@@ -9,6 +9,23 @@
     <Import_RootNamespace>Shared.SocketMeister</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Class1.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Base\OpenRequestMessages.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Base\SocketAsyncEventArgsPool.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Compression\CLZF2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Enums.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Events.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Exceptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Messages\ClientDisconnectMessage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Messages\IMessage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Messages\Message.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Messages\MessageBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Messages\MessageEngine.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Messages\PollRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Messages\PollResponse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Messages\RequestMessage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Messages\ResponseMessage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Messages\ServerStoppingMessage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SocketClient.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SocketEndPoint.cs" />
   </ItemGroup>
 </Project>

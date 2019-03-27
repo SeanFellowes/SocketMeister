@@ -7,10 +7,22 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared.SocketMeister", "Sha
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared.SocketMeister.Server", "Shared.SocketMeister.Server\Shared.SocketMeister.Server.shproj", "{042AC9F4-5E3A-4739-B8CD-287ED48A0B8D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocketMeister (.NET Standard 2.0)", "SocketMeister (.NET Standard 2.0)\SocketMeister (.NET Standard 2.0).csproj", "{37BE6CD5-9876-438A-B946-0AA155B13EF5}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Shared.SocketMeister.Server\Shared.SocketMeister.Server.projitems*{042ac9f4-5e3a-4739-b8cd-287ed48a0b8d}*SharedItemsImports = 13
 		Shared.SocketMeister\Shared.SocketMeister.projitems*{7fe383ec-5fd4-4d60-beeb-149e51549260}*SharedItemsImports = 13
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{37BE6CD5-9876-438A-B946-0AA155B13EF5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37BE6CD5-9876-438A-B946-0AA155B13EF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37BE6CD5-9876-438A-B946-0AA155B13EF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37BE6CD5-9876-438A-B946-0AA155B13EF5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
