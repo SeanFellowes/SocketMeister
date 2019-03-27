@@ -3,18 +3,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.539
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocketMeister", "SocketMeister.csproj", "{292E6649-500C-4C34-BDFE-89D64C5D1CF8}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared.SocketMeister", "Shared.SocketMeister\Shared.SocketMeister.shproj", "{7FE383EC-5FD4-4D60-BEEB-149E51549260}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared.SocketMeister.Server", "Shared.SocketMeister.Server\Shared.SocketMeister.Server.shproj", "{042AC9F4-5E3A-4739-B8CD-287ED48A0B8D}"
 EndProject
 Global
-	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
-		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{292E6649-500C-4C34-BDFE-89D64C5D1CF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{292E6649-500C-4C34-BDFE-89D64C5D1CF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{292E6649-500C-4C34-BDFE-89D64C5D1CF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{292E6649-500C-4C34-BDFE-89D64C5D1CF8}.Release|Any CPU.Build.0 = Release|Any CPU
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Shared.SocketMeister.Server\Shared.SocketMeister.Server.projitems*{042ac9f4-5e3a-4739-b8cd-287ed48a0b8d}*SharedItemsImports = 13
+		Shared.SocketMeister\Shared.SocketMeister.projitems*{7fe383ec-5fd4-4d60-beeb-149e51549260}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
