@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.539
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocketMeister", "SocketMeister.csproj", "{292E6649-500C-4C34-BDFE-89D64C5D1CF8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{292E6649-500C-4C34-BDFE-89D64C5D1CF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{292E6649-500C-4C34-BDFE-89D64C5D1CF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{292E6649-500C-4C34-BDFE-89D64C5D1CF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{292E6649-500C-4C34-BDFE-89D64C5D1CF8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C4E7889F-22D0-451C-AE7D-287E06E0DDED}
+	EndGlobalSection
+EndGlobal
