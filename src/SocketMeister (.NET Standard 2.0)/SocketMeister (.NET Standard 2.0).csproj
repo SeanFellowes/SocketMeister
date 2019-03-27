@@ -1,8 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net35;net4.7.2</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net2;net35;net4.7.2</TargetFrameworks>
     <RootNamespace>SocketMeister</RootNamespace>
+    <AssemblyName>SocketMeister</AssemblyName>
+    <Authors>Sean Fellowes</Authors>
+    <Description>Performant TCP socket server and client for .NET</Description>
+    <Copyright>Copyright ©2016 Sean Fellowes</Copyright>
+    <PackageProjectUrl>https://github.com/sfellowes/SocketMeister/projects/1</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/sfellowes/SocketMeister</RepositoryUrl>
+    <Version>0.1.0-beta</Version>
+    <PackageTags>tcp socket</PackageTags>
+    <Company />
+    <PackageReleaseNotes>Pre-release</PackageReleaseNotes>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
+    <DocumentationFile>C:\Users\Sean\Source\Repos\sfellowes\SocketMeister\src\SocketMeister (.NET Standard 2.0)\SocketMeister.xml</DocumentationFile>
   </PropertyGroup>
 
   <Import Project="..\Shared.SocketMeister\Shared.SocketMeister.projitems" Label="Shared" />

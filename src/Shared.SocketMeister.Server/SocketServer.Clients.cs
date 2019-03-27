@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -96,7 +95,15 @@ namespace SocketMeister
             /// <returns>List of clients</returns>
             public List<Client> ToList()
             {
-                lock (_lock) { return _list.ToList(); }
+                List<Client> rVal = new List<Client>();
+                lock (_lock)
+                {
+                    foreach (Client cl in _list)
+                    {
+                        rVal.Add(cl);
+                    }
+                }
+                return rVal;
             }
         }
     }
