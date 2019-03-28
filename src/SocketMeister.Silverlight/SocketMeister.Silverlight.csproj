@@ -1,0 +1,132 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{41EFAA42-85D4-49EC-9AB2-4CC879D2E50A}</ProjectGuid>
+    <ProjectTypeGuids>{A1591282-1198-4647-A2B1-27E5FF5F6F3B};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SocketMeister</RootNamespace>
+    <AssemblyName>SocketMeister</AssemblyName>
+    <TargetFrameworkIdentifier>Silverlight</TargetFrameworkIdentifier>
+    <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
+    <SilverlightVersion>$(TargetFrameworkVersion)</SilverlightVersion>
+    <SilverlightApplication>false</SilverlightApplication>
+    <ValidateXaml>true</ValidateXaml>
+    <ThrowErrorsInValidation>true</ThrowErrorsInValidation>
+  </PropertyGroup>
+  <!-- This property group is only here to support building this project using the 
+       MSBuild 3.5 toolset. In order to work correctly with this older toolset, it needs 
+       to set the TargetFrameworkVersion to v3.5 -->
+  <PropertyGroup Condition="'$(MSBuildToolsVersion)' == '3.5'">
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>Bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;TRACE;SILVERLIGHT</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>Bin\Release</OutputPath>
+    <DefineConstants>TRACE;SILVERLIGHT</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>Bin\Release\SocketMeister.XML</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="mscorlib" />
+    <Reference Include="System.Windows" />
+    <Reference Include="system" />
+    <Reference Include="System.Core">
+      <HintPath>$(TargetFrameworkDirectory)System.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Windows.Browser" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Shared.SocketMeister\Base\OpenRequestMessages.cs">
+      <Link>Shared.SocketMeister\Base\OpenRequestMessages.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\Base\SocketAsyncEventArgsPool.cs">
+      <Link>Shared.SocketMeister\Base\SocketAsyncEventArgsPool.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\Compression\CLZF2.cs">
+      <Link>Shared.SocketMeister\Compression\CLZF2.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\Enums.cs">
+      <Link>Shared.SocketMeister\Enums.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\Events.cs">
+      <Link>Shared.SocketMeister\Events.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\Exceptions.cs">
+      <Link>Shared.SocketMeister\Exceptions.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\Messages\ClientDisconnectMessage.cs">
+      <Link>Shared.SocketMeister\Messages\ClientDisconnectMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\Messages\IMessage.cs">
+      <Link>Shared.SocketMeister\Messages\IMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\Messages\Message.cs">
+      <Link>Shared.SocketMeister\Messages\Message.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\Messages\MessageBase.cs">
+      <Link>Shared.SocketMeister\Messages\MessageBase.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\Messages\MessageEngine.cs">
+      <Link>Shared.SocketMeister\Messages\MessageEngine.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\Messages\PollRequest.cs">
+      <Link>Shared.SocketMeister\Messages\PollRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\Messages\PollResponse.cs">
+      <Link>Shared.SocketMeister\Messages\PollResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\Messages\RequestMessage.cs">
+      <Link>Shared.SocketMeister\Messages\RequestMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\Messages\ResponseMessage.cs">
+      <Link>Shared.SocketMeister\Messages\ResponseMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\Messages\ServerStoppingMessage.cs">
+      <Link>Shared.SocketMeister\Messages\ServerStoppingMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\SocketClient.cs">
+      <Link>Shared.SocketMeister\SocketClient.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\SocketEndPoint.cs">
+      <Link>Shared.SocketMeister\SocketEndPoint.cs</Link>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Silverlight\$(SilverlightVersion)\Microsoft.Silverlight.CSharp.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{A1591282-1198-4647-A2B1-27E5FF5F6F3B}">
+        <SilverlightProjectProperties />
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
