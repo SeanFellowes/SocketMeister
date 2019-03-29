@@ -25,6 +25,4 @@
 
   <Import Project="..\Shared.SocketMeister\Shared.SocketMeister.projitems" Label="Shared" />
 
-  <Import Project="..\Shared.SocketMeister.Server\Shared.SocketMeister.Server.projitems" Label="Shared" />
-
 </Project>
