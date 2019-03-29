@@ -7,7 +7,11 @@ namespace SocketMeister
     /// <summary>
     /// Asynchronous, persistent TCP/IP socket client supporting multiple destinations
     /// </summary>
-    public partial class SocketClient
+#if SMISPUBLIC
+    public partial class SocketClient : IDisposable
+#else
+    internal partial class SocketClient : IDisposable
+#endif
     {
         /// <summary>
         /// Based on example from http://msdn2.microsoft.com/en-us/library/system.net.sockets.socketasynceventargs.socketasynceventargs.aspx

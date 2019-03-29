@@ -7,7 +7,11 @@ using System.Threading;
 
 namespace SocketMeister
 {
+#if SMISPUBLIC
     public partial class SocketServer
+#else
+    internal partial class SocketServer
+#endif
     {
         internal class Clients
         {

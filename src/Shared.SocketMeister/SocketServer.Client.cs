@@ -7,7 +7,11 @@ using SocketMeister.Messages;
 
 namespace SocketMeister
 {
+#if SMISPUBLIC
     public partial class SocketServer
+#else
+    internal partial class SocketServer
+#endif
     {
         /// <summary>
         /// Remote client which has connected to the socket server

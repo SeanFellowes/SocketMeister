@@ -6,13 +6,16 @@ using System.Text;
 using System.Threading;
 using SocketMeister.Messages;
 
-
 namespace SocketMeister
 {
     /// <summary>
     /// Asynchronous, persistent TCP/IP socket client supporting multiple destinations
     /// </summary>
+#if SMISPUBLIC
     public partial class SocketClient : IDisposable
+#else
+    internal partial class SocketClient : IDisposable
+#endif
     {
         /// <summary>
         /// The number of simultaneous send operations which can take place. Value should be between 2 and 15
@@ -213,7 +216,7 @@ namespace SocketMeister
 
 
 
-        #region Socket async connect
+#region Socket async connect
 
 
         /// <summary>
@@ -438,10 +441,10 @@ namespace SocketMeister
 
 
 
-        #endregion
+#endregion
 
 
-        #region Socket async Send
+#region Socket async Send
 
 
         /// <summary>
@@ -609,9 +612,9 @@ namespace SocketMeister
 
 
 
-        #endregion
+#endregion
 
-        #region Socket async Receive
+#region Socket async Receive
 
 
         /// <summary>
@@ -703,9 +706,9 @@ namespace SocketMeister
 
 
 
-        #endregion
+#endregion
 
-        #region Shared
+#region Shared
 
 
         private bool CanPoll()
@@ -753,6 +756,6 @@ namespace SocketMeister
         }
 
 
-        #endregion
+#endregion
     }
 }

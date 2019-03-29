@@ -7,7 +7,11 @@ namespace SocketMeister
     /// <summary>
     /// Raised when an exception occured.
     /// </summary>
+#if SMISPUBLIC
     public class ExceptionEventArgs : EventArgs
+#else
+    internal class ExceptionEventArgs : EventArgs
+#endif
     {
         private int _eventId;
         private Exception _exception;

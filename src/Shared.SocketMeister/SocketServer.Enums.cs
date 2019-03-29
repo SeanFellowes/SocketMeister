@@ -5,7 +5,11 @@ using System.Text;
 
 namespace SocketMeister
 {
+#if SMISPUBLIC
     public partial class SocketServer
+#else
+    internal partial class SocketServer
+#endif
     {
         /// <summary>
         /// Execution status of a service

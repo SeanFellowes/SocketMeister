@@ -10,7 +10,11 @@ namespace SocketMeister
     /// <summary>
     /// Client Socket to a SocketServer end point
     /// </summary>
+#if SMISPUBLIC
     public class SocketEndPoint
+#else
+    internal class SocketEndPoint
+#endif
     {
         private DateTime _dontReconnectUntil = DateTime.Now;
         private IPEndPoint _ipEndPoint = null;

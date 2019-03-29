@@ -12,7 +12,11 @@ namespace SocketMeister
     /// <summary>
     /// TCP/IP socket server which listens for client connections and raises events when messages are received
     /// </summary>
+#if SMISPUBLIC
     public partial class SocketServer
+#else
+    internal partial class SocketServer
+#endif
     {
         /// <summary>
         /// The maximum number of milliseconds to wait for clients to disconnect whien stopping the socket server

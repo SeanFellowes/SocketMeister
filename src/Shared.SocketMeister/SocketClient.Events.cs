@@ -8,7 +8,11 @@ namespace SocketMeister
     /// <summary>
     /// Asynchronous, persistent TCP/IP socket client supporting multiple destinations
     /// </summary>
-    public partial class SocketClient
+#if SMISPUBLIC
+    public partial class SocketClient : IDisposable
+#else
+    internal partial class SocketClient : IDisposable
+#endif
     {
         /// <summary>
         /// Information provided when a SocketClient connection to a socket server changes status
