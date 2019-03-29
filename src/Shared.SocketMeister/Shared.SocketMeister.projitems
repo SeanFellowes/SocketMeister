@@ -9,8 +9,8 @@
     <Import_RootNamespace>Shared.SocketMeister</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)OpenRequestMessages.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Base\SocketAsyncEventArgsPool.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SocketClient.OpenRequestMessages.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SocketAsyncEventArgsPool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Compression\CLZF2.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events.cs" />
@@ -27,5 +27,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Messages\ServerStoppingMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SocketClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SocketEndPoint.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Base\" />
   </ItemGroup>
 </Project>
