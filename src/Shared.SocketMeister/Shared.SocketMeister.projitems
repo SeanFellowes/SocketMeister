@@ -13,8 +13,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)SocketClient.OpenRequestMessages.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SocketClient.SocketAsyncEventArgsPool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\MessageEngine.CLZF2.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Enums.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Events.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SocketClient.Enums.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SocketClient.Events.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Exceptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\ClientDisconnectMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\IMessage.cs" />
