@@ -11,10 +11,5 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Messages\Message.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\RequestMessage.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SocketServer.Client.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SocketServer.Clients.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SocketServer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SocketServer.Enums.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SocketServer.Events.cs" />
   </ItemGroup>
 </Project>

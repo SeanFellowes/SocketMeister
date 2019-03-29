@@ -28,5 +28,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Messages\ServerStoppingMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SocketClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SocketEndPoint.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SocketServer.Client.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SocketServer.Clients.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SocketServer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SocketServer.Enums.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SocketServer.Events.cs" />
   </ItemGroup>
 </Project>
