@@ -7,7 +7,7 @@ namespace SocketMeister
     /// <summary>
     /// A SocketClient's connection status to a SocketServer.
     /// </summary>
-    public enum ConnectionStatus
+    public enum ConnectionStatuses
     {
         /// <summary>
         /// Socket is disconnected.

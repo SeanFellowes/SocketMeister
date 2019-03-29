@@ -44,7 +44,7 @@ namespace SocketMeister
         private SocketAsyncEventArgs _asyncEventArgsReceive = null;
         private readonly ManualResetEvent _autoResetConnectEvent = new ManualResetEvent(false);
         private readonly ManualResetEvent _autoResetPollEvent = new ManualResetEvent(false);
-        private ConnectionStatus _connectionStatus = ConnectionStatus.Disconnected;
+        private ConnectionStatuses _connectionStatus = ConnectionStatuses.Disconnected;
         private SocketEndPoint _currentEndPoint = null;
         private bool _enableCompression;
         private readonly List<SocketEndPoint> _endPoints = null;
@@ -73,7 +73,7 @@ namespace SocketMeister
         /// <summary>
         /// Event raised whenever a message is received from the server.
         /// </summary>
-        internal event EventHandler<MessageReceivedEventArgs> MessageReceived;
+        public event EventHandler<MessageReceivedEventArgs> MessageReceived;
 
 
         /// <summary>
@@ -168,7 +168,7 @@ namespace SocketMeister
         /// <summary>
         /// The connection status of the socket client
         /// </summary>
-        public ConnectionStatus ConnectionStatus
+        public ConnectionStatuses ConnectionStatus
         {
             get { lock (_lock) { return _connectionStatus; } }
             private set
@@ -180,7 +180,7 @@ namespace SocketMeister
                 }
                 if (ConnectionStatusChanged != null)
                 {
-                    if (value != ConnectionStatus.Connected) ConnectionStatusChanged(this, new ConnectionStatusChangedEventArgs(value, "", 0));
+                    if (value != ConnectionStatuses.Connected) ConnectionStatusChanged(this, new ConnectionStatusChangedEventArgs(value, "", 0));
                     else ConnectionStatusChanged(this, new ConnectionStatusChangedEventArgs(value, CurrentEndPoint.IPAddress, CurrentEndPoint.Port));
                 }
             }
@@ -221,12 +221,12 @@ namespace SocketMeister
         /// </summary>
         private void DisconnectSocket()
         {
-            if (ConnectionStatus == ConnectionStatus.Disconnecting || ConnectionStatus == ConnectionStatus.Disconnected) return;
+            if (ConnectionStatus == ConnectionStatuses.Disconnecting || ConnectionStatus == ConnectionStatuses.Disconnected) return;
 
             //  INITIATE SHUTDOWN
             SocketEndPoint disconnectingEndPoint = CurrentEndPoint;
             disconnectingEndPoint.DontReconnectUntil = DateTime.Now.AddSeconds(DONT_RECONNECT_DELAY_AFTER_SHUTDOWN);
-            ConnectionStatus = ConnectionStatus.Disconnecting;
+            ConnectionStatus = ConnectionStatuses.Disconnecting;
 
             Thread bgDisconnect = new Thread(
             new ThreadStart(delegate
@@ -279,7 +279,7 @@ namespace SocketMeister
                 _openRequests.ResetToUnsent();
 
                 //  FINALIZE AND RE-ATTEMPT CONNECTION IS WE ARE NOT STOPPING
-                ConnectionStatus = ConnectionStatus.Disconnected;
+                ConnectionStatus = ConnectionStatuses.Disconnected;
                 if (IsStopAllRequested == false) bgConnectToServer();
 
             }));
@@ -300,7 +300,7 @@ namespace SocketMeister
                 if (_isBackgroundConnectRunning == true) return;
                 _isBackgroundConnectRunning = true;
             }
-            ConnectionStatus = ConnectionStatus.Connecting;
+            ConnectionStatus = ConnectionStatuses.Connecting;
 
             Thread bgConnect = new Thread(new ThreadStart(delegate
             {
@@ -327,7 +327,7 @@ namespace SocketMeister
                             _autoResetConnectEvent.Reset();
                             _autoResetConnectEvent.WaitOne(5000);
 
-                            if (ConnectionStatus == ConnectionStatus.Connected)
+                            if (ConnectionStatus == ConnectionStatuses.Connected)
                             {
                                 bgPollServer();
                                 break;
@@ -411,7 +411,7 @@ namespace SocketMeister
                     _asyncEventArgsReceive.Completed += new EventHandler<SocketAsyncEventArgs>(ProcessReceive);
                     if (!CurrentEndPoint.Socket.ReceiveAsync(_asyncEventArgsReceive)) ProcessReceive(null, _asyncEventArgsReceive);
                     //  CONNECTED
-                    ConnectionStatus = ConnectionStatus.Connected;
+                    ConnectionStatus = ConnectionStatuses.Connected;
                     //  DONE
                     _autoResetConnectEvent.Set();
                 }
@@ -459,7 +459,7 @@ namespace SocketMeister
             DisconnectSocket();
 
             //  WAIT UNTIL DISCONNECT HAS FINISHED
-            while (ConnectionStatus != ConnectionStatus.Disconnected) { Thread.Sleep(50); }
+            while (ConnectionStatus != ConnectionStatuses.Disconnected) { Thread.Sleep(50); }
         }
 
 
@@ -488,7 +488,7 @@ namespace SocketMeister
             if (Parameters.Length == 0) throw new ArgumentException("At least 1 request parameter is required.", "Parameters");
             DateTime startTime = DateTime.Now;
             DateTime maxWait = startTime.AddMilliseconds(TimeoutMilliseconds);
-            while(ConnectionStatus != ConnectionStatus.Connected && IsStopAllRequested == false)
+            while(ConnectionStatus != ConnectionStatuses.Connected && IsStopAllRequested == false)
             {
                 Thread.Sleep(200);
                 if (IsStopAllRequested) throw new Exception("Request cannot be sent. The socket client is stopped or stopping");
@@ -713,7 +713,7 @@ namespace SocketMeister
             lock (_lock)
             {
                 if (_isStopAllRequested == true || _isStopPollingRequested == true) return false;
-                if (_connectionStatus != ConnectionStatus.Connected) return false;
+                if (_connectionStatus != ConnectionStatuses.Connected) return false;
                 return _currentEndPoint.Socket.Connected;
             }
         }
@@ -724,7 +724,7 @@ namespace SocketMeister
             lock (_lock)
             {
                 if (_isStopAllRequested == true) return false;
-                if (_connectionStatus != ConnectionStatus.Connected) return false;
+                if (_connectionStatus != ConnectionStatuses.Connected) return false;
                 return _currentEndPoint.Socket.Connected;
             }
         }

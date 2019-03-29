@@ -9,7 +9,7 @@ namespace SocketMeister.Messages
     /// <summary>
     /// This is the core engine for creating bytes to send down a socket and to receive bytes from a socket.
     /// </summary>
-    internal sealed class MessageEngine
+    internal sealed partial class MessageEngine
     {
         internal class Parse
         {
@@ -238,7 +238,7 @@ namespace SocketMeister.Messages
                                 {
                                     writer.Write(true);     //  COMPRESSED
                                     byte[] uncompressedBytes = msUncompressed.ToArray();
-                                    byte[] compressedBytes = Compression.CLZF2.Compress(msUncompressed.ToArray());
+                                    byte[] compressedBytes = CLZF2.Compress(msUncompressed.ToArray());
                                     int messageLengthUncompressed = uncompressedBytes.Length;
                                     int messageLength = compressedBytes.Length;
 
@@ -344,7 +344,7 @@ namespace SocketMeister.Messages
             if (_messageIsCompressed == false) return _receiveBuffer;
             //  UNCOMPRESS
             if (_uncompressedBuffer.Length < _messageLengthUncompressed) _uncompressedBuffer = new byte[_messageLengthUncompressed];
-            Compression.CLZF2.Decompress(_receiveBuffer, ref _uncompressedBuffer, _messageLength);
+            CLZF2.Decompress(_receiveBuffer, ref _uncompressedBuffer, _messageLength);
             return _uncompressedBuffer;
         }
 

@@ -12,7 +12,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Messages\Enums.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SocketClient.OpenRequestMessages.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SocketClient.SocketAsyncEventArgsPool.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Messages\CLZF2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Messages\MessageEngine.CLZF2.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Exceptions.cs" />
@@ -28,8 +28,5 @@
     <Compile Include="$(MSBuildThisFileDirectory)Messages\ServerStoppingMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SocketClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SocketEndPoint.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Compression\" />
   </ItemGroup>
 </Project>

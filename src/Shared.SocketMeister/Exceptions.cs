@@ -5,7 +5,7 @@ using System.Diagnostics;
 namespace SocketMeister
 {
     /// <summary>
-    /// Exception details
+    /// Raised when an exception occured.
     /// </summary>
     public class ExceptionEventArgs : EventArgs
     {
@@ -33,6 +33,7 @@ namespace SocketMeister
         /// </summary>
         public Exception Exception { get { return _exception; } }
     }
+
 
     /// <summary>
     /// Exception raised when on the client when the server is stopping
