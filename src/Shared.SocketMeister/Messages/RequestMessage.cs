@@ -5,6 +5,22 @@ using System.Net.Sockets;
 
 namespace SocketMeister.Messages
 {
+#if !SILVERLIGHT && !SMNOSERVER
+    internal partial class RequestMessage
+    {
+        private SocketServer.Client _remoteClient = null;
+
+        /// <summary>
+        /// The remote client which sent this RequestMessage (value null on SocketClient)
+        /// </summary>
+        internal SocketServer.Client RemoteClient
+        {
+            get { lock (_lock) { return _remoteClient; } }
+            set { lock (_lock) { _remoteClient = value; } }
+        }
+    }
+#endif
+
     /// <summary>
     /// A request, sent from socket client to socket server. A response is expected and will cause problems if it is not sent.
     /// </summary>

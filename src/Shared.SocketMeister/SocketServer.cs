@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !SILVERLIGHT && !SMNOSERVER
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
@@ -556,3 +557,4 @@ namespace SocketMeister
         }
     }
 }
+#endif
