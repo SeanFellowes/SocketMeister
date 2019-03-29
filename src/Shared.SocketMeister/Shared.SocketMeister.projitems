@@ -9,7 +9,7 @@
     <Import_RootNamespace>Shared.SocketMeister</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Base\OpenRequestMessages.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)OpenRequestMessages.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Base\SocketAsyncEventArgsPool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Compression\CLZF2.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums.cs" />
