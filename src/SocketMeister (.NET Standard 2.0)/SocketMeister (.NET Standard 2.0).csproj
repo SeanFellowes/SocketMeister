@@ -9,7 +9,7 @@
     <Copyright>Copyright ©2016 Sean Fellowes</Copyright>
     <PackageProjectUrl>https://github.com/sfellowes/SocketMeister</PackageProjectUrl>
     <RepositoryUrl>https://github.com/sfellowes/SocketMeister</RepositoryUrl>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <PackageTags>tcp socket</PackageTags>
     <Company />
     <PackageReleaseNotes>Initial Release</PackageReleaseNotes>
