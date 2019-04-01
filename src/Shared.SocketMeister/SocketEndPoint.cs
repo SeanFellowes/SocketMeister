@@ -17,7 +17,7 @@ namespace SocketMeister
 #endif
     {
         private DateTime _dontReconnectUntil = DateTime.Now;
-        private IPEndPoint _ipEndPoint = null;
+        private readonly IPEndPoint _ipEndPoint = null;
         private readonly string _iPAddress = null;
         private readonly object _lock = new object();
         private readonly ushort _port = 0;
@@ -38,8 +38,7 @@ namespace SocketMeister
             _port = Convert.ToUInt16(Port);
 
             //  TRY TO CREATE IpAddress
-            IPAddress IPAddr;
-            if (System.Net.IPAddress.TryParse(_iPAddress, out IPAddr))
+            if (System.Net.IPAddress.TryParse(_iPAddress, out IPAddress IPAddr))
             {
                 switch (IPAddr.AddressFamily)
                 {
@@ -77,6 +76,9 @@ namespace SocketMeister
                 //  NOTE: You may need to define NET20 or NET35 as a conditional compilation symbol in your project's Build properties
 #if !NET35 && !NET20
                 try { _socket.Dispose(); }
+                catch { }
+#else
+                try { _socket.Close(); }
                 catch { }
 #endif
             }

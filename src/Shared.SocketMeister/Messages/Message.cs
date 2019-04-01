@@ -41,19 +41,14 @@ namespace SocketMeister.Messages
         public Message(object[] Parameters, int TimeoutMilliseconds) : base(MessageTypes.Message, TimeoutMilliseconds)
         {
             _parameters = Parameters;
-            MemoryStream stream = null;
-            try
+            using (BinaryWriter writer = new BinaryWriter(new MemoryStream()))
             {
-                stream = new MemoryStream();
-                using (BinaryWriter writer = new BinaryWriter(stream))
+                SerializeParameters(writer, Parameters);
+                using (BinaryReader reader = new BinaryReader(writer.BaseStream))
                 {
-                    SerializeParameters(writer, Parameters);
+                    reader.BaseStream.Position = 0;
+                    _parameterBytes = reader.ReadBytes((Convert.ToInt32(reader.BaseStream.Length)));
                 }
-                _parameterBytes = stream.ToArray();
-            }
-            finally
-            {
-                if (stream != null) stream.Dispose();
             }
         }
 

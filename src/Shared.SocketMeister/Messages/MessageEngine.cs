@@ -199,81 +199,78 @@ namespace SocketMeister.Messages
         /// <returns>Byte array of the data to be sent</returns>
         public static byte[] GenerateSendBytes(IMessage SendObject, bool Compress)
         {
-            MemoryStream stream = null;
-            try
+            using (BinaryWriter writer = new BinaryWriter(new MemoryStream()))
             {
-                stream = new MemoryStream();
-                using (BinaryWriter writer = new BinaryWriter(stream))
+                //  WRITE HEADER
+                writer.Write(Convert.ToInt16(SendObject.MessageType));
+
+                if (Compress == false)
                 {
                     //  WRITE HEADER
-                    writer.Write(Convert.ToInt16(SendObject.MessageType));
+                    writer.Write(false);    //  NOT COMPRESSED
+                    writer.Write((int)0);   //  WILL BE USED TO WRITE _compressedLength
+                    writer.Write((int)0);   //  WILL BE USED TO WRITE _uncompressedLength
 
-                    if (Compress == false)
+                    //  WRITE USER BYTES
+                    long position1 = writer.BaseStream.Position;
+                    SendObject.AppendBytes(writer);
+                    int messageLength = Convert.ToInt32(writer.BaseStream.Position - position1);
+                    int messageLengthUncompressed = messageLength;
+
+                    //  GO BACK AND FINISH HEADER
+                    writer.BaseStream.Position = 3;
+                    writer.Write(messageLength);
+                    writer.Write(messageLengthUncompressed);
+                }
+                else
+                {
+                    byte[] uncompressedBytes = null;
+                    using (BinaryWriter writer2 = new BinaryWriter(new MemoryStream()))
                     {
-                        //  WRITE HEADER
-                        writer.Write(false);    //  NOT COMPRESSED
+                        SendObject.AppendBytes(writer2);
+
+                        using (BinaryReader reader2 = new BinaryReader(writer2.BaseStream))
+                        {
+                            reader2.BaseStream.Position = 0;
+                            uncompressedBytes = reader2.ReadBytes(Convert.ToInt32(reader2.BaseStream.Length));
+
+                        }
+                    }
+
+                    if (uncompressedBytes != null && uncompressedBytes.Length > 1024)
+                    {
+                        writer.Write(true);     //  COMPRESSED
+                        byte[] compressedBytes = CLZF2.Compress(uncompressedBytes);
+                        writer.Write(compressedBytes.Length);
+                        writer.Write(uncompressedBytes.Length);
+                        writer.Write(compressedBytes);
+                    }
+                    else
+                    {
+                        writer.Write(false);     //  UNCOMPRESSED
                         writer.Write((int)0);   //  WILL BE USED TO WRITE _compressedLength
                         writer.Write((int)0);   //  WILL BE USED TO WRITE _uncompressedLength
 
                         //  WRITE USER BYTES
-                        long position1 = stream.Position;
+                        long position1 = writer.BaseStream.Position;
                         SendObject.AppendBytes(writer);
-                        int messageLength = Convert.ToInt32(stream.Position - position1);
-                        int messageLengthUncompressed = messageLength;
+                        int messageLength2 = Convert.ToInt32(writer.BaseStream.Position - position1);
+                        int messageLengthUncompressed2 = messageLength2;
 
                         //  GO BACK AND FINISH HEADER
-                        stream.Position = 3;
-                        writer.Write(messageLength);
-                        writer.Write(messageLengthUncompressed);
+                        writer.BaseStream.Position = 3;
+                        writer.Write(messageLength2);
+                        writer.Write(messageLengthUncompressed2);
                     }
-                    else
-                    {
-                        using (MemoryStream msUncompressed = new MemoryStream())
-                        {
-                            using (BinaryWriter writer2 = new BinaryWriter(msUncompressed))
-                            {
-                                SendObject.AppendBytes(writer2);
 
-                                if (writer2.BaseStream.Length > 1024)
-                                {
-                                    writer.Write(true);     //  COMPRESSED
-                                    byte[] uncompressedBytes = msUncompressed.ToArray(); 
-                                    byte[] compressedBytes = CLZF2.Compress(msUncompressed.ToArray());
-                                    int messageLengthUncompressed = uncompressedBytes.Length;
-                                    int messageLength = compressedBytes.Length;
 
-                                    writer.Write(messageLength);
-                                    writer.Write(messageLengthUncompressed);
-                                    writer.Write(compressedBytes);
-
-                                }
-                                else
-                                {
-                                    writer.Write(false);     //  UNCOMPRESSED
-                                    writer.Write((int)0);   //  WILL BE USED TO WRITE _compressedLength
-                                    writer.Write((int)0);   //  WILL BE USED TO WRITE _uncompressedLength
-
-                                    //  WRITE USER BYTES
-                                    long position1 = stream.Position;
-                                    SendObject.AppendBytes(writer);
-                                    int messageLength2 = Convert.ToInt32(stream.Position - position1);
-                                    int messageLengthUncompressed2 = messageLength2;
-
-                                    //  GO BACK AND FINISH HEADER
-                                    stream.Position = 3;
-                                    writer.Write(messageLength2);
-                                    writer.Write(messageLengthUncompressed2);
-                                }
-
-                            }
-                        }
-                    }
                 }
-                return stream.ToArray();
-            }
-            finally
-            {
-                if (stream != null) stream.Dispose();
+                using (BinaryReader reader = new BinaryReader(writer.BaseStream))
+                {
+                    reader.BaseStream.Position = 0;
+                    return reader.ReadBytes(Convert.ToInt32(reader.BaseStream.Length));
+
+                }
             }
         }
 
