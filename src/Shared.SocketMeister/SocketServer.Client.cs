@@ -19,10 +19,10 @@ namespace SocketMeister
         public class Client
         {
             private readonly Guid _clientId = Guid.NewGuid();
-            private Socket _clientSocket;
+            private readonly Socket _clientSocket;
             private readonly DateTime _connectTimestamp = DateTime.Now;
             private readonly object _lock = new object();
-            private MessageEngine _receivedEnvelope;
+            private readonly MessageEngine _receivedEnvelope;
             private readonly SocketServer _socketServer;
 
             internal Client(SocketServer Server, Socket ClientSocket, bool EnableCompression)

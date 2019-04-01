@@ -286,10 +286,12 @@ namespace SocketMeister.Messages
 
         private void AddParseAttemptDetails()
         {
-            Parse p = new Parse(_statMessageNumber, _messageType.ToString(), _messageLength, _messageLengthUncompressed);
-            p.MessageReceived = _statMessageReceived;
-            p.SocketBytesRead = _statSocketBytesRead;
-            p.SocketBufferLength = _statSocketBufferLength;
+            Parse p = new Parse(_statMessageNumber, _messageType.ToString(), _messageLength, _messageLengthUncompressed)
+            {
+                MessageReceived = _statMessageReceived,
+                SocketBytesRead = _statSocketBytesRead,
+                SocketBufferLength = _statSocketBufferLength
+            };
             _history.Add(p);
         }
 
