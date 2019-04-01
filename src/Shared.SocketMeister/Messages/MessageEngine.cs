@@ -199,9 +199,11 @@ namespace SocketMeister.Messages
         /// <returns>Byte array of the data to be sent</returns>
         public static byte[] GenerateSendBytes(IMessage SendObject, bool Compress)
         {
-            using (MemoryStream ms = new MemoryStream())
+            MemoryStream stream = null;
+            try
             {
-                using (BinaryWriter writer = new BinaryWriter(ms))
+                stream = new MemoryStream();
+                using (BinaryWriter writer = new BinaryWriter(stream))
                 {
                     //  WRITE HEADER
                     writer.Write(Convert.ToInt16(SendObject.MessageType));
@@ -214,20 +216,18 @@ namespace SocketMeister.Messages
                         writer.Write((int)0);   //  WILL BE USED TO WRITE _uncompressedLength
 
                         //  WRITE USER BYTES
-                        long position1 = ms.Position;
+                        long position1 = stream.Position;
                         SendObject.AppendBytes(writer);
-                        int messageLength = Convert.ToInt32(ms.Position - position1);
+                        int messageLength = Convert.ToInt32(stream.Position - position1);
                         int messageLengthUncompressed = messageLength;
 
                         //  GO BACK AND FINISH HEADER
-                        ms.Position = 3;
+                        stream.Position = 3;
                         writer.Write(messageLength);
                         writer.Write(messageLengthUncompressed);
                     }
                     else
                     {
-                        //  WRITE HEADER
-
                         using (MemoryStream msUncompressed = new MemoryStream())
                         {
                             using (BinaryWriter writer2 = new BinaryWriter(msUncompressed))
@@ -237,7 +237,7 @@ namespace SocketMeister.Messages
                                 if (writer2.BaseStream.Length > 1024)
                                 {
                                     writer.Write(true);     //  COMPRESSED
-                                    byte[] uncompressedBytes = msUncompressed.ToArray();
+                                    byte[] uncompressedBytes = msUncompressed.ToArray(); 
                                     byte[] compressedBytes = CLZF2.Compress(msUncompressed.ToArray());
                                     int messageLengthUncompressed = uncompressedBytes.Length;
                                     int messageLength = compressedBytes.Length;
@@ -254,13 +254,13 @@ namespace SocketMeister.Messages
                                     writer.Write((int)0);   //  WILL BE USED TO WRITE _uncompressedLength
 
                                     //  WRITE USER BYTES
-                                    long position1 = ms.Position;
+                                    long position1 = stream.Position;
                                     SendObject.AppendBytes(writer);
-                                    int messageLength2 = Convert.ToInt32(ms.Position - position1);
+                                    int messageLength2 = Convert.ToInt32(stream.Position - position1);
                                     int messageLengthUncompressed2 = messageLength2;
 
                                     //  GO BACK AND FINISH HEADER
-                                    ms.Position = 3;
+                                    stream.Position = 3;
                                     writer.Write(messageLength2);
                                     writer.Write(messageLengthUncompressed2);
                                 }
@@ -269,7 +269,11 @@ namespace SocketMeister.Messages
                         }
                     }
                 }
-                return ms.ToArray();
+                return stream.ToArray();
+            }
+            finally
+            {
+                if (stream != null) stream.Dispose();
             }
         }
 
@@ -295,47 +299,74 @@ namespace SocketMeister.Messages
 
         internal ServerStoppingMessage GetDisconnectRequest()
         {
-            using (MemoryStream ms = new MemoryStream(GetBuffer()))
+            MemoryStream stream = null;
+            try
             {
-                using (BinaryReader bR = new BinaryReader(ms))
+                stream = new MemoryStream(GetBuffer());
+                using (BinaryReader reader = new BinaryReader(stream))
                 {
-                    return new ServerStoppingMessage(bR);
+                    stream = null;
+                    return new ServerStoppingMessage(reader);
                 }
+            }
+            finally
+            {
+                if (stream != null) stream.Dispose();
             }
         }
 
         internal Message GetMessage()
         {
-            using (MemoryStream ms = new MemoryStream(GetBuffer()))
+            MemoryStream stream = null;
+            try
             {
-                using (BinaryReader bR = new BinaryReader(ms))
+                stream = new MemoryStream(GetBuffer());
+                using (BinaryReader reader = new BinaryReader(stream))
                 {
-                    return new Message(bR);
+                    stream = null;
+                    return new Message(reader);
                 }
+            }
+            finally
+            {
+                if (stream != null) stream.Dispose();
             }
         }
 
 
         internal RequestMessage GetRequestMessage()
         {
-            using (MemoryStream ms = new MemoryStream(GetBuffer()))
+            MemoryStream stream = null;
+            try
             {
-                using (BinaryReader bR = new BinaryReader(ms))
+                stream = new MemoryStream(GetBuffer());
+                using (BinaryReader reader = new BinaryReader(stream))
                 {
-                    return new RequestMessage(bR);
+                    stream = null;
+                    return new RequestMessage(reader);
                 }
+            }
+            finally
+            {
+                if (stream != null) stream.Dispose();
             }
         }
 
-
         internal ResponseMessage GetResponseMessage()
         {
-            using (MemoryStream ms = new MemoryStream(GetBuffer()))
+            MemoryStream stream = null;
+            try
             {
-                using (BinaryReader bR = new BinaryReader(ms))
+                stream = new MemoryStream(GetBuffer());
+                using (BinaryReader reader = new BinaryReader(stream))
                 {
-                    return new ResponseMessage(bR);
+                    stream = null;
+                    return new ResponseMessage(reader);
                 }
+            }
+            finally
+            {
+                if (stream != null) stream.Dispose();
             }
         }
 

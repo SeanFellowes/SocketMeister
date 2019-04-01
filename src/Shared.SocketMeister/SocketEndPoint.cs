@@ -11,9 +11,9 @@ namespace SocketMeister
     /// Client Socket to a SocketServer end point
     /// </summary>
 #if SMISPUBLIC
-    public class SocketEndPoint
+    public class SocketEndPoint : IDisposable
 #else
-    internal class SocketEndPoint
+    internal class SocketEndPoint : IDisposable
 #endif
     {
         private DateTime _dontReconnectUntil = DateTime.Now;
@@ -56,6 +56,32 @@ namespace SocketMeister
             _ipEndPoint = new IPEndPoint(IPAddr, _port);
 
         }
+
+        /// <summary>
+        /// Dispose of the class
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Dispose of the class
+        /// </summary>
+        /// <param name="disposing"></param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                //  NOTE: You may need to define NET20 or NET35 as a conditional compilation symbol in your project's Build properties
+#if !NET35 && !NET20
+                try { _socket.Dispose(); }
+                catch { }
+#endif
+            }
+        }
+
 
         /// <summary>
         /// Used to delay reconnecting to a server after a server has disconnected or a socket has failed to a server.

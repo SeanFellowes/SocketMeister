@@ -61,15 +61,21 @@ namespace SocketMeister.Messages
             }
 
             //  SERIALIZE REQUEST MESSAGE
-            using (MemoryStream stream = new MemoryStream())
+            MemoryStream stream = null;
+            try
             {
-                using (BinaryWriter bWriter = new BinaryWriter(stream))
+                stream = new MemoryStream();
+                using (BinaryWriter writer = new BinaryWriter(stream))
                 {
-                    bWriter.Write(_requestId);
-                    bWriter.Write(_isLongPolling);
-                    SerializeParameters(bWriter, Parameters);
+                    writer.Write(_requestId);
+                    writer.Write(_isLongPolling);
+                    SerializeParameters(writer, Parameters);
                 }
                 _parameterBytes = stream.ToArray();
+            }
+            finally
+            {
+                if (stream != null) stream.Dispose();
             }
         }
 

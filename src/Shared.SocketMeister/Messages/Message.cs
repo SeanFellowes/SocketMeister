@@ -41,13 +41,19 @@ namespace SocketMeister.Messages
         public Message(object[] Parameters, int TimeoutMilliseconds) : base(MessageTypes.Message, TimeoutMilliseconds)
         {
             _parameters = Parameters;
-            using (MemoryStream stream = new MemoryStream())
+            MemoryStream stream = null;
+            try
             {
-                using (BinaryWriter bWriter = new BinaryWriter(stream))
+                stream = new MemoryStream();
+                using (BinaryWriter writer = new BinaryWriter(stream))
                 {
-                    SerializeParameters(bWriter, Parameters);
+                    SerializeParameters(writer, Parameters);
                 }
                 _parameterBytes = stream.ToArray();
+            }
+            finally
+            {
+                if (stream != null) stream.Dispose();
             }
         }
 
