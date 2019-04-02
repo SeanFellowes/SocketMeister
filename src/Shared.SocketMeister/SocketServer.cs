@@ -116,6 +116,9 @@ namespace SocketMeister
 #if !NET20 && !NET35
                 _allDone.Dispose();
                 _listener.Dispose();
+#else
+                _allDone.Close();
+                _listener.Close();
 #endif
             }
             _disposed = true;
