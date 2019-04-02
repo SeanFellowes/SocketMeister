@@ -9,10 +9,10 @@
     <Copyright>Copyright ©2016 Sean Fellowes</Copyright>
     <PackageProjectUrl>https://github.com/sfellowes/SocketMeister</PackageProjectUrl>
     <RepositoryUrl>https://github.com/sfellowes/SocketMeister</RepositoryUrl>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <PackageTags>tcp socket</PackageTags>
     <Company />
-    <PackageReleaseNotes>Initial Release</PackageReleaseNotes>
+    <PackageReleaseNotes>Resolved all Visual Studio code analysis warnings and messages.</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseUrl>https://licenses.nuget.org/MIT</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
@@ -22,6 +22,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
     <DocumentationFile>C:\Users\Sean\Source\Repos\sfellowes\SocketMeister\src\SocketMeister (.NET Standard 2.0)\SocketMeister.xml</DocumentationFile>
   </PropertyGroup>
+
 
   <Import Project="..\Shared.SocketMeister\Shared.SocketMeister.projitems" Label="Shared" />
 
