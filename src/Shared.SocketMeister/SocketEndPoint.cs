@@ -38,7 +38,8 @@ namespace SocketMeister
             _port = Convert.ToUInt16(Port);
 
             //  TRY TO CREATE IpAddress
-            if (System.Net.IPAddress.TryParse(_iPAddress, out IPAddress IPAddr))
+            IPAddress IPAddr;
+            if (System.Net.IPAddress.TryParse(_iPAddress, out IPAddr))
             {
                 switch (IPAddr.AddressFamily)
                 {
@@ -73,7 +74,7 @@ namespace SocketMeister
         {
             if (disposing)
             {
-                //  NOTE: You may need to define NET20 or NET35 as a conditional compilation symbol in your project's Build properties
+                //  NOTE: If you application uses .NET 2.0 or .NET 3.5. add NET20 or NET35 as a conditional compilation symbol, in your project's Build properties
 #if !NET35 && !NET20
                 try { _socket.Dispose(); }
                 catch { }

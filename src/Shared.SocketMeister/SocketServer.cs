@@ -13,9 +13,9 @@ namespace SocketMeister
     /// TCP/IP socket server which listens for client connections and raises events when messages are received
     /// </summary>
 #if SMISPUBLIC
-    public partial class SocketServer
+    public partial class SocketServer : IDisposable
 #else
-    internal partial class SocketServer
+    internal partial class SocketServer : IDisposable
 #endif
     {
         /// <summary>
@@ -25,6 +25,7 @@ namespace SocketMeister
 
         private ManualResetEvent _allDone = new ManualResetEvent(false);
         private readonly Clients _connectedClients = new Clients();
+        private bool _disposed = false;
         private readonly bool _enableCompression;
         private readonly string _endPoint;
         private readonly Socket _listener = null;
@@ -76,8 +77,10 @@ namespace SocketMeister
             _enableCompression = EnableCompression;
 
             //  SETUP BACKGROUND PROCESS TO FOR LISTENING
-            _threadListener = new Thread(new ThreadStart(bgListen));
-            _threadListener.IsBackground = true;
+            _threadListener = new Thread(new ThreadStart(BgListen))
+            {
+                IsBackground = true
+            };
 
             //  CONNECT TO ALL INTERFACES (I.P. 0.0.0.0 IS ALL)
             IPAddress ipAddress = IPAddress.Parse("0.0.0.0");
@@ -94,6 +97,30 @@ namespace SocketMeister
             _connectedClients.ClientDisconnected += _connectedClients_ClientDisconnected;
             _connectedClients.ClientConnected += _connectedClients_ClientConnected;
         }
+
+        /// <summary>
+        /// Dispose this class.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed) return;
+            if (disposing)
+            {
+                //  NOTE: If you application uses .NET 2.0 or .NET 3.5. add NET20 or NET35 as a conditional compilation symbol, in your project's Build properties
+#if !NET20 && !NET35
+                _allDone.Dispose();
+                _listener.Dispose();
+#endif
+            }
+            _disposed = true;
+        }
+
 
         /// <summary>
         /// The IP Address and Port that this socket server is using to communicate (e.g. 10.200.50.25:6000).
@@ -155,7 +182,7 @@ namespace SocketMeister
         /// <summary>
         /// Number of clients connected to the socket server.
         /// </summary>
-        public int ClientCount {  get { return _connectedClients.Count; } }
+        public int ClientCount { get { return _connectedClients.Count; } }
 
         /// <summary>
         /// Returns a list of clients which are connected to the socket server
@@ -258,8 +285,10 @@ namespace SocketMeister
                     try { handler.Close(); }
                     catch { }
                     return;
-                }));
-                bgReceive.IsBackground = true;
+                }))
+                {
+                    IsBackground = true
+                };
                 bgReceive.Start();
             }
             else
@@ -268,18 +297,20 @@ namespace SocketMeister
                 Thread bgReceive = new Thread(
                 new ThreadStart(delegate
                 {
-                // Get the socket that handles the client request. 
-                Socket listener = (Socket)ar.AsyncState;
+                    // Get the socket that handles the client request. 
+                    Socket listener = (Socket)ar.AsyncState;
                     Socket handler = null;
                     try { handler = listener.EndAccept(ar); }
                     catch { return; }
                     handler.SendTimeout = 30000;
-                // Create the state object.  
-                Client remoteClient = new Client(this, handler, _enableCompression);
+                    // Create the state object.  
+                    Client remoteClient = new Client(this, handler, _enableCompression);
                     _connectedClients.Add(remoteClient);
                     handler.BeginReceive(remoteClient.ReceiveBuffer, 0, SocketClient.SEND_RECEIVE_BUFFER_SIZE, 0, new AsyncCallback(ReadCallback), remoteClient);
-                }));
-                bgReceive.IsBackground = true;
+                }))
+                {
+                    IsBackground = true
+                };
                 bgReceive.Start();
             }
 
@@ -317,7 +348,7 @@ namespace SocketMeister
                             else
                             {
                                 lock (_lock) { _requestsInProgress = _requestsInProgress + 1; }
-                                ThreadPool.QueueUserWorkItem(bgProcessRequestMessage, request);
+                                ThreadPool.QueueUserWorkItem(BgProcessRequestMessage, request);
                             }
                         }
                         else if (receiveEnvelope.MessageType == MessageTypes.Message)
@@ -326,7 +357,7 @@ namespace SocketMeister
                             {
                                 Message message = receiveEnvelope.GetMessage();
                                 message.RemoteClient = remoteClient;
-                                ThreadPool.QueueUserWorkItem(bgProcessMessage, message);
+                                ThreadPool.QueueUserWorkItem(BgProcessMessage, message);
                             }
                         }
                         else if (receiveEnvelope.MessageType == MessageTypes.ClientDisconnectMessage)
@@ -347,7 +378,7 @@ namespace SocketMeister
                                 lock (_lock) { _requestsInProgress = _requestsInProgress + 1; }
                                 new Thread(new ThreadStart(delegate
                                 {
-                                    bgProcessPollRequest(remoteClient);
+                                    BgProcessPollRequest(remoteClient);
                                 }
                                 )).Start();
                             }
@@ -373,7 +404,7 @@ namespace SocketMeister
             }
         }
 
-        private void bgListen()
+        private void BgListen()
         {
             // Bind the socket to the local endpoint and listen for incoming connections.  
             try
@@ -401,7 +432,7 @@ namespace SocketMeister
             }
         }
 
-        private void bgProcessMessage(object state)
+        private void BgProcessMessage(object state)
         {
             Messages.Message request = (Messages.Message)state;
             try
@@ -414,7 +445,7 @@ namespace SocketMeister
             }
         }
 
-        private void bgProcessPollRequest(object state)
+        private void BgProcessPollRequest(object state)
         {
             Client remoteClient = (Client)state;
             try
@@ -432,7 +463,7 @@ namespace SocketMeister
             }
         }
 
-        private void bgProcessRequestMessage(object state)
+        private void BgProcessRequestMessage(object state)
         {
             RequestMessage request = (RequestMessage)state;
             try

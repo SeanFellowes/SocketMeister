@@ -129,7 +129,7 @@ namespace SocketMeister
             _asyncEventArgsPolling.SetBuffer(new byte[SEND_RECEIVE_BUFFER_SIZE], 0, SEND_RECEIVE_BUFFER_SIZE);
             _asyncEventArgsPolling.Completed += ProcessSendPollRequest;
 
-            bgConnectToServer();
+            BgConnectToServer();
         }
 
         /// <summary>
@@ -283,10 +283,12 @@ namespace SocketMeister
 
                 //  FINALIZE AND RE-ATTEMPT CONNECTION IS WE ARE NOT STOPPING
                 ConnectionStatus = ConnectionStatuses.Disconnected;
-                if (IsStopAllRequested == false) bgConnectToServer();
+                if (IsStopAllRequested == false) BgConnectToServer();
 
-            }));
-            bgDisconnect.IsBackground = true;
+            }))
+            {
+                IsBackground = true
+            };
             bgDisconnect.Start();
         }
 
@@ -296,7 +298,7 @@ namespace SocketMeister
         /// <summary>
         /// Background process which creates a connection with one of the servers specified
         /// </summary>
-        private void bgConnectToServer()
+        private void BgConnectToServer()
         {
             lock (_lock)
             {
@@ -332,7 +334,7 @@ namespace SocketMeister
 
                             if (ConnectionStatus == ConnectionStatuses.Connected)
                             {
-                                bgPollServer();
+                                BgPollServer();
                                 break;
                             }
                         }
@@ -341,8 +343,10 @@ namespace SocketMeister
                     Thread.Sleep(500);
                 }
                 IsBackgroundConnectRunning = false;
-            }));
-            bgConnect.IsBackground = true;
+            }))
+            {
+                IsBackground = true
+            };
             bgConnect.Start();
         }
 
@@ -350,7 +354,7 @@ namespace SocketMeister
         /// <summary>
         /// Background process which polls the server to determine if the socket is alive
         /// </summary>
-        private void bgPollServer()
+        private void BgPollServer()
         {
             Thread bgPolling = new Thread(new ThreadStart(delegate
             {
@@ -390,8 +394,10 @@ namespace SocketMeister
                     Thread.Sleep(200);
                 }
                 IsBackgroundPollingRunning = false;
-            }));
-            bgPolling.IsBackground = true;
+            }))
+            {
+                IsBackground = true
+            };
             bgPolling.Start();
         }
 

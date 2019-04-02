@@ -59,31 +59,79 @@
     <Reference Include="System.Windows.Browser" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Shared.SocketMeister\Exceptions.cs">
+      <Link>Shared.SocketMeister\Exceptions.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\Messages\ClientDisconnectMessage.cs">
+      <Link>Shared.SocketMeister\Messages\ClientDisconnectMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\Messages\Enums.cs">
+      <Link>Shared.SocketMeister\Messages\Enums.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\Messages\IMessage.cs">
+      <Link>Shared.SocketMeister\Messages\IMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\Messages\Message.cs">
+      <Link>Shared.SocketMeister\Messages\Message.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\Messages\MessageBase.cs">
+      <Link>Shared.SocketMeister\Messages\MessageBase.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\Messages\MessageEngine.CLZF2.cs">
+      <Link>Shared.SocketMeister\Messages\MessageEngine.CLZF2.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\Messages\MessageEngine.cs">
+      <Link>Shared.SocketMeister\Messages\MessageEngine.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\Messages\PollRequest.cs">
+      <Link>Shared.SocketMeister\Messages\PollRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\Messages\PollResponse.cs">
+      <Link>Shared.SocketMeister\Messages\PollResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\Messages\RequestMessage.cs">
+      <Link>Shared.SocketMeister\Messages\RequestMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\Messages\ResponseMessage.cs">
+      <Link>Shared.SocketMeister\Messages\ResponseMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\Messages\ServerStoppingMessage.cs">
+      <Link>Shared.SocketMeister\Messages\ServerStoppingMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\SocketClient.cs">
+      <Link>Shared.SocketMeister\SocketClient.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\SocketClient.Enums.cs">
+      <Link>Shared.SocketMeister\SocketClient.Enums.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\SocketClient.Events.cs">
+      <Link>Shared.SocketMeister\SocketClient.Events.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\SocketClient.OpenRequestMessages.cs">
+      <Link>Shared.SocketMeister\SocketClient.OpenRequestMessages.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\SocketClient.SocketAsyncEventArgsPool.cs">
+      <Link>Shared.SocketMeister\SocketClient.SocketAsyncEventArgsPool.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\SocketEndPoint.cs">
+      <Link>Shared.SocketMeister\SocketEndPoint.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\SocketServer.Client.cs">
+      <Link>Shared.SocketMeister\SocketServer.Client.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\SocketServer.Clients.cs">
+      <Link>Shared.SocketMeister\SocketServer.Clients.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\SocketServer.cs">
+      <Link>Shared.SocketMeister\SocketServer.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\SocketServer.Enums.cs">
+      <Link>Shared.SocketMeister\SocketServer.Enums.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\SocketServer.Events.cs">
+      <Link>Shared.SocketMeister\SocketServer.Events.cs</Link>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Shared.SocketMeister\Exceptions.cs" />
-    <Compile Include="Shared.SocketMeister\Messages\ClientDisconnectMessage.cs" />
-    <Compile Include="Shared.SocketMeister\Messages\Enums.cs" />
-    <Compile Include="Shared.SocketMeister\Messages\IMessage.cs" />
-    <Compile Include="Shared.SocketMeister\Messages\Message.cs" />
-    <Compile Include="Shared.SocketMeister\Messages\MessageBase.cs" />
-    <Compile Include="Shared.SocketMeister\Messages\MessageEngine.CLZF2.cs" />
-    <Compile Include="Shared.SocketMeister\Messages\MessageEngine.cs" />
-    <Compile Include="Shared.SocketMeister\Messages\PollRequest.cs" />
-    <Compile Include="Shared.SocketMeister\Messages\PollResponse.cs" />
-    <Compile Include="Shared.SocketMeister\Messages\RequestMessage.cs" />
-    <Compile Include="Shared.SocketMeister\Messages\ResponseMessage.cs" />
-    <Compile Include="Shared.SocketMeister\Messages\ServerStoppingMessage.cs" />
-    <Compile Include="Shared.SocketMeister\SocketClient.cs" />
-    <Compile Include="Shared.SocketMeister\SocketClient.Enums.cs" />
-    <Compile Include="Shared.SocketMeister\SocketClient.Events.cs" />
-    <Compile Include="Shared.SocketMeister\SocketClient.OpenRequestMessages.cs" />
-    <Compile Include="Shared.SocketMeister\SocketClient.SocketAsyncEventArgsPool.cs" />
-    <Compile Include="Shared.SocketMeister\SocketEndPoint.cs" />
-    <Compile Include="Shared.SocketMeister\SocketServer.Client.cs" />
-    <Compile Include="Shared.SocketMeister\SocketServer.Clients.cs" />
-    <Compile Include="Shared.SocketMeister\SocketServer.cs" />
-    <Compile Include="Shared.SocketMeister\SocketServer.Enums.cs" />
-    <Compile Include="Shared.SocketMeister\SocketServer.Events.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Silverlight\$(SilverlightVersion)\Microsoft.Silverlight.CSharp.targets" />
   <ProjectExtensions>
