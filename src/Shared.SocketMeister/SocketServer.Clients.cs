@@ -1,6 +1,7 @@
 ﻿#if !SILVERLIGHT && !SMNOSERVER
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -29,6 +30,11 @@ namespace SocketMeister
             public event EventHandler<ClientDisconnectedEventArgs> ClientDisconnected;
 
             /// <summary>
+            /// Raised when an exception occurs.
+            /// </summary>
+            public event EventHandler<ExceptionEventArgs> ExceptionRaised;
+
+            /// <summary>
             /// Total number of syschronous and asynchronous clients connected
             /// </summary>
             public int Count { get { lock (_lock) { return _list.Count; } } }
@@ -40,6 +46,7 @@ namespace SocketMeister
                 NotifyClientConnected(Client);
             }
 
+            [SuppressMessage("Microsoft.Performance", "CA1031:DoNotCatchGeneralExceptionTypes", MessageId = "ExceptionEventRaised")]
             public void Disconnect(Client Client)
             {
                 if (Client == null) return;
@@ -48,10 +55,23 @@ namespace SocketMeister
                     _list.Remove(Client);
                 }
 
-                try { Client.ClientSocket.Shutdown(SocketShutdown.Both); }
-                catch { }
-                try { Client.ClientSocket.Close(); }
-                catch { }
+                try
+                {
+                    Client.ClientSocket.Shutdown(SocketShutdown.Both);
+                }
+                catch (Exception ex)
+                {
+                    NotifyExceptionRaised(ex);
+                }
+
+                try
+                {
+                    Client.ClientSocket.Close();
+                }
+                catch (Exception ex)
+                {
+                    NotifyExceptionRaised(ex);
+                }
 
                 NotifyClientDisconnected(Client);
             }
@@ -72,8 +92,7 @@ namespace SocketMeister
                     //  RAISE EVENT IN THE BACKGROUND AND ERRORS ARE IGNORED
                     new Thread(new ThreadStart(delegate
                     {
-                        try { ClientConnected(null, new ClientConnectedEventArgs(Client)); }
-                        catch { }
+                        ClientConnected(null, new ClientConnectedEventArgs(Client)); 
                     }
                     )).Start();
                 }
@@ -86,12 +105,29 @@ namespace SocketMeister
                     //  RAISE EVENT IN THE BACKGROUND AND ERRORS ARE IGNORED
                     new Thread(new ThreadStart(delegate
                     {
-                        try { ClientDisconnected(null, new ClientDisconnectedEventArgs(Client)); }
-                        catch { }
+                        ClientDisconnected(null, new ClientDisconnectedEventArgs(Client)); 
                     }
                     )).Start();
                 }
             }
+
+            private void NotifyExceptionRaised(Exception Error)
+            {
+                if (ExceptionRaised != null)
+                {
+                    string msg = Error.Message;
+                    if (Error.StackTrace != null) msg += Environment.NewLine + Environment.NewLine + Error.StackTrace;
+                    if (Error.InnerException != null) msg += Environment.NewLine + Environment.NewLine + "Inner Exception: " + Error.InnerException.Message;
+                    //  RAISE EVENT IN THE BACKGROUND
+                    new Thread(new ThreadStart(delegate
+                    {
+                        ExceptionRaised?.Invoke(this, new ExceptionEventArgs(Error, 5008));
+                    }
+                    )).Start();
+
+                }
+            }
+
 
 
             /// <summary>

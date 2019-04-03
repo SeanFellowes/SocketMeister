@@ -1,6 +1,8 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.IO;
 using SocketMeister.Messages;
 
@@ -9,6 +11,7 @@ namespace SocketMeister.Messages
     /// <summary>
     /// This is the core engine for creating bytes to send down a socket and to receive bytes from a socket.
     /// </summary>
+    [SuppressMessage("Microsoft.Performance", "CA1825:AvoidZeroLegthArray", MessageId = "UnsupportedInEarlyDotNetVersions")]
     internal sealed partial class MessageEngine
     {
         internal class Parse
@@ -34,7 +37,7 @@ namespace SocketMeister.Messages
 
         internal class ParseHistory
         {
-            private List<Parse> _items = new List<Parse>();
+            private readonly List<Parse> _items = new List<Parse>();
 
             public void Add(Parse message)
             {
@@ -49,7 +52,7 @@ namespace SocketMeister.Messages
                     string T = Environment.NewLine + Environment.NewLine + "Receive History" + Environment.NewLine;
                     foreach (Parse m in _items)
                     {
-                        T += "#" + m.MessageNumber + " " + m.ReceivedDateTime.ToString("HH:mm:ss.fff");
+                        T += "#" + m.MessageNumber + " " + m.ReceivedDateTime.ToString("HH:mm:ss.fff", CultureInfo.InvariantCulture);
                         T += ", MessageType: " + m.MessageType;
                         T += ", MessageLength: " + m.MessageLength + " (" + m.MessageLengthUncompressed + " uncompressed)";
                         T += ", SocketBytesRead: " + m.SocketBytesRead + "(BufSize: " + m.SocketBufferLength + ")";
@@ -65,8 +68,7 @@ namespace SocketMeister.Messages
 
         public const int HEADERLENGTH = 11;
 
-        private readonly bool _enableCompression;
-        private ParseHistory _history = new ParseHistory();
+        private readonly ParseHistory _history = new ParseHistory();
         private bool _messageIsCompressed = false;
         private int _messageLength = 0;
         private int _messageLengthUncompressed = 0;
@@ -82,11 +84,7 @@ namespace SocketMeister.Messages
         private int _statSocketBytesRead;
         private byte[] _uncompressedBuffer = new byte[0];
 
-        internal MessageEngine(bool EnableCompression)
-        {
-            _enableCompression = EnableCompression;
-        }
-
+        [SuppressMessage("Microsoft.Performance", "CA1031:DoNotCatchGeneralExceptionTypes", MessageId = "RaiseMoreDetailedException")]
         internal bool AddBytesFromSocketReceiveBuffer(int SocketBytesRead, byte[] SocketReceiveBuffer, ref int SocketReceiveBufferPtr)
         {
             _statSocketBufferLength = SocketReceiveBuffer.Length;
@@ -141,7 +139,7 @@ namespace SocketMeister.Messages
                     msg += ", SocketReceiveBufferPtr: " + SocketReceiveBufferPtr;
                     msg += ", _receiveBuffer.Length: " + _receiveBuffer.Length + ", _receiveBufferPtr: " + _receiveBufferPtr;
                     msg += ", bytesRequired: " + bytesRequired + ", BytesPossible: " + bytesPossible;
-                    msg += ", _messageType: " + _messageType.ToString() + ", _messageIsCompressed: " + _messageIsCompressed.ToString();
+                    msg += ", _messageType: " + _messageType.ToString() + ", _messageIsCompressed: " + _messageIsCompressed.ToString(CultureInfo.CurrentCulture);
                     msg += ", MessageCount: " + _statMessageNumber;
                     msg += _history.Text;
                     msg += Environment.NewLine + Environment.NewLine;
@@ -177,7 +175,7 @@ namespace SocketMeister.Messages
                     msg += ", SocketReceiveBufferPtr: " + SocketReceiveBufferPtr;
                     msg += ", _receiveBuffer.Length: " + _receiveBuffer.Length + ", _receiveBufferPtr: " + _receiveBufferPtr;
                     msg += ", bytesRequired: " + bytesRequired + ", BytesPossible: " + bytesPossible;
-                    msg += ", _messageType: " + _messageType.ToString() + ", _messageIsCompressed: " + _messageIsCompressed.ToString();
+                    msg += ", _messageType: " + _messageType.ToString() + ", _messageIsCompressed: " + _messageIsCompressed.ToString(CultureInfo.CurrentCulture);
                     msg += ", MessageCount: " + _statMessageNumber;
                     msg += _history.Text;
                     msg += Environment.NewLine + Environment.NewLine;
@@ -202,7 +200,7 @@ namespace SocketMeister.Messages
             using (BinaryWriter writer = new BinaryWriter(new MemoryStream()))
             {
                 //  WRITE HEADER
-                writer.Write(Convert.ToInt16(SendObject.MessageType));
+                writer.Write((short)SendObject.MessageType);
 
                 if (Compress == false)
                 {

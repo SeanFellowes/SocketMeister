@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -13,6 +14,7 @@ namespace SocketMeister
 #if SMISPUBLIC
     public class SocketEndPoint : IDisposable
 #else
+    [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses", MessageId = "isChecked")]
     internal class SocketEndPoint : IDisposable
 #endif
     {
@@ -28,6 +30,7 @@ namespace SocketMeister
         /// </summary>
         /// <param name="IPAddress">IP Address of the server to connect to</param>
         /// <param name="Port">Port number of the socket listener to connect to</param>
+        [SuppressMessage("Microsoft.Performance", "IDE0018:VariableDeclarationCanBeInlined", MessageId = "NotSupportedBeforeDotNet4")]
         public SocketEndPoint(string IPAddress, int Port)
         {
             //  VALIDATE
@@ -76,11 +79,9 @@ namespace SocketMeister
             {
                 //  NOTE: If you application uses .NET 2.0 or .NET 3.5. add NET20 or NET35 as a conditional compilation symbol, in your project's Build properties
 #if !NET35 && !NET20
-                try { _socket.Dispose(); }
-                catch { }
+                _socket.Dispose(); 
 #else
-                try { _socket.Close(); }
-                catch { }
+                if (_socket.Connected == true) _socket.Close();
 #endif
             }
         }
@@ -125,15 +126,15 @@ namespace SocketMeister
         {
             lock (_lock)
             {
-                try { _socket.Shutdown(SocketShutdown.Both); }
-                catch { }
+                if ( _socket.Connected == true)
+                {
+                    _socket.Shutdown(SocketShutdown.Both);
 #if SILVERLIGHT
-                try { _socket.Close(); }
-                catch { }
+                    _socket.Close(); 
 #else
-                try { _socket.Disconnect(true); }
-                catch { }
+                    _socket.Disconnect(true);
 #endif
+                }
             }
         }
     }

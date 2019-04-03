@@ -1,6 +1,8 @@
 ﻿#if !SILVERLIGHT && !SMNOSERVER
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -23,7 +25,7 @@ namespace SocketMeister
         /// </summary>
         private const int MAX_WAIT_FOR_CLIENT_DISCONNECT_WHEN_STOPPING = 20000;
 
-        private ManualResetEvent _allDone = new ManualResetEvent(false);
+        private readonly ManualResetEvent _allDone = new ManualResetEvent(false);
         private readonly Clients _connectedClients = new Clients();
         private bool _disposed = false;
         private readonly bool _enableCompression;
@@ -33,8 +35,7 @@ namespace SocketMeister
         private readonly IPEndPoint _localEndPoint = null;
         private readonly object _lock = new object();
         private int _requestsInProgress = 0;
-        private bool _isStopRequested;
-        private Thread _threadListener = null;
+        private readonly Thread _threadListener;
 
         /// <summary>
         /// Event raised when a client connects to the socket server (Raised in a seperate thread)
@@ -87,16 +88,18 @@ namespace SocketMeister
             _localEndPoint = new IPEndPoint(ipAddress, Port);
 
             //  LOCAL IP ADDRESS AND PORT (USED FOR DIAGNOSTIC MESSAGES)
-            _endPoint = GetLocalIPAddress().ToString() + ":" + Port.ToString();
+            _endPoint = GetLocalIPAddress().ToString() + ":" + Port.ToString(CultureInfo.InvariantCulture);
 
             // Create a TCP/IP socket.  
             _listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             _listener.Bind(_localEndPoint);
 
             //  REGISTER FOR EVENTS
-            _connectedClients.ClientDisconnected += _connectedClients_ClientDisconnected;
-            _connectedClients.ClientConnected += _connectedClients_ClientConnected;
+            _connectedClients.ClientDisconnected += ConnectedClients_ClientDisconnected;
+            _connectedClients.ClientConnected += ConnectedClients_ClientConnected;
+            _connectedClients.ExceptionRaised += ConnectedClients_ExceptionRaised;
         }
+
 
         /// <summary>
         /// Dispose this class.
@@ -152,19 +155,15 @@ namespace SocketMeister
         /// </summary>
         public int RequestsInProgress { get { lock (_lock) { return _requestsInProgress; } } }
 
-        /// <summary>
-        /// Whether the socket service is in the process of stopping.
-        /// </summary>
-        private bool IsStopRequested { get { lock (_lock) { return _isStopRequested; } } set { lock (_lock) { _isStopRequested = value; } } }
 
-
-#region Public Methods
+        #region Public Methods
 
         /// <summary>
         /// Send a message to all connected clients. Exceptions will not halt this process, but generate 'ExceptionRaised' events. 
         /// </summary>
         /// <param name="Parameters">Parameters to send with the message</param>
         /// <param name="TimeoutMilliseconds">Number of milliseconds to wait before timing out</param>
+        [SuppressMessage("Microsoft.Performance", "CA1031:DoNotCatchGeneralExceptionTypes", MessageId = "ExceptionEventRaised")]
         public void BroadcastMessage(object[] Parameters, int TimeoutMilliseconds = 60000)
         {
             Messages.Message message = new Messages.Message(Parameters, TimeoutMilliseconds);
@@ -201,7 +200,6 @@ namespace SocketMeister
         /// </summary>
         public void Start()
         {
-            IsStopRequested = false;
             _threadListener.Start();
         }
 
@@ -209,6 +207,7 @@ namespace SocketMeister
         /// <summary>
         /// Sends a message to all clients to disconnect, waits for in progress requests to finish, then stops the socket server. 
         /// </summary>
+        [SuppressMessage("Microsoft.Performance", "CA1031:DoNotCatchGeneralExceptionTypes", MessageId = "ExceptionEventRaised")]
         public void Stop()
         {
             if (ListenerState != SocketServerStatus.Started) throw new Exception("Socket server is stopped, or in the process of starting or stopping.");
@@ -237,32 +236,30 @@ namespace SocketMeister
                 Thread.Sleep(200);
             }
 
-            //  STOP BACKGROUND THREADS
-            IsStopRequested = true;
-
             //  STOP RECEIVING
             try { _listener.Shutdown(SocketShutdown.Receive); }
-            catch { }
+            catch (Exception ex) { NotifyExceptionRaised(ex); }
 
             //  CLOSE CONNECTED CLIENTS
             _connectedClients.DisconnectAll();
 
             //  CLOSE LISTENER
             try { _listener.Shutdown(SocketShutdown.Send); }
-            catch { }
+            catch (Exception ex) { NotifyExceptionRaised(ex); }
             try { _listener.Close(); }
-            catch { }
+            catch (Exception ex) { NotifyExceptionRaised(ex); }
 
             ListenerState = SocketServerStatus.Stopped;
         }
 
-#endregion
+        #endregion
 
 
 
 
 
 
+        [SuppressMessage("Microsoft.Performance", "CA1031:DoNotCatchGeneralExceptionTypes", MessageId = "ExceptionEventRaised")]
         private void AcceptCallback(IAsyncResult ar)
         {
             // Signal the main thread to continue.  
@@ -283,11 +280,24 @@ namespace SocketMeister
                     //SendDisconnectMessage(handler);
 
                     //  SHUTDOWN THE SOCKET
-                    try { handler.Shutdown(SocketShutdown.Both); }
-                    catch { }
-                    try { handler.Close(); }
-                    catch { }
+                    try
+                    {
+                        handler.Shutdown(SocketShutdown.Both);
+                    }
+                    catch (Exception ex)
+                    {
+                        NotifyExceptionRaised(ex);
+                    }
+                    try
+                    {
+                        handler.Close();
+                    }
+                    catch (Exception ex)
+                    {
+                        NotifyExceptionRaised(ex);
+                    }
                     return;
+
                 }))
                 {
                     IsBackground = true
@@ -304,10 +314,14 @@ namespace SocketMeister
                     Socket listener = (Socket)ar.AsyncState;
                     Socket handler = null;
                     try { handler = listener.EndAccept(ar); }
-                    catch { return; }
+                    catch (Exception ex)
+                    {
+                        NotifyExceptionRaised(ex);
+                        return;
+                    }
                     handler.SendTimeout = 30000;
                     // Create the state object.  
-                    Client remoteClient = new Client(this, handler, _enableCompression);
+                    Client remoteClient = new Client(this, handler);
                     _connectedClients.Add(remoteClient);
                     handler.BeginReceive(remoteClient.ReceiveBuffer, 0, SocketClient.SEND_RECEIVE_BUFFER_SIZE, 0, new AsyncCallback(ReadCallback), remoteClient);
                 }))
@@ -319,6 +333,7 @@ namespace SocketMeister
 
         }
 
+        [SuppressMessage("Microsoft.Performance", "CA1031:DoNotCatchGeneralExceptionTypes", MessageId = "ExceptionEventRaised")]
         private void ReadCallback(IAsyncResult ar)
         {
             Client remoteClient = null;
@@ -350,7 +365,7 @@ namespace SocketMeister
                             }
                             else
                             {
-                                lock (_lock) { _requestsInProgress = _requestsInProgress + 1; }
+                                lock (_lock) { _requestsInProgress += 1; }
                                 ThreadPool.QueueUserWorkItem(BgProcessRequestMessage, request);
                             }
                         }
@@ -378,7 +393,7 @@ namespace SocketMeister
                         {
                             if (ListenerState == SocketServerStatus.Started)
                             {
-                                lock (_lock) { _requestsInProgress = _requestsInProgress + 1; }
+                                lock (_lock) { _requestsInProgress += 1; }
                                 new Thread(new ThreadStart(delegate
                                 {
                                     BgProcessPollRequest(remoteClient);
@@ -407,6 +422,7 @@ namespace SocketMeister
             }
         }
 
+        [SuppressMessage("Microsoft.Performance", "CA1031:DoNotCatchGeneralExceptionTypes", MessageId = "ExceptionEventRaised")]
         private void BgListen()
         {
             // Bind the socket to the local endpoint and listen for incoming connections.  
@@ -435,6 +451,7 @@ namespace SocketMeister
             }
         }
 
+        [SuppressMessage("Microsoft.Performance", "CA1031:DoNotCatchGeneralExceptionTypes", MessageId = "ExceptionEventRaised")]
         private void BgProcessMessage(object state)
         {
             Messages.Message request = (Messages.Message)state;
@@ -448,6 +465,7 @@ namespace SocketMeister
             }
         }
 
+        [SuppressMessage("Microsoft.Performance", "CA1031:DoNotCatchGeneralExceptionTypes", MessageId = "ExceptionEventRaised")]
         private void BgProcessPollRequest(object state)
         {
             Client remoteClient = (Client)state;
@@ -462,10 +480,11 @@ namespace SocketMeister
             }
             finally
             {
-                lock (_lock) { _requestsInProgress = _requestsInProgress - 1; }
+                lock (_lock) { _requestsInProgress -= 1; }
             }
         }
 
+        [SuppressMessage("Microsoft.Performance", "CA1031:DoNotCatchGeneralExceptionTypes", MessageId = "ExceptionEventRaised")]
         private void BgProcessRequestMessage(object state)
         {
             RequestMessage request = (RequestMessage)state;
@@ -488,7 +507,7 @@ namespace SocketMeister
             }
             finally
             {
-                lock (_lock) { _requestsInProgress = _requestsInProgress - 1; }
+                lock (_lock) { _requestsInProgress -= 1; }
             }
         }
 
@@ -515,14 +534,14 @@ namespace SocketMeister
                 //  RAISE EVENT IN THE BACKGROUND
                 new Thread(new ThreadStart(delegate
                 {
-                    try { ExceptionRaised?.Invoke(this, new ExceptionEventArgs(Error, 5008)); }
-                    catch { }
+                    ExceptionRaised?.Invoke(this, new ExceptionEventArgs(Error, 5008)); 
                 }
                 )).Start();
 
             }
         }
 
+        [SuppressMessage("Microsoft.Performance", "CA1031:DoNotCatchGeneralExceptionTypes", MessageId = "ExceptionEventRaised")]
         private void SendCallback(IAsyncResult ar)
         {
             Client remoteClient = null;
@@ -541,6 +560,7 @@ namespace SocketMeister
             }
         }
 
+        [SuppressMessage("Microsoft.Performance", "CA1031:DoNotCatchGeneralExceptionTypes", MessageId = "ExceptionEventRaised")]
         private void SendDisconnectMessage(Socket Socket)
         {
             try
@@ -555,6 +575,7 @@ namespace SocketMeister
             }
         }
 
+        [SuppressMessage("Microsoft.Performance", "CA1031:DoNotCatchGeneralExceptionTypes", MessageId = "ExceptionEventRaised")]
         internal void SendMessage(Client RemoteClient, IMessage Message, bool Async = true)
         {
             if (RemoteClient == null || RemoteClient.ClientSocket == null ||
@@ -584,12 +605,17 @@ namespace SocketMeister
             }
         }
 
-        private void _connectedClients_ClientConnected(object sender, ClientConnectedEventArgs e)
+        private void ConnectedClients_ClientConnected(object sender, ClientConnectedEventArgs e)
         {
             ClientConnected?.Invoke(this, e);
         }
 
-        private void _connectedClients_ClientDisconnected(object sender, ClientDisconnectedEventArgs e)
+        private void ConnectedClients_ExceptionRaised(object sender, ExceptionEventArgs e)
+        {
+            NotifyExceptionRaised(e.Exception);
+        }
+
+        private void ConnectedClients_ClientDisconnected(object sender, ClientDisconnectedEventArgs e)
         {
             ClientDisconnected?.Invoke(this, e);
         }

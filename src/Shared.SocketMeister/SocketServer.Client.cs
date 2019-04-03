@@ -21,15 +21,14 @@ namespace SocketMeister
             private readonly Guid _clientId = Guid.NewGuid();
             private readonly Socket _clientSocket;
             private readonly DateTime _connectTimestamp = DateTime.Now;
-            private readonly object _lock = new object();
             private readonly MessageEngine _receivedEnvelope;
             private readonly SocketServer _socketServer;
 
-            internal Client(SocketServer Server, Socket ClientSocket, bool EnableCompression)
+            internal Client(SocketServer Server, Socket ClientSocket)
             {
                 _socketServer = Server;
                 _clientSocket = ClientSocket;
-                _receivedEnvelope = new MessageEngine(EnableCompression);
+                _receivedEnvelope = new MessageEngine();
             }
 
             /// <summary>

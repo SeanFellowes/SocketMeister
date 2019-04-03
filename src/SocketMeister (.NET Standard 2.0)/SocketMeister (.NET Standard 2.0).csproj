@@ -9,7 +9,7 @@
     <Copyright>Copyright ©2016 Sean Fellowes</Copyright>
     <PackageProjectUrl>https://github.com/sfellowes/SocketMeister</PackageProjectUrl>
     <RepositoryUrl>https://github.com/sfellowes/SocketMeister</RepositoryUrl>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
     <PackageTags>tcp socket</PackageTags>
     <Company />
     <PackageReleaseNotes>Resolved all Visual Studio code analysis warnings and messages.</PackageReleaseNotes>

@@ -6,8 +6,9 @@ using System.Threading;
 
 namespace SocketMeister.Messages
 {
-    internal class MessageBase
+    internal class MessageBase : IDisposable
     {
+        private bool disposed = false;
         private AutoResetEvent _sendReceiveCompleteEvent = null;
         private readonly object _lock = new object();
         private readonly MessageTypes _messageType;
@@ -26,6 +27,28 @@ namespace SocketMeister.Messages
             _messageType = MessageType;
             _timeoutMilliseconds = TimeoutMilliseconds;
             _timeout = DateTime.Now.AddMilliseconds(TimeoutMilliseconds);
+        }
+
+        // Public implementation of Dispose pattern callable by consumers.
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        // Protected implementation of Dispose pattern.
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposed) return;
+
+            if (disposing)
+            {
+#if !NET20 && !NET35
+                _sendReceiveCompleteEvent.Dispose();
+#endif
+            }
+
+            disposed = true;
         }
 
 
@@ -182,7 +205,7 @@ namespace SocketMeister.Messages
                 }
                 else
                 {
-                    throw new ArgumentException("Request parameter " + (ptr + 1) + " is an unsupported type (" + ParamType.Name + ").", "Parameters");
+                    throw new ArgumentException("Request parameter " + (ptr + 1) + " is an unsupported type (" + ParamType.Name + ").", nameof(Parameters));
                 }
             }
         }

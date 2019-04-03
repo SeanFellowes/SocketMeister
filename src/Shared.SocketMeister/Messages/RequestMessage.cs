@@ -26,6 +26,8 @@ namespace SocketMeister.Messages
     /// </summary>
     internal partial class RequestMessage : MessageBase, IMessage
     {
+        bool disposed = false;
+
         //  REQUEST ID
         private static long _maxRequestId = 0;
         private static readonly object _lockMaxRequestId = new object();
@@ -56,7 +58,7 @@ namespace SocketMeister.Messages
             lock (_lockMaxRequestId)
             {
                 if (_maxRequestId + 1 > long.MaxValue) _maxRequestId = 1;
-                else _maxRequestId = _maxRequestId + 1;
+                else _maxRequestId += 1;
                 _requestId = _maxRequestId;
             }
 
@@ -81,6 +83,23 @@ namespace SocketMeister.Messages
             _isLongPolling = bR.ReadBoolean();
             _parameters = DeserializeParameters(bR);
         }
+
+        // Protected implementation of Dispose pattern.
+        protected override void Dispose(bool disposing)
+        {
+            if (disposed)
+                return;
+
+            if (disposing)
+            {
+                if (_response != null) _response.Dispose();
+            }
+
+            disposed = true;
+            // Call base class implementation.
+            base.Dispose(disposing);
+        }
+
 
 
         /// <summary>

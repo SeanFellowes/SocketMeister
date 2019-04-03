@@ -8,7 +8,6 @@ namespace SocketMeister.Messages
     internal class ServerStoppingMessage : MessageBase, IMessage
     {
         //  INTERNAL (NOT SENT IN MESSAGE DATA)
-        private readonly object _lock = new object();
         private readonly int _maxWaitMilliseconds;
 
         public ServerStoppingMessage(int MaxWaitMilliseconds) : base(MessageTypes.ServerStoppingMessage)
