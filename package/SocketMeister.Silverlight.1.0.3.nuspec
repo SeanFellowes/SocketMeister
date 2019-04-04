@@ -7,13 +7,13 @@
     <owners>Sean Fellowes</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <license type="expression">MIT</license>
-    <projectUrl>https://github.com/sfellowes/SocketMeister</projectUrl>
-    <iconUrl>https://raw.githubusercontent.com/sfellowes/SocketMeister/master/images/icon_128.png</iconUrl>
+    <projectUrl>https://github.com/SeanFellowes/SocketMeister</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/SeanFellowes/SocketMeister/master/images/icon_128.png</iconUrl>
     <description>Performant TCP socket server and client for Silverlight</description>
     <releaseNotes>Resolved fxCop issues</releaseNotes>
     <copyright>Copyright © 2010-2019 Sean Fellowes</copyright>
     <tags>tcp socket</tags>
-    <repository type="git" url="https://github.com/sfellowes/SocketMeister" />
+    <repository type="git" url="https://github.com/SeanFellowes/SocketMeister" />
     <dependencies>
       <group targetFramework="Silverlight5.0" />
     </dependencies>
