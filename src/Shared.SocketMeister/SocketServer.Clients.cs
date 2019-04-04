@@ -136,15 +136,15 @@ namespace SocketMeister
             /// <returns>List of clients</returns>
             public List<Client> ToList()
             {
-                List<Client> rVal = new List<Client>();
                 lock (_lock)
                 {
+                    List<Client> rVal = new List<Client>(_list.Count);
                     foreach (Client cl in _list)
                     {
                         rVal.Add(cl);
                     }
+                    return rVal;
                 }
-                return rVal;
             }
         }
     }

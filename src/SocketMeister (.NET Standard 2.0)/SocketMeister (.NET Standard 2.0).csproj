@@ -6,21 +6,24 @@
     <AssemblyName>SocketMeister</AssemblyName>
     <Authors>Sean Fellowes</Authors>
     <Description>Performant TCP socket server and client for .NET</Description>
-    <Copyright>Copyright ©2016 Sean Fellowes</Copyright>
+    <Copyright>Copyright © 2010-2019 Sean Fellowes</Copyright>
     <PackageProjectUrl>https://github.com/sfellowes/SocketMeister</PackageProjectUrl>
     <RepositoryUrl>https://github.com/sfellowes/SocketMeister</RepositoryUrl>
     <Version>1.0.3</Version>
     <PackageTags>tcp socket</PackageTags>
     <Company />
-    <PackageReleaseNotes>Resolved all Visual Studio code analysis warnings and messages.</PackageReleaseNotes>
+    <PackageReleaseNotes>Resolved fxCop issues</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageLicenseUrl>https://licenses.nuget.org/MIT</PackageLicenseUrl>
+    <PackageLicenseUrl></PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
     <PackageIconUrl>https://raw.githubusercontent.com/sfellowes/SocketMeister/master/images/icon_128.png</PackageIconUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <DocumentationFile>C:\Users\Sean\Source\Repos\sfellowes\SocketMeister\src\SocketMeister.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
-    <DocumentationFile>C:\Users\Sean\Source\Repos\sfellowes\SocketMeister\src\SocketMeister (.NET Standard 2.0)\SocketMeister.xml</DocumentationFile>
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
 
 

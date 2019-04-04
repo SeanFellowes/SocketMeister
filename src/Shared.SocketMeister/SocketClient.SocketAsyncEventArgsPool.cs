@@ -22,7 +22,7 @@ namespace SocketMeister
             /// <summary>
             /// Pool of SocketAsyncEventArgs.
             /// </summary>
-            private Stack<SocketAsyncEventArgs> pool;
+            private readonly Stack<SocketAsyncEventArgs> pool;
 
             /// <summary>
             /// Initializes the object pool to the specified size.
