@@ -7,8 +7,8 @@
     <Authors>Sean Fellowes</Authors>
     <Description>Performant TCP socket server and client for .NET</Description>
     <Copyright>Copyright © 2010-2019 Sean Fellowes</Copyright>
-    <PackageProjectUrl>https://github.com/sfellowes/SocketMeister</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/sfellowes/SocketMeister</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/SeanFellowes/SocketMeister</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/SeanFellowes/SocketMeister</RepositoryUrl>
     <Version>1.0.3</Version>
     <PackageTags>tcp socket</PackageTags>
     <Company />
@@ -16,7 +16,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseUrl></PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageIconUrl>https://raw.githubusercontent.com/sfellowes/SocketMeister/master/images/icon_128.png</PackageIconUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/SeanFellowes/SocketMeister/master/images/icon_128.png</PackageIconUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <DocumentationFile>C:\Users\Sean\Source\Repos\SeanFellowes\SocketMeister\src\SocketMeister.xml</DocumentationFile>
   </PropertyGroup>
