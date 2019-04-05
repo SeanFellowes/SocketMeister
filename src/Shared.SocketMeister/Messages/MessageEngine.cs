@@ -21,7 +21,7 @@ namespace SocketMeister.Messages
                 this.MessageLengthUncompressed = MessageLengthUncompressed;
                 this.MessageNumber = MessageNumber;
                 this.MessageType = MessageType;
-                this.ReceivedDateTime = DateTime.Now;
+                ReceivedDateTime = DateTime.Now;
             }
 
             public long MessageNumber { get; set; }

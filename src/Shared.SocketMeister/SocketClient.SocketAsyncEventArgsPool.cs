@@ -30,7 +30,7 @@ namespace SocketMeister
             /// <param name="Capacity">Maximum number of SocketAsyncEventArgs objects the pool can hold.</param>
             internal SocketAsyncEventArgsPool(int Capacity)
             {
-                this.pool = new Stack<SocketAsyncEventArgs>(Capacity);
+                pool = new Stack<SocketAsyncEventArgs>(Capacity);
             }
 
             /// <summary>
@@ -39,10 +39,10 @@ namespace SocketMeister
             /// <returns>SocketAsyncEventArgs removed from the pool.</returns>
             internal SocketAsyncEventArgs Pop()
             {
-                lock (this.pool)
+                lock (pool)
                 {
                     //  ENSURE THERE IS ALWAYS AT LEAST ONE ITEM
-                    if (this.pool.Count > 0) return this.pool.Pop();
+                    if (pool.Count > 0) return pool.Pop();
                     return null;
                 }
             }
@@ -54,10 +54,10 @@ namespace SocketMeister
             internal void Push(SocketAsyncEventArgs item)
             {
                 if (item == null) return;
-                lock (this.pool)
+                lock (pool)
                 {
                     if (pool.Contains(item) == true) return;
-                    this.pool.Push(item);
+                    pool.Push(item);
                 }
             }
 
