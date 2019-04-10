@@ -672,6 +672,147 @@
             Closes the socket
             </summary>
         </member>
+        <member name="T:SocketMeister.PolicyServer">
+            <summary>
+            Server side socket processing components. Is the central socket server.
+            </summary>
+        </member>
+        <member name="T:SocketMeister.PolicyServer.SocketServerStatusTypes">
+            <summary>
+            Socket server statuses.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.PolicyServer.SocketServerStatusTypes.Stopped">
+            <summary>
+            Socket server is stopped
+            </summary>
+        </member>
+        <member name="F:SocketMeister.PolicyServer.SocketServerStatusTypes.Started">
+            <summary>
+            Socket server is started
+            </summary>
+        </member>
+        <member name="F:SocketMeister.PolicyServer.SocketServerStatusTypes.Starting">
+            <summary>
+            Socket server is starting
+            </summary>
+        </member>
+        <member name="F:SocketMeister.PolicyServer.SocketServerStatusTypes.Stopping">
+            <summary>
+            Socket server is stopping
+            </summary>
+        </member>
+        <member name="T:SocketMeister.PolicyServer.PolicyServerErrorEventArgs">
+            <summary>
+            Error event used in both the Socket Policy Server and Client
+            </summary>
+        </member>
+        <member name="P:SocketMeister.PolicyServer.PolicyServerErrorEventArgs.Error">
+            <summary>
+            .NET Exception class containing the error
+            </summary>
+        </member>
+        <member name="P:SocketMeister.PolicyServer.PolicyServerErrorEventArgs.Source">
+            <summary>
+            Short description containing the source of the error (eg Server, Client, Listener)
+            </summary>
+        </member>
+        <member name="T:SocketMeister.PolicyServer.PolicyRequestReceivedEventArgs">
+            <summary>
+            Raised whenever a policy request is received
+            </summary>
+        </member>
+        <member name="P:SocketMeister.PolicyServer.PolicyRequestReceivedEventArgs.EndPoint">
+            <summary>
+            The end point (client) requesting the policy file
+            </summary>
+        </member>
+        <member name="P:SocketMeister.PolicyServer.PolicyRequestReceivedEventArgs.TotalPolicyRequestsReceived">
+            <summary>
+            The total of policy received since this policy server was instatiated
+            </summary>
+        </member>
+        <member name="T:SocketMeister.PolicyServer.PolicyServerStatusChangedEventArgs">
+            <summary>
+            Raised whenever the running status of socket server changes
+            </summary>
+        </member>
+        <member name="P:SocketMeister.PolicyServer.PolicyServerStatusChangedEventArgs.Status">
+            <summary>
+            Status type
+            </summary>
+        </member>
+        <member name="P:SocketMeister.PolicyServer.PolicyServerStatusChangedEventArgs.IPAddress">
+            <summary>
+            IP Address of the socket server
+            </summary>
+        </member>
+        <member name="T:SocketMeister.PolicyServer.UnknownPolicyRequestReceivedEventArgs">
+            <summary>
+            Raised whenever an unknown request is received
+            </summary>
+        </member>
+        <member name="P:SocketMeister.PolicyServer.UnknownPolicyRequestReceivedEventArgs.EndPoint">
+            <summary>
+            The end point (client) submitting the unknown request
+            </summary>
+        </member>
+        <member name="P:SocketMeister.PolicyServer.UnknownPolicyRequestReceivedEventArgs.TotalUnknownRequestsReceived">
+            <summary>
+            The number of unknown requests received since this policy server was instantiated 
+            </summary>
+        </member>
+        <member name="E:SocketMeister.PolicyServer.Error">
+            <summary>
+            An error occured in the socket server. Trap these if you want to perform logging.
+            </summary>
+        </member>
+        <member name="E:SocketMeister.PolicyServer.PolicyRequestReceived">
+            <summary>
+            A request for the policy file was received.
+            </summary>
+        </member>
+        <member name="E:SocketMeister.PolicyServer.SocketServiceStatusChanged">
+            <summary>
+            The status of the socket server changed. Statuses include stating, started, stopping and stopped.
+            </summary>
+        </member>
+        <member name="E:SocketMeister.PolicyServer.UnknownRequestReceived">
+            <summary>
+            An unknown request was received. Port 943 is expecting ONLY policy requests.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.PolicyServer.#ctor">
+            <summary>
+            Default PolicyServer Constructor. Will automatically use the first IP4 ethernet card found
+            </summary>
+        </member>
+        <member name="M:SocketMeister.PolicyServer.#ctor(System.String)">
+            <summary>
+            PolicyServer Constructor
+            </summary>
+            <param name="IPAddress">The IP address of this server. If using this locally only (e.g. for locally testing the server and client), use "127.0.0.1"</param>
+        </member>
+        <member name="P:SocketMeister.PolicyServer.IPAddress">
+            <summary>
+            The IP address being used.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.PolicyServer.ServiceStatus">
+            <summary>
+            The current status of the sockted server. Statuses include Stopped, Starting, Started and Stopping
+            </summary>
+        </member>
+        <member name="M:SocketMeister.PolicyServer.Start">
+            <summary>
+            Start the socket server. This is a background operation. Your code can (optionally) poll the 'ServiceStatus' property or catch the 'SocketServiceStatusChanged' Event.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.PolicyServer.Stop">
+            <summary>
+            Stop the socket server. This is a background operation. Your code can (optionally) poll the 'ServiceStatus' property or catch the 'SocketServiceStatusChanged' Event.
+            </summary>
+        </member>
         <member name="T:SocketMeister.SocketServer">
             <summary>
             TCP/IP socket server which listens for client connections and raises events when messages are received
