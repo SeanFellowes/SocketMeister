@@ -17,8 +17,8 @@ namespace SocketMeister
         {
             private bool _isRunning = false;
             private bool _run = true;
-            private readonly object lockObject = new object();
-            private Socket listener = null;
+            private readonly object _lock = new object();
+            private Socket _listener = null;
             private bool _rejectNewConnections = false;
 
             //  EVENTS
@@ -26,9 +26,9 @@ namespace SocketMeister
             internal event EventHandler<PolicyServerIsRunningChangedArgs> IsRunningChanged;
 
             //  PROPERTIES
-            internal bool IsRunning { get { lock (lockObject) { return _isRunning; } } private set { lock (lockObject) { _isRunning = value; } } }
-            private bool RunListener { get { lock (lockObject) { return _run; } } set { lock (lockObject) { _run = value; } } }
-            internal bool RejectNewConnections { get { lock (lockObject) { return _rejectNewConnections; } } set { lock (lockObject) { _rejectNewConnections = value; } } }
+            internal bool IsRunning { get { lock (_lock) { return _isRunning; } } private set { lock (_lock) { _isRunning = value; } } }
+            private bool RunListener { get { lock (_lock) { return _run; } } set { lock (_lock) { _run = value; } } }
+            internal bool RejectNewConnections { get { lock (_lock) { return _rejectNewConnections; } } set { lock (_lock) { _rejectNewConnections = value; } } }
 
             public void Dispose()
             {
@@ -39,8 +39,8 @@ namespace SocketMeister
             {
                 if (disposing)
                 {
-                    if (listener != null) listener.Close();
-                    listener = null;
+                    if (_listener != null) _listener.Close();
+                    _listener = null;
                 }
             }
 
@@ -54,18 +54,18 @@ namespace SocketMeister
 
             internal void Stop()
             {
-                if (listener == null || IsRunning == false) return;
+                if (_listener == null || IsRunning == false) return;
                 RunListener = false;
-                listener.Close();
+                _listener.Close();
                 while (IsRunning == true) { Thread.Sleep(200); }
                 try
                 {
 #if !NET20 && !NET35
-                    listener.Dispose();
+                    _listener.Dispose();
 #else
-                    listener.Close();
+                    _listener.Close();
 #endif
-                    listener = null;
+                    _listener = null;
                 }
                 catch { }
             }
@@ -77,8 +77,8 @@ namespace SocketMeister
 
                 try
                 {
-                    listener = new Socket(localEP.Address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-                    listener.Bind(localEP);
+                    _listener = new Socket(localEP.Address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+                    _listener.Bind(localEP);
                     IsRunning = true;
                     IsRunningChanged?.Invoke(this, new PolicyServerIsRunningChangedArgs { IsRunning = true });
                     while (RunListener == true)
@@ -87,8 +87,8 @@ namespace SocketMeister
                         {
                             if (RunListener == true)
                             {
-                                listener.Listen(maximumConnections);
-                                Socket socket = listener.Accept();
+                                _listener.Listen(maximumConnections);
+                                Socket socket = _listener.Accept();
 
                                 // Return connected socket through callback function.
                                 if (callback != null && RejectNewConnections == false)
@@ -117,7 +117,7 @@ namespace SocketMeister
                     IsRunningChanged?.Invoke(this, new PolicyServerIsRunningChangedArgs { IsRunning = false });
                     ExceptionRaised?.Invoke(this, new ExceptionEventArgs(ex, 1234));
                 }
-                try { listener.Close(); }
+                try { _listener.Close(); }
                 catch { IsRunning = false; }
             }
 

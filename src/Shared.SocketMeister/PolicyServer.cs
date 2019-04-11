@@ -8,6 +8,7 @@ using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Threading;
+using System.Globalization;
 
 namespace SocketMeister
 {
@@ -20,19 +21,16 @@ namespace SocketMeister
     internal partial class PolicyServer : IDisposable
 #endif
     {
+        public const int ServicePort = 943;
         private const string POLICY_REQUEST = "<policy-file-request/>";
 
-        private IPAddress _ipAddress = null;
-        private Listener _listenerPolicyRequests = null;
+        private Listener _listener = null;
         private byte[] _policybytes;
         private bool _run = true;
-        public const int ServicePort = 943;
         private ServiceStatus _serviceStatus = ServiceStatus.Stopped;
 
         //  THREADSAFE LOCKS
         private readonly object _lockClass = new object();
-
-        //  EVENTS
 
         /// <summary>
         /// Raised when an exception occurs.
@@ -55,21 +53,12 @@ namespace SocketMeister
         public event EventHandler<PolicyRequestReceivedEventArgs> UnknownRequestReceived;
 
         /// <summary>
-        /// Default PolicyServer Constructor. Will automatically use the first IP4 ethernet card found
+        /// PolicyServer Constructor. The policy server will connect to all network interfaces on port 943
         /// </summary>
         public PolicyServer()
         {
-            _ipAddress = System.Net.IPAddress.Parse(GetLocalIPv4(NetworkInterfaceType.Ethernet));
-        }
-
-
-        /// <summary>
-        /// PolicyServer Constructor
-        /// </summary>
-        /// <param name="IPAddress">The IP address of this server. If using this locally only (e.g. for locally testing the server and client), use "127.0.0.1"</param>
-        public PolicyServer(string IPAddress)
-        {
-            _ipAddress = System.Net.IPAddress.Parse(IPAddress); ;
+            //  CONNECT TO ALL INTERFACES (I.P. 0.0.0.0 IS ALL)
+            IPAddress = IPAddress.Parse("0.0.0.0");
         }
 
         public void Dispose()
@@ -81,9 +70,8 @@ namespace SocketMeister
         {
             if (disposing)
             {
-                _ipAddress = null;
-                if (_listenerPolicyRequests != null) _listenerPolicyRequests.Dispose();
-                _listenerPolicyRequests = null;
+                if (_listener != null) _listener.Dispose();
+                _listener = null;
                 _policybytes = null;
             }
         }
@@ -98,8 +86,7 @@ namespace SocketMeister
         /// <summary>
         /// The IP address being used.
         /// </summary>
-        public IPAddress IPAddress { get { return _ipAddress; } }
-
+        public IPAddress IPAddress { get; private set; }
 
 
         /// <summary>
@@ -123,6 +110,18 @@ namespace SocketMeister
         //  *********************
         //  ** PUBLIC METHODS ***
         //  *********************
+        private static IPAddress GetLocalIPAddress()
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (IPAddress ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    return ip;
+                }
+            }
+            throw new Exception("No network adapters with an IPv4 address in the system!");
+        }
 
 
         public static string GetLocalIPv4(NetworkInterfaceType _type)
@@ -168,10 +167,10 @@ namespace SocketMeister
                         filestream.Close();
 
                         // Initialize policy socket listener
-                        _listenerPolicyRequests = new Listener();
-                        _listenerPolicyRequests.ExceptionRaised += SocketListener_Error;
-                        _listenerPolicyRequests.IsRunningChanged += SocketListener_ListenerStatusChanged;
-                        _listenerPolicyRequests.Start(_ipAddress, ServicePort, PolicyClient_Connected, 1000);
+                        _listener = new Listener();
+                        _listener.ExceptionRaised += SocketListener_Error;
+                        _listener.IsRunningChanged += SocketListener_ListenerStatusChanged;
+                        _listener.Start(IPAddress, ServicePort, PolicyClient_Connected, 1000);
 
                         //  REGISTER AS STARTED AND START THE MESSAGE SENDER (NOTE: WILL NOT RUN UNLESS ServiceStatus = STARTED
                         this.ServiceStatus = ServiceStatus.Started;
@@ -204,13 +203,13 @@ namespace SocketMeister
                     Run = false;
 
                     //  LISTENERS TO REJECT NEW CLIENT CONNECTIONS
-                    _listenerPolicyRequests.RejectNewConnections = true;
+                    _listener.RejectNewConnections = true;
 
                     //  UNREGISTER LISTENER EVENTS
-                    _listenerPolicyRequests.ExceptionRaised -= SocketListener_Error;
+                    _listener.ExceptionRaised -= SocketListener_Error;
 
                     //  STOP THE LISTENERS
-                    _listenerPolicyRequests.Stop();
+                    _listener.Stop();
                     DateTime timeout = DateTime.Now.AddSeconds(30);
                     while (this.ServiceStatus != ServiceStatus.Stopped && DateTime.Now < timeout)
                     {
@@ -219,7 +218,7 @@ namespace SocketMeister
 
 
                     //  UNREGISTER REMAINING EVENTS
-                    _listenerPolicyRequests.IsRunningChanged -= SocketListener_ListenerStatusChanged;
+                    _listener.IsRunningChanged -= SocketListener_ListenerStatusChanged;
 
                     //  IT SHOULD ALREADY BE STOPPED, BUT IF THE STOP TIMED OUT IT WONT HAVE
                     this.ServiceStatus = ServiceStatus.Stopped;
@@ -248,8 +247,8 @@ namespace SocketMeister
         private void SocketListener_ListenerStatusChanged(object sender, PolicyServerIsRunningChangedArgs e)
         {
             //  IF BOTH THE POLICY AND CLIENT LISTENERS ARE RUNNING THEN RETURN A STATUS OF RUNNING
-            if (_listenerPolicyRequests == null) return;
-            if (_listenerPolicyRequests.IsRunning != true) ServiceStatus = ServiceStatus.Stopped;
+            if (_listener == null) return;
+            if (_listener.IsRunning != true) ServiceStatus = ServiceStatus.Stopped;
         }
 
         //  POLICY FILE LISTENER (PORT 943) - WHEN A CLIENT CONNECTS, SEND BACK THE POLICY FILE

@@ -32,7 +32,6 @@ namespace SocketMeister
         private readonly string _endPoint;
         private readonly Socket _listener = null;
         private ServiceStatus _listenerState;
-        private readonly IPEndPoint _localEndPoint = null;
         private readonly object _lock = new object();
         private int _requestsInProgress = 0;
         private readonly Thread _threadListener;
@@ -85,14 +84,14 @@ namespace SocketMeister
 
             //  CONNECT TO ALL INTERFACES (I.P. 0.0.0.0 IS ALL)
             IPAddress ipAddress = IPAddress.Parse("0.0.0.0");
-            _localEndPoint = new IPEndPoint(ipAddress, Port);
+            IPEndPoint localEP = new IPEndPoint(ipAddress, Port);
 
             //  LOCAL IP ADDRESS AND PORT (USED FOR DIAGNOSTIC MESSAGES)
             _endPoint = GetLocalIPAddress().ToString() + ":" + Port.ToString(CultureInfo.InvariantCulture);
 
             // Create a TCP/IP socket.  
             _listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            _listener.Bind(_localEndPoint);
+            _listener.Bind(localEP);
 
             //  REGISTER FOR EVENTS
             _connectedClients.ClientDisconnected += ConnectedClients_ClientDisconnected;
@@ -511,7 +510,7 @@ namespace SocketMeister
             }
         }
 
-        internal static IPAddress GetLocalIPAddress()
+        private static IPAddress GetLocalIPAddress()
         {
             var host = Dns.GetHostEntry(Dns.GetHostName());
             foreach (IPAddress ip in host.AddressList)
