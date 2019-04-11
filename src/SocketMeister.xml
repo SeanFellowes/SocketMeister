@@ -702,12 +702,12 @@
             Lightweight TCP server which listens on port 943 for policy file requests from Silverlight clients. Policy file describes which ports between 4502-4534 can be used by Silverlight.
             </summary>
         </member>
-        <member name="T:SocketMeister.PolicyServer.PolicyRequestEventArgs">
+        <member name="T:SocketMeister.PolicyServer.PolicyRequestReceivedEventArgs">
             <summary>
             Raised whenever a policy request is received
             </summary>
         </member>
-        <member name="P:SocketMeister.PolicyServer.PolicyRequestEventArgs.EndPoint">
+        <member name="P:SocketMeister.PolicyServer.PolicyRequestReceivedEventArgs.EndPoint">
             <summary>
             The end point (client) requesting the policy file
             </summary>

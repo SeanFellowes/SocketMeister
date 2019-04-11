@@ -12,7 +12,7 @@ namespace SocketMeister
         /// <summary>
         /// Raised whenever a policy request is received
         /// </summary>
-        public class PolicyRequestEventArgs : EventArgs
+        public class PolicyRequestReceivedEventArgs : EventArgs
         {
             /// <summary>
             /// The end point (client) requesting the policy file

@@ -42,7 +42,7 @@ namespace SocketMeister
         /// <summary>
         /// A request for the policy file was received.
         /// </summary>
-        public event EventHandler<PolicyRequestEventArgs> PolicyRequestReceived;
+        public event EventHandler<PolicyRequestReceivedEventArgs> PolicyRequestReceived;
 
         /// <summary>
         /// The status of the socket server changed. Statuses include stating, started, stopping and stopped.
@@ -52,7 +52,7 @@ namespace SocketMeister
         /// <summary>
         /// An unknown request was received. Port 943 is expecting ONLY policy requests.
         /// </summary>
-        public event EventHandler<PolicyRequestEventArgs> UnknownRequestReceived;
+        public event EventHandler<PolicyRequestReceivedEventArgs> UnknownRequestReceived;
 
         /// <summary>
         /// Default PolicyServer Constructor. Will automatically use the first IP4 ethernet card found
@@ -276,7 +276,7 @@ namespace SocketMeister
                             {
                                 new Thread(new ThreadStart(delegate
                                 {
-                                    try { PolicyRequestReceived(this, new PolicyRequestEventArgs() { EndPoint = endPoint }); }
+                                    try { PolicyRequestReceived(this, new PolicyRequestReceivedEventArgs() { EndPoint = endPoint }); }
                                     catch { }
                                 })).Start();
                             }
@@ -287,7 +287,7 @@ namespace SocketMeister
                             {
                                 new Thread(new ThreadStart(delegate
                                 {
-                                    try { UnknownRequestReceived(this, new PolicyRequestEventArgs() { EndPoint = endPoint }); }
+                                    try { UnknownRequestReceived(this, new PolicyRequestReceivedEventArgs() { EndPoint = endPoint }); }
                                     catch { }
                                 })).Start();
                             }
