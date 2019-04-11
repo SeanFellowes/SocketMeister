@@ -4,6 +4,31 @@
         <name>SocketMeister</name>
     </assembly>
     <members>
+        <member name="T:SocketMeister.ServiceStatus">
+            <summary>
+            Status of a socket service
+            </summary>
+        </member>
+        <member name="F:SocketMeister.ServiceStatus.Stopped">
+            <summary>
+            Service is stopped
+            </summary>
+        </member>
+        <member name="F:SocketMeister.ServiceStatus.Starting">
+            <summary>
+            Service is starting
+            </summary>
+        </member>
+        <member name="F:SocketMeister.ServiceStatus.Started">
+            <summary>
+            Service is started
+            </summary>
+        </member>
+        <member name="F:SocketMeister.ServiceStatus.Stopping">
+            <summary>
+            Service is stopping
+            </summary>
+        </member>
         <member name="T:SocketMeister.Messages.MessageTypes">
             <summary>
             Internal message types
@@ -674,97 +699,38 @@
         </member>
         <member name="T:SocketMeister.PolicyServer">
             <summary>
-            Server side socket processing components. Is the central socket server.
+            Lightweight TCP server which listens on port 943 for policy file requests from Silverlight clients. Policy file describes which ports between 4502-4534 can be used by Silverlight.
             </summary>
         </member>
-        <member name="T:SocketMeister.PolicyServer.SocketServerStatusTypes">
-            <summary>
-            Socket server statuses.
-            </summary>
-        </member>
-        <member name="F:SocketMeister.PolicyServer.SocketServerStatusTypes.Stopped">
-            <summary>
-            Socket server is stopped
-            </summary>
-        </member>
-        <member name="F:SocketMeister.PolicyServer.SocketServerStatusTypes.Started">
-            <summary>
-            Socket server is started
-            </summary>
-        </member>
-        <member name="F:SocketMeister.PolicyServer.SocketServerStatusTypes.Starting">
-            <summary>
-            Socket server is starting
-            </summary>
-        </member>
-        <member name="F:SocketMeister.PolicyServer.SocketServerStatusTypes.Stopping">
-            <summary>
-            Socket server is stopping
-            </summary>
-        </member>
-        <member name="T:SocketMeister.PolicyServer.PolicyServerErrorEventArgs">
-            <summary>
-            Error event used in both the Socket Policy Server and Client
-            </summary>
-        </member>
-        <member name="P:SocketMeister.PolicyServer.PolicyServerErrorEventArgs.Error">
-            <summary>
-            .NET Exception class containing the error
-            </summary>
-        </member>
-        <member name="P:SocketMeister.PolicyServer.PolicyServerErrorEventArgs.Source">
-            <summary>
-            Short description containing the source of the error (eg Server, Client, Listener)
-            </summary>
-        </member>
-        <member name="T:SocketMeister.PolicyServer.PolicyRequestReceivedEventArgs">
+        <member name="T:SocketMeister.PolicyServer.PolicyRequestEventArgs">
             <summary>
             Raised whenever a policy request is received
             </summary>
         </member>
-        <member name="P:SocketMeister.PolicyServer.PolicyRequestReceivedEventArgs.EndPoint">
+        <member name="P:SocketMeister.PolicyServer.PolicyRequestEventArgs.EndPoint">
             <summary>
             The end point (client) requesting the policy file
             </summary>
         </member>
-        <member name="P:SocketMeister.PolicyServer.PolicyRequestReceivedEventArgs.TotalPolicyRequestsReceived">
+        <member name="T:SocketMeister.PolicyServer.ServerStatusEventArgs">
             <summary>
-            The total of policy received since this policy server was instatiated
+            Status of a socket service.
             </summary>
         </member>
-        <member name="T:SocketMeister.PolicyServer.PolicyServerStatusChangedEventArgs">
+        <member name="M:SocketMeister.PolicyServer.ServerStatusEventArgs.#ctor(SocketMeister.ServiceStatus)">
             <summary>
-            Raised whenever the running status of socket server changes
+            Constructor
+            </summary>
+            <param name="Status">Current status of the service</param>
+        </member>
+        <member name="P:SocketMeister.PolicyServer.ServerStatusEventArgs.Status">
+            <summary>
+            Execution status of the service.
             </summary>
         </member>
-        <member name="P:SocketMeister.PolicyServer.PolicyServerStatusChangedEventArgs.Status">
+        <member name="E:SocketMeister.PolicyServer.ExceptionRaised">
             <summary>
-            Status type
-            </summary>
-        </member>
-        <member name="P:SocketMeister.PolicyServer.PolicyServerStatusChangedEventArgs.IPAddress">
-            <summary>
-            IP Address of the socket server
-            </summary>
-        </member>
-        <member name="T:SocketMeister.PolicyServer.UnknownPolicyRequestReceivedEventArgs">
-            <summary>
-            Raised whenever an unknown request is received
-            </summary>
-        </member>
-        <member name="P:SocketMeister.PolicyServer.UnknownPolicyRequestReceivedEventArgs.EndPoint">
-            <summary>
-            The end point (client) submitting the unknown request
-            </summary>
-        </member>
-        <member name="P:SocketMeister.PolicyServer.UnknownPolicyRequestReceivedEventArgs.TotalUnknownRequestsReceived">
-            <summary>
-            The number of unknown requests received since this policy server was instantiated 
-            </summary>
-        </member>
-        <member name="E:SocketMeister.PolicyServer.Error">
-            <summary>
-            An error occured in the socket server. Trap these if you want to perform logging.
+            Raised when an exception occurs.
             </summary>
         </member>
         <member name="E:SocketMeister.PolicyServer.PolicyRequestReceived">
@@ -971,31 +937,6 @@
             Sends a message to all clients to disconnect, waits for in progress requests to finish, then stops the socket server. 
             </summary>
         </member>
-        <member name="T:SocketMeister.SocketServer.SocketServerStatus">
-            <summary>
-            Execution status of a service
-            </summary>
-        </member>
-        <member name="F:SocketMeister.SocketServer.SocketServerStatus.Stopped">
-            <summary>
-            Service is stopped
-            </summary>
-        </member>
-        <member name="F:SocketMeister.SocketServer.SocketServerStatus.Starting">
-            <summary>
-            Service is starting
-            </summary>
-        </member>
-        <member name="F:SocketMeister.SocketServer.SocketServerStatus.Started">
-            <summary>
-            Service is started
-            </summary>
-        </member>
-        <member name="F:SocketMeister.SocketServer.SocketServerStatus.Stopping">
-            <summary>
-            Service is stopping
-            </summary>
-        </member>
         <member name="T:SocketMeister.SocketServer.ClientConnectedEventArgs">
             <summary>
             Event raised when a client connects to the socket server.
@@ -1041,23 +982,18 @@
             The byte array which is to be returned to the client. Null is returned if a 'Response' value is not provided when processing the 'RequestReceived' event.
             </summary>
         </member>
-        <member name="T:SocketMeister.SocketServer.SocketServerStatusChangedEventArgs">
+        <member name="T:SocketMeister.SocketServer.ServerStatusEventArgs">
             <summary>
-            Execution status of a service changed. Includes the new status
+            Status of a socket service.
             </summary>
         </member>
-        <member name="M:SocketMeister.SocketServer.SocketServerStatusChangedEventArgs.#ctor">
-            <summary>
-            Default constructor
-            </summary>
-        </member>
-        <member name="M:SocketMeister.SocketServer.SocketServerStatusChangedEventArgs.#ctor(SocketMeister.SocketServer.SocketServerStatus)">
+        <member name="M:SocketMeister.SocketServer.ServerStatusEventArgs.#ctor(SocketMeister.ServiceStatus)">
             <summary>
             Constructor
             </summary>
             <param name="Status">Current status of the service</param>
         </member>
-        <member name="P:SocketMeister.SocketServer.SocketServerStatusChangedEventArgs.Status">
+        <member name="P:SocketMeister.SocketServer.ServerStatusEventArgs.Status">
             <summary>
             Execution status of the service.
             </summary>

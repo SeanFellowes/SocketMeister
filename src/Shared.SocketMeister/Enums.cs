@@ -4,6 +4,7 @@ using System.Text;
 
 namespace SocketMeister
 {
+#if !SILVERLIGHT && !SMNOSERVER
 
     /// <summary>
     /// Status of a socket service
@@ -27,5 +28,5 @@ namespace SocketMeister
         /// </summary>
         Stopping = 3
     }
-
+#endif
 }

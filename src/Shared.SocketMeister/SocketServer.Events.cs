@@ -78,21 +78,15 @@ namespace SocketMeister
         }
 
         /// <summary>
-        /// Execution status of a service changed. Includes the new status
+        /// Status of a socket service.
         /// </summary>
-        public class SocketServerStatusChangedEventArgs : EventArgs
+        public class ServerStatusEventArgs : EventArgs
         {
-
-            /// <summary>
-            /// Default constructor
-            /// </summary>
-            public SocketServerStatusChangedEventArgs() { }
-
             /// <summary>
             /// Constructor
             /// </summary>
             /// <param name="Status">Current status of the service</param>
-            public SocketServerStatusChangedEventArgs(SocketServerStatus Status)
+            public ServerStatusEventArgs(ServiceStatus Status)
             {
                 this.Status = Status;
             }

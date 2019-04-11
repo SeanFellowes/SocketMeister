@@ -20,8 +20,9 @@ namespace SocketMeister
             private readonly object lockObject = new object();
             private Socket listener = null;
             private bool _rejectNewConnections = false;
+
             //  EVENTS
-            internal event EventHandler<PolicyServerErrorEventArgs> Error;
+            internal event EventHandler<ExceptionEventArgs> ExceptionRaised;
             internal event EventHandler<PolicyServerIsRunningChangedArgs> IsRunningChanged;
 
             //  PROPERTIES
@@ -43,12 +44,6 @@ namespace SocketMeister
                 }
             }
 
-
-            internal void RejectNewConnectionss()
-            {
-                if (listener == null || IsRunning == false) return;
-                listener.Accept();
-            }
 
             internal void Start(IPAddress Address, int port, GetSocketCallBack callback, int maximumConnections)
             {
@@ -114,13 +109,13 @@ namespace SocketMeister
                 {
                     IsRunning = false;
                     IsRunningChanged?.Invoke(this, new PolicyServerIsRunningChangedArgs { IsRunning = false });
-                    if (sex.ErrorCode != 10004 && Error != null) IsRunningChanged(this, new PolicyServerIsRunningChangedArgs { IsRunning = false });
+                    if (sex.ErrorCode != 10004 && ExceptionRaised != null) IsRunningChanged(this, new PolicyServerIsRunningChangedArgs { IsRunning = false });
                 }
                 catch (Exception ex)
                 {
                     IsRunning = false;
                     IsRunningChanged?.Invoke(this, new PolicyServerIsRunningChangedArgs { IsRunning = false });
-                    Error?.Invoke(this, new PolicyServerErrorEventArgs { Error = ex });
+                    ExceptionRaised?.Invoke(this, new ExceptionEventArgs(ex, 1234));
                 }
                 try { listener.Close(); }
                 catch { IsRunning = false; }

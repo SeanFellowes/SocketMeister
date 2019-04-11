@@ -55,7 +55,7 @@ namespace SocketMeister
         /// <summary>
         /// Reaised when the status of the socket listener changes.
         /// </summary>
-        public event EventHandler<SocketServerStatusChangedEventArgs> ListenerStateChanged;
+        public event EventHandler<ServerStatusEventArgs> ListenerStateChanged;
 
         /// <summary>
         /// Raised when a message is received from a client.
@@ -146,7 +146,7 @@ namespace SocketMeister
                     if (_listenerState == value) return;
                     _listenerState = value;
                 }
-                ListenerStateChanged?.Invoke(null, new SocketServerStatusChangedEventArgs { Status = value });
+                ListenerStateChanged?.Invoke(null, new ServerStatusEventArgs(value));
             }
         }
 
