@@ -29,20 +29,15 @@
     <Compile Include="$(MSBuildThisFileDirectory)Messages\ServerStoppingMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SocketClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SocketEndPoint.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PolicyServer.Enums.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PolicyServer.Events.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PolicyServer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PolicyServer.Listener.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SocketServer.Client.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SocketServer.Clients.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SocketServer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SocketServer.Enums.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SocketServer.Events.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="$(MSBuildThisFileDirectory)CrossDomainPolicy.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)SocketPolicyServer\" />
   </ItemGroup>
 </Project>
