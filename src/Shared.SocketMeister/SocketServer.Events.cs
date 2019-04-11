@@ -100,7 +100,7 @@ namespace SocketMeister
             /// <summary>
             /// Execution status of the service.
             /// </summary>
-            public SocketServerStatus Status { get; set; } = SocketServerStatus.Stopped;
+            public ServiceStatus Status { get; set; } = ServiceStatus.Stopped;
         }
 
     }

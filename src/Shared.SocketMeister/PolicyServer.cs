@@ -12,7 +12,7 @@ using System.Threading;
 namespace SocketMeister
 {
     /// <summary>
-    /// Server side socket processing components. Is the central socket server.
+    /// Lightweight TCP server which listens on port 943 for policy file requests from Silverlight clients. Policy file describes which ports between 4502-4534 can be used by Silverlight.
     /// </summary>
 #if SMISPUBLIC
      public partial class PolicyServer : IDisposable
@@ -92,7 +92,6 @@ namespace SocketMeister
 
 
         //  PRIVATE / INTERNAL PROPERTIES
-        private Listener PolicyListener { get { return _listenerPolicyRequests; } }
         private bool Run { get { lock (_lockClass) { return _run; } } set { lock (_lockClass) _run = value; } }
 
 
@@ -172,9 +171,9 @@ namespace SocketMeister
 
                         // Initialize policy socket listener
                         _listenerPolicyRequests = new Listener();
-                        _listenerPolicyRequests.Error += socketListener_Error;
-                        _listenerPolicyRequests.IsRunningChanged += socketListener_ListenerStatusChanged;
-                        _listenerPolicyRequests.Start(_ipAddress, ServicePort, policyClient_Connected, 1000, "Policy Listener");
+                        _listenerPolicyRequests.Error += SocketListener_Error;
+                        _listenerPolicyRequests.IsRunningChanged += SocketListener_ListenerStatusChanged;
+                        _listenerPolicyRequests.Start(_ipAddress, ServicePort, PolicyClient_Connected, 1000);
 
                         //  REGISTER AS STARTED AND START THE MESSAGE SENDER (NOTE: WILL NOT RUN UNLESS ServiceStatus = STARTED
                         this.ServiceStatus = SocketServerStatusTypes.Started;
@@ -210,7 +209,7 @@ namespace SocketMeister
                     _listenerPolicyRequests.RejectNewConnections = true;
 
                     //  UNREGISTER LISTENER EVENTS
-                    _listenerPolicyRequests.Error -= socketListener_Error;
+                    _listenerPolicyRequests.Error -= SocketListener_Error;
 
                     //  STOP THE LISTENERS
                     _listenerPolicyRequests.Stop();
@@ -222,7 +221,7 @@ namespace SocketMeister
 
 
                     //  UNREGISTER REMAINING EVENTS
-                    _listenerPolicyRequests.IsRunningChanged -= socketListener_ListenerStatusChanged;
+                    _listenerPolicyRequests.IsRunningChanged -= SocketListener_ListenerStatusChanged;
 
                     //  IT SHOULD ALREADY BE STOPPED, BUT IF THE STOP TIMED OUT IT WONT HAVE
                     this.ServiceStatus = SocketServerStatusTypes.Stopped;
@@ -243,12 +242,12 @@ namespace SocketMeister
         //  ************************
 
 
-        private void socketListener_Error(object sender, PolicyServerErrorEventArgs e)
+        private void SocketListener_Error(object sender, PolicyServerErrorEventArgs e)
         {
             GenerateError(e.Error, 52805);
         }
 
-        private void socketListener_ListenerStatusChanged(object sender, PolicyServerIsRunningChangedArgs e)
+        private void SocketListener_ListenerStatusChanged(object sender, PolicyServerIsRunningChangedArgs e)
         {
             //  IF BOTH THE POLICY AND CLIENT LISTENERS ARE RUNNING THEN RETURN A STATUS OF RUNNING
             if (_listenerPolicyRequests == null) return;
@@ -256,7 +255,7 @@ namespace SocketMeister
         }
 
         //  POLICY FILE LISTENER (PORT 943) - WHEN A CLIENT CONNECTS, SEND BACK THE POLICY FILE
-        private void policyClient_Connected(Socket sock)
+        private void PolicyClient_Connected(Socket sock)
         {
             new Thread(
                 new ThreadStart(delegate
@@ -278,7 +277,7 @@ namespace SocketMeister
                             int cnt = 0;
                             lock (_lockClass)
                             {
-                                _policyRequestsReceived = _policyRequestsReceived + 1;
+                                _policyRequestsReceived += 1;
                                 if (_policyRequestsReceived == int.MaxValue) _policyRequestsReceived = 1;
                                 cnt = _policyRequestsReceived;
                             }
@@ -296,7 +295,7 @@ namespace SocketMeister
                             int cnt = 0;
                             lock (_lockClass)
                             {
-                                _unknownRequestsReceived = _unknownRequestsReceived + 1;
+                                _unknownRequestsReceived += 1;
                                 if (_unknownRequestsReceived == int.MaxValue) _unknownRequestsReceived = 1;
                                 cnt = _unknownRequestsReceived;
                             }
@@ -336,12 +335,7 @@ namespace SocketMeister
         {
             new Thread(new ThreadStart(delegate
             {
-                try
-                {
-                    //EventLogHelper.WriteErrorToEventLog(ex, ErrorNumber);
-                    if (Error != null) Error(this, new PolicyServerErrorEventArgs { Source = DetermineSourceName(this), Error = ex });
-                }
-                catch { }
+                Error?.Invoke(this, new PolicyServerErrorEventArgs { Source = DetermineSourceName(this), Error = ex });
             })).Start();
         }
 

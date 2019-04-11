@@ -15,7 +15,7 @@ namespace Test.Server
     {
         //  Sliverlight ports are between 4502-4534
         private int _port = 4502;
-        private SocketServer _socketServer = null;
+        private SocketServer _socketServer;
 
         public Server()
         {

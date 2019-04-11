@@ -31,7 +31,7 @@ namespace SocketMeister
         private readonly bool _enableCompression;
         private readonly string _endPoint;
         private readonly Socket _listener = null;
-        private SocketServerStatus _listenerState;
+        private ServiceStatus _listenerState;
         private readonly IPEndPoint _localEndPoint = null;
         private readonly object _lock = new object();
         private int _requestsInProgress = 0;
@@ -136,7 +136,7 @@ namespace SocketMeister
         /// <summary>
         /// Status of the socket listener
         /// </summary>
-        public SocketServerStatus ListenerState
+        public ServiceStatus ListenerState
         {
             get { lock (_lock) { return _listenerState; } }
             set
@@ -210,9 +210,9 @@ namespace SocketMeister
         [SuppressMessage("Microsoft.Performance", "CA1031:DoNotCatchGeneralExceptionTypes", MessageId = "ExceptionEventRaised")]
         public void Stop()
         {
-            if (ListenerState != SocketServerStatus.Started) throw new Exception("Socket server is stopped, or in the process of starting or stopping.");
+            if (ListenerState != ServiceStatus.Started) throw new Exception("Socket server is stopped, or in the process of starting or stopping.");
 
-            ListenerState = SocketServerStatus.Stopping;
+            ListenerState = ServiceStatus.Stopping;
             _allDone.Set();
 
             List<Client> toProcess = _connectedClients.ToList();
@@ -249,7 +249,7 @@ namespace SocketMeister
             try { _listener.Close(); }
             catch (Exception ex) { NotifyExceptionRaised(ex); }
 
-            ListenerState = SocketServerStatus.Stopped;
+            ListenerState = ServiceStatus.Stopped;
         }
 
         #endregion
@@ -265,7 +265,7 @@ namespace SocketMeister
             // Signal the main thread to continue.  
             _allDone.Set();
 
-            if (ListenerState == SocketServerStatus.Stopped || ListenerState == SocketServerStatus.Stopping)
+            if (ListenerState == ServiceStatus.Stopped || ListenerState == ServiceStatus.Stopping)
             {
                 //  ACCEPT THE CONNECTION BUT DISCONNECT THE CLIENT
                 Thread bgReceive = new Thread(
@@ -358,7 +358,7 @@ namespace SocketMeister
                         {
                             RequestMessage request = receiveEnvelope.GetRequestMessage();
                             request.RemoteClient = remoteClient;
-                            if (ListenerState == SocketServerStatus.Stopping)
+                            if (ListenerState == ServiceStatus.Stopping)
                             {
                                 ResponseMessage response = new ResponseMessage(request.RequestId, new Exception("Server is stopping"));
                                 SendMessage(request.RemoteClient, response, false);
@@ -371,7 +371,7 @@ namespace SocketMeister
                         }
                         else if (receiveEnvelope.MessageType == MessageTypes.Message)
                         {
-                            if (ListenerState == SocketServerStatus.Started)
+                            if (ListenerState == ServiceStatus.Started)
                             {
                                 Message message = receiveEnvelope.GetMessage();
                                 message.RemoteClient = remoteClient;
@@ -391,7 +391,7 @@ namespace SocketMeister
                         }
                         else if (receiveEnvelope.MessageType == MessageTypes.PollRequest)
                         {
-                            if (ListenerState == SocketServerStatus.Started)
+                            if (ListenerState == ServiceStatus.Started)
                             {
                                 lock (_lock) { _requestsInProgress += 1; }
                                 new Thread(new ThreadStart(delegate
@@ -428,11 +428,11 @@ namespace SocketMeister
             // Bind the socket to the local endpoint and listen for incoming connections.  
             try
             {
-                ListenerState = SocketServerStatus.Starting;
+                ListenerState = ServiceStatus.Starting;
                 _listener.Listen(500);
-                ListenerState = SocketServerStatus.Started;
+                ListenerState = ServiceStatus.Started;
 
-                while (ListenerState != SocketServerStatus.Stopped)
+                while (ListenerState != ServiceStatus.Stopped)
                 {
                     // Set the event to nonsignaled state.  
                     _allDone.Reset();
@@ -446,7 +446,7 @@ namespace SocketMeister
             }
             catch (Exception ex)
             {
-                ListenerState = SocketServerStatus.Stopped;
+                ListenerState = ServiceStatus.Stopped;
                 NotifyExceptionRaised(ex);
             }
         }

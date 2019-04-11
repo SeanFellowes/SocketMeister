@@ -17,7 +17,6 @@ namespace SocketMeister
         {
             private bool _isRunning = false;
             private bool _run = true;
-            private string _listenerName = "Unknown";
             private readonly object lockObject = new object();
             private Socket listener = null;
             private bool _rejectNewConnections = false;
@@ -51,11 +50,10 @@ namespace SocketMeister
                 listener.Accept();
             }
 
-            internal void Start(IPAddress Address, int port, GetSocketCallBack callback, int maximumConnections, string ListenerName)
+            internal void Start(IPAddress Address, int port, GetSocketCallBack callback, int maximumConnections)
             {
                 //  RUN ON ANOTHER THREAD
                 _rejectNewConnections = false;
-                _listenerName = ListenerName;
                 new Thread(new ThreadStart(delegate { Listen(Address, port, callback, maximumConnections); })).Start();
             }
 
@@ -87,7 +85,7 @@ namespace SocketMeister
                     listener = new Socket(localEP.Address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
                     listener.Bind(localEP);
                     IsRunning = true;
-                    if (IsRunningChanged != null) IsRunningChanged(this, new PolicyServerIsRunningChangedArgs { IsRunning = true });
+                    IsRunningChanged?.Invoke(this, new PolicyServerIsRunningChangedArgs { IsRunning = true });
                     while (RunListener == true)
                     {
                         if (RejectNewConnections == false)
@@ -110,19 +108,19 @@ namespace SocketMeister
                         else Thread.Sleep(250);
                     }
                     IsRunning = false;
-                    if (IsRunningChanged != null) IsRunningChanged(this, new PolicyServerIsRunningChangedArgs { IsRunning = false });
+                    IsRunningChanged?.Invoke(this, new PolicyServerIsRunningChangedArgs { IsRunning = false });
                 }
                 catch (SocketException sex)
                 {
                     IsRunning = false;
-                    if (IsRunningChanged != null) IsRunningChanged(this, new PolicyServerIsRunningChangedArgs { IsRunning = false });
+                    IsRunningChanged?.Invoke(this, new PolicyServerIsRunningChangedArgs { IsRunning = false });
                     if (sex.ErrorCode != 10004 && Error != null) IsRunningChanged(this, new PolicyServerIsRunningChangedArgs { IsRunning = false });
                 }
                 catch (Exception ex)
                 {
                     IsRunning = false;
-                    if (IsRunningChanged != null) IsRunningChanged(this, new PolicyServerIsRunningChangedArgs { IsRunning = false });
-                    if (Error != null) { Error(this, new PolicyServerErrorEventArgs { Error = ex }); }
+                    IsRunningChanged?.Invoke(this, new PolicyServerIsRunningChangedArgs { IsRunning = false });
+                    Error?.Invoke(this, new PolicyServerErrorEventArgs { Error = ex });
                 }
                 try { listener.Close(); }
                 catch { IsRunning = false; }

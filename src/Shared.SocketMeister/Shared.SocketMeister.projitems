@@ -6,9 +6,10 @@
     <SharedGUID>7fe383ec-5fd4-4d60-beeb-149e51549260</SharedGUID>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
-    <Import_RootNamespace>Shared.SocketMeister</Import_RootNamespace>
+    <Import_RootNamespace>SocketMeister</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Enums.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\Enums.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SocketClient.OpenRequestMessages.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SocketClient.SocketAsyncEventArgsPool.cs" />
@@ -28,10 +29,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Messages\ServerStoppingMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SocketClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SocketEndPoint.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SocketPolicyServer\PolicyServer.Enums.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SocketPolicyServer\PolicyServer.Events.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SocketPolicyServer\PolicyServer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SocketPolicyServer\PolicyServer.Listener.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PolicyServer.Enums.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PolicyServer.Events.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PolicyServer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PolicyServer.Listener.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SocketServer.Client.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SocketServer.Clients.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SocketServer.cs" />
@@ -39,6 +40,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)SocketServer.Events.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="$(MSBuildThisFileDirectory)SocketPolicyServer\CrossDomainPolicy.xml" />
+    <Content Include="$(MSBuildThisFileDirectory)CrossDomainPolicy.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)SocketPolicyServer\" />
   </ItemGroup>
 </Project>
