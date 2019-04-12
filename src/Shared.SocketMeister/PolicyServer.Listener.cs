@@ -22,7 +22,7 @@ namespace SocketMeister
             private bool _rejectNewConnections = false;
 
             //  EVENTS
-            internal event EventHandler<ExceptionEventArgs> ExceptionRaised;
+            internal event EventHandler<TraceEventArgs> TraceEventRaised;
             internal event EventHandler<PolicyServerIsRunningChangedArgs> IsRunningChanged;
 
             //  PROPERTIES
@@ -109,13 +109,13 @@ namespace SocketMeister
                 {
                     IsRunning = false;
                     IsRunningChanged?.Invoke(this, new PolicyServerIsRunningChangedArgs { IsRunning = false });
-                    if (sex.ErrorCode != 10004 && ExceptionRaised != null) IsRunningChanged(this, new PolicyServerIsRunningChangedArgs { IsRunning = false });
+                    if (sex.ErrorCode != 10004 && TraceEventRaised != null) IsRunningChanged(this, new PolicyServerIsRunningChangedArgs { IsRunning = false });
                 }
                 catch (Exception ex)
                 {
                     IsRunning = false;
                     IsRunningChanged?.Invoke(this, new PolicyServerIsRunningChangedArgs { IsRunning = false });
-                    ExceptionRaised?.Invoke(this, new ExceptionEventArgs(ex, 1234));
+                    TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 1234));
                 }
                 try { _listener.Close(); }
                 catch { IsRunning = false; }

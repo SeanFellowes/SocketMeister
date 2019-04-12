@@ -33,9 +33,9 @@ namespace SocketMeister
         private readonly object _lockClass = new object();
 
         /// <summary>
-        /// Raised when an exception occurs.
+        /// Trace message raised from within SocketMeister.
         /// </summary>
-        public event EventHandler<ExceptionEventArgs> ExceptionRaised;
+        public event EventHandler<TraceEventArgs> TraceEventRaised;
 
         /// <summary>
         /// A request for the policy file was received.
@@ -168,7 +168,7 @@ namespace SocketMeister
 
                         // Initialize policy socket listener
                         _listener = new Listener();
-                        _listener.ExceptionRaised += SocketListener_Error;
+                        _listener.TraceEventRaised += SocketListener_Error;
                         _listener.IsRunningChanged += SocketListener_ListenerStatusChanged;
                         _listener.Start(IPAddress, ServicePort, PolicyClient_Connected, 1000);
 
@@ -181,7 +181,7 @@ namespace SocketMeister
                     catch (Exception ex)
                     {
                         this.ServiceStatus = ServiceStatus.Stopped;
-                        NotifyExceptionRaised(new Exception("Error starting Socket Service: " + ex.Message), 52800);
+                        TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 52800));
                     }
                 })).Start();
         }
@@ -206,7 +206,7 @@ namespace SocketMeister
                     _listener.RejectNewConnections = true;
 
                     //  UNREGISTER LISTENER EVENTS
-                    _listener.ExceptionRaised -= SocketListener_Error;
+                    _listener.TraceEventRaised -= SocketListener_Error;
 
                     //  STOP THE LISTENERS
                     _listener.Stop();
@@ -226,7 +226,7 @@ namespace SocketMeister
                 catch (Exception ex)
                 {
                     this.ServiceStatus = ServiceStatus.Stopped;
-                    NotifyExceptionRaised(new Exception("Error Stopping Socket Service: " + ex.Message), 52801);
+                    TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 52801));
                 }
             })).Start();
         }
@@ -239,9 +239,9 @@ namespace SocketMeister
         //  ************************
 
 
-        private void SocketListener_Error(object sender, ExceptionEventArgs e)
+        private void SocketListener_Error(object sender, TraceEventArgs e)
         {
-            NotifyExceptionRaised(e.Exception, e.EventId);
+            TraceEventRaised?.Invoke(this, e);
         }
 
         private void SocketListener_ListenerStatusChanged(object sender, PolicyServerIsRunningChangedArgs e)
@@ -293,7 +293,10 @@ namespace SocketMeister
 
                         }
                     }
-                    catch (Exception ex) { NotifyExceptionRaised(ex, 52810); }
+                    catch (Exception ex)
+                    {
+                        TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 52810));
+                    }
                     finally
                     {
                         sock.Close();
@@ -303,14 +306,6 @@ namespace SocketMeister
 
 
 
-
-        private void NotifyExceptionRaised(Exception ex, int ErrorNumber)
-        {
-            new Thread(new ThreadStart(delegate
-            {
-                ExceptionRaised?.Invoke(this, new ExceptionEventArgs(ex, ErrorNumber));
-            })).Start();
-        }
 
 
     }

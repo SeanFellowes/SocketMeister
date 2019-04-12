@@ -31,7 +31,7 @@ namespace SocketMeister
             /// <summary>
             /// Raised when an exception occurs.
             /// </summary>
-            public event EventHandler<ExceptionEventArgs> ExceptionRaised;
+            public event EventHandler<TraceEventArgs> TraceEventRaised;
 
             /// <summary>
             /// Total number of syschronous and asynchronous clients connected
@@ -112,7 +112,7 @@ namespace SocketMeister
 
             private void NotifyExceptionRaised(Exception Error)
             {
-                if (ExceptionRaised != null)
+                if (TraceEventRaised != null)
                 {
                     string msg = Error.Message;
                     if (Error.StackTrace != null) msg += Environment.NewLine + Environment.NewLine + Error.StackTrace;
@@ -120,7 +120,7 @@ namespace SocketMeister
                     //  RAISE EVENT IN THE BACKGROUND
                     new Thread(new ThreadStart(delegate
                     {
-                        ExceptionRaised?.Invoke(this, new ExceptionEventArgs(Error, 5008));
+                        TraceEventRaised?.Invoke(this, new TraceEventArgs(Error, 5008));
                     }
                     )).Start();
 

@@ -29,6 +29,26 @@
             Service is stopping
             </summary>
         </member>
+        <member name="T:SocketMeister.SeverityType">
+            <summary>
+            Severity of a trace event
+            </summary>
+        </member>
+        <member name="F:SocketMeister.SeverityType.Information">
+            <summary>
+            Information
+            </summary>
+        </member>
+        <member name="F:SocketMeister.SeverityType.Warning">
+            <summary>
+            Warning
+            </summary>
+        </member>
+        <member name="F:SocketMeister.SeverityType.Error">
+            <summary>
+            Error
+            </summary>
+        </member>
         <member name="T:SocketMeister.Messages.MessageTypes">
             <summary>
             Internal message types
@@ -537,9 +557,9 @@
             Event raised when a status of a socket connection has changed
             </summary>
         </member>
-        <member name="E:SocketMeister.SocketClient.ExceptionRaised">
+        <member name="E:SocketMeister.SocketClient.TraceEventRaised">
             <summary>
-            Event raised when an exception occurs
+            Trace message raised from this socket client.
             </summary>
         </member>
         <member name="E:SocketMeister.SocketClient.MessageReceived">
@@ -622,26 +642,61 @@
             <param name="sender">Sending Socket</param>
             <param name="e">Socket Arguments</param>
         </member>
-        <member name="T:SocketMeister.ExceptionEventArgs">
+        <member name="M:SocketMeister.TraceEventArgs.#ctor(System.String,SocketMeister.SeverityType,System.Int32)">
             <summary>
-            Raised when an exception occured.
+            Constructor
             </summary>
+            <param name="Message">Message describing the trace event</param>
+            <param name="Severity">Severity of the trace event.</param>
+            <param name="EventId">Event identifier for this trace event. Useful if writing this to the Windows Event Log (Or equivalent).</param>
         </member>
-        <member name="M:SocketMeister.ExceptionEventArgs.#ctor(System.Exception,System.Int32)">
+        <member name="M:SocketMeister.TraceEventArgs.#ctor(System.String,SocketMeister.SeverityType,System.Int32,System.String)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="Message">Message describing the trace event</param>
+            <param name="Severity">Severity of the trace event.</param>
+            <param name="EventId">Event identifier for this trace event. Useful if writing this to the Windows Event Log (Or equivalent).</param>
+            <param name="Source">Source of the trace event.</param>
+        </member>
+        <member name="M:SocketMeister.TraceEventArgs.#ctor(System.Exception,System.Int32)">
             <summary>
             Constructor
             </summary>
             <param name="Exception">Exception which occured.</param>
-            <param name="EventId">Event identifier for this exception. Useful if writing this to the Windows Event Log (Or equivalent).</param>
+            <param name="EventId">Event identifier for this trace event. Useful if writing this to the Windows Event Log (Or equivalent).</param>
         </member>
-        <member name="P:SocketMeister.ExceptionEventArgs.EventId">
+        <member name="M:SocketMeister.TraceEventArgs.#ctor(System.Exception,System.Int32,System.String)">
             <summary>
-            Event identifier for this exception. Useful if writing this to the Windows Event Log.
+            Constructor
+            </summary>
+            <param name="Exception">Exception which occured.</param>
+            <param name="EventId">Event identifier for this trace event. Useful if writing this to the Windows Event Log (Or equivalent).</param>
+            <param name="Source">Source of the trace event.</param>
+        </member>
+        <member name="P:SocketMeister.TraceEventArgs.EventId">
+            <summary>
+            Event identifier for this trace event. Useful if writing this to the Windows Event Log (Or equivalent).
             </summary>
         </member>
-        <member name="P:SocketMeister.ExceptionEventArgs.Exception">
+        <member name="P:SocketMeister.TraceEventArgs.Message">
             <summary>
-            Exception that occured
+            Message describing the trace event
+            </summary>
+        </member>
+        <member name="P:SocketMeister.TraceEventArgs.Severity">
+            <summary>
+            Severity of the trace event.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.TraceEventArgs.Source">
+            <summary>
+            Optional source of the trace event.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.TraceEventArgs.StackTrace">
+            <summary>
+            Optional stack trace information.
             </summary>
         </member>
         <member name="T:SocketMeister.SocketEndPoint">
@@ -728,9 +783,9 @@
             Execution status of the service.
             </summary>
         </member>
-        <member name="E:SocketMeister.PolicyServer.ExceptionRaised">
+        <member name="E:SocketMeister.PolicyServer.TraceEventRaised">
             <summary>
-            Raised when an exception occurs.
+            Trace message raised from within SocketMeister.
             </summary>
         </member>
         <member name="E:SocketMeister.PolicyServer.PolicyRequestReceived">
@@ -750,14 +805,8 @@
         </member>
         <member name="M:SocketMeister.PolicyServer.#ctor">
             <summary>
-            Default PolicyServer Constructor. Will automatically use the first IP4 ethernet card found
+            PolicyServer Constructor. The policy server will connect to all network interfaces on port 943
             </summary>
-        </member>
-        <member name="M:SocketMeister.PolicyServer.#ctor(System.String)">
-            <summary>
-            PolicyServer Constructor
-            </summary>
-            <param name="IPAddress">The IP address of this server. If using this locally only (e.g. for locally testing the server and client), use "127.0.0.1"</param>
         </member>
         <member name="P:SocketMeister.PolicyServer.IPAddress">
             <summary>
@@ -831,7 +880,7 @@
             Event raised when a client disconnects from the socket server (Raised in a seperate thread)
             </summary>
         </member>
-        <member name="E:SocketMeister.SocketServer.Clients.ExceptionRaised">
+        <member name="E:SocketMeister.SocketServer.Clients.TraceEventRaised">
             <summary>
             Raised when an exception occurs.
             </summary>
@@ -862,9 +911,9 @@
             Event raised when a client disconnects from the socket server (Raised in a seperate thread)
             </summary>
         </member>
-        <member name="E:SocketMeister.SocketServer.ExceptionRaised">
+        <member name="E:SocketMeister.SocketServer.TraceEventRaised">
             <summary>
-            Raised when an exception occurs.
+            Raised when an trace log event has been raised.
             </summary>
         </member>
         <member name="E:SocketMeister.SocketServer.ListenerStateChanged">

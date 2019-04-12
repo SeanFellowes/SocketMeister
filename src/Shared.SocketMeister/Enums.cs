@@ -28,5 +28,25 @@ namespace SocketMeister
         /// </summary>
         Stopping = 3
     }
+
+    /// <summary>
+    /// Severity of a trace event
+    /// </summary>
+    public enum SeverityType
+    {
+        /// <summary>
+        /// Information
+        /// </summary>
+        Information = 0,
+        /// <summary>
+        /// Warning
+        /// </summary>
+        Warning = 1,
+        /// <summary>
+        /// Error
+        /// </summary>
+        Error = 2
+    }
+
 #endif
 }

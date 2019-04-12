@@ -26,6 +26,13 @@ namespace Test.Server
         private ServerType _serverType = ServerType.SocketServer;
         private SocketServer _socketServer = null;
 
+        /// <summary>
+        /// Raised when an trace log event has been raised.
+        /// </summary>
+        internal event EventHandler<TraceEventArgs> TraceEventRaised;
+
+
+
         public Server()
         {
             InitializeComponent();
@@ -49,6 +56,16 @@ namespace Test.Server
             {
                 _serverType = value;
                 SetLabel();
+            }
+        }
+
+        public bool ShowButtons
+        {
+            get { return pnlButtons.Visible; }
+            set
+            {
+                if (value == true) pnlButtons.Visible = true;
+                else pnlButtons.Visible = false;
             }
         }
 
@@ -122,18 +139,6 @@ namespace Test.Server
 
 
 
-
-
-        //public void Stop()
-        //{
-        //    btnStart.Text = "Start";
-        //    if (_serverType == ServerType.SocketServer)
-        //        _socketServer.Stop();
-        //    else
-        //        _policyServer.Stop();
-        //}
-
-
         /// <summary>
         /// Attempts to stop the service.
         /// </summary>
@@ -199,14 +204,21 @@ namespace Test.Server
             {
                 _socketServer = new SocketServer(_port, true);
                 _socketServer.ListenerStateChanged += SocketServer_ListenerStateChanged;
+                _socketServer.TraceEventRaised += Server_TraceEventRaised;
                 _socketServer.Start();
             }
             else
             {
                 _policyServer = new PolicyServer();
                 _policyServer.SocketServiceStatusChanged += PolicyServer_SocketServiceStatusChanged;
+                _policyServer.TraceEventRaised += Server_TraceEventRaised;
                 _policyServer.Start();
             }
+        }
+
+        private void Server_TraceEventRaised(object sender, TraceEventArgs e)
+        {
+            TraceEventRaised?.Invoke(this, e);
         }
 
         private void _bgStartService_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)

@@ -67,9 +67,9 @@ namespace SocketMeister
         public event EventHandler<ConnectionStatusChangedEventArgs> ConnectionStatusChanged;
 
         /// <summary>
-        /// Event raised when an exception occurs
+        /// Trace message raised from this socket client.
         /// </summary>
-        public event EventHandler<ExceptionEventArgs> ExceptionRaised;
+        public event EventHandler<TraceEventArgs> TraceEventRaised;
 
         /// <summary>
         /// Event raised whenever a message is received from the server.
@@ -251,7 +251,7 @@ namespace SocketMeister
                         }
                         catch (Exception ex)
                         {
-                            NotifyExceptionRaised(ex);
+                            TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 1234));
                         }
                     }
 
@@ -277,7 +277,7 @@ namespace SocketMeister
                 }
                 catch (Exception ex)
                 {
-                    NotifyExceptionRaised(ex);
+                    TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 1234));
                 }
 
                 //  CLOSE OPEN REQUESTS AGAIN!!! UNDER LOAD THE CLIENT CAN SUBMIT A REQUEST (BECAUSE OF CROSS THREADING)
@@ -344,7 +344,7 @@ namespace SocketMeister
                     }
                     catch (Exception ex)
                     {
-                        NotifyExceptionRaised(ex);
+                        TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 1234));
                     }
                     Thread.Sleep(500);
                 }
@@ -390,13 +390,13 @@ namespace SocketMeister
                         }
                         catch (Exception ex)
                         {
-                            NotifyExceptionRaised(ex);
+                            TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 1234));
                         }
                     }
 
                     if (LastPollResponse < (DateTime.Now.AddSeconds(-DISCONNECT_AFTER_NO_POLL_RESPONSE_SECONDS)))
                     {
-                        NotifyExceptionRaised(new Exception("Disconnecting: Server failed to reply to polling after " + DISCONNECT_AFTER_NO_POLL_RESPONSE_SECONDS + " seconds."));
+                        TraceEventRaised?.Invoke(this, new TraceEventArgs("Disconnecting: Server failed to reply to polling after " + DISCONNECT_AFTER_NO_POLL_RESPONSE_SECONDS + " seconds.", SeverityType.Warning, 1234));
                         DisconnectSocket();
                         break;
                     }
@@ -438,7 +438,7 @@ namespace SocketMeister
                 catch (Exception ex)
                 {
                     _autoResetConnectEvent.Set();
-                    NotifyExceptionRaised(ex);
+                    TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 1234));
                 }
             }
             else if (e.SocketError == SocketError.TimedOut)
@@ -553,7 +553,7 @@ namespace SocketMeister
                 }
                 catch (Exception ex)
                 {
-                    NotifyExceptionRaised(ex);
+                    TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 1234));
                 }
                 Thread.Sleep(200);
             }
@@ -587,12 +587,12 @@ namespace SocketMeister
             {
                 if (result == SocketError.ConnectionReset)
                 {
-                    NotifyExceptionRaised(new Exception("Disconnecting: Connection was reset."));
+                    TraceEventRaised?.Invoke(this, new TraceEventArgs("Disconnecting: Connection was reset.", SeverityType.Warning, 11000));
                     DisconnectSocket();
                 }
                 else if (result != SocketError.Success)
                 {
-                    NotifyExceptionRaised(new Exception("Disconnecting: Send did not generate a success. Socket operation returned error code " + (int)e.SocketError));
+                    TraceEventRaised?.Invoke(this, new TraceEventArgs("Disconnecting: Send did not generate a success. Socket operation returned error code " + (int)e.SocketError, SeverityType.Warning, 11000));
                     DisconnectSocket();
                 }
                 else
@@ -602,7 +602,7 @@ namespace SocketMeister
             }
             catch (Exception ex)
             {
-                NotifyExceptionRaised(ex);
+                TraceEventRaised?.Invoke(this,  new TraceEventArgs(ex, 11001));
             }
         }
 
@@ -639,7 +639,7 @@ namespace SocketMeister
             //}
             if (e.BytesTransferred == 0 || e.SocketError != SocketError.Success)
             {
-                NotifyExceptionRaised(new Exception("Disconnecting: ProcessReceive received socket error code " + (int)e.SocketError));
+                TraceEventRaised?.Invoke(this, new TraceEventArgs("Disconnecting: ProcessReceive received socket error code " + (int)e.SocketError, SeverityType.Warning, 11000));
                 DisconnectSocket();
                 return;
             }
@@ -679,7 +679,7 @@ namespace SocketMeister
                         }
                         else if (_receiveEngine.MessageType == MessageTypes.ServerStoppingMessage)
                         {
-                            NotifyExceptionRaised(new Exception("Disconnecting: Server is stopping."));
+                            TraceEventRaised?.Invoke(this, new TraceEventArgs("Disconnecting: Server is stopping.", SeverityType.Warning, 11000));
                             DisconnectSocket();
                         }
                         else if (_receiveEngine.MessageType == MessageTypes.PollResponse)
@@ -700,12 +700,12 @@ namespace SocketMeister
             {
                 //  IF A LARGE CHUNK OF DATA WAS BEING RECEIVED WHEN THE CONNECTION WAS LOST, THE Disconnect() ROUTINE
                 //  MAY ALREADY HAVE BEEN RUN (WHICH DISPOSES OBJECTS). IF THIS IS THE CASE, SIMPLY EXIT
-                NotifyExceptionRaised(new Exception("Disconnecting: ObjectDisposedException running ProcessReceive: " + ee.Message));
+                TraceEventRaised?.Invoke(this, new TraceEventArgs("Disconnecting: ObjectDisposedException running ProcessReceive: " + ee.Message, SeverityType.Error, 11000));
                 DisconnectSocket();
             }
             catch (Exception ex)
             {
-                NotifyExceptionRaised(new Exception("Disconnecting: Error running ProcessReceive: " + ex.Message));
+                TraceEventRaised?.Invoke(this, new TraceEventArgs("Disconnecting: Error running ProcessReceive: " + ex.Message, SeverityType.Error, 11000));
                 DisconnectSocket();
             }
         }
@@ -739,11 +739,6 @@ namespace SocketMeister
         }
 
 
-        private void NotifyExceptionRaised(Exception ex)
-        {
-            ExceptionRaised?.Invoke(this, new ExceptionEventArgs(ex, 1234)); 
-        }
-
 
         [SuppressMessage("Microsoft.Performance", "CA1031:DoNotCatchGeneralExceptionTypes", MessageId = "ExceptionEventRaised")]
         private void NotifyMessageReceived(Messages.Message Message)
@@ -754,7 +749,10 @@ namespace SocketMeister
                 new Thread(new ThreadStart(delegate
                 {
                     try { MessageReceived(this, new MessageReceivedEventArgs(Message.Parameters)); }
-                    catch (Exception ex) { NotifyExceptionRaised(ex); }
+                    catch (Exception ex)
+                    {
+                        TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 11000));
+                    }
                 }
                 )).Start();
 
