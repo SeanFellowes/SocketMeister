@@ -56,6 +56,26 @@ namespace Test.Server
             {
                 _serverType = value;
                 SetLabel();
+                if (_serverType == ServerType.PolicyServer)
+                {
+                    SessionCountIcon.Visible = false;
+                    SessionCountLabel.Visible = false;
+                }
+                else
+                {
+                    SessionCountIcon.Visible = true;
+                    SessionCountLabel.Visible = true;
+                }
+            }
+        }
+
+        public ServiceStatus Status
+        {
+            get
+            {
+                if (_policyServer != null) return _policyServer.Status;
+                else if (_socketServer != null) return _socketServer.Status;
+                else return ServiceStatus.Stopped;
             }
         }
 
@@ -130,7 +150,7 @@ namespace Test.Server
             try
             {
                 if (_socketServer == null) return false;
-                if (_socketServer.ListenerState == ServiceStatus.Started)
+                if (_socketServer.Status == ServiceStatus.Started)
                 {
                     this.Cursor = Cursors.WaitCursor;
                     _socketServer.Stop();
@@ -152,7 +172,7 @@ namespace Test.Server
             else LabelPort.Text = "Policy server on port " + _policyPort.ToString();
         }
 
-        private void Start()
+        public void Start()
         {
             try
             {

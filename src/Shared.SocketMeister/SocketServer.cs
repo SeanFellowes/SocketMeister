@@ -31,7 +31,7 @@ namespace SocketMeister
         private readonly bool _enableCompression;
         private readonly string _endPoint;
         private readonly Socket _listener = null;
-        private ServiceStatus _listenerState;
+        private ServiceStatus _status;
         private readonly object _lock = new object();
         private int _requestsInProgress = 0;
         private readonly Thread _threadListener;
@@ -135,15 +135,15 @@ namespace SocketMeister
         /// <summary>
         /// Status of the socket listener
         /// </summary>
-        public ServiceStatus ListenerState
+        public ServiceStatus Status
         {
-            get { lock (_lock) { return _listenerState; } }
+            get { lock (_lock) { return _status; } }
             set
             {
                 lock (_lock)
                 {
-                    if (_listenerState == value) return;
-                    _listenerState = value;
+                    if (_status == value) return;
+                    _status = value;
                 }
                 ListenerStateChanged?.Invoke(null, new ServerStatusEventArgs(value));
             }
@@ -209,9 +209,9 @@ namespace SocketMeister
         [SuppressMessage("Microsoft.Performance", "CA1031:DoNotCatchGeneralExceptionTypes", MessageId = "ExceptionEventRaised")]
         public void Stop()
         {
-            if (ListenerState != ServiceStatus.Started) throw new Exception("Socket server is stopped, or in the process of starting or stopping.");
+            if (Status != ServiceStatus.Started) throw new Exception("Socket server is stopped, or in the process of starting or stopping.");
 
-            ListenerState = ServiceStatus.Stopping;
+            Status = ServiceStatus.Stopping;
             _allDone.Set();
 
             List<Client> toProcess = _connectedClients.ToList();
@@ -257,7 +257,7 @@ namespace SocketMeister
                 TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 5008));
             }
 
-            ListenerState = ServiceStatus.Stopped;
+            Status = ServiceStatus.Stopped;
         }
 
         #endregion
@@ -273,7 +273,7 @@ namespace SocketMeister
             // Signal the main thread to continue.  
             _allDone.Set();
 
-            if (ListenerState == ServiceStatus.Stopped || ListenerState == ServiceStatus.Stopping)
+            if (Status == ServiceStatus.Stopped || Status == ServiceStatus.Stopping)
             {
                 //  ACCEPT THE CONNECTION BUT DISCONNECT THE CLIENT
                 Thread bgReceive = new Thread(
@@ -366,7 +366,7 @@ namespace SocketMeister
                         {
                             RequestMessage request = receiveEnvelope.GetRequestMessage();
                             request.RemoteClient = remoteClient;
-                            if (ListenerState == ServiceStatus.Stopping)
+                            if (Status == ServiceStatus.Stopping)
                             {
                                 ResponseMessage response = new ResponseMessage(request.RequestId, new Exception("Server is stopping"));
                                 SendMessage(request.RemoteClient, response, false);
@@ -379,7 +379,7 @@ namespace SocketMeister
                         }
                         else if (receiveEnvelope.MessageType == MessageTypes.Message)
                         {
-                            if (ListenerState == ServiceStatus.Started)
+                            if (Status == ServiceStatus.Started)
                             {
                                 Message message = receiveEnvelope.GetMessage();
                                 message.RemoteClient = remoteClient;
@@ -399,7 +399,7 @@ namespace SocketMeister
                         }
                         else if (receiveEnvelope.MessageType == MessageTypes.PollRequest)
                         {
-                            if (ListenerState == ServiceStatus.Started)
+                            if (Status == ServiceStatus.Started)
                             {
                                 lock (_lock) { _requestsInProgress += 1; }
                                 new Thread(new ThreadStart(delegate
@@ -436,11 +436,11 @@ namespace SocketMeister
             // Bind the socket to the local endpoint and listen for incoming connections.  
             try
             {
-                ListenerState = ServiceStatus.Starting;
+                Status = ServiceStatus.Starting;
                 _listener.Listen(500);
-                ListenerState = ServiceStatus.Started;
+                Status = ServiceStatus.Started;
 
-                while (ListenerState != ServiceStatus.Stopped)
+                while (Status != ServiceStatus.Stopped)
                 {
                     // Set the event to nonsignaled state.  
                     _allDone.Reset();
@@ -454,7 +454,7 @@ namespace SocketMeister
             }
             catch (Exception ex)
             {
-                ListenerState = ServiceStatus.Stopped;
+                Status = ServiceStatus.Stopped;
                 TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 5008));
             }
         }

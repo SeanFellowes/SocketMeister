@@ -36,20 +36,18 @@
             this.panel2 = new System.Windows.Forms.Panel();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.server5 = new Test.Server.Server();
-            this.server4 = new Test.Server.Server();
-            this.server1 = new Test.Server.Server();
-            this.server2 = new Test.Server.Server();
-            this.server3 = new Test.Server.Server();
-            this.server6 = new Test.Server.Server();
             this.dGrid = new System.Windows.Forms.DataGridView();
             this.TimeStamp = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Object = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Type = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ClientID = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.EndPointID = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.MessageID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Message = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.TestServer4 = new Test.Server.Server();
+            this.TestServer3 = new Test.Server.Server();
+            this.TestServer2 = new Test.Server.Server();
+            this.TestServer1 = new Test.Server.Server();
+            this.ControlPolicyServer = new Test.Server.Server();
+            this.ControlServer = new Test.Server.Server();
             this.pnlControl.SuspendLayout();
             this.panelControlHeader.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -61,8 +59,8 @@
             // 
             this.pnlControl.BackColor = System.Drawing.Color.Moccasin;
             this.pnlControl.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pnlControl.Controls.Add(this.server1);
-            this.pnlControl.Controls.Add(this.server2);
+            this.pnlControl.Controls.Add(this.ControlPolicyServer);
+            this.pnlControl.Controls.Add(this.ControlServer);
             this.pnlControl.Controls.Add(this.panelControlHeader);
             this.pnlControl.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlControl.Location = new System.Drawing.Point(0, 0);
@@ -110,10 +108,10 @@
             // 
             this.panel1.BackColor = System.Drawing.Color.PaleTurquoise;
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panel1.Controls.Add(this.server3);
-            this.panel1.Controls.Add(this.server6);
-            this.panel1.Controls.Add(this.server5);
-            this.panel1.Controls.Add(this.server4);
+            this.panel1.Controls.Add(this.TestServer4);
+            this.panel1.Controls.Add(this.TestServer3);
+            this.panel1.Controls.Add(this.TestServer2);
+            this.panel1.Controls.Add(this.TestServer1);
             this.panel1.Controls.Add(this.panel2);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 74);
@@ -156,70 +154,6 @@
             this.label4.Text = "Test Services";
             this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // server5
-            // 
-            this.server5.BackColor = System.Drawing.Color.Honeydew;
-            this.server5.Location = new System.Drawing.Point(3, 71);
-            this.server5.Margin = new System.Windows.Forms.Padding(2);
-            this.server5.Name = "server5";
-            this.server5.Port = 4512;
-            this.server5.ServerType = Test.Server.ServerType.SocketServer;
-            this.server5.Size = new System.Drawing.Size(300, 31);
-            this.server5.TabIndex = 6;
-            // 
-            // server4
-            // 
-            this.server4.Location = new System.Drawing.Point(3, 41);
-            this.server4.Margin = new System.Windows.Forms.Padding(2);
-            this.server4.Name = "server4";
-            this.server4.Port = 4510;
-            this.server4.ServerType = Test.Server.ServerType.SocketServer;
-            this.server4.Size = new System.Drawing.Size(300, 31);
-            this.server4.TabIndex = 4;
-            // 
-            // server1
-            // 
-            this.server1.BackColor = System.Drawing.Color.PapayaWhip;
-            this.server1.Location = new System.Drawing.Point(307, 41);
-            this.server1.Margin = new System.Windows.Forms.Padding(2);
-            this.server1.Name = "server1";
-            this.server1.Port = 4505;
-            this.server1.ServerType = Test.Server.ServerType.PolicyServer;
-            this.server1.Size = new System.Drawing.Size(300, 27);
-            this.server1.TabIndex = 5;
-            // 
-            // server2
-            // 
-            this.server2.Location = new System.Drawing.Point(3, 41);
-            this.server2.Margin = new System.Windows.Forms.Padding(2);
-            this.server2.Name = "server2";
-            this.server2.Port = 4505;
-            this.server2.ServerType = Test.Server.ServerType.SocketServer;
-            this.server2.Size = new System.Drawing.Size(300, 27);
-            this.server2.TabIndex = 4;
-            // 
-            // server3
-            // 
-            this.server3.BackColor = System.Drawing.Color.Transparent;
-            this.server3.Location = new System.Drawing.Point(307, 71);
-            this.server3.Margin = new System.Windows.Forms.Padding(2);
-            this.server3.Name = "server3";
-            this.server3.Port = 4513;
-            this.server3.ServerType = Test.Server.ServerType.SocketServer;
-            this.server3.Size = new System.Drawing.Size(300, 31);
-            this.server3.TabIndex = 8;
-            // 
-            // server6
-            // 
-            this.server6.BackColor = System.Drawing.Color.Honeydew;
-            this.server6.Location = new System.Drawing.Point(307, 41);
-            this.server6.Margin = new System.Windows.Forms.Padding(2);
-            this.server6.Name = "server6";
-            this.server6.Port = 4511;
-            this.server6.ServerType = Test.Server.ServerType.SocketServer;
-            this.server6.Size = new System.Drawing.Size(300, 31);
-            this.server6.TabIndex = 7;
-            // 
             // dGrid
             // 
             this.dGrid.AllowUserToAddRows = false;
@@ -231,8 +165,6 @@
             this.Object,
             this.Type,
             this.ClientID,
-            this.EndPointID,
-            this.MessageID,
             this.Message});
             this.dGrid.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dGrid.Location = new System.Drawing.Point(0, 178);
@@ -249,41 +181,25 @@
             // 
             // Object
             // 
-            this.Object.DataPropertyName = "Object";
-            this.Object.HeaderText = "Object";
+            this.Object.DataPropertyName = "Source";
+            this.Object.HeaderText = "Source";
             this.Object.Name = "Object";
-            this.Object.Width = 63;
+            this.Object.Width = 66;
             // 
             // Type
             // 
-            this.Type.DataPropertyName = "MessageType";
-            this.Type.HeaderText = "Type";
+            this.Type.DataPropertyName = "Severity";
+            this.Type.HeaderText = "Severity";
             this.Type.Name = "Type";
-            this.Type.Width = 56;
+            this.Type.Width = 70;
             // 
             // ClientID
             // 
-            this.ClientID.DataPropertyName = "ClientID";
-            this.ClientID.HeaderText = "ClientID";
+            this.ClientID.DataPropertyName = "EventId";
+            this.ClientID.HeaderText = "EventId";
             this.ClientID.Name = "ClientID";
             this.ClientID.ReadOnly = true;
             this.ClientID.Width = 69;
-            // 
-            // EndPointID
-            // 
-            this.EndPointID.DataPropertyName = "EndPointID";
-            this.EndPointID.HeaderText = "EndPointID";
-            this.EndPointID.Name = "EndPointID";
-            this.EndPointID.ReadOnly = true;
-            this.EndPointID.Width = 86;
-            // 
-            // MessageID
-            // 
-            this.MessageID.DataPropertyName = "MessageID";
-            this.MessageID.HeaderText = "MessageID";
-            this.MessageID.Name = "MessageID";
-            this.MessageID.ReadOnly = true;
-            this.MessageID.Width = 86;
             // 
             // Message
             // 
@@ -291,6 +207,70 @@
             this.Message.HeaderText = "Message";
             this.Message.Name = "Message";
             this.Message.Width = 75;
+            // 
+            // TestServer4
+            // 
+            this.TestServer4.BackColor = System.Drawing.Color.Transparent;
+            this.TestServer4.Location = new System.Drawing.Point(307, 71);
+            this.TestServer4.Margin = new System.Windows.Forms.Padding(2);
+            this.TestServer4.Name = "TestServer4";
+            this.TestServer4.Port = 4513;
+            this.TestServer4.ServerType = Test.Server.ServerType.SocketServer;
+            this.TestServer4.Size = new System.Drawing.Size(300, 31);
+            this.TestServer4.TabIndex = 8;
+            // 
+            // TestServer3
+            // 
+            this.TestServer3.BackColor = System.Drawing.Color.Honeydew;
+            this.TestServer3.Location = new System.Drawing.Point(307, 41);
+            this.TestServer3.Margin = new System.Windows.Forms.Padding(2);
+            this.TestServer3.Name = "TestServer3";
+            this.TestServer3.Port = 4511;
+            this.TestServer3.ServerType = Test.Server.ServerType.SocketServer;
+            this.TestServer3.Size = new System.Drawing.Size(300, 31);
+            this.TestServer3.TabIndex = 7;
+            // 
+            // TestServer2
+            // 
+            this.TestServer2.BackColor = System.Drawing.Color.Honeydew;
+            this.TestServer2.Location = new System.Drawing.Point(3, 71);
+            this.TestServer2.Margin = new System.Windows.Forms.Padding(2);
+            this.TestServer2.Name = "TestServer2";
+            this.TestServer2.Port = 4512;
+            this.TestServer2.ServerType = Test.Server.ServerType.SocketServer;
+            this.TestServer2.Size = new System.Drawing.Size(300, 31);
+            this.TestServer2.TabIndex = 6;
+            // 
+            // TestServer1
+            // 
+            this.TestServer1.Location = new System.Drawing.Point(3, 41);
+            this.TestServer1.Margin = new System.Windows.Forms.Padding(2);
+            this.TestServer1.Name = "TestServer1";
+            this.TestServer1.Port = 4510;
+            this.TestServer1.ServerType = Test.Server.ServerType.SocketServer;
+            this.TestServer1.Size = new System.Drawing.Size(300, 31);
+            this.TestServer1.TabIndex = 4;
+            // 
+            // ControlPolicyServer
+            // 
+            this.ControlPolicyServer.BackColor = System.Drawing.Color.OldLace;
+            this.ControlPolicyServer.Location = new System.Drawing.Point(307, 41);
+            this.ControlPolicyServer.Margin = new System.Windows.Forms.Padding(2);
+            this.ControlPolicyServer.Name = "ControlPolicyServer";
+            this.ControlPolicyServer.Port = 4505;
+            this.ControlPolicyServer.ServerType = Test.Server.ServerType.PolicyServer;
+            this.ControlPolicyServer.Size = new System.Drawing.Size(300, 27);
+            this.ControlPolicyServer.TabIndex = 5;
+            // 
+            // ControlServer
+            // 
+            this.ControlServer.Location = new System.Drawing.Point(3, 41);
+            this.ControlServer.Margin = new System.Windows.Forms.Padding(2);
+            this.ControlServer.Name = "ControlServer";
+            this.ControlServer.Port = 4505;
+            this.ControlServer.ServerType = Test.Server.ServerType.SocketServer;
+            this.ControlServer.Size = new System.Drawing.Size(300, 27);
+            this.ControlServer.TabIndex = 4;
             // 
             // FormMain
             // 
@@ -303,6 +283,7 @@
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "FormMain";
             this.Text = "SocketMeister Server Tester";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormMain_FormClosed);
             this.Load += new System.EventHandler(this.FormMain_Load);
             this.pnlControl.ResumeLayout(false);
             this.panelControlHeader.ResumeLayout(false);
@@ -316,26 +297,24 @@
         #endregion
 
         private System.Windows.Forms.Panel pnlControl;
-        private Server server1;
-        private Server server2;
+        private Server ControlPolicyServer;
+        private Server ControlServer;
         private System.Windows.Forms.Panel panelControlHeader;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Panel panel1;
-        private Server server5;
-        private Server server4;
+        private Server TestServer2;
+        private Server TestServer1;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
-        private Server server3;
-        private Server server6;
+        private Server TestServer4;
+        private Server TestServer3;
         private System.Windows.Forms.DataGridView dGrid;
         private System.Windows.Forms.DataGridViewTextBoxColumn TimeStamp;
         private System.Windows.Forms.DataGridViewTextBoxColumn Object;
         private System.Windows.Forms.DataGridViewTextBoxColumn Type;
         private System.Windows.Forms.DataGridViewTextBoxColumn ClientID;
-        private System.Windows.Forms.DataGridViewTextBoxColumn EndPointID;
-        private System.Windows.Forms.DataGridViewTextBoxColumn MessageID;
         private System.Windows.Forms.DataGridViewTextBoxColumn Message;
     }
 }
