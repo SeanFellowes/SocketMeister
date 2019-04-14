@@ -1,4 +1,4 @@
-﻿namespace Test.Server
+﻿namespace SocketMeister.Test
 {
     partial class Server
     {
@@ -30,8 +30,8 @@
         {
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel3 = new System.Windows.Forms.Panel();
-            this.LabelSessionCount = new System.Windows.Forms.Label();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.SessionCountLabel = new System.Windows.Forms.Label();
+            this.SessionCountIcon = new System.Windows.Forms.PictureBox();
             this.LabelStatus = new System.Windows.Forms.Label();
             this.panel4 = new System.Windows.Forms.Panel();
             this.StatusIndicator = new System.Windows.Forms.Panel();
@@ -39,7 +39,7 @@
             this.LabelPort = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.panel3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.SessionCountIcon)).BeginInit();
             this.panel4.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
@@ -58,8 +58,8 @@
             // 
             // panel3
             // 
-            this.panel3.Controls.Add(this.LabelSessionCount);
-            this.panel3.Controls.Add(this.pictureBox1);
+            this.panel3.Controls.Add(this.SessionCountLabel);
+            this.panel3.Controls.Add(this.SessionCountIcon);
             this.panel3.Controls.Add(this.LabelStatus);
             this.panel3.Controls.Add(this.panel4);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Right;
@@ -70,28 +70,28 @@
             this.panel3.Size = new System.Drawing.Size(146, 26);
             this.panel3.TabIndex = 1;
             // 
-            // LabelSessionCount
+            // SessionCountLabel
             // 
-            this.LabelSessionCount.Dock = System.Windows.Forms.DockStyle.Right;
-            this.LabelSessionCount.Location = new System.Drawing.Point(5, 2);
-            this.LabelSessionCount.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.LabelSessionCount.Name = "LabelSessionCount";
-            this.LabelSessionCount.Size = new System.Drawing.Size(30, 22);
-            this.LabelSessionCount.TabIndex = 4;
-            this.LabelSessionCount.Text = "0";
-            this.LabelSessionCount.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.SessionCountLabel.Dock = System.Windows.Forms.DockStyle.Right;
+            this.SessionCountLabel.Location = new System.Drawing.Point(5, 2);
+            this.SessionCountLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.SessionCountLabel.Name = "SessionCountLabel";
+            this.SessionCountLabel.Size = new System.Drawing.Size(30, 22);
+            this.SessionCountLabel.TabIndex = 4;
+            this.SessionCountLabel.Text = "0";
+            this.SessionCountLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // pictureBox1
+            // SessionCountIcon
             // 
-            this.pictureBox1.BackgroundImage = global::Test.Server.Properties.Resources.person_24;
-            this.pictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Right;
-            this.pictureBox1.Location = new System.Drawing.Point(35, 2);
-            this.pictureBox1.Margin = new System.Windows.Forms.Padding(0);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(23, 22);
-            this.pictureBox1.TabIndex = 3;
-            this.pictureBox1.TabStop = false;
+            this.SessionCountIcon.BackgroundImage = global::SocketMeister.Test.Properties.Resources.person_24;
+            this.SessionCountIcon.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.SessionCountIcon.Dock = System.Windows.Forms.DockStyle.Right;
+            this.SessionCountIcon.Location = new System.Drawing.Point(35, 2);
+            this.SessionCountIcon.Margin = new System.Windows.Forms.Padding(0);
+            this.SessionCountIcon.Name = "SessionCountIcon";
+            this.SessionCountIcon.Size = new System.Drawing.Size(23, 22);
+            this.SessionCountIcon.TabIndex = 3;
+            this.SessionCountIcon.TabStop = false;
             // 
             // LabelStatus
             // 
@@ -161,7 +161,7 @@
             this.Size = new System.Drawing.Size(448, 136);
             this.panel1.ResumeLayout(false);
             this.panel3.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.SessionCountIcon)).EndInit();
             this.panel4.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -177,7 +177,7 @@
         private System.Windows.Forms.Panel StatusIndicator;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Label LabelPort;
-        private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.Label LabelSessionCount;
+        private System.Windows.Forms.PictureBox SessionCountIcon;
+        private System.Windows.Forms.Label SessionCountLabel;
     }
 }

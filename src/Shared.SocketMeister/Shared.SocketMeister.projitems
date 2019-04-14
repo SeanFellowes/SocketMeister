@@ -38,6 +38,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)SocketServer.Events.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="$(MSBuildThisFileDirectory)CrossDomainPolicy.xml" />
+    <Content Include="$(MSBuildThisFileDirectory)CrossDomainPolicy.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 </Project>
