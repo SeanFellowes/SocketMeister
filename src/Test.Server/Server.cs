@@ -59,16 +59,6 @@ namespace Test.Server
             }
         }
 
-        public bool ShowButtons
-        {
-            get { return pnlButtons.Visible; }
-            set
-            {
-                if (value == true) pnlButtons.Visible = true;
-                else pnlButtons.Visible = false;
-            }
-        }
-
         private void BtnStart_Click(object sender, EventArgs e)
         {
             Start();
@@ -103,31 +93,23 @@ namespace Test.Server
                     {
                         LabelStatus.Text = "Started";
                         StatusIndicator.BackColor = Color.DarkGreen;
-                        btnStart.Enabled = false;
-                        btnStop.Enabled = true;
                         this.Cursor = Cursors.Default;
                     }
                     else if (Status == ServiceStatus.Starting)
                     {
                         LabelStatus.Text = "Starting...";
                         StatusIndicator.BackColor = Color.Yellow;
-                        btnStart.Enabled = false;
-                        btnStop.Enabled = false;
                     }
                     else if (Status == ServiceStatus.Stopped)
                     {
                         LabelStatus.Text = "Stopped";
                         StatusIndicator.BackColor = Color.Red;
-                        btnStart.Enabled = true;
-                        btnStop.Enabled = false;
                         this.Cursor = Cursors.Default;
                     }
                     else
                     {
                         LabelStatus.Text = "Stopping...";
                         StatusIndicator.BackColor = Color.DarkOrange;
-                        btnStart.Enabled = false;
-                        btnStop.Enabled = false;
                     }
                 }
             }
@@ -175,8 +157,6 @@ namespace Test.Server
             try
             {
                 this.Cursor = Cursors.WaitCursor;
-                btnStop.Enabled = false;
-                btnStart.Enabled = false;
                 Application.DoEvents();
 
                 //  START IN THE BACKGROUND
@@ -188,8 +168,6 @@ namespace Test.Server
             catch (Exception ex)
             {
                 this.Cursor = Cursors.Default;
-                btnStart.Enabled = true;
-                btnStop.Enabled = false;
                 string msg = ex.Message;
                 if (ex.StackTrace != null) msg += "\n\n" + ex.StackTrace;
                 MessageBox.Show(msg);
@@ -229,16 +207,12 @@ namespace Test.Server
                 this.Cursor = Cursors.Default;
                 if (e.Error != null)
                 {
-                    btnStart.Enabled = true;
-                    btnStop.Enabled = false;
                     string msg = e.Error.Message;
                     if (e.Error.StackTrace != null) msg += "\n\n" + e.Error.StackTrace;
                     MessageBox.Show(msg, "Error Starting", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 else if (e.Cancelled == true)
                 {
-                    btnStart.Enabled = true;
-                    btnStop.Enabled = false;
                 }
             }
         }
