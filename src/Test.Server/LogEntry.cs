@@ -6,7 +6,7 @@ using System.Text;
 using System.Windows.Forms;
 using SocketMeister;
 
-namespace SocketMeister
+namespace SocketMeister.Test
 {
     internal class LogEntry : INotifyPropertyChanged
     {

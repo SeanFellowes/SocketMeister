@@ -31,6 +31,7 @@ namespace SocketMeister
         private readonly bool _enableCompression;
         private readonly string _endPoint;
         private readonly Socket _listener = null;
+        private readonly int _port;
         private ServiceStatus _status;
         private readonly object _lock = new object();
         private int _requestsInProgress = 0;
@@ -74,6 +75,7 @@ namespace SocketMeister
         /// <param name="EnableCompression">Enable compression on message data</param>
         public SocketServer(int Port, bool EnableCompression)
         {
+            _port = Port;
             _enableCompression = EnableCompression;
 
             //  SETUP BACKGROUND PROCESS TO FOR LISTENING
@@ -439,6 +441,7 @@ namespace SocketMeister
                 Status = ServiceStatus.Starting;
                 _listener.Listen(500);
                 Status = ServiceStatus.Started;
+                TraceEventRaised?.Invoke(this, new TraceEventArgs("Socket server started on port " + _port.ToString(), SeverityType.Information, 10023));
 
                 while (Status != ServiceStatus.Stopped)
                 {

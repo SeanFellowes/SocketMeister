@@ -1,4 +1,4 @@
-﻿namespace Test.Server
+﻿namespace SocketMeister.Test
 {
     partial class Server
     {
@@ -83,7 +83,7 @@
             // 
             // SessionCountIcon
             // 
-            this.SessionCountIcon.BackgroundImage = global::Test.Server.Properties.Resources.person_24;
+            this.SessionCountIcon.BackgroundImage = global::SocketMeister.Test.Properties.Resources.person_24;
             this.SessionCountIcon.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.SessionCountIcon.Dock = System.Windows.Forms.DockStyle.Right;
             this.SessionCountIcon.Location = new System.Drawing.Point(35, 2);

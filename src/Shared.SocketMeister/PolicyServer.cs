@@ -77,6 +77,7 @@ namespace SocketMeister
         }
 
 
+
         //  PRIVATE / INTERNAL PROPERTIES
         private bool Run { get { lock (_lockClass) { return _run; } } set { lock (_lockClass) _run = value; } }
 
@@ -175,8 +176,7 @@ namespace SocketMeister
                         //  REGISTER AS STARTED AND START THE MESSAGE SENDER (NOTE: WILL NOT RUN UNLESS ServiceStatus = STARTED
                         this.Status = ServiceStatus.Started;
 
-                        //  WRITE EVENT
-                        //EventLogHelper.WriteInfoToEventLog("Socket policy server started on address " + _ipAddress + ":" + _servicePort + ". Policy port listener on port 943. Maximum client connections = 1000", 1000);
+                        TraceEventRaised?.Invoke(this, new TraceEventArgs("Policy server started on port " + ServicePort.ToString(), SeverityType.Information, 10023));
                     }
                     catch (Exception ex)
                     {

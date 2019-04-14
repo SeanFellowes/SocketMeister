@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using SocketMeister;
 
-namespace Test.Server
+namespace SocketMeister.Test
 {
     public enum ServerType
     {
@@ -41,7 +41,11 @@ namespace Test.Server
 
         public int Port
         {
-            get { return _port; }
+            get
+            {
+                if (_serverType == ServerType.PolicyServer) return _policyPort;
+                return _port;
+            }
             set
             {
                 _port = value;

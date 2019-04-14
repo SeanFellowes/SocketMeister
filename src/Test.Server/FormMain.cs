@@ -8,11 +8,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Test.Server
+namespace SocketMeister.Test
 {
     public partial class FormMain : Form
     {
-        private readonly BindingList<SocketMeister.LogEntry> _gridItems;
+        private readonly BindingList<LogEntry> _gridItems;
 
         public FormMain()
         {
@@ -27,7 +27,7 @@ namespace Test.Server
             TestServer4.TraceEventRaised += TraceEventRaised;
 
             dGrid.AutoGenerateColumns = true;
-            _gridItems = new BindingList<SocketMeister.LogEntry>
+            _gridItems = new BindingList<LogEntry>
             {
                 AllowNew = true,
                 AllowRemove = true,
@@ -43,7 +43,7 @@ namespace Test.Server
 
         private void TraceEventRaised(object sender, SocketMeister.TraceEventArgs e)
         {
-            Test.Server.Server server = (Server)sender;
+            SocketMeister.Test.Server server = (Server)sender;
             InsertListboxItem(server.Port.ToString(), e);
         }
 
@@ -52,8 +52,8 @@ namespace Test.Server
         {
             this.Top = 0;
             this.Left = 0;
-            this.Height = 900;
-            this.Width = 1500;
+            this.Height = Screen.PrimaryScreen.WorkingArea.Height;
+            this.Width = Convert.ToInt32(Screen.PrimaryScreen.WorkingArea.Width * .5);
 
         }
 
@@ -65,7 +65,7 @@ namespace Test.Server
             }
             else
             {
-                SocketMeister.LogEntry logEntry = new SocketMeister.LogEntry(source, args.Message, args.Severity, args.EventId);
+                LogEntry logEntry = new LogEntry(source, args.Message, args.Severity, args.EventId);
                 if (_gridItems.Count == 0) _gridItems.Add(logEntry);
                 else _gridItems.Insert(0, logEntry);
             }
@@ -77,6 +77,18 @@ namespace Test.Server
             if (ControlPolicyServer.Status == SocketMeister.ServiceStatus.Started) ControlPolicyServer.Stop();
             Application.Exit();
 
+        }
+
+        private void PanelMain_Resize(object sender, EventArgs e)
+        {
+            PanelMainTrace.Top = 0;
+            PanelMainTrace.Left = 0;
+            PanelMainTrace.Height = Convert.ToInt32( PanelMain.Height * 0.3);
+            PanelMainTrace.Width = PanelMain.Width;
+            PanelMainTests.Left = 0;
+            PanelMainTests.Top = PanelMainTrace.Height - 1;
+            PanelMainTests.Height = PanelMain.Height - PanelMainTests.Top;
+            PanelMainTests.Width = PanelMain.Width;
         }
     }
 }
