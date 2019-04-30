@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{81CCDF22-AA24-41D6-BF0C-3F8E4072BF70}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>SocketMeister.Test.Client.WinForms</RootNamespace>
+    <RootNamespace>SocketMeister.Test.Client</RootNamespace>
     <AssemblyName>SocketMeister.Test.Client.WinForms</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
