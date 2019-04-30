@@ -3,12 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocketMeister.Silverlight", "SocketMeister.Silverlight.csproj", "{41EFAA42-85D4-49EC-9AB2-4CC879D2E50A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocketMeister (Silverlight)", "SocketMeister (Silverlight).csproj", "{41EFAA42-85D4-49EC-9AB2-4CC879D2E50A}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared.SocketMeister", "..\Shared.SocketMeister\Shared.SocketMeister.shproj", "{7FE383EC-5FD4-4D60-BEEB-149E51549260}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared.SocketMeister.Test.Client", "..\Shared.SocketMeister.Test.Client\Shared.SocketMeister.Test.Client.shproj", "{2C586D07-661C-4156-8409-A9F2C7A31B54}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\Shared.SocketMeister.Test.Client\Shared.SocketMeister.Test.Client.projitems*{2c586d07-661c-4156-8409-a9f2c7a31b54}*SharedItemsImports = 13
 		..\Shared.SocketMeister\Shared.SocketMeister.projitems*{7fe383ec-5fd4-4d60-beeb-149e51549260}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
