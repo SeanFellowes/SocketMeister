@@ -59,6 +59,9 @@
     <Reference Include="System.Windows.Browser" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Shared.SocketMeister\Enums.cs">
+      <Link>Shared.SocketMeister\Enums.cs</Link>
+    </Compile>
     <Compile Include="..\Shared.SocketMeister\Exceptions.cs">
       <Link>Shared.SocketMeister\Exceptions.cs</Link>
     </Compile>
@@ -98,6 +101,15 @@
     <Compile Include="..\Shared.SocketMeister\Messages\ServerStoppingMessage.cs">
       <Link>Shared.SocketMeister\Messages\ServerStoppingMessage.cs</Link>
     </Compile>
+    <Compile Include="..\Shared.SocketMeister\PolicyServer.cs">
+      <Link>Shared.SocketMeister\PolicyServer.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\PolicyServer.Events.cs">
+      <Link>Shared.SocketMeister\PolicyServer.Events.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\PolicyServer.Listener.cs">
+      <Link>Shared.SocketMeister\PolicyServer.Listener.cs</Link>
+    </Compile>
     <Compile Include="..\Shared.SocketMeister\SocketClient.cs">
       <Link>Shared.SocketMeister\SocketClient.cs</Link>
     </Compile>
@@ -125,13 +137,16 @@
     <Compile Include="..\Shared.SocketMeister\SocketServer.cs">
       <Link>Shared.SocketMeister\SocketServer.cs</Link>
     </Compile>
-    <Compile Include="..\Shared.SocketMeister\SocketServer.Enums.cs">
-      <Link>Shared.SocketMeister\SocketServer.Enums.cs</Link>
-    </Compile>
     <Compile Include="..\Shared.SocketMeister\SocketServer.Events.cs">
       <Link>Shared.SocketMeister\SocketServer.Events.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\Shared.SocketMeister\CrossDomainPolicy.xml">
+      <Link>Shared.SocketMeister\CrossDomainPolicy.xml</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Silverlight\$(SilverlightVersion)\Microsoft.Silverlight.CSharp.targets" />
   <ProjectExtensions>

@@ -29,6 +29,9 @@ namespace SocketMeister
         Stopping = 3
     }
 
+
+#endif
+
     /// <summary>
     /// Severity of a trace event
     /// </summary>
@@ -48,5 +51,4 @@ namespace SocketMeister
         Error = 2
     }
 
-#endif
 }
