@@ -14,6 +14,8 @@ namespace SocketMeister.Test.Client.Silverlight
 {
     public partial class MainPage : UserControl
     {
+        TestClientHarness _testClient = null;
+
         public MainPage()
         {
             InitializeComponent();

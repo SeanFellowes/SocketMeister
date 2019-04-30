@@ -71,6 +71,9 @@
     <Reference Include="System.Windows.Browser" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Shared.SocketMeister.Test.Client\TestClientHarness.cs">
+      <Link>Shared.SocketMeister.Test.Client\TestClientHarness.cs</Link>
+    </Compile>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
@@ -91,6 +94,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\AppManifest.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SocketMeister %28Silverlight%29\SocketMeister %28Silverlight%29.csproj">
+      <Project>{41efaa42-85d4-49ec-9ab2-4cc879d2e50a}</Project>
+      <Name>SocketMeister %28Silverlight%29</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Silverlight\$(SilverlightVersion)\Microsoft.Silverlight.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

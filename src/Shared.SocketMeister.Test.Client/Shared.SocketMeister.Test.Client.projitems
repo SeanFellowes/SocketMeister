@@ -9,5 +9,6 @@
     <Import_RootNamespace>SocketMeister.Test.Client</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)TestClientHarness.cs" />
   </ItemGroup>
 </Project>
