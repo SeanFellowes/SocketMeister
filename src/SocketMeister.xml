@@ -309,8 +309,8 @@
             <summary>
             RequestMessage constructor
             </summary>
-            <param name="Parameters">Array of parameters to send with the request. There must be at least 1 parameter.</param>
-            <param name="TimeoutMilliseconds">The maximum number of milliseconds to wait for a response before timing out.</param>
+            <param name="parameters">Array of parameters to send with the request. There must be at least 1 parameter.</param>
+            <param name="timeoutMilliseconds">The maximum number of milliseconds to wait for a response before timing out.</param>
         </member>
         <member name="P:SocketMeister.Messages.Message.Parameters">
             <summary>
@@ -351,9 +351,9 @@
             <summary>
             RequestMessage constructor
             </summary>
-            <param name="Parameters">Array of parameters to send with the request. There must be at least 1 parameter.</param>
-            <param name="TimeoutMilliseconds">The maximum number of milliseconds to wait for a response before timing out.</param>
-            <param name="IsLongPolling">The maximum number of milliseconds to wait for a response before timing out.</param>
+            <param name="parameters">Array of parameters to send with the request. There must be at least 1 parameter.</param>
+            <param name="timeoutMilliseconds">The maximum number of milliseconds to wait for a response before timing out.</param>
+            <param name="isLongPolling">The maximum number of milliseconds to wait for a response before timing out.</param>
         </member>
         <member name="P:SocketMeister.Messages.RequestMessage.Parameters">
             <summary>
@@ -374,7 +374,7 @@
             <summary>
             Fastest was to build this is to create it directly from the SocketEnvelope buffer.
             </summary>
-            <param name="Reader">Binary Reader</param>
+            <param name="reader">Binary Reader</param>
         </member>
         <member name="P:SocketMeister.Messages.ResponseMessage.RequestId">
             <summary>
@@ -385,7 +385,7 @@
             <summary>
             Fastest was to build this is to create it directly from the SocketEnvelope buffer.
             </summary>
-            <param name="Reader">Binary Reader</param>
+            <param name="reader">Binary Reader</param>
         </member>
         <member name="P:SocketMeister.Messages.ServerStoppingMessage.MaxWaitMilliseconds">
             <summary>
@@ -646,33 +646,33 @@
             <summary>
             Constructor
             </summary>
-            <param name="Message">Message describing the trace event</param>
-            <param name="Severity">Severity of the trace event.</param>
-            <param name="EventId">Event identifier for this trace event. Useful if writing this to the Windows Event Log (Or equivalent).</param>
+            <param name="message">Message describing the trace event</param>
+            <param name="severity">Severity of the trace event.</param>
+            <param name="eventId">Event identifier for this trace event. Useful if writing this to the Windows Event Log (Or equivalent).</param>
         </member>
         <member name="M:SocketMeister.TraceEventArgs.#ctor(System.String,SocketMeister.SeverityType,System.Int32,System.String)">
             <summary>
             Constructor
             </summary>
-            <param name="Message">Message describing the trace event</param>
-            <param name="Severity">Severity of the trace event.</param>
-            <param name="EventId">Event identifier for this trace event. Useful if writing this to the Windows Event Log (Or equivalent).</param>
-            <param name="Source">Source of the trace event.</param>
+            <param name="message">Message describing the trace event</param>
+            <param name="severity">Severity of the trace event.</param>
+            <param name="eventId">Event identifier for this trace event. Useful if writing this to the Windows Event Log (Or equivalent).</param>
+            <param name="source">Source of the trace event.</param>
         </member>
         <member name="M:SocketMeister.TraceEventArgs.#ctor(System.Exception,System.Int32)">
             <summary>
             Constructor
             </summary>
-            <param name="Exception">Exception which occured.</param>
-            <param name="EventId">Event identifier for this trace event. Useful if writing this to the Windows Event Log (Or equivalent).</param>
+            <param name="exception">Exception which occured.</param>
+            <param name="eventId">Event identifier for this trace event. Useful if writing this to the Windows Event Log (Or equivalent).</param>
         </member>
         <member name="M:SocketMeister.TraceEventArgs.#ctor(System.Exception,System.Int32,System.String)">
             <summary>
             Constructor
             </summary>
-            <param name="Exception">Exception which occured.</param>
-            <param name="EventId">Event identifier for this trace event. Useful if writing this to the Windows Event Log (Or equivalent).</param>
-            <param name="Source">Source of the trace event.</param>
+            <param name="exception">Exception which occured.</param>
+            <param name="eventId">Event identifier for this trace event. Useful if writing this to the Windows Event Log (Or equivalent).</param>
+            <param name="source">Source of the trace event.</param>
         </member>
         <member name="P:SocketMeister.TraceEventArgs.EventId">
             <summary>
@@ -776,7 +776,7 @@
             <summary>
             Constructor
             </summary>
-            <param name="Status">Current status of the service</param>
+            <param name="status">Current status of the service</param>
         </member>
         <member name="P:SocketMeister.PolicyServer.ServerStatusEventArgs.Status">
             <summary>

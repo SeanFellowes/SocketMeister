@@ -74,6 +74,12 @@
     <Compile Include="..\Shared.SocketMeister.Test.Client\TestClientHarness.cs">
       <Link>Shared.SocketMeister.Test.Client\TestClientHarness.cs</Link>
     </Compile>
+    <Compile Include="..\Shared.SocketMeister.Test.Client\Testing\Enums.cs">
+      <Link>Shared.SocketMeister.Test.Client\Testing\Enums.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister.Test.Client\Testing\Events.cs">
+      <Link>Shared.SocketMeister.Test.Client\Testing\Events.cs</Link>
+    </Compile>
     <Compile Include="..\Shared.SocketMeister\Enums.cs">
       <Link>Shared.SocketMeister\Enums.cs</Link>
     </Compile>
