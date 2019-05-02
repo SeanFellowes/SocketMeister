@@ -41,25 +41,25 @@ namespace SocketMeister
         /// </summary>
         internal const int SEND_RECEIVE_BUFFER_SIZE = 65536;
 
-        private SocketAsyncEventArgs _asyncEventArgsConnect = null;
-        private SocketAsyncEventArgs _asyncEventArgsPolling = null;
-        private SocketAsyncEventArgs _asyncEventArgsReceive = null;
-        private readonly ManualResetEvent _autoResetConnectEvent = new ManualResetEvent(false);
-        private readonly ManualResetEvent _autoResetPollEvent = new ManualResetEvent(false);
-        private ConnectionStatuses _connectionStatus = ConnectionStatuses.Disconnected;
-        private SocketEndPoint _currentEndPoint = null;
-        private readonly List<SocketEndPoint> _endPoints = null;
-        private bool _isBackgroundConnectRunning;
-        private bool _isBackgroundPollingRunning;
-        private bool _isStopAllRequested = false;
-        private bool _isStopPollingRequested = false;
-        private DateTime _lastPollResponse = DateTime.Now;
-        private readonly object _lock = new object();
-        private DateTime _nextPollRequest;
-        private readonly OpenRequestMessages _openRequests = new OpenRequestMessages();
-        private readonly Random _randomizer = new Random();
-        private MessageEngine _receiveEngine;
-        private readonly SocketAsyncEventArgsPool _sendEventArgsPool;
+        private SocketAsyncEventArgs asyncEventArgsConnect = null;
+        private SocketAsyncEventArgs asyncEventArgsPolling = null;
+        private SocketAsyncEventArgs asyncEventArgsReceive = null;
+        private readonly ManualResetEvent autoResetConnectEvent = new ManualResetEvent(false);
+        private readonly ManualResetEvent autoResetPollEvent = new ManualResetEvent(false);
+        private readonly object classLock = new object();
+        private ConnectionStatuses connectionStatus = ConnectionStatuses.Disconnected;
+        private SocketEndPoint currentEndPoint = null;
+        private readonly List<SocketEndPoint> endPoints = null;
+        private bool isBackgroundConnectRunning;
+        private bool isBackgroundPollingRunning;
+        private bool isStopAllRequested = false;
+        private bool isStopPollingRequested = false;
+        private DateTime lastPollResponse = DateTime.Now;
+        private DateTime nextPollRequest;
+        private readonly OpenRequestMessages openRequests = new OpenRequestMessages();
+        private readonly Random randomizer = new Random();
+        private MessageEngine receiveEngine;
+        private readonly SocketAsyncEventArgsPool sendEventArgsPool;
 
         /// <summary>
         /// Event raised when a status of a socket connection has changed
@@ -80,50 +80,50 @@ namespace SocketMeister
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="EndPoints">Collection of endpoints that are available to connect to</param>
-        public SocketClient(List<SocketEndPoint> EndPoints)
+        /// <param name="endPoints">Collection of endpoints that are available to connect to</param>
+        public SocketClient(List<SocketEndPoint> endPoints)
         {
-            if (EndPoints == null) throw new ArgumentNullException(nameof(EndPoints));
-            else if (EndPoints.Count == 0) throw new ArgumentException("No end points were provided", nameof(EndPoints));
+            if (endPoints == null) throw new ArgumentNullException(nameof(endPoints));
+            else if (endPoints.Count == 0) throw new ArgumentException("No end points were provided", nameof(endPoints));
 
-            _receiveEngine = new MessageEngine();
+            receiveEngine = new MessageEngine();
 
             //  SETUP ENDPOINTS AND CHOOSE THE ENDPOINT TO START WITH
-            _endPoints = EndPoints;
-            if (_endPoints.Count == 1)
+            this.endPoints = endPoints;
+            if (this.endPoints.Count == 1)
             {
-                CurrentEndPoint = _endPoints[0];
+                CurrentEndPoint = this.endPoints[0];
             }
             else
             {
-                int loopCnt = _randomizer.Next(20);
+                int loopCnt = randomizer.Next(20);
                 int pointer = 0;
                 for (int a = 0; a < loopCnt; a++)
                 {
-                    pointer = _randomizer.Next(_endPoints.Count);
+                    pointer = randomizer.Next(this.endPoints.Count);
                 }
-                pointer = _randomizer.Next(_endPoints.Count);
-                CurrentEndPoint = _endPoints[pointer];
+                pointer = randomizer.Next(this.endPoints.Count);
+                CurrentEndPoint = this.endPoints[pointer];
                 //  ENSURE THIS ENDPOINT IS SELECTED FIRST (Must have the lowest DontReconnectUntil)
                 CurrentEndPoint.DontReconnectUntil = DateTime.Now.AddYears(-1);
             }
 
             //  PREALLOCATE A POOL OF SocketAsyncEventArgs FOR SENDING
-            _sendEventArgsPool = new SocketAsyncEventArgsPool(CLIENT_SEND_EVENT_ARGS_POOL_SIZE);
+            sendEventArgsPool = new SocketAsyncEventArgsPool(CLIENT_SEND_EVENT_ARGS_POOL_SIZE);
             for (int i = 0; i < CLIENT_SEND_EVENT_ARGS_POOL_SIZE; i++)
             {
                 SocketAsyncEventArgs eArgs = new SocketAsyncEventArgs();
                 eArgs.SetBuffer(new byte[SEND_RECEIVE_BUFFER_SIZE], 0, SEND_RECEIVE_BUFFER_SIZE);
                 eArgs.Completed += ProcessSend;
-                _sendEventArgsPool.Push(eArgs);
+                sendEventArgsPool.Push(eArgs);
             }
 
-            _asyncEventArgsConnect = new SocketAsyncEventArgs();
-            _asyncEventArgsConnect.Completed += new EventHandler<SocketAsyncEventArgs>(ProcessConnect);
+            asyncEventArgsConnect = new SocketAsyncEventArgs();
+            asyncEventArgsConnect.Completed += new EventHandler<SocketAsyncEventArgs>(ProcessConnect);
 
-            _asyncEventArgsPolling = new SocketAsyncEventArgs();
-            _asyncEventArgsPolling.SetBuffer(new byte[SEND_RECEIVE_BUFFER_SIZE], 0, SEND_RECEIVE_BUFFER_SIZE);
-            _asyncEventArgsPolling.Completed += ProcessSendPollRequest;
+            asyncEventArgsPolling = new SocketAsyncEventArgs();
+            asyncEventArgsPolling.SetBuffer(new byte[SEND_RECEIVE_BUFFER_SIZE], 0, SEND_RECEIVE_BUFFER_SIZE);
+            asyncEventArgsPolling.Completed += ProcessSendPollRequest;
 
             BgConnectToServer();
         }
@@ -145,17 +145,17 @@ namespace SocketMeister
         {
             if (disposing)
             {
-                _currentEndPoint.Dispose();
-                _autoResetConnectEvent.Close();
-                _autoResetPollEvent.Close();
-                if (_asyncEventArgsConnect != null) _asyncEventArgsConnect.Dispose();
-                _asyncEventArgsConnect = null;
-                if (_asyncEventArgsPolling != null) _asyncEventArgsPolling.Dispose();
-                _asyncEventArgsPolling = null;
-                if (_asyncEventArgsReceive != null) _asyncEventArgsReceive.Dispose();
-                _asyncEventArgsReceive = null;
-                _receiveEngine = null; ;
-                foreach (SocketEndPoint ep in _endPoints)
+                currentEndPoint.Dispose();
+                autoResetConnectEvent.Close();
+                autoResetPollEvent.Close();
+                if (asyncEventArgsConnect != null) asyncEventArgsConnect.Dispose();
+                asyncEventArgsConnect = null;
+                if (asyncEventArgsPolling != null) asyncEventArgsPolling.Dispose();
+                asyncEventArgsPolling = null;
+                if (asyncEventArgsReceive != null) asyncEventArgsReceive.Dispose();
+                asyncEventArgsReceive = null;
+                receiveEngine = null; ;
+                foreach (SocketEndPoint ep in endPoints)
                 {
                     ep.CloseSocket(); 
                 }
@@ -168,13 +168,13 @@ namespace SocketMeister
         /// </summary>
         public ConnectionStatuses ConnectionStatus
         {
-            get { lock (_lock) { return _connectionStatus; } }
+            get { lock (classLock) { return connectionStatus; } }
             private set
             {
-                lock (_lock)
+                lock (classLock)
                 {
-                    if (_connectionStatus == value) return;
-                    _connectionStatus = value;
+                    if (connectionStatus == value) return;
+                    connectionStatus = value;
                 }
                 if (ConnectionStatusChanged != null)
                 {
@@ -186,27 +186,27 @@ namespace SocketMeister
 
         private SocketEndPoint CurrentEndPoint
         {
-            get { lock (_lock) { return _currentEndPoint; } }
-            set { lock (_lock) { _currentEndPoint = value; } }
+            get { lock (classLock) { return currentEndPoint; } }
+            set { lock (classLock) { currentEndPoint = value; } }
         }
 
-        private bool IsBackgroundConnectRunning { get { lock (_lock) { return _isBackgroundConnectRunning; } } set { lock (_lock) { _isBackgroundConnectRunning = value; } } }
+        private bool IsBackgroundConnectRunning { get { lock (classLock) { return isBackgroundConnectRunning; } } set { lock (classLock) { isBackgroundConnectRunning = value; } } }
 
-        private bool IsBackgroundPollingRunning { get { lock (_lock) { return _isBackgroundPollingRunning; } } set { lock (_lock) { _isBackgroundPollingRunning = value; } } }
+        private bool IsBackgroundPollingRunning { get { lock (classLock) { return isBackgroundPollingRunning; } } set { lock (classLock) { isBackgroundPollingRunning = value; } } }
 
-        private bool IsStopAllRequested { get { lock (_lock) { return _isStopAllRequested; } } set { lock (_lock) { _isStopAllRequested = value; } } }
+        private bool IsStopAllRequested { get { lock (classLock) { return isStopAllRequested; } } set { lock (classLock) { isStopAllRequested = value; } } }
 
-        private bool IsStopPollingRequested { get { lock (_lock) { return _isStopPollingRequested; } } set { lock (_lock) { _isStopPollingRequested = value; } } }
+        private bool IsStopPollingRequested { get { lock (classLock) { return isStopPollingRequested; } } set { lock (classLock) { isStopPollingRequested = value; } } }
 
         /// <summary>
         /// The last time a polling response was received from the socket server.
         /// </summary>
-        private DateTime LastPollResponse { get { lock (_lock) { return _lastPollResponse; } } set { lock (_lock) { _lastPollResponse = value; } } }
+        private DateTime LastPollResponse { get { lock (classLock) { return lastPollResponse; } } set { lock (classLock) { lastPollResponse = value; } } }
 
         /// <summary>
         /// The next time this socket client should attempt to poll the socket server.
         /// </summary>
-        private DateTime NextPollRequest { get { lock (_lock) { return _nextPollRequest; } } set { lock (_lock) { _nextPollRequest = value; } } }
+        private DateTime NextPollRequest { get { lock (classLock) { return nextPollRequest; } } set { lock (classLock) { nextPollRequest = value; } } }
 
 
 
@@ -232,10 +232,10 @@ namespace SocketMeister
             {
                 //  STOP POLLING
                 IsStopPollingRequested = true;
-                _autoResetPollEvent.Set();
+                autoResetPollEvent.Set();
 
                 //  CLOSE OPEN REQUESTS
-                _openRequests.ResetToUnsent();
+                openRequests.ResetToUnsent();
 
                 if (disconnectingEndPoint.Socket.Connected == true)
                 {
@@ -268,11 +268,11 @@ namespace SocketMeister
                 //  CLEANUP
                 try
                 {
-                    if (_asyncEventArgsReceive != null)
+                    if (asyncEventArgsReceive != null)
                     {
-                        _asyncEventArgsReceive.Completed -= new EventHandler<SocketAsyncEventArgs>(ProcessSend);
-                        _asyncEventArgsReceive.Dispose();
-                        _asyncEventArgsReceive = null;
+                        asyncEventArgsReceive.Completed -= new EventHandler<SocketAsyncEventArgs>(ProcessSend);
+                        asyncEventArgsReceive.Dispose();
+                        asyncEventArgsReceive = null;
                     }
                 }
                 catch (Exception ex)
@@ -281,7 +281,7 @@ namespace SocketMeister
                 }
 
                 //  CLOSE OPEN REQUESTS AGAIN!!! UNDER LOAD THE CLIENT CAN SUBMIT A REQUEST (BECAUSE OF CROSS THREADING)
-                _openRequests.ResetToUnsent();
+                openRequests.ResetToUnsent();
 
                 //  FINALIZE AND RE-ATTEMPT CONNECTION IS WE ARE NOT STOPPING
                 ConnectionStatus = ConnectionStatuses.Disconnected;
@@ -303,10 +303,10 @@ namespace SocketMeister
         [SuppressMessage("Microsoft.Performance", "CA1031:DoNotCatchGeneralExceptionTypes", MessageId = "ExceptionEventRaised")]
         private void BgConnectToServer()
         {
-            lock (_lock)
+            lock (classLock)
             {
-                if (_isBackgroundConnectRunning == true) return;
-                _isBackgroundConnectRunning = true;
+                if (isBackgroundConnectRunning == true) return;
+                isBackgroundConnectRunning = true;
             }
             ConnectionStatus = ConnectionStatuses.Connecting;
 
@@ -317,12 +317,12 @@ namespace SocketMeister
                     try
                     {
                         //  CHOOSE THE NEXT ENDPOINT TO TRY
-                        if (_endPoints.Count > 1)
+                        if (endPoints.Count > 1)
                         {
-                            SocketEndPoint bestEP = _endPoints[0];
-                            for (int i = 1; i < _endPoints.Count; i++)
+                            SocketEndPoint bestEP = endPoints[0];
+                            for (int i = 1; i < endPoints.Count; i++)
                             {
-                                if (_endPoints[i].DontReconnectUntil < bestEP.DontReconnectUntil) bestEP = _endPoints[i];
+                                if (endPoints[i].DontReconnectUntil < bestEP.DontReconnectUntil) bestEP = endPoints[i];
                             }
                             CurrentEndPoint = bestEP;
                         }
@@ -330,10 +330,10 @@ namespace SocketMeister
                         if (CurrentEndPoint.DontReconnectUntil < DateTime.Now)
                         {
                             //  TRY TO CONNECT
-                            _asyncEventArgsConnect.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
-                            if (!CurrentEndPoint.Socket.ConnectAsync(_asyncEventArgsConnect)) ProcessConnect(null, _asyncEventArgsConnect);
-                            _autoResetConnectEvent.Reset();
-                            _autoResetConnectEvent.WaitOne(5000);
+                            asyncEventArgsConnect.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
+                            if (!CurrentEndPoint.Socket.ConnectAsync(asyncEventArgsConnect)) ProcessConnect(null, asyncEventArgsConnect);
+                            autoResetConnectEvent.Reset();
+                            autoResetConnectEvent.WaitOne(5000);
 
                             if (ConnectionStatus == ConnectionStatuses.Connected)
                             {
@@ -365,13 +365,13 @@ namespace SocketMeister
         {
             Thread bgPolling = new Thread(new ThreadStart(delegate
             {
-                lock (_lock)
+                lock (classLock)
                 {
-                    if (_isBackgroundPollingRunning == true) return;
-                    _isBackgroundPollingRunning = true;
-                    _isStopPollingRequested = false;
-                    _lastPollResponse = DateTime.Now;
-                    _nextPollRequest = DateTime.Now;
+                    if (isBackgroundPollingRunning == true) return;
+                    isBackgroundPollingRunning = true;
+                    isStopPollingRequested = false;
+                    lastPollResponse = DateTime.Now;
+                    nextPollRequest = DateTime.Now;
                 }
 
                 while (IsStopPollingRequested == false)
@@ -382,11 +382,11 @@ namespace SocketMeister
                         {
                             NextPollRequest = DateTime.Now.AddSeconds(POLLING_FREQUENCY);
                             byte[] sendBytes = MessageEngine.GenerateSendBytes(new PollRequest(), false);
-                            _asyncEventArgsPolling.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
-                            _asyncEventArgsPolling.SetBuffer(sendBytes, 0, sendBytes.Length);
-                            if (!CurrentEndPoint.Socket.SendAsync(_asyncEventArgsPolling)) ProcessSendPollRequest(null, _asyncEventArgsPolling);
-                            _autoResetPollEvent.Reset();
-                            _autoResetPollEvent.WaitOne();
+                            asyncEventArgsPolling.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
+                            asyncEventArgsPolling.SetBuffer(sendBytes, 0, sendBytes.Length);
+                            if (!CurrentEndPoint.Socket.SendAsync(asyncEventArgsPolling)) ProcessSendPollRequest(null, asyncEventArgsPolling);
+                            autoResetPollEvent.Reset();
+                            autoResetPollEvent.WaitOne();
                         }
                         catch (Exception ex)
                         {
@@ -426,18 +426,18 @@ namespace SocketMeister
                 //  ATTEMPT TO START RECEIVING
                 try
                 {
-                    _asyncEventArgsReceive = new SocketAsyncEventArgs();
-                    _asyncEventArgsReceive.SetBuffer(new byte[SEND_RECEIVE_BUFFER_SIZE], 0, SEND_RECEIVE_BUFFER_SIZE);
-                    _asyncEventArgsReceive.Completed += new EventHandler<SocketAsyncEventArgs>(ProcessReceive);
-                    if (!CurrentEndPoint.Socket.ReceiveAsync(_asyncEventArgsReceive)) ProcessReceive(null, _asyncEventArgsReceive);
+                    asyncEventArgsReceive = new SocketAsyncEventArgs();
+                    asyncEventArgsReceive.SetBuffer(new byte[SEND_RECEIVE_BUFFER_SIZE], 0, SEND_RECEIVE_BUFFER_SIZE);
+                    asyncEventArgsReceive.Completed += new EventHandler<SocketAsyncEventArgs>(ProcessReceive);
+                    if (!CurrentEndPoint.Socket.ReceiveAsync(asyncEventArgsReceive)) ProcessReceive(null, asyncEventArgsReceive);
                     //  CONNECTED
                     ConnectionStatus = ConnectionStatuses.Connected;
                     //  DONE
-                    _autoResetConnectEvent.Set();
+                    autoResetConnectEvent.Set();
                 }
                 catch (Exception ex)
                 {
-                    _autoResetConnectEvent.Set();
+                    autoResetConnectEvent.Set();
                     TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 1234));
                 }
             }
@@ -445,13 +445,13 @@ namespace SocketMeister
             {
                 //  NOTE: WHEN FAILING OVER UNDER HIGH LOAD, SocketError.TimedOut OCCURS FOR UP TO 120 SECONDS (WORSE CASE)
                 //  BEFORE CONNECTION SUCCESSFULLY COMPLETES. IT'S A BIT ANNOYING BUT I HAVE FOUND NO WORK AROUND.
-                CurrentEndPoint.DontReconnectUntil = DateTime.Now.AddMilliseconds(2000 + _randomizer.Next(4000));
-                _autoResetConnectEvent.Set();
+                CurrentEndPoint.DontReconnectUntil = DateTime.Now.AddMilliseconds(2000 + randomizer.Next(4000));
+                autoResetConnectEvent.Set();
             }
             else
             {
-                CurrentEndPoint.DontReconnectUntil = DateTime.Now.AddMilliseconds(2000 + _randomizer.Next(4000));
-                _autoResetConnectEvent.Set();
+                CurrentEndPoint.DontReconnectUntil = DateTime.Now.AddMilliseconds(2000 + randomizer.Next(4000));
+                autoResetConnectEvent.Set();
             }
         }
 
@@ -472,7 +472,7 @@ namespace SocketMeister
             IsStopAllRequested = true;
 
             //  ENSURE BACKGROUND CONNECT HAS STOPPED
-            _autoResetConnectEvent.Set();
+            autoResetConnectEvent.Set();
             while (IsBackgroundConnectRunning == true) { Thread.Sleep(5); }
 
             //  SHUTDOWN SOCKET
@@ -486,17 +486,17 @@ namespace SocketMeister
         /// <summary>
         /// Send a request to the server and wait for a response. 
         /// </summary>
-        /// <param name="Parameters">Array of parameters to send with the request</param>
-        /// <param name="TimeoutMilliseconds">Maximum number of milliseconds to wait for a response from the server</param>
-        /// <param name="IsLongPolling">If the request is long polling on the server mark this as true and the request will be cancelled instantly when a disconnect occurs</param>
+        /// <param name="parameters">Array of parameters to send with the request</param>
+        /// <param name="timeoutMilliseconds">Maximum number of milliseconds to wait for a response from the server</param>
+        /// <param name="isLongPolling">If the request is long polling on the server mark this as true and the request will be cancelled instantly when a disconnect occurs</param>
         /// <returns>Nullable array of bytes which was returned from the socket server</returns>
-        public byte[] SendRequest(object[] Parameters, int TimeoutMilliseconds = 60000, bool IsLongPolling = false)
+        public byte[] SendRequest(object[] parameters, int timeoutMilliseconds = 60000, bool isLongPolling = false)
         {
             if (IsStopAllRequested) throw new Exception("Request cannot be sent. The socket client is stopped or stopping");
-            if (Parameters == null) throw new ArgumentException("Request parameters cannot be null.", nameof(Parameters));
-            if (Parameters.Length == 0) throw new ArgumentException("At least 1 request parameter is required.", nameof(Parameters));
+            if (parameters == null) throw new ArgumentException("Request parameters cannot be null.", nameof(parameters));
+            if (parameters.Length == 0) throw new ArgumentException("At least 1 request parameter is required.", nameof(parameters));
             DateTime startTime = DateTime.Now;
-            DateTime maxWait = startTime.AddMilliseconds(TimeoutMilliseconds);
+            DateTime maxWait = startTime.AddMilliseconds(timeoutMilliseconds);
             while(ConnectionStatus != ConnectionStatuses.Connected && IsStopAllRequested == false)
             {
                 Thread.Sleep(200);
@@ -504,35 +504,35 @@ namespace SocketMeister
                 if (DateTime.Now > maxWait) throw new TimeoutException();
             }
             //DelaySending();
-            int remainingMilliseconds = TimeoutMilliseconds - Convert.ToInt32((DateTime.Now - startTime).TotalMilliseconds);
-            return SendReceive(new RequestMessage(Parameters, remainingMilliseconds, IsLongPolling));
+            int remainingMilliseconds = timeoutMilliseconds - Convert.ToInt32((DateTime.Now - startTime).TotalMilliseconds);
+            return SendReceive(new RequestMessage(parameters, remainingMilliseconds, isLongPolling));
         }
 
 
         [SuppressMessage("Microsoft.Performance", "CA1031:DoNotCatchGeneralExceptionTypes", MessageId = "ExceptionEventRaised")]
-        private byte[] SendReceive(RequestMessage Request)
+        private byte[] SendReceive(RequestMessage request)
         {
             if (IsStopAllRequested == true) return null;
 
             DateTime nowTs = DateTime.Now;
-            _openRequests.Add(Request);
+            openRequests.Add(request);
 
-            byte[] sendBytes = MessageEngine.GenerateSendBytes(Request, false);
+            byte[] sendBytes = MessageEngine.GenerateSendBytes(request, false);
             while (true == true)
             {
                 try
                 {
                     if (IsStopAllRequested == true) return null;
 
-                    if (Request.SendReceiveStatus == SendReceiveStatus.Unsent && CanSendReceive() == true)
+                    if (request.SendReceiveStatus == SendReceiveStatus.Unsent && CanSendReceive() == true)
                     {
-                        SocketAsyncEventArgs sendEventArgs = _sendEventArgsPool.Pop();
+                        SocketAsyncEventArgs sendEventArgs = sendEventArgsPool.Pop();
                         if (sendEventArgs != null)
                         {
-                            sendEventArgs.UserToken = Request;
+                            sendEventArgs.UserToken = request;
                             sendEventArgs.SetBuffer(sendBytes, 0, sendBytes.Length);
-                            Request.SendReceiveStatus = SendReceiveStatus.InProgress;
-                            int maxWait = Convert.ToInt32(Request.TimeoutMilliseconds - (DateTime.Now - nowTs).TotalMilliseconds);
+                            request.SendReceiveStatus = SendReceiveStatus.InProgress;
+                            int maxWait = Convert.ToInt32(request.TimeoutMilliseconds - (DateTime.Now - nowTs).TotalMilliseconds);
 
                             if (maxWait > 0)
                             {
@@ -541,7 +541,7 @@ namespace SocketMeister
                                 if (!CurrentEndPoint.Socket.SendAsync(sendEventArgs)) ProcessSend(null, sendEventArgs);
 
                                 //  WAIT FOR RESPONSE
-                                while (Request.SendReceiveStatus == SendReceiveStatus.InProgress)
+                                while (request.SendReceiveStatus == SendReceiveStatus.InProgress)
                                 {
                                     Thread.Sleep(5);
                                 }
@@ -549,7 +549,7 @@ namespace SocketMeister
                         }
                     }
 
-                    if (Request.SendReceiveStatus == SendReceiveStatus.ResponseReceived || Request.SendReceiveStatus == SendReceiveStatus.Timeout) break;
+                    if (request.SendReceiveStatus == SendReceiveStatus.ResponseReceived || request.SendReceiveStatus == SendReceiveStatus.Timeout) break;
                 }
                 catch (Exception ex)
                 {
@@ -558,12 +558,12 @@ namespace SocketMeister
                 Thread.Sleep(200);
             }
 
-            _openRequests.Remove(Request);
+            openRequests.Remove(request);
 
-            if (Request.SendReceiveStatus == SendReceiveStatus.ResponseReceived)
+            if (request.SendReceiveStatus == SendReceiveStatus.ResponseReceived)
             {
-                if (Request.Response.Error != null) throw new Exception(Request.Response.Error);
-                else return Request.Response.ResponseData;
+                if (request.Response.Error != null) throw new Exception(request.Response.Error);
+                else return request.Response.ResponseData;
             }
             else throw new TimeoutException();
         }
@@ -571,7 +571,7 @@ namespace SocketMeister
 
         private void ProcessSendPollRequest(object sender, SocketAsyncEventArgs e)
         {
-            _autoResetPollEvent.Set();
+            autoResetPollEvent.Set();
         }
 
 
@@ -612,7 +612,7 @@ namespace SocketMeister
             e.UserToken = null;
             //  FREE THE SocketAsyncEventArg SO IT CAN BE REUSED.
             e.SetBuffer(new byte[2], 0, 2);
-            _sendEventArgsPool.Push(e);
+            sendEventArgsPool.Push(e);
         }
 
 
@@ -650,16 +650,16 @@ namespace SocketMeister
                 int socketReceiveBufferPtr = 0;
                 while (socketReceiveBufferPtr < e.BytesTransferred && CanSendReceive())
                 {
-                    bool haveEntireMessage = _receiveEngine.AddBytesFromSocketReceiveBuffer(e.BytesTransferred, e.Buffer, ref socketReceiveBufferPtr);
+                    bool haveEntireMessage = receiveEngine.AddBytesFromSocketReceiveBuffer(e.BytesTransferred, e.Buffer, ref socketReceiveBufferPtr);
                     if (haveEntireMessage == true)
                     {
-                        if (_receiveEngine.MessageType == MessageTypes.ResponseMessage)
+                        if (receiveEngine.MessageType == MessageTypes.ResponseMessage)
                         {
                             //  SyncEndPointSubscriptionsWithServer() IS WAITING. COMPLETE THE SYNCRONOUS OPERATION SO IT CAN CONTINUE
-                            ResponseMessage response = _receiveEngine.GetResponseMessage();
+                            ResponseMessage response = receiveEngine.GetResponseMessage();
 
                             //  CHECK TO SEE IS THE MESSAGE IS IN THE LIST OF OPEN SendReceive ITEMS.
-                            RequestMessage foundOpenRequest = _openRequests.Find(response.RequestId);
+                            RequestMessage foundOpenRequest = openRequests.Find(response.RequestId);
                             if (foundOpenRequest != null)
                             {
                                 if (response.ServerIsStopping == true)
@@ -673,16 +673,16 @@ namespace SocketMeister
                                 }
                             }
                         }
-                        else if (_receiveEngine.MessageType == MessageTypes.Message)
+                        else if (receiveEngine.MessageType == MessageTypes.Message)
                         {
-                            NotifyMessageReceived(_receiveEngine.GetMessage());
+                            NotifyMessageReceived(receiveEngine.GetMessage());
                         }
-                        else if (_receiveEngine.MessageType == MessageTypes.ServerStoppingMessage)
+                        else if (receiveEngine.MessageType == MessageTypes.ServerStoppingMessage)
                         {
                             TraceEventRaised?.Invoke(this, new TraceEventArgs("Disconnecting: Server is stopping.", SeverityType.Warning, 11000));
                             DisconnectSocket();
                         }
-                        else if (_receiveEngine.MessageType == MessageTypes.PollResponse)
+                        else if (receiveEngine.MessageType == MessageTypes.PollResponse)
                         {
                             LastPollResponse = DateTime.Now;
                         }
@@ -719,36 +719,36 @@ namespace SocketMeister
 
         private bool CanPoll()
         {
-            lock (_lock)
+            lock (classLock)
             {
-                if (_isStopAllRequested == true || _isStopPollingRequested == true) return false;
-                if (_connectionStatus != ConnectionStatuses.Connected) return false;
-                return _currentEndPoint.Socket.Connected;
+                if (isStopAllRequested == true || isStopPollingRequested == true) return false;
+                if (connectionStatus != ConnectionStatuses.Connected) return false;
+                return currentEndPoint.Socket.Connected;
             }
         }
 
 
         private bool CanSendReceive()
         {
-            lock (_lock)
+            lock (classLock)
             {
-                if (_isStopAllRequested == true) return false;
-                if (_connectionStatus != ConnectionStatuses.Connected) return false;
-                return _currentEndPoint.Socket.Connected;
+                if (isStopAllRequested == true) return false;
+                if (connectionStatus != ConnectionStatuses.Connected) return false;
+                return currentEndPoint.Socket.Connected;
             }
         }
 
 
 
         [SuppressMessage("Microsoft.Performance", "CA1031:DoNotCatchGeneralExceptionTypes", MessageId = "ExceptionEventRaised")]
-        private void NotifyMessageReceived(Messages.Message Message)
+        private void NotifyMessageReceived(Messages.Message message)
         {
             if (MessageReceived != null)
             {
                 //  RAISE EVENT IN THE BACKGROUND
                 new Thread(new ThreadStart(delegate
                 {
-                    try { MessageReceived(this, new MessageReceivedEventArgs(Message.Parameters)); }
+                    try { MessageReceived(this, new MessageReceivedEventArgs(message.Parameters)); }
                     catch (Exception ex)
                     {
                         TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 11000));

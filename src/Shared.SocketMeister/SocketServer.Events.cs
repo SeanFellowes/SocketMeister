@@ -14,9 +14,9 @@ namespace SocketMeister
         /// </summary>
         public class ClientConnectedEventArgs : EventArgs
         {
-            internal ClientConnectedEventArgs(Client Client)
+            internal ClientConnectedEventArgs(Client client)
             {
-                this.Client = Client;
+                Client = client;
             }
 
             /// <summary>
@@ -30,9 +30,9 @@ namespace SocketMeister
         /// </summary>
         public class ClientDisconnectedEventArgs : EventArgs
         {
-            internal ClientDisconnectedEventArgs(Client Client)
+            internal ClientDisconnectedEventArgs(Client client)
             {
-                this.Client = Client;
+                Client = client;
             }
 
             /// <summary>
@@ -47,10 +47,10 @@ namespace SocketMeister
         /// </summary>
         public class MessageReceivedEventArgs : EventArgs
         {
-            internal MessageReceivedEventArgs(Client Client, object[] Parameters)
+            internal MessageReceivedEventArgs(Client client, object[] parameters)
             {
-                this.Client = Client;
-                this.Parameters = Parameters;
+                Client = client;
+                Parameters = parameters;
             }
 
             /// <summary>
@@ -69,7 +69,7 @@ namespace SocketMeister
         /// </summary>
         public class RequestReceivedEventArgs : MessageReceivedEventArgs
         {
-            internal RequestReceivedEventArgs(Client Client, object[] Parameters) : base(Client, Parameters) { }
+            internal RequestReceivedEventArgs(Client client, object[] parameters) : base(client, parameters) { }
 
             /// <summary>
             /// The byte array which is to be returned to the client. Null is returned if a 'Response' value is not provided when processing the 'RequestReceived' event.
@@ -85,10 +85,10 @@ namespace SocketMeister
             /// <summary>
             /// Constructor
             /// </summary>
-            /// <param name="Status">Current status of the service</param>
-            public ServerStatusEventArgs(ServiceStatus Status)
+            /// <param name="status">Current status of the service</param>
+            public ServerStatusEventArgs(ServiceStatus status)
             {
-                this.Status = Status;
+                Status = status;
             }
 
             /// <summary>

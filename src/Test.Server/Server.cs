@@ -20,11 +20,11 @@ namespace SocketMeister.Test
     public partial class Server : UserControl
     {
         //  Silverlight ports are between 4502-4534
-        private const int _policyPort = 943;
-        private PolicyServer _policyServer = null;
-        private int _port = 4502;
-        private ServerType _serverType = ServerType.SocketServer;
-        private SocketServer _socketServer = null;
+        private const int policyPort = 943;
+        private PolicyServer policyServer = null;
+        private int port = 4502;
+        private ServerType serverType = ServerType.SocketServer;
+        private SocketServer socketServer = null;
 
         /// <summary>
         /// Raised when an trace log event has been raised.
@@ -43,24 +43,24 @@ namespace SocketMeister.Test
         {
             get
             {
-                if (_serverType == ServerType.PolicyServer) return _policyPort;
-                return _port;
+                if (serverType == ServerType.PolicyServer) return policyPort;
+                return port;
             }
             set
             {
-                _port = value;
+                port = value;
                 SetLabel();
             }
         }
 
         public ServerType ServerType
         {
-            get { return _serverType; }
+            get { return serverType; }
             set
             {
-                _serverType = value;
+                serverType = value;
                 SetLabel();
-                if (_serverType == ServerType.PolicyServer)
+                if (serverType == ServerType.PolicyServer)
                 {
                     SessionCountIcon.Visible = false;
                     SessionCountLabel.Visible = false;
@@ -77,8 +77,8 @@ namespace SocketMeister.Test
         {
             get
             {
-                if (_policyServer != null) return _policyServer.Status;
-                else if (_socketServer != null) return _socketServer.Status;
+                if (policyServer != null) return policyServer.Status;
+                else if (socketServer != null) return socketServer.Status;
                 else return ServiceStatus.Stopped;
             }
         }
@@ -153,11 +153,11 @@ namespace SocketMeister.Test
         {
             try
             {
-                if (_socketServer == null) return false;
-                if (_socketServer.Status == ServiceStatus.Started)
+                if (socketServer == null) return false;
+                if (socketServer.Status == ServiceStatus.Started)
                 {
                     this.Cursor = Cursors.WaitCursor;
-                    _socketServer.Stop();
+                    socketServer.Stop();
                     return true;
                 }
                 return false;
@@ -172,8 +172,8 @@ namespace SocketMeister.Test
 
         private void SetLabel()
         {
-            if (_serverType == ServerType.SocketServer) LabelPort.Text = "Socket server on port " + _port.ToString();
-            else LabelPort.Text = "Policy server on port " + _policyPort.ToString();
+            if (serverType == ServerType.SocketServer) LabelPort.Text = "Socket server on port " + port.ToString();
+            else LabelPort.Text = "Policy server on port " + policyPort.ToString();
         }
 
         public void Start()
@@ -185,8 +185,8 @@ namespace SocketMeister.Test
 
                 //  START IN THE BACKGROUND
                 BackgroundWorker bgStartService = new BackgroundWorker();
-                bgStartService.DoWork += _bgStartService_DoWork;
-                bgStartService.RunWorkerCompleted += _bgStartService_RunWorkerCompleted;
+                bgStartService.DoWork += bgStartService_DoWork;
+                bgStartService.RunWorkerCompleted += bgStartService_RunWorkerCompleted;
                 bgStartService.RunWorkerAsync();
             }
             catch (Exception ex)
@@ -200,21 +200,21 @@ namespace SocketMeister.Test
 
 
 
-        private void _bgStartService_DoWork(object sender, DoWorkEventArgs e)
+        private void bgStartService_DoWork(object sender, DoWorkEventArgs e)
         {
-            if (_serverType == ServerType.SocketServer)
+            if (serverType == ServerType.SocketServer)
             {
-                _socketServer = new SocketServer(_port, true);
-                _socketServer.ListenerStateChanged += SocketServer_ListenerStateChanged;
-                _socketServer.TraceEventRaised += Server_TraceEventRaised;
-                _socketServer.Start();
+                socketServer = new SocketServer(port, true);
+                socketServer.ListenerStateChanged += SocketServer_ListenerStateChanged;
+                socketServer.TraceEventRaised += Server_TraceEventRaised;
+                socketServer.Start();
             }
             else
             {
-                _policyServer = new PolicyServer();
-                _policyServer.SocketServiceStatusChanged += PolicyServer_SocketServiceStatusChanged;
-                _policyServer.TraceEventRaised += Server_TraceEventRaised;
-                _policyServer.Start();
+                policyServer = new PolicyServer();
+                policyServer.SocketServiceStatusChanged += PolicyServer_SocketServiceStatusChanged;
+                policyServer.TraceEventRaised += Server_TraceEventRaised;
+                policyServer.Start();
             }
         }
 
@@ -223,9 +223,9 @@ namespace SocketMeister.Test
             TraceEventRaised?.Invoke(this, e);
         }
 
-        private void _bgStartService_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private void bgStartService_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            if (InvokeRequired) Invoke(new MethodInvoker(delegate { _bgStartService_RunWorkerCompleted(sender, e); }));
+            if (InvokeRequired) Invoke(new MethodInvoker(delegate { bgStartService_RunWorkerCompleted(sender, e); }));
             else
             {
                 this.Cursor = Cursors.Default;

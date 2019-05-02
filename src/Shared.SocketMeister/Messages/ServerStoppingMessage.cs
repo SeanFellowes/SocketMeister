@@ -5,20 +5,20 @@ namespace SocketMeister.Messages
     internal class ServerStoppingMessage : MessageBase, IMessage
     {
         //  INTERNAL (NOT SENT IN MESSAGE DATA)
-        private readonly int _maxWaitMilliseconds;
+        private readonly int maxWaitMilliseconds;
 
-        public ServerStoppingMessage(int MaxWaitMilliseconds) : base(MessageTypes.ServerStoppingMessage)
+        public ServerStoppingMessage(int maxWaitMilliseconds) : base(MessageTypes.ServerStoppingMessage)
         {
-            _maxWaitMilliseconds = MaxWaitMilliseconds;
+            this.maxWaitMilliseconds = maxWaitMilliseconds;
         }
 
         /// <summary>
         /// Fastest was to build this is to create it directly from the SocketEnvelope buffer.
         /// </summary>
-        /// <param name="Reader">Binary Reader</param>
-        public ServerStoppingMessage(BinaryReader Reader) : base(MessageTypes.ServerStoppingMessage)
+        /// <param name="reader">Binary Reader</param>
+        public ServerStoppingMessage(BinaryReader reader) : base(MessageTypes.ServerStoppingMessage)
         {
-            _maxWaitMilliseconds = Reader.ReadInt32();
+            maxWaitMilliseconds = reader.ReadInt32();
         }
 
         /// <summary>
@@ -26,14 +26,14 @@ namespace SocketMeister.Messages
         /// </summary>
         public int MaxWaitMilliseconds
         {
-            get { return _maxWaitMilliseconds; }
+            get { return maxWaitMilliseconds; }
         }
 
 
 
-        public void AppendBytes(BinaryWriter Writer)
+        public void AppendBytes(BinaryWriter writer)
         {
-            Writer.Write(_maxWaitMilliseconds);
+            writer.Write(maxWaitMilliseconds);
         }
 
 

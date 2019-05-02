@@ -6,22 +6,22 @@ namespace SocketMeister.Messages
     internal class ResponseMessage : MessageBase, IMessage
     {
         //  RESPONSE VARIABLES
-        private readonly string _error = null;
-        private readonly long _requestId;
-        private readonly Byte[] _responseData = null;
-        private readonly bool _serverIsStopping = false;
+        private readonly string error = null;
+        private readonly long requestId;
+        private readonly Byte[] responseData = null;
+        private readonly bool serverIsStopping = false;
 
-        public ResponseMessage(long RequestId, byte[] ResponseData) : base(MessageTypes.ResponseMessage)
+        public ResponseMessage(long requestId, byte[] responseData) : base(MessageTypes.ResponseMessage)
         {
-            _requestId = RequestId;
-            _responseData = ResponseData;
+            this.requestId = requestId;
+            this.responseData = responseData;
         }
 
-        public ResponseMessage(long RequestId, Exception Exception) : base(MessageTypes.ResponseMessage)
+        public ResponseMessage(long requestId, Exception exception) : base(MessageTypes.ResponseMessage)
         {
-            _requestId = RequestId;
-            _error = Exception.Message;
-            if (Exception.StackTrace != null) _error += Environment.NewLine + Environment.NewLine + Exception.StackTrace;
+            this.requestId = requestId;
+            error = exception.Message;
+            if (exception.StackTrace != null) error += Environment.NewLine + Environment.NewLine + exception.StackTrace;
         }
 
 
@@ -29,13 +29,13 @@ namespace SocketMeister.Messages
         /// <summary>
         /// Fastest was to build this is to create it directly from the SocketEnvelope buffer.
         /// </summary>
-        /// <param name="Reader">Binary Reader</param>
-        public ResponseMessage(BinaryReader Reader) : base(MessageTypes.ResponseMessage)
+        /// <param name="reader">Binary Reader</param>
+        public ResponseMessage(BinaryReader reader) : base(MessageTypes.ResponseMessage)
         {
-            _requestId = Reader.ReadInt64();
-            if (Reader.ReadBoolean() == true) _responseData = Reader.ReadBytes(Reader.ReadInt32());
-            if (Reader.ReadBoolean() == true) _error = Reader.ReadString();
-            _serverIsStopping = Reader.ReadBoolean();
+            requestId = reader.ReadInt64();
+            if (reader.ReadBoolean() == true) responseData = reader.ReadBytes(reader.ReadInt32());
+            if (reader.ReadBoolean() == true) error = reader.ReadString();
+            serverIsStopping = reader.ReadBoolean();
         }
 
         /// <summary>
@@ -43,45 +43,45 @@ namespace SocketMeister.Messages
         /// </summary>
         public long RequestId
         {
-            get { return _requestId; }
+            get { return requestId; }
         }
 
 
         public Byte[] ResponseData
         {
-            get { return _responseData; }
+            get { return responseData; }
         }
 
 
         public string Error
         {
-            get { return _error; }
+            get { return error; }
         }
 
         public bool ServerIsStopping
         {
-            get { return _serverIsStopping; }
+            get { return serverIsStopping; }
         }
 
 
 
-        public void AppendBytes(BinaryWriter Writer)
+        public void AppendBytes(BinaryWriter writer)
         {
-            Writer.Write(_requestId);
-            if (_responseData == null) Writer.Write(false);
+            writer.Write(requestId);
+            if (responseData == null) writer.Write(false);
             else
             {
-                Writer.Write(true);
-                Writer.Write(_responseData.Length);
-                Writer.Write(_responseData);
+                writer.Write(true);
+                writer.Write(responseData.Length);
+                writer.Write(responseData);
             }
-            if (_error == null) Writer.Write(false);
+            if (error == null) writer.Write(false);
             else
             {
-                Writer.Write(true);
-                Writer.Write(_error);
+                writer.Write(true);
+                writer.Write(error);
             }
-            Writer.Write(_serverIsStopping);
+            writer.Write(serverIsStopping);
         }
     }
 }

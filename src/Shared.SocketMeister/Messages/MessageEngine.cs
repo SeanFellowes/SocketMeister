@@ -36,12 +36,12 @@ namespace SocketMeister.Messages
 
         internal class ParseHistory
         {
-            private readonly List<Parse> _items = new List<Parse>();
+            private readonly List<Parse> items = new List<Parse>();
 
             public void Add(Parse message)
             {
-                if (_items.Count > 19) _items.RemoveAt(0);
-                _items.Add(message);
+                if (items.Count > 19) items.RemoveAt(0);
+                items.Add(message);
             }
 
             public string Text
@@ -49,7 +49,7 @@ namespace SocketMeister.Messages
                 get
                 {
                     string T = Environment.NewLine + Environment.NewLine + "Receive History" + Environment.NewLine;
-                    foreach (Parse m in _items)
+                    foreach (Parse m in items)
                     {
                         T += "#" + m.MessageNumber + " " + m.ReceivedDateTime.ToString("HH:mm:ss.fff", CultureInfo.InvariantCulture);
                         T += ", MessageType: " + m.MessageType;
@@ -67,62 +67,61 @@ namespace SocketMeister.Messages
 
         public const int HEADERLENGTH = 11;
 
-        private readonly ParseHistory _history = new ParseHistory();
-        private bool _messageIsCompressed = false;
-        private int _messageLength = 0;
-        private int _messageLengthUncompressed = 0;
-        private MessageTypes _messageType = MessageTypes.Unknown;
-        private readonly byte[] _headerBuffer = new byte[11];
-        private int _headerBufferPtr = 0;
-        private bool _headerReceived = false;
-        private byte[] _receiveBuffer = new byte[0];
-        private int _receiveBufferPtr = 0;
-        private long _statMessageNumber = 1;
-        private bool _statMessageReceived;
-        private int _statSocketBufferLength;
-        private int _statSocketBytesRead;
-        private byte[] _uncompressedBuffer = new byte[0];
+        private readonly byte[] headerBuffer = new byte[11];
+        private int headerBufferPtr = 0;
+        private bool headerReceived = false;
+        private readonly ParseHistory history = new ParseHistory();
+        private bool messageIsCompressed = false;
+        private int messageLength = 0;
+        private int messageLengthUncompressed = 0;
+        private MessageTypes messageType = MessageTypes.Unknown;
+        private byte[] receiveBuffer = new byte[0];
+        private int receiveBufferPtr = 0;
+        private long statMessageNumber = 1;
+        private bool statMessageReceived;
+        private int statSocketBufferLength;
+        private int statSocketBytesRead;
+        private byte[] uncompressedBuffer = new byte[0];
 
         [SuppressMessage("Microsoft.Performance", "CA1031:DoNotCatchGeneralExceptionTypes", MessageId = "RaiseMoreDetailedException")]
         internal bool AddBytesFromSocketReceiveBuffer(int SocketBytesRead, byte[] SocketReceiveBuffer, ref int SocketReceiveBufferPtr)
         {
-            _statSocketBufferLength = SocketReceiveBuffer.Length;
-            _statSocketBytesRead = SocketBytesRead;
-            _statMessageReceived = false;
+            statSocketBufferLength = SocketReceiveBuffer.Length;
+            statSocketBytesRead = SocketBytesRead;
+            statMessageReceived = false;
 
-            if (_headerReceived == false)
+            if (headerReceived == false)
             {
                 int bytesRequired = 0;
                 int bytesPossible = 0;
                 try
                 {
-                    bytesRequired = HEADERLENGTH - _headerBufferPtr;
+                    bytesRequired = HEADERLENGTH - headerBufferPtr;
                     bytesPossible = bytesRequired;
                     if ((SocketBytesRead - SocketReceiveBufferPtr) < bytesRequired) bytesPossible = (SocketBytesRead - SocketReceiveBufferPtr);
-                    Buffer.BlockCopy(SocketReceiveBuffer, SocketReceiveBufferPtr, _headerBuffer, _headerBufferPtr, bytesPossible);
-                    _headerBufferPtr += bytesPossible;
+                    Buffer.BlockCopy(SocketReceiveBuffer, SocketReceiveBufferPtr, headerBuffer, headerBufferPtr, bytesPossible);
+                    headerBufferPtr += bytesPossible;
                     SocketReceiveBufferPtr += bytesPossible;
 
-                    if (_headerBufferPtr == HEADERLENGTH)
+                    if (headerBufferPtr == HEADERLENGTH)
                     {
                         //  SETUP TO RECEIVE THE ENTIRE MESSAGE
-                        _headerReceived = true;
+                        headerReceived = true;
 
                         //  SETUP MESSAGE BODY BYTE ARRAY FOR THE EXPECTED BYTES
-                        _messageType = (MessageTypes)Convert.ToInt16(_headerBuffer[0] | (_headerBuffer[1] << 8));
-                        _messageIsCompressed = Convert.ToBoolean(_headerBuffer[2]);
-                        _messageLength = _headerBuffer[3] | (_headerBuffer[4] << 8) | (_headerBuffer[5] << 16) | (_headerBuffer[6] << 24);
-                        _messageLengthUncompressed = _headerBuffer[7] | (_headerBuffer[8] << 8) | (_headerBuffer[9] << 16) | (_headerBuffer[10] << 24);
+                        messageType = (MessageTypes)Convert.ToInt16(headerBuffer[0] | (headerBuffer[1] << 8));
+                        messageIsCompressed = Convert.ToBoolean(headerBuffer[2]);
+                        messageLength = headerBuffer[3] | (headerBuffer[4] << 8) | (headerBuffer[5] << 16) | (headerBuffer[6] << 24);
+                        messageLengthUncompressed = headerBuffer[7] | (headerBuffer[8] << 8) | (headerBuffer[9] << 16) | (headerBuffer[10] << 24);
 
-                        if (Enum.IsDefined(typeof(MessageTypes), _messageType) == false)
+                        if (Enum.IsDefined(typeof(MessageTypes), messageType) == false)
                         {
                             throw new Exception("Invalid Message Type");
                         }
 
                         //  ONLY EXTEND THE MESSAGE BUFFER IF IT IS TOO SMALL FOR THE INCOMING MESSAGE.
                         //  THIS PROVIDES IMPROVED SPEED AND MUCH LESS WORK FOR THE GARBAGE COLLECTOR (BECAUSE WE ARE REUSING THE BUFFER)
-                        if (_messageLength > _receiveBuffer.Length) _receiveBuffer = new byte[_messageLength];
-                        // _receiveBuffer = new byte[_messageLength];
+                        if (messageLength > receiveBuffer.Length) receiveBuffer = new byte[messageLength];
 
                         //  WE MAY NEED THIS
                         ////  WRITE THE MESSAGE LENGTH IN THE FIRST 4 BYTES (THIS LOOKS CONVOLUTED BUT ACTUALLY IS THE FASTEST WAY POSSIBLE)
@@ -134,49 +133,49 @@ namespace SocketMeister.Messages
                 }
                 catch (Exception ex)
                 {
-                    string msg = "Error processing Message Body. _messageLength: " + _messageLength + "(" + _messageLengthUncompressed + " uncompressed), ReceivedByesCount: " + SocketBytesRead + ", SocketReceiveBuffer.Length: " + SocketReceiveBuffer.Length;
+                    string msg = "Error processing Message Body. messageLength: " + messageLength + "(" + messageLengthUncompressed + " uncompressed), ReceivedByesCount: " + SocketBytesRead + ", SocketReceiveBuffer.Length: " + SocketReceiveBuffer.Length;
                     msg += ", SocketReceiveBufferPtr: " + SocketReceiveBufferPtr;
-                    msg += ", _receiveBuffer.Length: " + _receiveBuffer.Length + ", _receiveBufferPtr: " + _receiveBufferPtr;
+                    msg += ", receiveBuffer.Length: " + receiveBuffer.Length + ", receiveBufferPtr: " + receiveBufferPtr;
                     msg += ", bytesRequired: " + bytesRequired + ", BytesPossible: " + bytesPossible;
-                    msg += ", _messageType: " + _messageType.ToString() + ", _messageIsCompressed: " + _messageIsCompressed.ToString(CultureInfo.CurrentCulture);
-                    msg += ", MessageCount: " + _statMessageNumber;
-                    msg += _history.Text;
+                    msg += ", messageType: " + messageType.ToString() + ", messageIsCompressed: " + messageIsCompressed.ToString(CultureInfo.CurrentCulture);
+                    msg += ", MessageCount: " + statMessageNumber;
+                    msg += history.Text;
                     msg += Environment.NewLine + Environment.NewLine;
                     msg += ex.Message;
                     throw new Exception(msg);
                 }
             }
-            if (_headerReceived == true && (SocketReceiveBufferPtr < SocketBytesRead || _messageLength == 0))
+            if (headerReceived == true && (SocketReceiveBufferPtr < SocketBytesRead || messageLength == 0))
             {
                 int bytesRequired = 0;
                 int bytesPossible = 0;
                 try
                 {
-                    bytesRequired = _messageLength - _receiveBufferPtr;
+                    bytesRequired = messageLength - receiveBufferPtr;
                     bytesPossible = bytesRequired;
                     if ((SocketBytesRead - SocketReceiveBufferPtr) < bytesRequired) bytesPossible = (SocketBytesRead - SocketReceiveBufferPtr);
-                    Buffer.BlockCopy(SocketReceiveBuffer, SocketReceiveBufferPtr, _receiveBuffer, _receiveBufferPtr, bytesPossible);
-                    _receiveBufferPtr += bytesPossible;
+                    Buffer.BlockCopy(SocketReceiveBuffer, SocketReceiveBufferPtr, receiveBuffer, receiveBufferPtr, bytesPossible);
+                    receiveBufferPtr += bytesPossible;
                     SocketReceiveBufferPtr += bytesPossible;
 
-                    if (_receiveBufferPtr == _messageLength)
+                    if (receiveBufferPtr == messageLength)
                     {
-                        _statMessageReceived = true;
+                        statMessageReceived = true;
                         Reset();
                         AddParseAttemptDetails();
-                        _statMessageNumber++;
+                        statMessageNumber++;
                         return true;
                     }
                 }
                 catch (Exception ex)
                 {
-                    string msg = "Error processing Message Body. _messageLength: " + _messageLength + "(" + _messageLengthUncompressed + " uncompressed), ReceivedByesCount: " + SocketBytesRead + ", SocketReceiveBuffer.Length: " + SocketReceiveBuffer.Length;
+                    string msg = "Error processing Message Body. messageLength: " + messageLength + "(" + messageLengthUncompressed + " uncompressed), ReceivedByesCount: " + SocketBytesRead + ", SocketReceiveBuffer.Length: " + SocketReceiveBuffer.Length;
                     msg += ", SocketReceiveBufferPtr: " + SocketReceiveBufferPtr;
-                    msg += ", _receiveBuffer.Length: " + _receiveBuffer.Length + ", _receiveBufferPtr: " + _receiveBufferPtr;
+                    msg += ", receiveBuffer.Length: " + receiveBuffer.Length + ", receiveBufferPtr: " + receiveBufferPtr;
                     msg += ", bytesRequired: " + bytesRequired + ", BytesPossible: " + bytesPossible;
-                    msg += ", _messageType: " + _messageType.ToString() + ", _messageIsCompressed: " + _messageIsCompressed.ToString(CultureInfo.CurrentCulture);
-                    msg += ", MessageCount: " + _statMessageNumber;
-                    msg += _history.Text;
+                    msg += ", messageType: " + messageType.ToString() + ", messageIsCompressed: " + messageIsCompressed.ToString(CultureInfo.CurrentCulture);
+                    msg += ", MessageCount: " + statMessageNumber;
+                    msg += history.Text;
                     msg += Environment.NewLine + Environment.NewLine;
                     msg += ex.Message;
                     throw new Exception(msg);
@@ -205,8 +204,8 @@ namespace SocketMeister.Messages
                 {
                     //  WRITE HEADER
                     writer.Write(false);    //  NOT COMPRESSED
-                    writer.Write((int)0);   //  WILL BE USED TO WRITE _compressedLength
-                    writer.Write((int)0);   //  WILL BE USED TO WRITE _uncompressedLength
+                    writer.Write((int)0);   //  WILL BE USED TO WRITE compressedLength
+                    writer.Write((int)0);   //  WILL BE USED TO WRITE uncompressedLength
 
                     //  WRITE USER BYTES
                     long position1 = writer.BaseStream.Position;
@@ -245,8 +244,8 @@ namespace SocketMeister.Messages
                     else
                     {
                         writer.Write(false);     //  UNCOMPRESSED
-                        writer.Write((int)0);   //  WILL BE USED TO WRITE _compressedLength
-                        writer.Write((int)0);   //  WILL BE USED TO WRITE _uncompressedLength
+                        writer.Write((int)0);   //  WILL BE USED TO WRITE compressedLength
+                        writer.Write((int)0);   //  WILL BE USED TO WRITE uncompressedLength
 
                         //  WRITE USER BYTES
                         long position1 = writer.BaseStream.Position;
@@ -277,19 +276,19 @@ namespace SocketMeister.Messages
         /// </summary>
         internal MessageTypes MessageType
         {
-            get { return _messageType; }
+            get { return messageType; }
         }
 
 
         private void AddParseAttemptDetails()
         {
-            Parse p = new Parse(_statMessageNumber, _messageType.ToString(), _messageLength, _messageLengthUncompressed)
+            Parse p = new Parse(statMessageNumber, messageType.ToString(), messageLength, messageLengthUncompressed)
             {
-                MessageReceived = _statMessageReceived,
-                SocketBytesRead = _statSocketBytesRead,
-                SocketBufferLength = _statSocketBufferLength
+                MessageReceived = statMessageReceived,
+                SocketBytesRead = statSocketBytesRead,
+                SocketBufferLength = statSocketBufferLength
             };
-            _history.Add(p);
+            history.Add(p);
         }
 
 
@@ -368,11 +367,11 @@ namespace SocketMeister.Messages
 
         private byte[] GetBuffer()
         {
-            if (_messageIsCompressed == false) return _receiveBuffer;
+            if (messageIsCompressed == false) return receiveBuffer;
             //  UNCOMPRESS
-            if (_uncompressedBuffer.Length < _messageLengthUncompressed) _uncompressedBuffer = new byte[_messageLengthUncompressed];
-            CLZF2.Decompress(_receiveBuffer, ref _uncompressedBuffer, _messageLength);
-            return _uncompressedBuffer;
+            if (uncompressedBuffer.Length < messageLengthUncompressed) uncompressedBuffer = new byte[messageLengthUncompressed];
+            CLZF2.Decompress(receiveBuffer, ref uncompressedBuffer, messageLength);
+            return uncompressedBuffer;
         }
 
         /// <summary>
@@ -380,9 +379,9 @@ namespace SocketMeister.Messages
         /// </summary>
         public void Reset()
         {
-            _headerBufferPtr = 0;
-            _receiveBufferPtr = 0;
-            _headerReceived = false;
+            headerBufferPtr = 0;
+            receiveBufferPtr = 0;
+            headerReceived = false;
         }
 
 

@@ -25,17 +25,17 @@ namespace SocketMeister
         /// </summary>
         private const int MAX_WAIT_FOR_CLIENT_DISCONNECT_WHEN_STOPPING = 20000;
 
-        private readonly ManualResetEvent _allDone = new ManualResetEvent(false);
-        private readonly Clients _connectedClients = new Clients();
-        private bool _disposed = false;
-        private readonly bool _enableCompression;
-        private readonly string _endPoint;
-        private readonly Socket _listener = null;
-        private readonly int _port;
-        private ServiceStatus _status;
-        private readonly object _lock = new object();
-        private int _requestsInProgress = 0;
-        private readonly Thread _threadListener;
+        private readonly ManualResetEvent allDone = new ManualResetEvent(false);
+        private readonly object classLock = new object();
+        private readonly Clients connectedClients = new Clients();
+        private bool disposed = false;
+        private readonly bool enableCompression;
+        private readonly string endPoint;
+        private readonly Socket listener = null;
+        private readonly int port;
+        private int requestsInProgress = 0;
+        private ServiceStatus status;
+        private readonly Thread threadListener;
 
         /// <summary>
         /// Event raised when a client connects to the socket server (Raised in a seperate thread)
@@ -71,34 +71,34 @@ namespace SocketMeister
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="Port">Port that this socket server will listen on</param>
-        /// <param name="EnableCompression">Enable compression on message data</param>
-        public SocketServer(int Port, bool EnableCompression)
+        /// <param name="port">Port that this socket server will listen on</param>
+        /// <param name="enableCompression">Enable compression on message data</param>
+        public SocketServer(int port, bool enableCompression)
         {
-            _port = Port;
-            _enableCompression = EnableCompression;
+            this.port = port;
+            this.enableCompression = enableCompression;
 
             //  SETUP BACKGROUND PROCESS TO FOR LISTENING
-            _threadListener = new Thread(new ThreadStart(BgListen))
+            threadListener = new Thread(new ThreadStart(BgListen))
             {
                 IsBackground = true
             };
 
             //  CONNECT TO ALL INTERFACES (I.P. 0.0.0.0 IS ALL)
             IPAddress ipAddress = IPAddress.Parse("0.0.0.0");
-            IPEndPoint localEP = new IPEndPoint(ipAddress, Port);
+            IPEndPoint localEP = new IPEndPoint(ipAddress, port);
 
             //  LOCAL IP ADDRESS AND PORT (USED FOR DIAGNOSTIC MESSAGES)
-            _endPoint = GetLocalIPAddress().ToString() + ":" + Port.ToString(CultureInfo.InvariantCulture);
+            endPoint = GetLocalIPAddress().ToString() + ":" + port.ToString(CultureInfo.InvariantCulture);
 
             // Create a TCP/IP socket.  
-            _listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            _listener.Bind(localEP);
+            listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            listener.Bind(localEP);
 
             //  REGISTER FOR EVENTS
-            _connectedClients.ClientDisconnected += ConnectedClients_ClientDisconnected;
-            _connectedClients.ClientConnected += ConnectedClients_ClientConnected;
-            _connectedClients.TraceEventRaised += ConnectedClients_ExceptionRaised;
+            connectedClients.ClientDisconnected += ConnectedClients_ClientDisconnected;
+            connectedClients.ClientConnected += ConnectedClients_ClientConnected;
+            connectedClients.TraceEventRaised += ConnectedClients_ExceptionRaised;
         }
 
 
@@ -113,39 +113,39 @@ namespace SocketMeister
 
         protected virtual void Dispose(bool disposing)
         {
-            if (_disposed) return;
+            if (disposed) return;
             if (disposing)
             {
                 //  NOTE: If you application uses .NET 2.0 or .NET 3.5. add NET20 or NET35 as a conditional compilation symbol, in your project's Build properties
 #if !NET20 && !NET35
-                _allDone.Dispose();
-                _listener.Dispose();
+                allDone.Dispose();
+                listener.Dispose();
 #else
-                _allDone.Close();
-                _listener.Close();
+                allDone.Close();
+                listener.Close();
 #endif
             }
-            _disposed = true;
+            disposed = true;
         }
 
 
         /// <summary>
         /// The IP Address and Port that this socket server is using to communicate (e.g. 10.200.50.25:6000).
         /// </summary>
-        public string EndPoint { get { return _endPoint; } }
+        public string EndPoint { get { return endPoint; } }
 
         /// <summary>
         /// Status of the socket listener
         /// </summary>
         public ServiceStatus Status
         {
-            get { lock (_lock) { return _status; } }
+            get { lock (classLock) { return status; } }
             set
             {
-                lock (_lock)
+                lock (classLock)
                 {
-                    if (_status == value) return;
-                    _status = value;
+                    if (status == value) return;
+                    status = value;
                 }
                 ListenerStateChanged?.Invoke(null, new ServerStatusEventArgs(value));
             }
@@ -154,7 +154,7 @@ namespace SocketMeister
         /// <summary>
         /// The number of client requests currently being executed.
         /// </summary>
-        public int RequestsInProgress { get { lock (_lock) { return _requestsInProgress; } } }
+        public int RequestsInProgress { get { lock (classLock) { return requestsInProgress; } } }
 
 
         #region Public Methods
@@ -162,13 +162,13 @@ namespace SocketMeister
         /// <summary>
         /// Send a message to all connected clients. Exceptions will not halt this process, but generate 'ExceptionRaised' events. 
         /// </summary>
-        /// <param name="Parameters">Parameters to send with the message</param>
-        /// <param name="TimeoutMilliseconds">Number of milliseconds to wait before timing out</param>
+        /// <param name="parameters">Parameters to send with the message</param>
+        /// <param name="timeoutMilliseconds">Number of milliseconds to wait before timing out</param>
         [SuppressMessage("Microsoft.Performance", "CA1031:DoNotCatchGeneralExceptionTypes", MessageId = "ExceptionEventRaised")]
-        public void BroadcastMessage(object[] Parameters, int TimeoutMilliseconds = 60000)
+        public void BroadcastMessage(object[] parameters, int timeoutMilliseconds = 60000)
         {
-            Messages.Message message = new Messages.Message(Parameters, TimeoutMilliseconds);
-            List<Client> clients = _connectedClients.ToList();
+            Messages.Message message = new Messages.Message(parameters, timeoutMilliseconds);
+            List<Client> clients = connectedClients.ToList();
             foreach (Client client in clients)
             {
                 try
@@ -185,7 +185,7 @@ namespace SocketMeister
         /// <summary>
         /// Number of clients connected to the socket server.
         /// </summary>
-        public int ClientCount { get { return _connectedClients.Count; } }
+        public int ClientCount { get { return connectedClients.Count; } }
 
         /// <summary>
         /// Returns a list of clients which are connected to the socket server
@@ -193,7 +193,7 @@ namespace SocketMeister
         /// <returns>List of clients</returns>
         public List<Client> GetClients()
         {
-            return _connectedClients.ToList();
+            return connectedClients.ToList();
         }
 
         /// <summary>
@@ -201,7 +201,7 @@ namespace SocketMeister
         /// </summary>
         public void Start()
         {
-            _threadListener.Start();
+            threadListener.Start();
         }
 
 
@@ -214,9 +214,9 @@ namespace SocketMeister
             if (Status != ServiceStatus.Started) throw new Exception("Socket server is stopped, or in the process of starting or stopping.");
 
             Status = ServiceStatus.Stopping;
-            _allDone.Set();
+            allDone.Set();
 
-            List<Client> toProcess = _connectedClients.ToList();
+            List<Client> toProcess = connectedClients.ToList();
 
             //  SEND SYNCRONOUS DISCONNECT MESSAGE TO CLIENTS
             foreach (Client remoteClient in toProcess)
@@ -228,32 +228,32 @@ namespace SocketMeister
             DateTime maxWaitClientDisconnect = DateTime.Now.AddMilliseconds(MAX_WAIT_FOR_CLIENT_DISCONNECT_WHEN_STOPPING);
             while (true == true)
             {
-                if (_connectedClients.Count == 0) break;
+                if (connectedClients.Count == 0) break;
                 if (DateTime.Now > maxWaitClientDisconnect)
                 {
-                    TraceEventRaised?.Invoke(this, new TraceEventArgs(new Exception("There were " + _connectedClients.Count + " client/s still connected after an attempt to close them. They will now be force closed"), 5013));
+                    TraceEventRaised?.Invoke(this, new TraceEventArgs(new Exception("There were " + connectedClients.Count + " client/s still connected after an attempt to close them. They will now be force closed"), 5013));
                     break;
                 }
                 Thread.Sleep(200);
             }
 
             //  STOP RECEIVING
-            try { _listener.Shutdown(SocketShutdown.Receive); }
+            try { listener.Shutdown(SocketShutdown.Receive); }
             catch (Exception ex)
             {
                 TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 5008));
             }
 
             //  CLOSE CONNECTED CLIENTS
-            _connectedClients.DisconnectAll();
+            connectedClients.DisconnectAll();
 
             //  CLOSE LISTENER
-            try { _listener.Shutdown(SocketShutdown.Send); }
+            try { listener.Shutdown(SocketShutdown.Send); }
             catch (Exception ex)
             {
                 TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 5008));
             }
-            try { _listener.Close(); }
+            try { listener.Close(); }
             catch (Exception ex)
             {
                 TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 5008));
@@ -273,7 +273,7 @@ namespace SocketMeister
         private void AcceptCallback(IAsyncResult ar)
         {
             // Signal the main thread to continue.  
-            _allDone.Set();
+            allDone.Set();
 
             if (Status == ServiceStatus.Stopped || Status == ServiceStatus.Stopping)
             {
@@ -332,7 +332,7 @@ namespace SocketMeister
                     handler.SendTimeout = 30000;
                     // Create the state object.  
                     Client remoteClient = new Client(this, handler);
-                    _connectedClients.Add(remoteClient);
+                    connectedClients.Add(remoteClient);
                     handler.BeginReceive(remoteClient.ReceiveBuffer, 0, SocketClient.SEND_RECEIVE_BUFFER_SIZE, 0, new AsyncCallback(ReadCallback), remoteClient);
                 }))
                 {
@@ -375,7 +375,7 @@ namespace SocketMeister
                             }
                             else
                             {
-                                lock (_lock) { _requestsInProgress += 1; }
+                                lock (classLock) { requestsInProgress += 1; }
                                 ThreadPool.QueueUserWorkItem(BgProcessRequestMessage, request);
                             }
                         }
@@ -392,7 +392,7 @@ namespace SocketMeister
                         {
                             try
                             {
-                                _connectedClients.Disconnect(remoteClient);
+                                connectedClients.Disconnect(remoteClient);
                             }
                             catch (Exception ex)
                             {
@@ -403,7 +403,7 @@ namespace SocketMeister
                         {
                             if (Status == ServiceStatus.Started)
                             {
-                                lock (_lock) { _requestsInProgress += 1; }
+                                lock (classLock) { requestsInProgress += 1; }
                                 new Thread(new ThreadStart(delegate
                                 {
                                     BgProcessPollRequest(remoteClient);
@@ -421,13 +421,13 @@ namespace SocketMeister
             }
             catch (SocketException ex)
             {
-                _connectedClients.Disconnect(remoteClient);
+                connectedClients.Disconnect(remoteClient);
                 //  CONNECTION RESET EVENTS ARE NORMAL. WE DON'T WANT EVENT LOGS FULL OF THESE DISCONNECT MESSAGES
                 if (ex.SocketErrorCode != SocketError.ConnectionReset) TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 5008));
             }
             catch (Exception ex)
             {
-                _connectedClients.Disconnect(remoteClient);
+                connectedClients.Disconnect(remoteClient);
                 TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 5008));
             }
         }
@@ -439,20 +439,20 @@ namespace SocketMeister
             try
             {
                 Status = ServiceStatus.Starting;
-                _listener.Listen(500);
+                listener.Listen(500);
                 Status = ServiceStatus.Started;
-                TraceEventRaised?.Invoke(this, new TraceEventArgs("Socket server started on port " + _port.ToString(), SeverityType.Information, 10023));
+                TraceEventRaised?.Invoke(this, new TraceEventArgs("Socket server started on port " + port.ToString(), SeverityType.Information, 10023));
 
                 while (Status != ServiceStatus.Stopped)
                 {
                     // Set the event to nonsignaled state.  
-                    _allDone.Reset();
+                    allDone.Reset();
 
                     // Start an asynchronous socket to listen for connections.  
-                    _listener.BeginAccept(new AsyncCallback(AcceptCallback), _listener);
+                    listener.BeginAccept(new AsyncCallback(AcceptCallback), listener);
 
                     // Wait until a connection is made before continuing.  
-                    _allDone.WaitOne();
+                    allDone.WaitOne();
                 }
             }
             catch (Exception ex)
@@ -491,7 +491,7 @@ namespace SocketMeister
             }
             finally
             {
-                lock (_lock) { _requestsInProgress -= 1; }
+                lock (classLock) { requestsInProgress -= 1; }
             }
         }
 
@@ -518,7 +518,7 @@ namespace SocketMeister
             }
             finally
             {
-                lock (_lock) { _requestsInProgress -= 1; }
+                lock (classLock) { requestsInProgress -= 1; }
             }
         }
 
@@ -550,19 +550,19 @@ namespace SocketMeister
             }
             catch (Exception ex)
             {
-                _connectedClients.Disconnect(remoteClient);
+                connectedClients.Disconnect(remoteClient);
                 TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 5008));
             }
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1031:DoNotCatchGeneralExceptionTypes", MessageId = "ExceptionEventRaised")]
-        private void SendDisconnectMessage(Socket Socket)
+        private void SendDisconnectMessage(Socket socket)
         {
             try
             {
-                if (Socket == null || Socket.Connected == false) return;
-                byte[] sendBytes = MessageEngine.GenerateSendBytes(new ServerStoppingMessage(MAX_WAIT_FOR_CLIENT_DISCONNECT_WHEN_STOPPING), _enableCompression);
-                Socket.Send(sendBytes, sendBytes.Length, SocketFlags.None);
+                if (socket == null || socket.Connected == false) return;
+                byte[] sendBytes = MessageEngine.GenerateSendBytes(new ServerStoppingMessage(MAX_WAIT_FOR_CLIENT_DISCONNECT_WHEN_STOPPING), enableCompression);
+                socket.Send(sendBytes, sendBytes.Length, SocketFlags.None);
             }
             catch (Exception ex)
             {
@@ -571,31 +571,31 @@ namespace SocketMeister
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1031:DoNotCatchGeneralExceptionTypes", MessageId = "ExceptionEventRaised")]
-        internal void SendMessage(Client RemoteClient, IMessage Message, bool Async = true)
+        internal void SendMessage(Client remoteClient, IMessage message, bool async = true)
         {
-            if (RemoteClient == null || RemoteClient.ClientSocket == null ||
-                RemoteClient.ClientSocket.Connected == false || RemoteClient.ClientSocket.Poll(200000, SelectMode.SelectWrite) == false) return;
+            if (remoteClient == null || remoteClient.ClientSocket == null ||
+                remoteClient.ClientSocket.Connected == false || remoteClient.ClientSocket.Poll(200000, SelectMode.SelectWrite) == false) return;
 
             try
             {
-                byte[] sendBytes = MessageEngine.GenerateSendBytes(Message, _enableCompression);
-                if (Async == true)
+                byte[] sendBytes = MessageEngine.GenerateSendBytes(message, enableCompression);
+                if (async == true)
                 {
-                    RemoteClient.ClientSocket.BeginSend(sendBytes, 0, sendBytes.Length, 0, new AsyncCallback(SendCallback), RemoteClient);
+                    remoteClient.ClientSocket.BeginSend(sendBytes, 0, sendBytes.Length, 0, new AsyncCallback(SendCallback), remoteClient);
                 }
                 else
                 {
-                    RemoteClient.ClientSocket.Send(sendBytes, sendBytes.Length, SocketFlags.None);
+                    remoteClient.ClientSocket.Send(sendBytes, sendBytes.Length, SocketFlags.None);
                 }
             }
             catch (ObjectDisposedException ex)
             {
-                _connectedClients.Disconnect(RemoteClient);
+                connectedClients.Disconnect(remoteClient);
                 TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 5008));
             }
             catch (Exception ex)
             {
-                _connectedClients.Disconnect(RemoteClient);
+                connectedClients.Disconnect(remoteClient);
                 TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 5008));
             }
         }

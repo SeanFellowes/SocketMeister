@@ -12,7 +12,7 @@ namespace SocketMeister.Test
 {
     public partial class FormMain : Form
     {
-        private readonly BindingList<LogEntry> _gridItems;
+        private readonly BindingList<LogEntry> gridItems;
 
         public FormMain()
         {
@@ -27,14 +27,14 @@ namespace SocketMeister.Test
             TestServer4.TraceEventRaised += TraceEventRaised;
 
             dGrid.AutoGenerateColumns = true;
-            _gridItems = new BindingList<LogEntry>
+            gridItems = new BindingList<LogEntry>
             {
                 AllowNew = true,
                 AllowRemove = true,
                 RaiseListChangedEvents = true,
                 AllowEdit = false
             };
-            dGrid.DataSource = _gridItems;
+            dGrid.DataSource = gridItems;
 
             //  START CONTROL ITEMS
             ControlServer.Start();
@@ -66,8 +66,8 @@ namespace SocketMeister.Test
             else
             {
                 LogEntry logEntry = new LogEntry(source, args.Message, args.Severity, args.EventId);
-                if (_gridItems.Count == 0) _gridItems.Add(logEntry);
-                else _gridItems.Insert(0, logEntry);
+                if (gridItems.Count == 0) gridItems.Add(logEntry);
+                else gridItems.Insert(0, logEntry);
             }
         }
 

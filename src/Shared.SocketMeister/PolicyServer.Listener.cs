@@ -15,20 +15,20 @@ namespace SocketMeister
         internal delegate void GetSocketCallBack(Socket sock);
         internal class Listener : IDisposable
         {
-            private bool _isRunning = false;
-            private bool _run = true;
-            private readonly object _lock = new object();
-            private Socket _listener = null;
-            private bool _rejectNewConnections = false;
+            private bool isRunning = false;
+            private bool run = true;
+            private readonly object classLock = new object();
+            private Socket listener = null;
+            private bool rejectNewConnections = false;
 
             //  EVENTS
             internal event EventHandler<TraceEventArgs> TraceEventRaised;
             internal event EventHandler<PolicyServerIsRunningChangedArgs> IsRunningChanged;
 
             //  PROPERTIES
-            internal bool IsRunning { get { lock (_lock) { return _isRunning; } } private set { lock (_lock) { _isRunning = value; } } }
-            private bool RunListener { get { lock (_lock) { return _run; } } set { lock (_lock) { _run = value; } } }
-            internal bool RejectNewConnections { get { lock (_lock) { return _rejectNewConnections; } } set { lock (_lock) { _rejectNewConnections = value; } } }
+            internal bool IsRunning { get { lock (classLock) { return isRunning; } } private set { lock (classLock) { isRunning = value; } } }
+            private bool RunListener { get { lock (classLock) { return run; } } set { lock (classLock) { run = value; } } }
+            internal bool RejectNewConnections { get { lock (classLock) { return rejectNewConnections; } } set { lock (classLock) { rejectNewConnections = value; } } }
 
             public void Dispose()
             {
@@ -39,46 +39,46 @@ namespace SocketMeister
             {
                 if (disposing)
                 {
-                    if (_listener != null) _listener.Close();
-                    _listener = null;
+                    if (listener != null) listener.Close();
+                    listener = null;
                 }
             }
 
 
-            internal void Start(IPAddress Address, int port, GetSocketCallBack callback, int maximumConnections)
+            internal void Start(IPAddress address, int port, GetSocketCallBack callback, int maximumConnections)
             {
                 //  RUN ON ANOTHER THREAD
-                _rejectNewConnections = false;
-                new Thread(new ThreadStart(delegate { Listen(Address, port, callback, maximumConnections); })).Start();
+                rejectNewConnections = false;
+                new Thread(new ThreadStart(delegate { Listen(address, port, callback, maximumConnections); })).Start();
             }
 
             internal void Stop()
             {
-                if (_listener == null || IsRunning == false) return;
+                if (listener == null || IsRunning == false) return;
                 RunListener = false;
-                _listener.Close();
+                listener.Close();
                 while (IsRunning == true) { Thread.Sleep(200); }
                 try
                 {
 #if !NET20 && !NET35
-                    _listener.Dispose();
+                    listener.Dispose();
 #else
-                    _listener.Close();
+                    listener.Close();
 #endif
-                    _listener = null;
+                    listener = null;
                 }
                 catch { }
             }
 
-            private void Listen(IPAddress Address, int port, GetSocketCallBack callback, int maximumConnections)
+            private void Listen(IPAddress address, int port, GetSocketCallBack callback, int maximumConnections)
             {
                 RunListener = true;
-                IPEndPoint localEP = new IPEndPoint(Address, port);
+                IPEndPoint localEP = new IPEndPoint(address, port);
 
                 try
                 {
-                    _listener = new Socket(localEP.Address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-                    _listener.Bind(localEP);
+                    listener = new Socket(localEP.Address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+                    listener.Bind(localEP);
                     IsRunning = true;
                     IsRunningChanged?.Invoke(this, new PolicyServerIsRunningChangedArgs { IsRunning = true });
                     while (RunListener == true)
@@ -87,8 +87,8 @@ namespace SocketMeister
                         {
                             if (RunListener == true)
                             {
-                                _listener.Listen(maximumConnections);
-                                Socket socket = _listener.Accept();
+                                listener.Listen(maximumConnections);
+                                Socket socket = listener.Accept();
 
                                 // Return connected socket through callback function.
                                 if (callback != null && RejectNewConnections == false)
@@ -117,7 +117,7 @@ namespace SocketMeister
                     IsRunningChanged?.Invoke(this, new PolicyServerIsRunningChangedArgs { IsRunning = false });
                     TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 1234));
                 }
-                try { _listener.Close(); }
+                try { listener.Close(); }
                 catch { IsRunning = false; }
             }
 

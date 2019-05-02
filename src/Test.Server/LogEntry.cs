@@ -10,29 +10,29 @@ namespace SocketMeister.Test
 {
     internal class LogEntry : INotifyPropertyChanged
     {
-        readonly DateTime _timeStamp;
-        readonly string _source = "";
-        readonly string _message = "";
-        readonly string _eventId = "";
-        readonly string _severity = "";
+        readonly string eventId = "";
+        readonly string message = "";
+        readonly string severity = "";
+        readonly string source = "";
+        readonly DateTime timeStamp;
 
-        public string TimeStamp { get { return _timeStamp.ToString("HH:mm:ss fff"); } }
-        public string Source { get { return _source; } }
-        public string EventId { get { return _eventId; } }
-        public string Message { get { return _message; } }
-        public string Severity { get { return _severity; } }
+        public string TimeStamp { get { return timeStamp.ToString("HH:mm:ss fff"); } }
+        public string Source { get { return source; } }
+        public string EventId { get { return eventId; } }
+        public string Message { get { return message; } }
+        public string Severity { get { return severity; } }
 
         public LogEntry() { }
 
-        public LogEntry(string Source, string Message, SeverityType Severity, int EventId)
+        public LogEntry(string source, string message, SeverityType severity, int eventId)
         {
-            _timeStamp = DateTime.Now;
-            _source = Source;
-            _message = Message;
-            if (EventId != 0) _eventId = EventId.ToString();
-            if (Severity == SeverityType.Error) _severity = "Error";
-            else if (Severity == SeverityType.Information) _severity = "Information";
-            else if (Severity == SeverityType.Warning) _severity = "Warning";
+            timeStamp = DateTime.Now;
+            this.source = source;
+            this.message = message;
+            if (eventId != 0) this.eventId = eventId.ToString();
+            if (severity == SeverityType.Error) this.severity = "Error";
+            else if (severity == SeverityType.Information) this.severity = "Information";
+            else if (severity == SeverityType.Warning) this.severity = "Warning";
             this.NotifyPropertyChanged("TimeStamp");
             this.NotifyPropertyChanged("Source");
             this.NotifyPropertyChanged("EventId");

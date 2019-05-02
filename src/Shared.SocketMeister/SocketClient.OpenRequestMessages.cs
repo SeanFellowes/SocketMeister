@@ -19,12 +19,12 @@ namespace SocketMeister
         /// </summary>
         internal class OpenRequestMessages
         {
-            private readonly List<RequestMessage> _list = new List<RequestMessage>();
-            private readonly object _lock = new object();
+            private readonly object classLock = new object();
+            private readonly List<RequestMessage> list = new List<RequestMessage>();
 
-            internal void Add(RequestMessage AddItem)
+            internal void Add(RequestMessage addItem)
             {
-                lock (_lock) { _list.Add(AddItem); }
+                lock (classLock) { list.Add(addItem); }
             }
 
             /// <summary>
@@ -32,25 +32,25 @@ namespace SocketMeister
             /// </summary>
             public int Count
             {
-                get { lock (_lock) { return _list.Count; } }
+                get { lock (classLock) { return list.Count; } }
             }
 
 
-            internal RequestMessage Find(long RequestID)
+            internal RequestMessage Find(long requestID)
             {
-                lock (_lock)
+                lock (classLock)
                 {
-                    foreach (RequestMessage message in _list)
+                    foreach (RequestMessage message in list)
                     {
-                        if (message.RequestId == RequestID) return message;
+                        if (message.RequestId == requestID) return message;
                     }
                 }
                 return null;
             }
 
-            internal void Remove(RequestMessage RemoveItem)
+            internal void Remove(RequestMessage removeItem)
             {
-                lock (_lock) { _list.Remove(RemoveItem); }
+                lock (classLock) { list.Remove(removeItem); }
             }
 
             /// <summary>
@@ -58,9 +58,9 @@ namespace SocketMeister
             /// </summary>
             internal void ResetToUnsent()
             {
-                lock (_lock)
+                lock (classLock)
                 {
-                    foreach (RequestMessage message in _list)
+                    foreach (RequestMessage message in list)
                     {
                         if (message.SendReceiveStatus != SendReceiveStatus.ResponseReceived) message.SendReceiveStatus = SendReceiveStatus.Unsent;
                     }

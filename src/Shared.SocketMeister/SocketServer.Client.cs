@@ -16,33 +16,33 @@ namespace SocketMeister
         /// </summary>
         public class Client
         {
-            private readonly Guid _clientId = Guid.NewGuid();
-            private readonly Socket _clientSocket;
-            private readonly DateTime _connectTimestamp = DateTime.Now;
-            private readonly MessageEngine _receivedEnvelope;
-            private readonly SocketServer _socketServer;
+            private readonly Guid clientId = Guid.NewGuid();
+            private readonly Socket clientSocket;
+            private readonly DateTime connectTimestamp = DateTime.Now;
+            private readonly MessageEngine receivedEnvelope;
+            private readonly SocketServer socketServer;
 
             internal Client(SocketServer Server, Socket ClientSocket)
             {
-                _socketServer = Server;
-                _clientSocket = ClientSocket;
-                _receivedEnvelope = new MessageEngine();
+                socketServer = Server;
+                clientSocket = ClientSocket;
+                receivedEnvelope = new MessageEngine();
             }
 
             /// <summary>
             /// Unique GUID assigned to each client
             /// </summary>
-            public Guid ClientId { get { return _clientId; } }
+            public Guid ClientId { get { return clientId; } }
 
             /// <summary>
             /// Socket which the client is transmitting data on.
             /// </summary>
-            internal Socket ClientSocket { get { return _clientSocket; } }
+            internal Socket ClientSocket { get { return clientSocket; } }
 
             /// <summary>
             /// Date and time which the client connected.
             /// </summary>
-            public DateTime ConnectTimestamp { get { return _connectTimestamp; } }
+            public DateTime ConnectTimestamp { get { return connectTimestamp; } }
 
             /// <summary>
             /// Byte array to directly receive data from the socket. 
@@ -52,17 +52,17 @@ namespace SocketMeister
             /// <summary>
             /// Class which processes raw data directly from the socket and converts into usable messages.
             /// </summary>
-            internal MessageEngine ReceiveEnvelope { get { return _receivedEnvelope; } }
+            internal MessageEngine ReceiveEnvelope { get { return receivedEnvelope; } }
 
             /// <summary>
             /// Send a message to this client
             /// </summary>
-            /// <param name="Parameters">Parameters to send to the client.</param>
-            /// <param name="TimeoutMilliseconds">Number of milliseconds to attempt to send the message before throwing a TimeoutException.</param>
-            public void SendMessage(object[] Parameters, int TimeoutMilliseconds = 60000)
+            /// <param name="parameters">Parameters to send to the client.</param>
+            /// <param name="timeoutMilliseconds">Number of milliseconds to attempt to send the message before throwing a TimeoutException.</param>
+            public void SendMessage(object[] parameters, int timeoutMilliseconds = 60000)
             {
-                Messages.Message message = new Messages.Message(Parameters, TimeoutMilliseconds);
-                _socketServer.SendMessage(this, message, true);
+                Message message = new Message(parameters, timeoutMilliseconds);
+                socketServer.SendMessage(this, message, true);
             }
         }
     }

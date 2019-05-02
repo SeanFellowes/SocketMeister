@@ -30,10 +30,10 @@ namespace SocketMeister
             /// <summary>
             /// Constructor
             /// </summary>
-            /// <param name="Status">Current status of the service</param>
-            public ServerStatusEventArgs(ServiceStatus Status)
+            /// <param name="status">Current status of the service</param>
+            public ServerStatusEventArgs(ServiceStatus status)
             {
-                this.Status = Status;
+                Status = status;
             }
 
             /// <summary>

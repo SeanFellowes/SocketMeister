@@ -24,13 +24,11 @@ namespace SocketMeister
         public const int ServicePort = 943;
         private const string POLICY_REQUEST = "<policy-file-request/>";
 
-        private Listener _listener = null;
-        private byte[] _policybytes;
-        private bool _run = true;
-        private ServiceStatus _status = ServiceStatus.Stopped;
-
-        //  THREADSAFE LOCKS
-        private readonly object _lockClass = new object();
+        private readonly object classLock = new object();
+        private Listener listener = null;
+        private byte[] policyBytes;
+        private bool run = true;
+        private ServiceStatus status = ServiceStatus.Stopped;
 
         /// <summary>
         /// Trace message raised from within SocketMeister.
@@ -70,16 +68,16 @@ namespace SocketMeister
         {
             if (disposing)
             {
-                if (_listener != null) _listener.Dispose();
-                _listener = null;
-                _policybytes = null;
+                if (listener != null) listener.Dispose();
+                listener = null;
+                policyBytes = null;
             }
         }
 
 
 
         //  PRIVATE / INTERNAL PROPERTIES
-        private bool Run { get { lock (_lockClass) { return _run; } } set { lock (_lockClass) _run = value; } }
+        private bool Run { get { lock (classLock) { return run; } } set { lock (classLock) run = value; } }
 
 
         //  PUBLIC PROPERTIES
@@ -95,10 +93,10 @@ namespace SocketMeister
         /// </summary>
         public ServiceStatus Status
         {
-            get { lock (_lockClass) { return _status; } }
+            get { lock (classLock) { return status; } }
             private set
             {
-                lock (_lockClass) { _status = value; }
+                lock (classLock) { status = value; }
                 if (SocketServiceStatusChanged != null)
                 {
                     try { SocketServiceStatusChanged(this, new ServerStatusEventArgs(value)); }
@@ -125,12 +123,12 @@ namespace SocketMeister
         }
 
 
-        public static string GetLocalIPv4(NetworkInterfaceType _type)
+        public static string GetLocalIPv4(NetworkInterfaceType type)
         {
             string output = "";
             foreach (NetworkInterface item in NetworkInterface.GetAllNetworkInterfaces())
             {
-                if (item.NetworkInterfaceType == _type && item.OperationalStatus == OperationalStatus.Up)
+                if (item.NetworkInterfaceType == type && item.OperationalStatus == OperationalStatus.Up)
                 {
                     foreach (UnicastIPAddressInformation ip in item.GetIPProperties().UnicastAddresses)
                     {
@@ -163,15 +161,15 @@ namespace SocketMeister
                         string assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                         string xmlFileName = Path.Combine(assemblyFolder, "CrossDomainPolicy.xml");
                         var filestream = new FileStream(xmlFileName, FileMode.Open, FileAccess.Read);
-                        _policybytes = new byte[filestream.Length];
-                        filestream.Read(_policybytes, 0, (int)filestream.Length);
+                        policyBytes = new byte[filestream.Length];
+                        filestream.Read(policyBytes, 0, (int)filestream.Length);
                         filestream.Close();
 
                         // Initialize policy socket listener
-                        _listener = new Listener();
-                        _listener.TraceEventRaised += SocketListener_Error;
-                        _listener.IsRunningChanged += SocketListener_ListenerStatusChanged;
-                        _listener.Start(IPAddress, ServicePort, PolicyClient_Connected, 1000);
+                        listener = new Listener();
+                        listener.TraceEventRaised += SocketListener_Error;
+                        listener.IsRunningChanged += SocketListener_ListenerStatusChanged;
+                        listener.Start(IPAddress, ServicePort, PolicyClient_Connected, 1000);
 
                         //  REGISTER AS STARTED AND START THE MESSAGE SENDER (NOTE: WILL NOT RUN UNLESS ServiceStatus = STARTED
                         this.Status = ServiceStatus.Started;
@@ -203,13 +201,13 @@ namespace SocketMeister
                     Run = false;
 
                     //  LISTENERS TO REJECT NEW CLIENT CONNECTIONS
-                    _listener.RejectNewConnections = true;
+                    listener.RejectNewConnections = true;
 
                     //  UNREGISTER LISTENER EVENTS
-                    _listener.TraceEventRaised -= SocketListener_Error;
+                    listener.TraceEventRaised -= SocketListener_Error;
 
                     //  STOP THE LISTENERS
-                    _listener.Stop();
+                    listener.Stop();
                     DateTime timeout = DateTime.Now.AddSeconds(30);
                     while (this.Status != ServiceStatus.Stopped && DateTime.Now < timeout)
                     {
@@ -218,7 +216,7 @@ namespace SocketMeister
 
 
                     //  UNREGISTER REMAINING EVENTS
-                    _listener.IsRunningChanged -= SocketListener_ListenerStatusChanged;
+                    listener.IsRunningChanged -= SocketListener_ListenerStatusChanged;
 
                     //  IT SHOULD ALREADY BE STOPPED, BUT IF THE STOP TIMED OUT IT WONT HAVE
                     this.Status = ServiceStatus.Stopped;
@@ -247,8 +245,8 @@ namespace SocketMeister
         private void SocketListener_ListenerStatusChanged(object sender, PolicyServerIsRunningChangedArgs e)
         {
             //  IF BOTH THE POLICY AND CLIENT LISTENERS ARE RUNNING THEN RETURN A STATUS OF RUNNING
-            if (_listener == null) return;
-            if (_listener.IsRunning != true) Status = ServiceStatus.Stopped;
+            if (listener == null) return;
+            if (listener.IsRunning != true) Status = ServiceStatus.Stopped;
         }
 
         //  POLICY FILE LISTENER (PORT 943) - WHEN A CLIENT CONNECTS, SEND BACK THE POLICY FILE
@@ -270,7 +268,7 @@ namespace SocketMeister
                         //  IF A POLICY HAS BEEN RECEIVED, RETURN THE POLICY FILE
                         if (requeststr == POLICY_REQUEST)
                         {
-                            sock.Send(_policybytes, 0, _policybytes.Length, SocketFlags.None);
+                            sock.Send(policyBytes, 0, policyBytes.Length, SocketFlags.None);
                             if (PolicyRequestReceived != null)
                             {
                                 new Thread(new ThreadStart(delegate

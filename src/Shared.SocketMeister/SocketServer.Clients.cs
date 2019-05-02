@@ -15,8 +15,8 @@ namespace SocketMeister
     {
         internal class Clients
         {
-            private readonly List<Client> _list = new List<Client>();
-            private readonly object _lock = new object();
+            private readonly object classLock = new object();
+            private readonly List<Client> list = new List<Client>();
 
             /// <summary>
             /// Event raised when a client connects to the socket server (Raised in a seperate thread)
@@ -36,27 +36,27 @@ namespace SocketMeister
             /// <summary>
             /// Total number of syschronous and asynchronous clients connected
             /// </summary>
-            public int Count { get { lock (_lock) { return _list.Count; } } }
+            public int Count { get { lock (classLock) { return list.Count; } } }
 
-            public void Add(Client Client)
+            public void Add(Client client)
             {
-                if (Client == null) return;
-                lock (_lock) { _list.Add(Client); }
-                NotifyClientConnected(Client);
+                if (client == null) return;
+                lock (classLock) { list.Add(client); }
+                NotifyClientConnected(client);
             }
 
             [SuppressMessage("Microsoft.Performance", "CA1031:DoNotCatchGeneralExceptionTypes", MessageId = "ExceptionEventRaised")]
-            public void Disconnect(Client Client)
+            public void Disconnect(Client client)
             {
-                if (Client == null) return;
-                lock (_lock)
+                if (client == null) return;
+                lock (classLock)
                 {
-                    _list.Remove(Client);
+                    list.Remove(client);
                 }
 
                 try
                 {
-                    Client.ClientSocket.Shutdown(SocketShutdown.Both);
+                    client.ClientSocket.Shutdown(SocketShutdown.Both);
                 }
                 catch (Exception ex)
                 {
@@ -65,14 +65,14 @@ namespace SocketMeister
 
                 try
                 {
-                    Client.ClientSocket.Close();
+                    client.ClientSocket.Close();
                 }
                 catch (Exception ex)
                 {
                     NotifyExceptionRaised(ex);
                 }
 
-                NotifyClientDisconnected(Client);
+                NotifyClientDisconnected(client);
             }
 
             public void DisconnectAll()
@@ -84,43 +84,43 @@ namespace SocketMeister
                 }
             }
 
-            private void NotifyClientConnected(Client Client)
+            private void NotifyClientConnected(Client client)
             {
                 if (ClientConnected != null)
                 {
                     //  RAISE EVENT IN THE BACKGROUND AND ERRORS ARE IGNORED
                     new Thread(new ThreadStart(delegate
                     {
-                        ClientConnected(null, new ClientConnectedEventArgs(Client)); 
+                        ClientConnected(null, new ClientConnectedEventArgs(client)); 
                     }
                     )).Start();
                 }
             }
 
-            private void NotifyClientDisconnected(Client Client)
+            private void NotifyClientDisconnected(Client client)
             {
                 if (ClientConnected != null)
                 {
                     //  RAISE EVENT IN THE BACKGROUND AND ERRORS ARE IGNORED
                     new Thread(new ThreadStart(delegate
                     {
-                        ClientDisconnected(null, new ClientDisconnectedEventArgs(Client)); 
+                        ClientDisconnected(null, new ClientDisconnectedEventArgs(client)); 
                     }
                     )).Start();
                 }
             }
 
-            private void NotifyExceptionRaised(Exception Error)
+            private void NotifyExceptionRaised(Exception error)
             {
                 if (TraceEventRaised != null)
                 {
-                    string msg = Error.Message;
-                    if (Error.StackTrace != null) msg += Environment.NewLine + Environment.NewLine + Error.StackTrace;
-                    if (Error.InnerException != null) msg += Environment.NewLine + Environment.NewLine + "Inner Exception: " + Error.InnerException.Message;
+                    string msg = error.Message;
+                    if (error.StackTrace != null) msg += Environment.NewLine + Environment.NewLine + error.StackTrace;
+                    if (error.InnerException != null) msg += Environment.NewLine + Environment.NewLine + "Inner Exception: " + error.InnerException.Message;
                     //  RAISE EVENT IN THE BACKGROUND
                     new Thread(new ThreadStart(delegate
                     {
-                        TraceEventRaised?.Invoke(this, new TraceEventArgs(Error, 5008));
+                        TraceEventRaised?.Invoke(this, new TraceEventArgs(error, 5008));
                     }
                     )).Start();
 
@@ -135,10 +135,10 @@ namespace SocketMeister
             /// <returns>List of clients</returns>
             public List<Client> ToList()
             {
-                lock (_lock)
+                lock (classLock)
                 {
-                    List<Client> rVal = new List<Client>(_list.Count);
-                    foreach (Client cl in _list)
+                    List<Client> rVal = new List<Client>(list.Count);
+                    foreach (Client cl in list)
                     {
                         rVal.Add(cl);
                     }

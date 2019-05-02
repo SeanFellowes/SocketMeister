@@ -9,7 +9,7 @@ namespace SocketMeister.Messages
     {
         public PollResponse() : base(MessageTypes.PollResponse) { }
 
-        public void AppendBytes(BinaryWriter Writer)
+        public void AppendBytes(BinaryWriter writer)
         {
         }
     }

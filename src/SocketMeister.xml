@@ -487,15 +487,15 @@
             <summary>
             Default constructor
             </summary>
-            <param name="Status">The status of the socket</param>
+            <param name="status">The status of the socket</param>
         </member>
         <member name="M:SocketMeister.SocketClient.ConnectionStatusChangedEventArgs.#ctor(SocketMeister.SocketClient.ConnectionStatuses,System.String,System.UInt16)">
             <summary>
             Default constructor
             </summary>
-            <param name="Status">The status of the socket</param>
-            <param name="IPAddress">Destination TCP/IP Port.</param>
-            <param name="Port"></param>
+            <param name="status">The status of the socket</param>
+            <param name="iPAddress">Destination TCP/IP Port.</param>
+            <param name="port"></param>
         </member>
         <member name="P:SocketMeister.SocketClient.ConnectionStatusChangedEventArgs.IPAddress">
             <summary>
@@ -571,7 +571,7 @@
             <summary>
             Constructor
             </summary>
-            <param name="EndPoints">Collection of endpoints that are available to connect to</param>
+            <param name="endPoints">Collection of endpoints that are available to connect to</param>
         </member>
         <member name="M:SocketMeister.SocketClient.Dispose">
             <summary>
@@ -630,9 +630,9 @@
             <summary>
             Send a request to the server and wait for a response. 
             </summary>
-            <param name="Parameters">Array of parameters to send with the request</param>
-            <param name="TimeoutMilliseconds">Maximum number of milliseconds to wait for a response from the server</param>
-            <param name="IsLongPolling">If the request is long polling on the server mark this as true and the request will be cancelled instantly when a disconnect occurs</param>
+            <param name="parameters">Array of parameters to send with the request</param>
+            <param name="timeoutMilliseconds">Maximum number of milliseconds to wait for a response from the server</param>
+            <param name="isLongPolling">If the request is long polling on the server mark this as true and the request will be cancelled instantly when a disconnect occurs</param>
             <returns>Nullable array of bytes which was returned from the socket server</returns>
         </member>
         <member name="M:SocketMeister.SocketClient.ProcessReceive(System.Object,System.Net.Sockets.SocketAsyncEventArgs)">
@@ -708,8 +708,8 @@
             <summary>
             Default constructor
             </summary>
-            <param name="IPAddress">IP Address of the server to connect to</param>
-            <param name="Port">Port number of the socket listener to connect to</param>
+            <param name="iPAddress">IP Address of the server to connect to</param>
+            <param name="port">Port number of the socket listener to connect to</param>
         </member>
         <member name="M:SocketMeister.SocketEndPoint.Dispose">
             <summary>
@@ -813,7 +813,7 @@
             The IP address being used.
             </summary>
         </member>
-        <member name="P:SocketMeister.PolicyServer.ServiceStatus">
+        <member name="P:SocketMeister.PolicyServer.Status">
             <summary>
             The current status of the sockted server. Statuses include Stopped, Starting, Started and Stopping
             </summary>
@@ -867,8 +867,8 @@
             <summary>
             Send a message to this client
             </summary>
-            <param name="Parameters">Parameters to send to the client.</param>
-            <param name="TimeoutMilliseconds">Number of milliseconds to attempt to send the message before throwing a TimeoutException.</param>
+            <param name="parameters">Parameters to send to the client.</param>
+            <param name="timeoutMilliseconds">Number of milliseconds to attempt to send the message before throwing a TimeoutException.</param>
         </member>
         <member name="E:SocketMeister.SocketServer.Clients.ClientConnected">
             <summary>
@@ -935,8 +935,8 @@
             <summary>
             Constructor
             </summary>
-            <param name="Port">Port that this socket server will listen on</param>
-            <param name="EnableCompression">Enable compression on message data</param>
+            <param name="port">Port that this socket server will listen on</param>
+            <param name="enableCompression">Enable compression on message data</param>
         </member>
         <member name="M:SocketMeister.SocketServer.Dispose">
             <summary>
@@ -948,7 +948,7 @@
             The IP Address and Port that this socket server is using to communicate (e.g. 10.200.50.25:6000).
             </summary>
         </member>
-        <member name="P:SocketMeister.SocketServer.ListenerState">
+        <member name="P:SocketMeister.SocketServer.Status">
             <summary>
             Status of the socket listener
             </summary>
@@ -962,8 +962,8 @@
             <summary>
             Send a message to all connected clients. Exceptions will not halt this process, but generate 'ExceptionRaised' events. 
             </summary>
-            <param name="Parameters">Parameters to send with the message</param>
-            <param name="TimeoutMilliseconds">Number of milliseconds to wait before timing out</param>
+            <param name="parameters">Parameters to send with the message</param>
+            <param name="timeoutMilliseconds">Number of milliseconds to wait before timing out</param>
         </member>
         <member name="P:SocketMeister.SocketServer.ClientCount">
             <summary>
@@ -1040,7 +1040,7 @@
             <summary>
             Constructor
             </summary>
-            <param name="Status">Current status of the service</param>
+            <param name="status">Current status of the service</param>
         </member>
         <member name="P:SocketMeister.SocketServer.ServerStatusEventArgs.Status">
             <summary>
