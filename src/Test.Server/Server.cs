@@ -137,10 +137,7 @@ namespace SocketMeister.Test
                     }
                 }
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+            catch { }
         }
 
 
@@ -153,14 +150,28 @@ namespace SocketMeister.Test
         {
             try
             {
-                if (socketServer == null) return false;
-                if (socketServer.Status == ServiceStatus.Started)
+                if (ServerType == ServerType.SocketServer)
                 {
-                    this.Cursor = Cursors.WaitCursor;
-                    socketServer.Stop();
-                    return true;
+                    if (socketServer == null) return false;
+                    if (socketServer.Status == ServiceStatus.Started)
+                    {
+                        this.Cursor = Cursors.WaitCursor;
+                        socketServer.Stop();
+                        return true;
+                    }
+                    return false;
                 }
-                return false;
+                else
+                {
+                    if (policyServer == null) return false;
+                    if (policyServer.Status == ServiceStatus.Started)
+                    {
+                        this.Cursor = Cursors.WaitCursor;
+                        policyServer.Stop();
+                        return true;
+                    }
+                    return false;
+                }
             }
             catch (Exception ex)
             {

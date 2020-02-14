@@ -26,6 +26,23 @@ namespace SocketMeister
         }
 
         /// <summary>
+        /// Event raised when there is a change to the clients connected to the socket server.
+        /// </summary>
+        public class ClientsChangedEventArgs : EventArgs
+        {
+            internal ClientsChangedEventArgs(int Count)
+            {
+                this.Count = Count;
+            }
+
+            /// <summary>
+            /// The numb er of clients connected to the socket server
+            /// </summary>
+            public int Count { get; }
+        }
+
+
+        /// <summary>
         /// Event raised when a client disconnects from the socket server.
         /// </summary>
         public class ClientDisconnectedEventArgs : EventArgs

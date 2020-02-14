@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Windows.Threading;
 using SocketMeister.Testing;
 
 namespace SocketMeister
@@ -8,18 +9,49 @@ namespace SocketMeister
     public class TestClientHarness
     {
         private readonly SocketClient controlSocket = null;
+        private readonly DispatcherTimer controlConnectedTimer = null;
 
         /// <summary>
         /// Event raised when a status of a socket connection has changed
         /// </summary>
         public event EventHandler<ConnectionStatusChangedEventArgs> ConnectionStatusChanged;
 
+        /// <summary>
+        /// Triggered when connection the the control socket failed or could not start.
+        /// </summary> 
+        public event EventHandler<EventArgs> ControlConnectionFailed;
+
+
 
         public TestClientHarness()
         {
+            controlConnectedTimer = new DispatcherTimer();
+            controlConnectedTimer.Interval = new TimeSpan(0, 0, 10);
+            controlConnectedTimer.Tick += ControlConnectedTimer_Tick;
+            controlConnectedTimer.Start();
+
+            //  CONNECT TO THE TEST SERVER ON THE CONTROL CHANNEL AT PORT 4505. THIS WILL RECEIVE INSTRUCTIONS FROM THE TEST SERVER
             List<SocketEndPoint> endPoints = new List<SocketEndPoint>() { new SocketEndPoint("127.0.0.1", 4505) };
             controlSocket = new SocketClient(endPoints);
             controlSocket.ConnectionStatusChanged += controlSocket_ConnectionStatusChanged;
+        }
+
+        private void ControlConnectedTimer_Tick(object sender, EventArgs e)
+        {
+            controlConnectedTimer.Stop();
+            if (controlSocket == null || controlSocket.ConnectionStatus != SocketClient.ConnectionStatuses.Connected)
+            {
+                try
+                {
+                    if (controlSocket != null) controlSocket.Stop();
+                }
+                catch { }
+                ControlConnectionFailed?.Invoke(this, new EventArgs());
+            }
+            else
+            {
+                controlConnectedTimer.Start();
+            }
         }
 
 

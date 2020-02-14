@@ -71,12 +71,15 @@ namespace SocketMeister.Test
             }
         }
 
+        private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            ControlServer.Stop();
+            ControlPolicyServer.Stop();
+        }
+
         private void FormMain_FormClosed(object sender, FormClosedEventArgs e)
         {
-            if (ControlServer.Status == SocketMeister.ServiceStatus.Started) ControlServer.Stop();
-            if (ControlPolicyServer.Status == SocketMeister.ServiceStatus.Started) ControlPolicyServer.Stop();
             Application.Exit();
-
         }
 
         private void PanelMain_Resize(object sender, EventArgs e)
@@ -90,5 +93,6 @@ namespace SocketMeister.Test
             PanelMainTests.Height = PanelMain.Height - PanelMainTests.Top;
             PanelMainTests.Width = PanelMain.Width;
         }
+
     }
 }

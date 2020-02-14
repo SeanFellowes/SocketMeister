@@ -43,6 +43,11 @@ namespace SocketMeister
         public event EventHandler<ClientConnectedEventArgs> ClientConnected;
 
         /// <summary>
+        /// Event raised when when there is a change to the clients connected to the socket server
+        /// </summary>
+        public event EventHandler<ClientsChangedEventArgs> ClientsChanged;
+
+        /// <summary>
         /// Event raised when a client disconnects from the socket server (Raised in a seperate thread)
         /// </summary>
         public event EventHandler<ClientDisconnectedEventArgs> ClientDisconnected;
@@ -66,6 +71,26 @@ namespace SocketMeister
         /// Raised when a request message is received from a client. A response can be provided which will be returned to the client.
         /// </summary>
         public event EventHandler<RequestReceivedEventArgs> RequestReceived;
+
+
+        private void NotifyTraceEventRaised(Exception ex, int ErrorNumber)
+        {
+            try
+            {
+                TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, ErrorNumber));
+            }
+            catch { }
+        }
+
+        private void NotifyTraceEventRaised(TraceEventArgs args)
+        {
+            try
+            {
+                TraceEventRaised?.Invoke(this, args);
+            }
+            catch { }
+        }
+
 
 
         /// <summary>
@@ -177,7 +202,7 @@ namespace SocketMeister
                 }
                 catch (Exception ex)
                 {
-                    TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 5008));
+                    NotifyTraceEventRaised(ex, 5008);
                 }
             }
         }
@@ -231,7 +256,7 @@ namespace SocketMeister
                 if (connectedClients.Count == 0) break;
                 if (DateTime.Now > maxWaitClientDisconnect)
                 {
-                    TraceEventRaised?.Invoke(this, new TraceEventArgs(new Exception("There were " + connectedClients.Count + " client/s still connected after an attempt to close them. They will now be force closed"), 5013));
+                    NotifyTraceEventRaised(new Exception("There were " + connectedClients.Count + " client/s still connected after an attempt to close them. They will now be force closed"), 5013);
                     break;
                 }
                 Thread.Sleep(200);
@@ -241,23 +266,31 @@ namespace SocketMeister
             try { listener.Shutdown(SocketShutdown.Receive); }
             catch (Exception ex)
             {
-                TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 5008));
+                NotifyTraceEventRaised(ex, 5008);
             }
 
             //  CLOSE CONNECTED CLIENTS
             connectedClients.DisconnectAll();
 
+
             //  CLOSE LISTENER
             try { listener.Shutdown(SocketShutdown.Send); }
             catch (Exception ex)
             {
-                TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 5008));
+                NotifyTraceEventRaised(ex, 5008);
             }
             try { listener.Close(); }
             catch (Exception ex)
             {
-                TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 5008));
+                NotifyTraceEventRaised(ex, 5008);
             }
+#if ! NET35
+            try { listener.Dispose(); }
+            catch (Exception ex)
+            {
+                NotifyTraceEventRaised(ex, 5008);
+            }
+#endif
 
             Status = ServiceStatus.Stopped;
         }
@@ -296,7 +329,7 @@ namespace SocketMeister
                     }
                     catch (Exception ex)
                     {
-                        TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 5008));
+                        NotifyTraceEventRaised(ex, 5008);
                     }
                     try
                     {
@@ -304,7 +337,7 @@ namespace SocketMeister
                     }
                     catch (Exception ex)
                     {
-                        TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 5008));
+                        NotifyTraceEventRaised(ex, 5008);
                     }
                     return;
 
@@ -326,7 +359,7 @@ namespace SocketMeister
                     try { handler = listener.EndAccept(ar); }
                     catch (Exception ex)
                     {
-                        TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 5008));
+                        NotifyTraceEventRaised(ex, 5008);
                         return;
                     }
                     handler.SendTimeout = 30000;
@@ -396,7 +429,7 @@ namespace SocketMeister
                             }
                             catch (Exception ex)
                             {
-                                TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 5008));
+                                NotifyTraceEventRaised(ex, 5008);
                             }
                         }
                         else if (receiveEnvelope.MessageType == MessageTypes.PollRequest)
@@ -423,12 +456,12 @@ namespace SocketMeister
             {
                 connectedClients.Disconnect(remoteClient);
                 //  CONNECTION RESET EVENTS ARE NORMAL. WE DON'T WANT EVENT LOGS FULL OF THESE DISCONNECT MESSAGES
-                if (ex.SocketErrorCode != SocketError.ConnectionReset) TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 5008));
+                if (ex.SocketErrorCode != SocketError.ConnectionReset) NotifyTraceEventRaised(ex, 5008);
             }
             catch (Exception ex)
             {
                 connectedClients.Disconnect(remoteClient);
-                TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 5008));
+                NotifyTraceEventRaised(ex, 5008);
             }
         }
 
@@ -441,7 +474,7 @@ namespace SocketMeister
                 Status = ServiceStatus.Starting;
                 listener.Listen(500);
                 Status = ServiceStatus.Started;
-                TraceEventRaised?.Invoke(this, new TraceEventArgs("Socket server started on port " + port.ToString(), SeverityType.Information, 10023));
+                NotifyTraceEventRaised(new TraceEventArgs("Socket server started on port " + port.ToString(), SeverityType.Information, 10023));
 
                 while (Status != ServiceStatus.Stopped)
                 {
@@ -458,7 +491,7 @@ namespace SocketMeister
             catch (Exception ex)
             {
                 Status = ServiceStatus.Stopped;
-                TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 5008));
+                NotifyTraceEventRaised(ex, 5008);
             }
         }
 
@@ -472,7 +505,7 @@ namespace SocketMeister
             }
             catch (Exception ex)
             {
-                TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 5008));
+                NotifyTraceEventRaised(ex, 5008);
             }
         }
 
@@ -487,7 +520,7 @@ namespace SocketMeister
             }
             catch (Exception ex)
             {
-                TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 5008));
+                NotifyTraceEventRaised(ex, 5008);
             }
             finally
             {
@@ -512,7 +545,7 @@ namespace SocketMeister
             }
             catch (Exception ex)
             {
-                TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 5008));
+                NotifyTraceEventRaised(ex, 5008);
                 ResponseMessage response = new ResponseMessage(request.RequestId, ex);
                 SendMessage(request.RemoteClient, response, false);
             }
@@ -551,7 +584,7 @@ namespace SocketMeister
             catch (Exception ex)
             {
                 connectedClients.Disconnect(remoteClient);
-                TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 5008));
+                NotifyTraceEventRaised(ex, 5008);
             }
         }
 
@@ -566,7 +599,7 @@ namespace SocketMeister
             }
             catch (Exception ex)
             {
-                TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 5008));
+                NotifyTraceEventRaised(ex, 5008);
             }
         }
 
@@ -591,12 +624,12 @@ namespace SocketMeister
             catch (ObjectDisposedException ex)
             {
                 connectedClients.Disconnect(remoteClient);
-                TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 5008));
+                NotifyTraceEventRaised(ex, 5008);
             }
             catch (Exception ex)
             {
                 connectedClients.Disconnect(remoteClient);
-                TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 5008));
+                NotifyTraceEventRaised(ex, 5008);
             }
         }
 
@@ -607,7 +640,7 @@ namespace SocketMeister
 
         private void ConnectedClients_ExceptionRaised(object sender, TraceEventArgs e)
         {
-            TraceEventRaised?.Invoke(this, e);
+            NotifyTraceEventRaised(e);
         }
 
         private void ConnectedClients_ClientDisconnected(object sender, ClientDisconnectedEventArgs e)

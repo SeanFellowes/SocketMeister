@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net2;net35;net4.7.2</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net35;net4.7.2;net4.0;net4.5</TargetFrameworks>
     <RootNamespace>SocketMeister</RootNamespace>
     <AssemblyName>SocketMeister</AssemblyName>
     <Authors>Sean Fellowes</Authors>
     <Description>Performant TCP socket server and client for .NET</Description>
-    <Copyright>Copyright © 2010-2019 Sean Fellowes</Copyright>
+    <Copyright>Copyright © 2010-2020 Sean Fellowes</Copyright>
     <PackageProjectUrl>https://github.com/SeanFellowes/SocketMeister</PackageProjectUrl>
     <RepositoryUrl>https://github.com/SeanFellowes/SocketMeister</RepositoryUrl>
     <Version>1.0.3</Version>

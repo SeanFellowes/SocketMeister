@@ -96,12 +96,16 @@ namespace SocketMeister
             get { lock (classLock) { return status; } }
             private set
             {
-                lock (classLock) { status = value; }
-                if (SocketServiceStatusChanged != null)
-                {
-                    try { SocketServiceStatusChanged(this, new ServerStatusEventArgs(value)); }
-                    catch { }
+                lock (classLock) 
+                { 
+                    if (status == value) return; 
+                    status = value; 
                 }
+                try 
+                {
+                    SocketServiceStatusChanged?.Invoke(this, new ServerStatusEventArgs(value));
+                }
+                catch { }
             }
         }
 
@@ -192,41 +196,38 @@ namespace SocketMeister
         {
             if (Status == ServiceStatus.Stopped) return;
 
-            //  STOP IN A THREAD (ALLOW THE PARENT TO DO WHAT IT NEEDS TO DO)
-            new Thread( new ThreadStart(delegate {
-                try
+            try
+            {
+                //  STOP THE SERVICE. CHILD THREADS WILL STOP AS SOON AS THE ServiceStatus IS NOT "Started"
+                Status = ServiceStatus.Stopping;
+                Run = false;
+
+                //  LISTENERS TO REJECT NEW CLIENT CONNECTIONS
+                listener.RejectNewConnections = true;
+
+                //  UNREGISTER LISTENER EVENTS
+                listener.TraceEventRaised -= SocketListener_Error;
+
+                //  STOP THE LISTENERS
+                listener.Stop();
+                DateTime timeout = DateTime.Now.AddSeconds(30);
+                while (this.Status != ServiceStatus.Stopped && DateTime.Now < timeout)
                 {
-                    //  STOP THE SERVICE. CHILD THREADS WILL STOP AS SOON AS THE ServiceStatus IS NOT "Started"
-                    Status = ServiceStatus.Stopping;
-                    Run = false;
-
-                    //  LISTENERS TO REJECT NEW CLIENT CONNECTIONS
-                    listener.RejectNewConnections = true;
-
-                    //  UNREGISTER LISTENER EVENTS
-                    listener.TraceEventRaised -= SocketListener_Error;
-
-                    //  STOP THE LISTENERS
-                    listener.Stop();
-                    DateTime timeout = DateTime.Now.AddSeconds(30);
-                    while (this.Status != ServiceStatus.Stopped && DateTime.Now < timeout)
-                    {
-                        Thread.Sleep(100);
-                    }
-
-
-                    //  UNREGISTER REMAINING EVENTS
-                    listener.IsRunningChanged -= SocketListener_ListenerStatusChanged;
-
-                    //  IT SHOULD ALREADY BE STOPPED, BUT IF THE STOP TIMED OUT IT WONT HAVE
-                    this.Status = ServiceStatus.Stopped;
+                    Thread.Sleep(100);
                 }
-                catch (Exception ex)
-                {
-                    this.Status = ServiceStatus.Stopped;
-                    TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 52801));
-                }
-            })).Start();
+
+
+                //  UNREGISTER REMAINING EVENTS
+                listener.IsRunningChanged -= SocketListener_ListenerStatusChanged;
+
+                //  IT SHOULD ALREADY BE STOPPED, BUT IF THE STOP TIMED OUT IT WONT HAVE
+                this.Status = ServiceStatus.Stopped;
+            }
+            catch (Exception ex)
+            {
+                Status = ServiceStatus.Stopped;
+                TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 52801));
+            }
         }
 
 
