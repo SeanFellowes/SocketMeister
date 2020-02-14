@@ -123,6 +123,7 @@ namespace SocketMeister
             //  REGISTER FOR EVENTS
             connectedClients.ClientDisconnected += ConnectedClients_ClientDisconnected;
             connectedClients.ClientConnected += ConnectedClients_ClientConnected;
+            connectedClients.ClientsChanged += ConnectedClients_ClientsChanged;
             connectedClients.TraceEventRaised += ConnectedClients_ExceptionRaised;
         }
 
@@ -189,7 +190,6 @@ namespace SocketMeister
         /// </summary>
         /// <param name="parameters">Parameters to send with the message</param>
         /// <param name="timeoutMilliseconds">Number of milliseconds to wait before timing out</param>
-        [SuppressMessage("Microsoft.Performance", "CA1031:DoNotCatchGeneralExceptionTypes", MessageId = "ExceptionEventRaised")]
         public void BroadcastMessage(object[] parameters, int timeoutMilliseconds = 60000)
         {
             Messages.Message message = new Messages.Message(parameters, timeoutMilliseconds);
@@ -233,7 +233,6 @@ namespace SocketMeister
         /// <summary>
         /// Sends a message to all clients to disconnect, waits for in progress requests to finish, then stops the socket server. 
         /// </summary>
-        [SuppressMessage("Microsoft.Performance", "CA1031:DoNotCatchGeneralExceptionTypes", MessageId = "ExceptionEventRaised")]
         public void Stop()
         {
             if (Status != ServiceStatus.Started) throw new Exception("Socket server is stopped, or in the process of starting or stopping.");
@@ -302,7 +301,6 @@ namespace SocketMeister
 
 
 
-        [SuppressMessage("Microsoft.Performance", "CA1031:DoNotCatchGeneralExceptionTypes", MessageId = "ExceptionEventRaised")]
         private void AcceptCallback(IAsyncResult ar)
         {
             // Signal the main thread to continue.  
@@ -376,7 +374,6 @@ namespace SocketMeister
 
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1031:DoNotCatchGeneralExceptionTypes", MessageId = "ExceptionEventRaised")]
         private void ReadCallback(IAsyncResult ar)
         {
             Client remoteClient = null;
@@ -465,7 +462,6 @@ namespace SocketMeister
             }
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1031:DoNotCatchGeneralExceptionTypes", MessageId = "ExceptionEventRaised")]
         private void BgListen()
         {
             // Bind the socket to the local endpoint and listen for incoming connections.  
@@ -495,7 +491,6 @@ namespace SocketMeister
             }
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1031:DoNotCatchGeneralExceptionTypes", MessageId = "ExceptionEventRaised")]
         private void BgProcessMessage(object state)
         {
             Messages.Message request = (Messages.Message)state;
@@ -509,7 +504,6 @@ namespace SocketMeister
             }
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1031:DoNotCatchGeneralExceptionTypes", MessageId = "ExceptionEventRaised")]
         private void BgProcessPollRequest(object state)
         {
             Client remoteClient = (Client)state;
@@ -528,7 +522,6 @@ namespace SocketMeister
             }
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1031:DoNotCatchGeneralExceptionTypes", MessageId = "ExceptionEventRaised")]
         private void BgProcessRequestMessage(object state)
         {
             RequestMessage request = (RequestMessage)state;
@@ -569,7 +562,6 @@ namespace SocketMeister
         }
 
 
-        [SuppressMessage("Microsoft.Performance", "CA1031:DoNotCatchGeneralExceptionTypes", MessageId = "ExceptionEventRaised")]
         private void SendCallback(IAsyncResult ar)
         {
             Client remoteClient = null;
@@ -588,7 +580,6 @@ namespace SocketMeister
             }
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1031:DoNotCatchGeneralExceptionTypes", MessageId = "ExceptionEventRaised")]
         private void SendDisconnectMessage(Socket socket)
         {
             try
@@ -603,7 +594,6 @@ namespace SocketMeister
             }
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1031:DoNotCatchGeneralExceptionTypes", MessageId = "ExceptionEventRaised")]
         internal void SendMessage(Client remoteClient, IMessage message, bool async = true)
         {
             if (remoteClient == null || remoteClient.ClientSocket == null ||
@@ -642,6 +632,12 @@ namespace SocketMeister
         {
             NotifyTraceEventRaised(e);
         }
+
+        private void ConnectedClients_ClientsChanged(object sender, ClientsChangedEventArgs e)
+        {
+            ClientsChanged?.Invoke(this, e);
+        }
+
 
         private void ConnectedClients_ClientDisconnected(object sender, ClientDisconnectedEventArgs e)
         {

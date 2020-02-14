@@ -83,7 +83,6 @@ namespace SocketMeister.Messages
         private int statSocketBytesRead;
         private byte[] uncompressedBuffer = new byte[0];
 
-        [SuppressMessage("Microsoft.Performance", "CA1031:DoNotCatchGeneralExceptionTypes", MessageId = "RaiseMoreDetailedException")]
         internal bool AddBytesFromSocketReceiveBuffer(int SocketBytesRead, byte[] SocketReceiveBuffer, ref int SocketReceiveBufferPtr)
         {
             statSocketBufferLength = SocketReceiveBuffer.Length;

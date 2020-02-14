@@ -24,7 +24,8 @@ namespace Test.Client.WinForms
         {
             try
             {
-                harness = new SocketMeister.TestClientHarness();
+                Guid guid = Guid.NewGuid();
+                harness = new SocketMeister.TestClientHarness(guid);
                 harness.ControlConnectionFailed += Harness_ControlConnectionFailed;
             }
             catch

@@ -29,6 +29,11 @@ namespace SocketMeister
             public event EventHandler<ClientDisconnectedEventArgs> ClientDisconnected;
 
             /// <summary>
+            /// Event raised when when there is a change to the clients connected to the socket server
+            /// </summary>
+            public event EventHandler<ClientsChangedEventArgs> ClientsChanged;
+
+            /// <summary>
             /// Raised when an exception occurs.
             /// </summary>
             public event EventHandler<TraceEventArgs> TraceEventRaised;
@@ -41,17 +46,25 @@ namespace SocketMeister
             public void Add(Client client)
             {
                 if (client == null) return;
-                lock (classLock) { list.Add(client); }
-                NotifyClientConnected(client);
+
+                int clientCount = 0;
+                lock (classLock) 
+                { 
+                    list.Add(client);
+                    clientCount = list.Count;
+                }
+                NotifyClientConnected(client, clientCount);
             }
 
-            [SuppressMessage("Microsoft.Performance", "CA1031:DoNotCatchGeneralExceptionTypes", MessageId = "ExceptionEventRaised")]
             public void Disconnect(Client client)
             {
                 if (client == null) return;
+
+                int clientCount = 0;
                 lock (classLock)
                 {
                     list.Remove(client);
+                    clientCount = list.Count;
                 }
 
                 try
@@ -72,7 +85,7 @@ namespace SocketMeister
                     NotifyExceptionRaised(ex);
                 }
 
-                NotifyClientDisconnected(client);
+                NotifyClientDisconnected(client, clientCount);
             }
 
             public void DisconnectAll()
@@ -84,31 +97,34 @@ namespace SocketMeister
                 }
             }
 
-            private void NotifyClientConnected(Client client)
+            private void NotifyClientConnected(Client client, int ClientCount)
             {
-                if (ClientConnected != null)
+                if (ClientConnected != null || ClientsChanged != null)
                 {
                     //  RAISE EVENT IN THE BACKGROUND AND ERRORS ARE IGNORED
                     new Thread(new ThreadStart(delegate
                     {
-                        ClientConnected(null, new ClientConnectedEventArgs(client)); 
+                        ClientConnected?.Invoke(null, new ClientConnectedEventArgs(client));
+                        ClientsChanged?.Invoke(null, new ClientsChangedEventArgs(ClientCount));
                     }
                     )).Start();
                 }
             }
 
-            private void NotifyClientDisconnected(Client client)
+            private void NotifyClientDisconnected(Client client, int ClientCount)
             {
-                if (ClientConnected != null)
+                if (ClientConnected != null || ClientsChanged != null)
                 {
                     //  RAISE EVENT IN THE BACKGROUND AND ERRORS ARE IGNORED
                     new Thread(new ThreadStart(delegate
                     {
-                        ClientDisconnected(null, new ClientDisconnectedEventArgs(client)); 
+                        ClientDisconnected?.Invoke(null, new ClientDisconnectedEventArgs(client));
+                        ClientsChanged?.Invoke(null, new ClientsChangedEventArgs(ClientCount));
                     }
                     )).Start();
                 }
             }
+
 
             private void NotifyExceptionRaised(Exception error)
             {

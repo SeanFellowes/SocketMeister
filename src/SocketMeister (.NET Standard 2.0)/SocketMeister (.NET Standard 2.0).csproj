@@ -18,7 +18,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageIconUrl>https://raw.githubusercontent.com/SeanFellowes/SocketMeister/master/images/icon_128.png</PackageIconUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <DocumentationFile>C:\Users\Sean\Source\Repos\SeanFellowes\SocketMeister\src\SocketMeister.xml</DocumentationFile>
+    <DocumentationFile>C:\Users\sfell\Source\Repos\SeanFellowes\SocketMeister\src\SocketMeister.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">

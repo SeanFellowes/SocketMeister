@@ -18,7 +18,6 @@ namespace SocketMeister.Test
         {
             InitializeComponent();
 
-
             ControlServer.TraceEventRaised += TraceEventRaised;
             ControlPolicyServer.TraceEventRaised += TraceEventRaised;
             TestServer1.TraceEventRaised += TraceEventRaised;
@@ -73,6 +72,8 @@ namespace SocketMeister.Test
 
         private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
         {
+            ControlServer.UnregisterEvents();
+            ControlPolicyServer.UnregisterEvents();
             ControlServer.Stop();
             ControlPolicyServer.Stop();
         }

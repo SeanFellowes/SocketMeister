@@ -906,6 +906,11 @@
             Event raised when a client connects to the socket server (Raised in a seperate thread)
             </summary>
         </member>
+        <member name="E:SocketMeister.SocketServer.ClientsChanged">
+            <summary>
+            Event raised when when there is a change to the clients connected to the socket server
+            </summary>
+        </member>
         <member name="E:SocketMeister.SocketServer.ClientDisconnected">
             <summary>
             Event raised when a client disconnects from the socket server (Raised in a seperate thread)
@@ -994,6 +999,16 @@
         <member name="P:SocketMeister.SocketServer.ClientConnectedEventArgs.Client">
             <summary>
             The client which connected
+            </summary>
+        </member>
+        <member name="T:SocketMeister.SocketServer.ClientsChangedEventArgs">
+            <summary>
+            Event raised when there is a change to the clients connected to the socket server.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketServer.ClientsChangedEventArgs.Count">
+            <summary>
+            The numb er of clients connected to the socket server
             </summary>
         </member>
         <member name="T:SocketMeister.SocketServer.ClientDisconnectedEventArgs">

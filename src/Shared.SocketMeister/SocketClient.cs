@@ -217,7 +217,6 @@ namespace SocketMeister
         /// <summary>
         /// Disconnect the socket. Note: This is performed in the background.
         /// </summary>
-        [SuppressMessage("Microsoft.Performance", "CA1031:DoNotCatchGeneralExceptionTypes", MessageId = "ExceptionEventRaised")]
         private void DisconnectSocket()
         {
             if (ConnectionStatus == ConnectionStatuses.Disconnecting || ConnectionStatus == ConnectionStatuses.Disconnected) return;
@@ -300,7 +299,6 @@ namespace SocketMeister
         /// <summary>
         /// Background process which creates a connection with one of the servers specified
         /// </summary>
-        [SuppressMessage("Microsoft.Performance", "CA1031:DoNotCatchGeneralExceptionTypes", MessageId = "ExceptionEventRaised")]
         private void BgConnectToServer()
         {
             lock (classLock)
@@ -360,7 +358,6 @@ namespace SocketMeister
         /// <summary>
         /// Background process which polls the server to determine if the socket is alive
         /// </summary>
-        [SuppressMessage("Microsoft.Performance", "CA1031:DoNotCatchGeneralExceptionTypes", MessageId = "ExceptionEventRaised")]
         private void BgPollServer()
         {
             Thread bgPolling = new Thread(new ThreadStart(delegate
@@ -418,7 +415,6 @@ namespace SocketMeister
         /// </summary>
         /// <param name="sender">Sending Socket</param>
         /// <param name="e">Socket Arguments</param>
-        [SuppressMessage("Microsoft.Performance", "CA1031:DoNotCatchGeneralExceptionTypes", MessageId = "ExceptionEventRaised")]
         private void ProcessConnect(object sender, SocketAsyncEventArgs e)
         {
             if (e.SocketError == SocketError.Success)
@@ -509,7 +505,6 @@ namespace SocketMeister
         }
 
 
-        [SuppressMessage("Microsoft.Performance", "CA1031:DoNotCatchGeneralExceptionTypes", MessageId = "ExceptionEventRaised")]
         private byte[] SendReceive(RequestMessage request)
         {
             if (IsStopAllRequested == true) return null;
@@ -576,7 +571,6 @@ namespace SocketMeister
 
 
         //  CALLED AFTER SendAsync COMPLETES
-        [SuppressMessage("Microsoft.Performance", "CA1031:DoNotCatchGeneralExceptionTypes", MessageId = "ExceptionEventRaised")]
         private void ProcessSend(object sender, SocketAsyncEventArgs e)
         {
             IMessage tokenSent = (IMessage)e.UserToken;
@@ -627,7 +621,6 @@ namespace SocketMeister
         /// </summary>
         /// <param name="sender">Sending Socket</param>
         /// <param name="e">Socket Arguments</param>
-        [SuppressMessage("Microsoft.Performance", "CA1031:DoNotCatchGeneralExceptionTypes", MessageId = "ExceptionEventRaised")]
         private void ProcessReceive(object sender, SocketAsyncEventArgs e)
         {
             //if (e.BytesTransferred == 0 || e.SocketError != SocketError.Success)
@@ -740,7 +733,6 @@ namespace SocketMeister
 
 
 
-        [SuppressMessage("Microsoft.Performance", "CA1031:DoNotCatchGeneralExceptionTypes", MessageId = "ExceptionEventRaised")]
         private void NotifyMessageReceived(Messages.Message message)
         {
             if (MessageReceived != null)

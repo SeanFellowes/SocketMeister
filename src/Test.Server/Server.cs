@@ -19,6 +19,8 @@ namespace SocketMeister.Test
 
     public partial class Server : UserControl
     {
+        private bool isParentClosed = false;
+        private readonly object lockControl = new object();
         //  Silverlight ports are between 4502-4534
         private const int policyPort = 943;
         private PolicyServer policyServer = null;
@@ -37,6 +39,25 @@ namespace SocketMeister.Test
         {
             InitializeComponent();
             SetLabel();
+        }
+
+
+        /// <summary>
+        /// When parent form is closing, unregister events to stop errors occuring when socket shutdown events bubble up to the non-existent parent
+        /// </summary>
+        public void UnregisterEvents()
+        {
+            if (socketServer != null)
+            {
+                socketServer.ClientsChanged -= SocketServer_ClientsChanged;
+                socketServer.ListenerStateChanged -= SocketServer_ListenerStateChanged;
+                socketServer.TraceEventRaised -= SocketServer_TraceEventRaised;
+            }
+            if (policyServer != null)
+            {
+                policyServer.SocketServiceStatusChanged -= PolicyServer_SocketServiceStatusChanged;
+                policyServer.TraceEventRaised -= SocketServer_TraceEventRaised;
+            }
         }
 
         public int Port
@@ -216,20 +237,30 @@ namespace SocketMeister.Test
             if (serverType == ServerType.SocketServer)
             {
                 socketServer = new SocketServer(port, true);
+                socketServer.ClientsChanged += SocketServer_ClientsChanged;
                 socketServer.ListenerStateChanged += SocketServer_ListenerStateChanged;
-                socketServer.TraceEventRaised += Server_TraceEventRaised;
+                socketServer.TraceEventRaised += SocketServer_TraceEventRaised;
                 socketServer.Start();
             }
             else
             {
                 policyServer = new PolicyServer();
                 policyServer.SocketServiceStatusChanged += PolicyServer_SocketServiceStatusChanged;
-                policyServer.TraceEventRaised += Server_TraceEventRaised;
+                policyServer.TraceEventRaised += SocketServer_TraceEventRaised;
                 policyServer.Start();
             }
         }
 
-        private void Server_TraceEventRaised(object sender, TraceEventArgs e)
+        private void SocketServer_ClientsChanged(object sender, SocketServer.ClientsChangedEventArgs e)
+        {
+            if (InvokeRequired) Invoke(new MethodInvoker(delegate { SocketServer_ClientsChanged(sender, e); }));
+            else
+            {
+                SessionCountLabel.Text = e.Count.ToString();
+            }
+        }
+
+        private void SocketServer_TraceEventRaised(object sender, TraceEventArgs e)
         {
             TraceEventRaised?.Invoke(this, e);
         }
