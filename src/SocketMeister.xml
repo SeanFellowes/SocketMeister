@@ -880,6 +880,11 @@
             Event raised when a client disconnects from the socket server (Raised in a seperate thread)
             </summary>
         </member>
+        <member name="E:SocketMeister.SocketServer.Clients.ClientsChanged">
+            <summary>
+            Event raised when when there is a change to the clients connected to the socket server
+            </summary>
+        </member>
         <member name="E:SocketMeister.SocketServer.Clients.TraceEventRaised">
             <summary>
             Raised when an exception occurs.

@@ -19,7 +19,6 @@ namespace SocketMeister.Test
 
     public partial class Server : UserControl
     {
-        private bool isParentClosed = false;
         private readonly object lockControl = new object();
         //  Silverlight ports are between 4502-4534
         private const int policyPort = 943;
@@ -32,6 +31,16 @@ namespace SocketMeister.Test
         /// Raised when an trace log event has been raised.
         /// </summary>
         internal event EventHandler<TraceEventArgs> TraceEventRaised;
+
+        /// <summary>
+        /// Raised when a message is received from a client.
+        /// </summary>
+        internal event EventHandler<SocketServer.MessageReceivedEventArgs> MessageReceived;
+
+        /// <summary>
+        /// Raised when a request message is received from a client. A response can be provided which will be returned to the client.
+        /// </summary>
+        internal event EventHandler<SocketServer.RequestReceivedEventArgs> RequestReceived;
 
 
 
@@ -52,6 +61,8 @@ namespace SocketMeister.Test
                 socketServer.ClientsChanged -= SocketServer_ClientsChanged;
                 socketServer.ListenerStateChanged -= SocketServer_ListenerStateChanged;
                 socketServer.TraceEventRaised -= SocketServer_TraceEventRaised;
+                socketServer.MessageReceived -= SocketServer_MessageReceived;
+                socketServer.RequestReceived -= SocketServer_RequestReceived;
             }
             if (policyServer != null)
             {
@@ -240,6 +251,8 @@ namespace SocketMeister.Test
                 socketServer.ClientsChanged += SocketServer_ClientsChanged;
                 socketServer.ListenerStateChanged += SocketServer_ListenerStateChanged;
                 socketServer.TraceEventRaised += SocketServer_TraceEventRaised;
+                socketServer.MessageReceived += SocketServer_MessageReceived;
+                socketServer.RequestReceived += SocketServer_RequestReceived;
                 socketServer.Start();
             }
             else
@@ -249,6 +262,16 @@ namespace SocketMeister.Test
                 policyServer.TraceEventRaised += SocketServer_TraceEventRaised;
                 policyServer.Start();
             }
+        }
+
+        private void SocketServer_MessageReceived(object sender, SocketServer.MessageReceivedEventArgs e)
+        {
+            MessageReceived?.Invoke(sender, e);
+        }
+
+        private void SocketServer_RequestReceived(object sender, SocketServer.RequestReceivedEventArgs e)
+        {
+            RequestReceived?.Invoke(sender, e);
         }
 
         private void SocketServer_ClientsChanged(object sender, SocketServer.ClientsChangedEventArgs e)

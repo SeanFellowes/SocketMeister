@@ -68,6 +68,15 @@ namespace SocketMeister
 
         private void controlSocket_ConnectionStatusChanged(object sender, SocketClient.ConnectionStatusChangedEventArgs e)
         {
+            //  SEND A CONTROL MESSAGE TO THE SERVER
+            if (e.Status == SocketClient.ConnectionStatuses.Connected)
+            {
+                object[] parms = new object[2];
+                parms[0] = ControlMessage.ClientConnected;
+                parms[1] = guid;
+                controlSocket.SendRequest(parms);
+            }
+
             ConnectionStatusChanged?.Invoke(this, new ConnectionStatusChangedEventArgs((ConnectionStatus)e.Status, e.IPAddress, e.Port));
         }
 

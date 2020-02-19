@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>a9cbc518-dc97-4729-8773-94ff54861075</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>SocketMeister</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)AllTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Enums.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Events.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ITest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Test001_Connect.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TestActor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Testing\ControlMessage.cs" />
+  </ItemGroup>
+</Project>

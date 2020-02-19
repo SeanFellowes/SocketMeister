@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Server", "..\Test.Serv
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\Shared.SocketMeister.Test.Client\Shared.SocketMeister.Test.Client.projitems*{1d9dfe4d-dc5d-406d-ae81-aef1b1d546d5}*SharedItemsImports = 4
+		..\Shared.SocketMeister.Test\Shared.SocketMeister.Test.projitems*{1d9dfe4d-dc5d-406d-ae81-aef1b1d546d5}*SharedItemsImports = 4
 		..\Shared.SocketMeister\Shared.SocketMeister.projitems*{1d9dfe4d-dc5d-406d-ae81-aef1b1d546d5}*SharedItemsImports = 4
 		..\Shared.SocketMeister.Test.Client\Shared.SocketMeister.Test.Client.projitems*{2c586d07-661c-4156-8409-a9f2c7a31b54}*SharedItemsImports = 13
 		..\Shared.SocketMeister\Shared.SocketMeister.projitems*{7fe383ec-5fd4-4d60-beeb-149e51549260}*SharedItemsImports = 13

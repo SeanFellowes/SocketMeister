@@ -50,6 +50,7 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FormMain.cs">
@@ -103,5 +104,7 @@
     <Content Include="Service.ico" />
   </ItemGroup>
   <Import Project="..\Shared.SocketMeister\Shared.SocketMeister.projitems" Label="Shared" />
+  <Import Project="..\Shared.SocketMeister.Test\Shared.SocketMeister.Test.projitems" Label="Shared" />
+  <Import Project="..\Shared.SocketMeister.Test.Client\Shared.SocketMeister.Test.Client.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

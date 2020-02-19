@@ -17,15 +17,21 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared.SocketMeister.Test.C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Client.WinForms", "Test.Client.WinForms\Test.Client.WinForms.csproj", "{81CCDF22-AA24-41D6-BF0C-3F8E4072BF70}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared.SocketMeister.Test", "Shared.SocketMeister.Test\Shared.SocketMeister.Test.shproj", "{A9CBC518-DC97-4729-8773-94FF54861075}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Shared.SocketMeister.Test.Client\Shared.SocketMeister.Test.Client.projitems*{1d9dfe4d-dc5d-406d-ae81-aef1b1d546d5}*SharedItemsImports = 4
+		Shared.SocketMeister.Test\Shared.SocketMeister.Test.projitems*{1d9dfe4d-dc5d-406d-ae81-aef1b1d546d5}*SharedItemsImports = 4
 		Shared.SocketMeister\Shared.SocketMeister.projitems*{1d9dfe4d-dc5d-406d-ae81-aef1b1d546d5}*SharedItemsImports = 4
 		Shared.SocketMeister.Test.Client\Shared.SocketMeister.Test.Client.projitems*{2c586d07-661c-4156-8409-a9f2c7a31b54}*SharedItemsImports = 13
 		Shared.SocketMeister\Shared.SocketMeister.projitems*{4dedd745-2f5a-4b4a-acfe-a1d8c07110d4}*SharedItemsImports = 4
 		Shared.SocketMeister\Shared.SocketMeister.projitems*{719e367c-132f-4c9d-ad8e-db25f59e707b}*SharedItemsImports = 4
 		Shared.SocketMeister\Shared.SocketMeister.projitems*{7fe383ec-5fd4-4d60-beeb-149e51549260}*SharedItemsImports = 13
 		Shared.SocketMeister.Test.Client\Shared.SocketMeister.Test.Client.projitems*{81ccdf22-aa24-41d6-bf0c-3f8e4072bf70}*SharedItemsImports = 4
+		Shared.SocketMeister.Test\Shared.SocketMeister.Test.projitems*{81ccdf22-aa24-41d6-bf0c-3f8e4072bf70}*SharedItemsImports = 4
 		Shared.SocketMeister\Shared.SocketMeister.projitems*{81ccdf22-aa24-41d6-bf0c-3f8e4072bf70}*SharedItemsImports = 4
+		Shared.SocketMeister.Test\Shared.SocketMeister.Test.projitems*{a9cbc518-dc97-4729-8773-94ff54861075}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
