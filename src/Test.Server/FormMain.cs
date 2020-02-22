@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -39,6 +40,13 @@ namespace SocketMeister.Test
             TestServer3.TraceEventRaised += TraceEventRaised;
             TestServer4.TraceEventRaised += TraceEventRaised;
 
+            //  REGISTER FOR EVENTS FROM TESTS
+            foreach (ITest test in allTests)
+            {
+                test.TestStatusChanged += Test_TestStatusChanged;
+                test.TraceEventRaised += Test_TraceEventRaised;
+            }
+
             dGrid.AutoGenerateColumns = true;
             gridItems = new BindingList<LogEntry>
             {
@@ -54,6 +62,76 @@ namespace SocketMeister.Test
             ControlPolicyServer.Start();
 
             Setup();
+        }
+
+        private void Test_TestStatusChanged(object sender, TestStatusChangedEventArgs e)
+        {
+            if (InvokeRequired) Invoke(new MethodInvoker(delegate { Test_TestStatusChanged(sender, e); }));
+            else
+            {
+                ITest test = (ITest)sender;
+                int testIndex = allTests.IndexOf(test);
+                if (testIndex < 0) return;
+
+                bool executeEnabled = false;
+                Color statusColor = Color.Black;
+                string statusText = "";
+
+                if (e.Status == TestStatus.Failed)
+                {
+                    statusColor = Color.DarkRed;
+                    statusText = "Failed";
+                    executeEnabled = true;
+                }
+                else if (e.Status == TestStatus.InProgress)
+                {
+                    statusColor = Color.DarkGreen;
+                    statusText = "In Progress";
+                    executeEnabled = false;
+                }
+                else if (e.Status == TestStatus.NotStarted)
+                {
+                    statusColor = Color.White;
+                    statusText = "Not Started";
+                    executeEnabled = true;
+                }
+                else
+                {
+                    statusColor = Color.DarkSlateBlue;
+                    statusText = "Successful";
+                    executeEnabled = true;
+                }
+
+
+                for (int index = 0; index < allTests.Count; index++)
+                {
+                    lCol5[index].Enabled = executeEnabled;
+
+                    if (index == testIndex)
+                    {
+                        lCol1[index].BackColor = Color.SlateGray;
+                        lCol1[index].ForeColor = Color.White;
+                        lCol2[index].BackColor = Color.SlateGray;
+                        lCol2[index].ForeColor = Color.White;
+
+                        lCol3[index].ForeColor = Color.White;
+                        lCol3[index].BackColor = statusColor;
+                        lCol3[index].Text = statusText;
+
+                        lCol4[index].BackColor = Color.SlateGray;
+                        lCol4[index].ForeColor = Color.White;
+                    }
+                    else
+                    {
+                        lCol1[index].BackColor = Color.White;
+                        lCol1[index].ForeColor = Color.Black;
+                        lCol2[index].BackColor = Color.White;
+                        lCol2[index].ForeColor = Color.Black;
+                        lCol4[index].BackColor = Color.White;
+                        lCol4[index].ForeColor = Color.Black;
+                    }
+                }
+            }
         }
 
         private void ControlServer_RequestReceived(object sender, SocketServer.RequestReceivedEventArgs e)
@@ -74,6 +152,13 @@ namespace SocketMeister.Test
             SocketMeister.Test.Server server = (Server)sender;
             InsertListboxItem(server.Port.ToString(), e);
         }
+
+        private void Test_TraceEventRaised(object sender, TraceEventArgs e)
+        {
+            ITest test = (ITest)sender;
+            InsertListboxItem("Test " + test.Id.ToString(), e);
+        }
+
 
 
         private void FormMain_Load(object sender, EventArgs e)
@@ -199,39 +284,41 @@ namespace SocketMeister.Test
                 bt.Tag = test;
                 lCol5.Add(bt);
                 pnlTests.Controls.Add(bt);
+                bt.Click += ExecuteButton_Click;
 
-                //  SUBSCRIBE TO EVENTS
-                test.TestNotification += Test_TestNotification;
             }
 
             Repos();
         }
 
-        private void Test_TestNotification(object sender, TestNotificationEventArgs e)
+        private void ExecuteButton_Click(object sender, EventArgs e)
         {
-            ITest test = (ITest)sender;
-            SetTestNotification(test, e);
+            new Thread(
+                new ThreadStart(delegate
+                {
+                    ITest test = (ITest)((Button)sender).Tag;
+                    test.Start();
+                })).Start();
         }
 
-
-        private void SetTestNotification(ITest Test, TestNotificationEventArgs Value)
+        private void SetTestNotification(ITest Test, TestStatus Value)
         {
             if (InvokeRequired) Invoke(new MethodInvoker(delegate { SetTestNotification(Test, Value); }));
             else
             {
                 int index = allTests.IndexOf(Test);
                 if (index < 0) return;
-                if (Value.Status == TestNotificationStatuses.Failed)
+                if (Value == TestStatus.Failed)
                 {
                     (lCol3[index]).BackColor = Color.DarkRed;
                     (lCol3[index]).Text = "Failed";
                 }
-                else if (Value.Status == TestNotificationStatuses.InProgress)
+                else if (Value == TestStatus.InProgress)
                 {
                     (lCol3[index]).BackColor = Color.DarkGreen;
                     (lCol3[index]).Text = "In Progress";
                 }
-                else if (Value.Status == TestNotificationStatuses.NoStarted)
+                else if (Value == TestStatus.NotStarted)
                 {
                     (lCol3[index]).BackColor = Color.White;
                     (lCol3[index]).Text = "Not Started";
