@@ -72,7 +72,7 @@ namespace SocketMeister
             if (e.Status == SocketClient.ConnectionStatuses.Connected)
             {
                 object[] parms = new object[2];
-                parms[0] = ControlMessage.ClientConnected;
+                parms[0] =  ControlMessage.ClientConnected;
                 parms[1] = guid;
                 controlSocket.SendRequest(parms);
             }

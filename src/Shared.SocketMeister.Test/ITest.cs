@@ -8,18 +8,19 @@ namespace SocketMeister
 
     internal interface ITest 
     {
-        event EventHandler<TestNotificationEventArgs> TestNotification;
+        event EventHandler<TestPercentCompleteChangedEventArgs> PercentCompleteChanged;
+        event EventHandler<TestStatusChangedEventArgs> StatusChanged;
         event EventHandler<TraceEventArgs> TraceEventRaised;
-        event EventHandler<TestStatusChangedEventArgs> TestStatusChanged;
+
+        void Reset();
 
         void Start();
 
         void Stop();
 
-
         string Description { get; }
         int Id { get; }
-
-        TestStatus TestStatus { get; }
+        int PercentComplete { get; }
+        TestStatus Status { get; }
     }
 }

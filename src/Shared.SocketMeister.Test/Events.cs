@@ -4,36 +4,24 @@ using System.Text;
 
 namespace SocketMeister
 {
-    internal class TestNotificationEventArgs : EventArgs
+    internal class TestPercentCompleteChangedEventArgs : EventArgs
     {
-        private readonly string message = "";
-        private readonly double percentComplete = 0;
-        private readonly TestStatus status;
+        private readonly int percentComplete;
 
-        internal TestNotificationEventArgs(string Message, double PercentComplete, TestStatus Status)
+        internal TestPercentCompleteChangedEventArgs(int PercentComplete)
         {
-            message = Message;
-            percentComplete = PercentComplete;
-            status = Status;
+            if (PercentComplete < 0) percentComplete = 0;
+            else if (PercentComplete > 100) percentComplete = 100;
+            else percentComplete = PercentComplete;
         }
 
- 
-        public string Message
-        {
-            get { return message; } 
-        }
-
-        public double PercentComplete
+        public int PercentComplete
         {
             get { return percentComplete; }
         }
 
-        public TestStatus Status
-        {
-            get { return status; }
-        }
-
     }
+
 
     internal class TestStatusChangedEventArgs : EventArgs
     {

@@ -13,13 +13,22 @@ namespace SocketMeister.Test
 {
     public partial class FormMain : Form
     {
-        private readonly BindingList<LogEntry> gridItems;
-
-        private readonly AllTests allTests = new AllTests();
+        private enum Executing
+        {
+            Stopped = 0,
+            SingleTest = 1,
+            AllTests = 2,
+            StoppingAllTests = 20
+        }
         private const int rowHeight = 18;
         private const int executeButtonWidth = 90;
         private const int spacer = 0;
 
+        private readonly AllTests allTests = new AllTests();
+        private ITest currentTest = null;
+        private int currentTestPtr = 0;
+        private Executing executeMode = Executing.Stopped;
+        private readonly BindingList<LogEntry> gridItems;
         private readonly List<Label> lCol1 = new List<Label>();
         private readonly List<Label> lCol2 = new List<Label>();
         private readonly List<Label> lCol3 = new List<Label>();
@@ -43,7 +52,8 @@ namespace SocketMeister.Test
             //  REGISTER FOR EVENTS FROM TESTS
             foreach (ITest test in allTests)
             {
-                test.TestStatusChanged += Test_TestStatusChanged;
+                test.PercentCompleteChanged += Test_PercentCompleteChanged;
+                test.StatusChanged += Test_TestStatusChanged;
                 test.TraceEventRaised += Test_TraceEventRaised;
             }
 
@@ -56,12 +66,25 @@ namespace SocketMeister.Test
                 AllowEdit = false
             };
             dGrid.DataSource = gridItems;
+            lblTests.Text = "Tests (" + allTests.Count + ")";
 
             //  START CONTROL ITEMS
             ControlServer.Start();
             ControlPolicyServer.Start();
 
             Setup();
+        }
+
+        private void Test_PercentCompleteChanged(object sender, TestPercentCompleteChangedEventArgs e)
+        {
+            if (InvokeRequired) Invoke(new MethodInvoker(delegate { Test_PercentCompleteChanged(sender, e); }));
+            else
+            {
+                ITest test = (ITest)sender;
+                int testIndex = allTests.IndexOf(test);
+                if (testIndex < 0) return;
+                lCol4[testIndex].Text = e.PercentComplete.ToString() + " %";
+            }
         }
 
         private void Test_TestStatusChanged(object sender, TestStatusChangedEventArgs e)
@@ -73,7 +96,9 @@ namespace SocketMeister.Test
                 int testIndex = allTests.IndexOf(test);
                 if (testIndex < 0) return;
 
-                bool executeEnabled = false;
+                bool allTestsComplete = false;
+                bool executeThisTestEnabled = false;
+                bool executeNextTest = false;
                 Color statusColor = Color.Black;
                 string statusText = "";
 
@@ -81,31 +106,54 @@ namespace SocketMeister.Test
                 {
                     statusColor = Color.DarkRed;
                     statusText = "Failed";
-                    executeEnabled = true;
+                    executeThisTestEnabled = true;
+                    if (executeMode == Executing.AllTests) executeNextTest = true;
+                    else if (executeMode == Executing.StoppingAllTests) allTestsComplete = true;
+                }
+                else if (e.Status == TestStatus.Stopped)
+                {
+                    statusColor = Color.DarkRed;
+                    statusText = "Stopped";
+                    executeThisTestEnabled = true;
+                    if (executeMode == Executing.AllTests) executeNextTest = true;
+                    else if (executeMode == Executing.StoppingAllTests) allTestsComplete = true;
                 }
                 else if (e.Status == TestStatus.InProgress)
                 {
                     statusColor = Color.DarkGreen;
                     statusText = "In Progress";
-                    executeEnabled = false;
+                    executeThisTestEnabled = false;
+                }
+                else if (e.Status == TestStatus.Stopping)
+                {
+                    statusColor = Color.DarkOrange;
+                    statusText = "Stopping";
+                    executeThisTestEnabled = false;
                 }
                 else if (e.Status == TestStatus.NotStarted)
                 {
                     statusColor = Color.White;
                     statusText = "Not Started";
-                    executeEnabled = true;
+                    executeThisTestEnabled = true;
+                    if (executeMode == Executing.AllTests) executeNextTest = true;
+                    else if (executeMode == Executing.StoppingAllTests) allTestsComplete = true;
                 }
-                else
+                else if (e.Status == TestStatus.Successful)
                 {
                     statusColor = Color.DarkSlateBlue;
                     statusText = "Successful";
-                    executeEnabled = true;
+                    executeThisTestEnabled = true;
+                    if (executeMode == Executing.AllTests) executeNextTest = true;
+                    else if (executeMode == Executing.StoppingAllTests) allTestsComplete = true;
+                }
+                else
+                {
+                    throw new Exception("Unknown TestStatus " + e.Status.ToString());
                 }
 
 
                 for (int index = 0; index < allTests.Count; index++)
                 {
-                    lCol5[index].Enabled = executeEnabled;
 
                     if (index == testIndex)
                     {
@@ -120,6 +168,17 @@ namespace SocketMeister.Test
 
                         lCol4[index].BackColor = Color.SlateGray;
                         lCol4[index].ForeColor = Color.White;
+
+                        if (e.Status == TestStatus.InProgress)
+                        {
+                            lCol5[index].Enabled = true;
+                            lCol5[index].Text = "Stop";
+                        }
+                        else
+                        {
+                            lCol5[index].Enabled = executeThisTestEnabled;
+                            lCol5[index].Text = "Execute";
+                        }
                     }
                     else
                     {
@@ -129,7 +188,36 @@ namespace SocketMeister.Test
                         lCol2[index].ForeColor = Color.Black;
                         lCol4[index].BackColor = Color.White;
                         lCol4[index].ForeColor = Color.Black;
+
+                        lCol5[index].Enabled = executeThisTestEnabled;
                     }
+                }
+
+                //  RUN THE NEXT TEST IF APPLICABLE
+                if (executeNextTest == true)
+                {
+                    currentTestPtr++;
+                    if (currentTestPtr < allTests.Count)
+                    {
+                        currentTest = (ITest)lCol5[currentTestPtr].Tag;
+                        currentTest.Start();
+                    }
+                    else
+                    {
+                        allTestsComplete = true;
+                    }
+                }
+                
+                if (allTestsComplete == true)
+                {
+                    executeMode = Executing.Stopped;
+                    currentTest = null;
+                    for (int index = 0; index < allTests.Count; index++)
+                    {
+                        lCol5[index].Visible = true;
+                    }
+                    btnExecuteAllTests.Text = "Execute All Tests";
+                    btnExecuteAllTests.Enabled = true;
                 }
             }
         }
@@ -179,12 +267,15 @@ namespace SocketMeister.Test
             else
             {
                 LogEntry logEntry = new LogEntry(source, args.Message, args.Severity, args.EventId);
-                while (gridItems.Count > 1000)
-                {
-                    gridItems.RemoveAt(gridItems.Count - 1);
-                }
+                //while (gridItems.Count > 1000)
+                //{
+                //    gridItems.RemoveAt(gridItems.Count - 1);
+                //}
                 if (gridItems.Count == 0) gridItems.Add(logEntry);
                 else gridItems.Insert(0, logEntry);
+
+                lblTraceLog.Text = "Trace Log (" + gridItems.Count + ")";
+                lblTraceLog.Refresh();
             }
         }
 
@@ -235,7 +326,7 @@ namespace SocketMeister.Test
 
             foreach (ITest test in allTests)
             {
-                //  COL 1
+                //  COL 1 (ID)
                 Label lb = new Label();
                 lb.Text = test.Id.ToString();
 
@@ -245,7 +336,7 @@ namespace SocketMeister.Test
                 lCol1.Add(lb);
                 pnlTests.Controls.Add(lb);
 
-                //  COL 2
+                //  COL 2 (Description)
                 lb = new Label();
                 lb.Text = test.Description;
                 lb.TextAlign = ContentAlignment.MiddleLeft;
@@ -254,7 +345,7 @@ namespace SocketMeister.Test
                 lCol2.Add(lb);
                 pnlTests.Controls.Add(lb);
 
-                //  COL 3
+                //  COL 3 (Status)
                 lb = new Label();
                 lb.Text = "";
                 lb.TextAlign = ContentAlignment.MiddleLeft;
@@ -265,10 +356,10 @@ namespace SocketMeister.Test
                 lCol3.Add(lb);
                 pnlTests.Controls.Add(lb);
 
-                //  COL 4
+                //  COL 4 (Percent COmplete)
                 lb = new Label();
                 lb.Text = "";
-                lb.TextAlign = ContentAlignment.MiddleLeft;
+                lb.TextAlign = ContentAlignment.MiddleRight;
                 lb.BorderStyle = BorderStyle.FixedSingle;
                 lb.Font = font;
                 lCol4.Add(lb);
@@ -297,7 +388,19 @@ namespace SocketMeister.Test
                 new ThreadStart(delegate
                 {
                     ITest test = (ITest)((Button)sender).Tag;
-                    test.Start();
+
+                    if (executeMode == Executing.AllTests)
+                    {
+                        test.Start();
+                    }
+                    else if (executeMode == Executing.Stopped)
+                    {
+                        test.Start();
+                    }
+                    else if (executeMode == Executing.SingleTest)
+                    {
+                        test.Stop();
+                    }
                 })).Start();
         }
 
@@ -428,6 +531,37 @@ namespace SocketMeister.Test
                 Repos();
             }
             catch { }
+        }
+
+        private void btnExecuteAllTests_Click(object sender, EventArgs e)
+        {
+            if (executeMode == Executing.Stopped)
+            {
+                foreach (ITest test in allTests)
+                {
+                    test.Reset();
+                }
+                for (int index = 0; index < allTests.Count; index++)
+                {
+                    lCol5[index].Visible = false;
+                }
+
+                executeMode = Executing.AllTests;
+                currentTestPtr = 0;
+                btnExecuteAllTests.Text = "Stop";
+                ExecuteButton_Click(lCol5[currentTestPtr], new EventArgs());
+            }
+            else if (executeMode == Executing.AllTests)
+            {
+                executeMode = Executing.StoppingAllTests;
+                if (currentTest != null) currentTest.Stop();
+            }
+        }
+
+        private void btnClearLog_Click(object sender, EventArgs e)
+        {
+            gridItems.Clear();
+            lblTraceLog.Text = "Trace Log";
         }
     }
 }

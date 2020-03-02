@@ -8,7 +8,9 @@ namespace SocketMeister
     {
         NotStarted = 0,
         InProgress = 1,
+        Stopping = 2,
         Successful = 50,
-        Failed = 100
+        Failed = 100,
+        Stopped = 200
     }
 }

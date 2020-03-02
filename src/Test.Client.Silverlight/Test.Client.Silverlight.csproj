@@ -80,6 +80,24 @@
     <Compile Include="..\Shared.SocketMeister.Test.Client\Testing\Events.cs">
       <Link>Shared.SocketMeister.Test.Client\Testing\Events.cs</Link>
     </Compile>
+    <Compile Include="..\Shared.SocketMeister.Test\AllTests.cs">
+      <Link>Shared.SocketMeister.Test\AllTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister.Test\Enums.cs">
+      <Link>Shared.SocketMeister.Test\Enums.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister.Test\Events.cs">
+      <Link>Shared.SocketMeister.Test\Events.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister.Test\ITest.cs">
+      <Link>Shared.SocketMeister.Test\ITest.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister.Test\Test001_Connect.cs">
+      <Link>Shared.SocketMeister.Test\Test001_Connect.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister.Test\Testing\ControlMessage.cs">
+      <Link>Shared.SocketMeister.Test\Testing\ControlMessage.cs</Link>
+    </Compile>
     <Compile Include="..\Shared.SocketMeister\Enums.cs">
       <Link>Shared.SocketMeister\Enums.cs</Link>
     </Compile>
@@ -188,6 +206,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Silverlight\$(SilverlightVersion)\Microsoft.Silverlight.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -14,7 +14,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Events.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ITest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Test001_Connect.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)TestActor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Testing\ControlMessage.cs" />
   </ItemGroup>
 </Project>

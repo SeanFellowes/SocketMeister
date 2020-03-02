@@ -14,6 +14,7 @@ namespace SocketMeister.Test.Client.Silverlight
 {
     public partial class MainPage : UserControl
     {
+        private readonly Guid guid = System.Guid.NewGuid();
         private TestClientHarness testClient = null;
 
         public MainPage()
@@ -21,7 +22,7 @@ namespace SocketMeister.Test.Client.Silverlight
             InitializeComponent();
             StatusColour.Background = new SolidColorBrush(Color.FromArgb(255, 234, 144, 15));
             StatusText.Text = "Connecting to test server...";
-            testClient = new TestClientHarness();
+            testClient = new TestClientHarness(guid);
             testClient.ConnectionStatusChanged += TestClient_ConnectionStatusChanged;
 
         }

@@ -46,9 +46,8 @@
             this.CH3 = new System.Windows.Forms.TextBox();
             this.CH2 = new System.Windows.Forms.TextBox();
             this.CH1 = new System.Windows.Forms.TextBox();
-            this.panel7 = new System.Windows.Forms.Panel();
-            this.button2 = new System.Windows.Forms.Button();
-            this.label7 = new System.Windows.Forms.Label();
+            this.btnExecuteAllTests = new System.Windows.Forms.Button();
+            this.lblTests = new System.Windows.Forms.Label();
             this.PanelMain = new System.Windows.Forms.Panel();
             this.PanelMainTrace = new System.Windows.Forms.Panel();
             this.dGrid = new System.Windows.Forms.DataGridView();
@@ -57,23 +56,27 @@
             this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.label5 = new System.Windows.Forms.Label();
+            this.lblTraceLog = new System.Windows.Forms.Label();
             this.TestServer4 = new SocketMeister.Test.Server();
             this.TestServer3 = new SocketMeister.Test.Server();
             this.TestServer2 = new SocketMeister.Test.Server();
             this.TestServer1 = new SocketMeister.Test.Server();
             this.ControlPolicyServer = new SocketMeister.Test.Server();
             this.ControlServer = new SocketMeister.Test.Server();
+            this.PnlTestsHeader = new System.Windows.Forms.Panel();
+            this.btnClearLog = new System.Windows.Forms.Button();
+            this.panel3 = new System.Windows.Forms.Panel();
             this.pnlControl.SuspendLayout();
             this.panelControlHeader.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.PanelMainTests.SuspendLayout();
             this.pnlTests.SuspendLayout();
-            this.panel7.SuspendLayout();
             this.PanelMain.SuspendLayout();
             this.PanelMainTrace.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dGrid)).BeginInit();
+            this.PnlTestsHeader.SuspendLayout();
+            this.panel3.SuspendLayout();
             this.SuspendLayout();
             // 
             // pnlControl
@@ -178,8 +181,7 @@
             // PanelMainTests
             // 
             this.PanelMainTests.Controls.Add(this.pnlTests);
-            this.PanelMainTests.Controls.Add(this.panel7);
-            this.PanelMainTests.Controls.Add(this.label7);
+            this.PanelMainTests.Controls.Add(this.panel3);
             this.PanelMainTests.Location = new System.Drawing.Point(13, 227);
             this.PanelMainTests.Name = "PanelMainTests";
             this.PanelMainTests.Padding = new System.Windows.Forms.Padding(3);
@@ -196,9 +198,9 @@
             this.pnlTests.Controls.Add(this.CH2);
             this.pnlTests.Controls.Add(this.CH1);
             this.pnlTests.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlTests.Location = new System.Drawing.Point(3, 27);
+            this.pnlTests.Location = new System.Drawing.Point(3, 30);
             this.pnlTests.Name = "pnlTests";
-            this.pnlTests.Size = new System.Drawing.Size(793, 286);
+            this.pnlTests.Size = new System.Drawing.Size(793, 311);
             this.pnlTests.TabIndex = 35;
             this.pnlTests.Resize += new System.EventHandler(this.pnlTests_Resize);
             // 
@@ -211,6 +213,7 @@
             this.CH4.Size = new System.Drawing.Size(58, 20);
             this.CH4.TabIndex = 3;
             this.CH4.Text = "%";
+            this.CH4.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // CH3
             // 
@@ -242,34 +245,27 @@
             this.CH1.TabIndex = 0;
             this.CH1.Text = "ID";
             // 
-            // panel7
+            // btnExecuteAllTests
             // 
-            this.panel7.Controls.Add(this.button2);
-            this.panel7.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel7.Location = new System.Drawing.Point(3, 313);
-            this.panel7.Name = "panel7";
-            this.panel7.Size = new System.Drawing.Size(793, 28);
-            this.panel7.TabIndex = 34;
+            this.btnExecuteAllTests.Dock = System.Windows.Forms.DockStyle.Right;
+            this.btnExecuteAllTests.Location = new System.Drawing.Point(675, 3);
+            this.btnExecuteAllTests.Name = "btnExecuteAllTests";
+            this.btnExecuteAllTests.Size = new System.Drawing.Size(115, 21);
+            this.btnExecuteAllTests.TabIndex = 1;
+            this.btnExecuteAllTests.Text = "Execute All Tests";
+            this.btnExecuteAllTests.UseVisualStyleBackColor = true;
+            this.btnExecuteAllTests.Click += new System.EventHandler(this.btnExecuteAllTests_Click);
             // 
-            // button2
+            // lblTests
             // 
-            this.button2.Location = new System.Drawing.Point(6, 4);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(108, 21);
-            this.button2.TabIndex = 1;
-            this.button2.Text = "Execute All Tests";
-            this.button2.UseVisualStyleBackColor = true;
-            // 
-            // label7
-            // 
-            this.label7.Dock = System.Windows.Forms.DockStyle.Top;
-            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(3, 3);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(793, 24);
-            this.label7.TabIndex = 30;
-            this.label7.Text = "Tests";
-            this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblTests.Dock = System.Windows.Forms.DockStyle.Left;
+            this.lblTests.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblTests.Location = new System.Drawing.Point(3, 3);
+            this.lblTests.Name = "lblTests";
+            this.lblTests.Size = new System.Drawing.Size(143, 21);
+            this.lblTests.TabIndex = 30;
+            this.lblTests.Text = "Tests";
+            this.lblTests.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // PanelMain
             // 
@@ -285,7 +281,7 @@
             // PanelMainTrace
             // 
             this.PanelMainTrace.Controls.Add(this.dGrid);
-            this.PanelMainTrace.Controls.Add(this.label5);
+            this.PanelMainTrace.Controls.Add(this.PnlTestsHeader);
             this.PanelMainTrace.Location = new System.Drawing.Point(58, 6);
             this.PanelMainTrace.Name = "PanelMainTrace";
             this.PanelMainTrace.Padding = new System.Windows.Forms.Padding(3);
@@ -296,6 +292,7 @@
             // 
             this.dGrid.AllowUserToAddRows = false;
             this.dGrid.AllowUserToDeleteRows = false;
+            this.dGrid.AllowUserToResizeRows = false;
             this.dGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
@@ -321,8 +318,11 @@
             dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
             this.dGrid.DefaultCellStyle = dataGridViewCellStyle2;
             this.dGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dGrid.Location = new System.Drawing.Point(3, 27);
+            this.dGrid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
+            this.dGrid.Location = new System.Drawing.Point(3, 30);
+            this.dGrid.MultiSelect = false;
             this.dGrid.Name = "dGrid";
+            this.dGrid.ReadOnly = true;
             dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
             dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -331,7 +331,13 @@
             dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.dGrid.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
-            this.dGrid.Size = new System.Drawing.Size(580, 185);
+            this.dGrid.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+            this.dGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dGrid.ShowCellErrors = false;
+            this.dGrid.ShowCellToolTips = false;
+            this.dGrid.ShowEditingIcon = false;
+            this.dGrid.ShowRowErrors = false;
+            this.dGrid.Size = new System.Drawing.Size(580, 182);
             this.dGrid.TabIndex = 31;
             // 
             // dataGridViewTextBoxColumn1
@@ -339,6 +345,7 @@
             this.dataGridViewTextBoxColumn1.DataPropertyName = "TimeStamp";
             this.dataGridViewTextBoxColumn1.HeaderText = "TimeStamp";
             this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
+            this.dataGridViewTextBoxColumn1.ReadOnly = true;
             this.dataGridViewTextBoxColumn1.Width = 85;
             // 
             // dataGridViewTextBoxColumn2
@@ -346,6 +353,7 @@
             this.dataGridViewTextBoxColumn2.DataPropertyName = "Source";
             this.dataGridViewTextBoxColumn2.HeaderText = "Source";
             this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
+            this.dataGridViewTextBoxColumn2.ReadOnly = true;
             this.dataGridViewTextBoxColumn2.Width = 66;
             // 
             // dataGridViewTextBoxColumn3
@@ -353,6 +361,7 @@
             this.dataGridViewTextBoxColumn3.DataPropertyName = "Severity";
             this.dataGridViewTextBoxColumn3.HeaderText = "Severity";
             this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
+            this.dataGridViewTextBoxColumn3.ReadOnly = true;
             this.dataGridViewTextBoxColumn3.Width = 70;
             // 
             // dataGridViewTextBoxColumn4
@@ -368,18 +377,19 @@
             this.dataGridViewTextBoxColumn5.DataPropertyName = "Message";
             this.dataGridViewTextBoxColumn5.HeaderText = "Message";
             this.dataGridViewTextBoxColumn5.Name = "dataGridViewTextBoxColumn5";
+            this.dataGridViewTextBoxColumn5.ReadOnly = true;
             this.dataGridViewTextBoxColumn5.Width = 75;
             // 
-            // label5
+            // lblTraceLog
             // 
-            this.label5.Dock = System.Windows.Forms.DockStyle.Top;
-            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(3, 3);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(580, 24);
-            this.label5.TabIndex = 30;
-            this.label5.Text = "Trace Log";
-            this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblTraceLog.Dock = System.Windows.Forms.DockStyle.Left;
+            this.lblTraceLog.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblTraceLog.Location = new System.Drawing.Point(3, 3);
+            this.lblTraceLog.Name = "lblTraceLog";
+            this.lblTraceLog.Size = new System.Drawing.Size(139, 21);
+            this.lblTraceLog.TabIndex = 30;
+            this.lblTraceLog.Text = "Trace Log";
+            this.lblTraceLog.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // TestServer4
             // 
@@ -445,6 +455,39 @@
             this.ControlServer.Size = new System.Drawing.Size(300, 27);
             this.ControlServer.TabIndex = 4;
             // 
+            // PnlTestsHeader
+            // 
+            this.PnlTestsHeader.Controls.Add(this.btnClearLog);
+            this.PnlTestsHeader.Controls.Add(this.lblTraceLog);
+            this.PnlTestsHeader.Dock = System.Windows.Forms.DockStyle.Top;
+            this.PnlTestsHeader.Location = new System.Drawing.Point(3, 3);
+            this.PnlTestsHeader.Name = "PnlTestsHeader";
+            this.PnlTestsHeader.Padding = new System.Windows.Forms.Padding(3);
+            this.PnlTestsHeader.Size = new System.Drawing.Size(580, 27);
+            this.PnlTestsHeader.TabIndex = 32;
+            // 
+            // btnClearLog
+            // 
+            this.btnClearLog.Dock = System.Windows.Forms.DockStyle.Right;
+            this.btnClearLog.Location = new System.Drawing.Point(462, 3);
+            this.btnClearLog.Name = "btnClearLog";
+            this.btnClearLog.Size = new System.Drawing.Size(115, 21);
+            this.btnClearLog.TabIndex = 31;
+            this.btnClearLog.Text = "Clear Trace Log";
+            this.btnClearLog.UseVisualStyleBackColor = true;
+            this.btnClearLog.Click += new System.EventHandler(this.btnClearLog_Click);
+            // 
+            // panel3
+            // 
+            this.panel3.Controls.Add(this.btnExecuteAllTests);
+            this.panel3.Controls.Add(this.lblTests);
+            this.panel3.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel3.Location = new System.Drawing.Point(3, 3);
+            this.panel3.Name = "panel3";
+            this.panel3.Padding = new System.Windows.Forms.Padding(3);
+            this.panel3.Size = new System.Drawing.Size(793, 27);
+            this.panel3.TabIndex = 36;
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -467,10 +510,11 @@
             this.PanelMainTests.ResumeLayout(false);
             this.pnlTests.ResumeLayout(false);
             this.pnlTests.PerformLayout();
-            this.panel7.ResumeLayout(false);
             this.PanelMain.ResumeLayout(false);
             this.PanelMainTrace.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dGrid)).EndInit();
+            this.PnlTestsHeader.ResumeLayout(false);
+            this.panel3.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -492,9 +536,8 @@
         private Server TestServer4;
         private Server TestServer3;
         private System.Windows.Forms.Panel PanelMainTests;
-        private System.Windows.Forms.Panel panel7;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Button btnExecuteAllTests;
+        private System.Windows.Forms.Label lblTests;
         private System.Windows.Forms.Panel PanelMain;
         private System.Windows.Forms.Panel PanelMainTrace;
         private System.Windows.Forms.DataGridView dGrid;
@@ -503,12 +546,15 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn4;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn5;
-        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label lblTraceLog;
         private System.Windows.Forms.Panel pnlTests;
         private System.Windows.Forms.TextBox CH4;
         private System.Windows.Forms.TextBox CH3;
         private System.Windows.Forms.TextBox CH2;
         private System.Windows.Forms.TextBox CH1;
+        private System.Windows.Forms.Panel PnlTestsHeader;
+        private System.Windows.Forms.Button btnClearLog;
+        private System.Windows.Forms.Panel panel3;
     }
 }
 
