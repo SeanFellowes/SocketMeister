@@ -8,6 +8,7 @@ namespace SocketMeister
 
     internal interface ITest 
     {
+        event EventHandler<EventArgs> ExecuteTest;
         event EventHandler<TestPercentCompleteChangedEventArgs> PercentCompleteChanged;
         event EventHandler<TestStatusChangedEventArgs> StatusChanged;
         event EventHandler<TraceEventArgs> TraceEventRaised;
@@ -20,6 +21,7 @@ namespace SocketMeister
 
         string Description { get; }
         int Id { get; }
+        object Lock { get; }
         int PercentComplete { get; }
         TestStatus Status { get; }
     }
