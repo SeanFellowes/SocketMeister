@@ -14,21 +14,24 @@ namespace SocketMeister.Test
         readonly string message = "";
         readonly string severity = "";
         readonly string source = "";
+        readonly string stackTrace = "";
         readonly DateTime timeStamp;
 
         public string TimeStamp { get { return timeStamp.ToString("HH:mm:ss fff"); } }
         public string Source { get { return source; } }
+        public string StackTrace { get { return stackTrace; } }
         public string EventId { get { return eventId; } }
         public string Message { get { return message; } }
         public string Severity { get { return severity; } }
 
         public LogEntry() { }
 
-        public LogEntry(string source, string message, SeverityType severity, int eventId)
+        public LogEntry(string source, string message, SeverityType severity, int eventId, string stacktrace = null)
         {
             timeStamp = DateTime.Now;
             this.source = source;
             this.message = message;
+            this.stackTrace = stacktrace;
             if (eventId != 0) this.eventId = eventId.ToString();
             if (severity == SeverityType.Error) this.severity = "Error";
             else if (severity == SeverityType.Information) this.severity = "Information";
@@ -38,6 +41,7 @@ namespace SocketMeister.Test
             this.NotifyPropertyChanged("EventId");
             this.NotifyPropertyChanged("Message");
             this.NotifyPropertyChanged("Severity");
+            if (this.stackTrace != null) this.NotifyPropertyChanged("StackTrace");
         }
         public event PropertyChangedEventHandler PropertyChanged;
         private void NotifyPropertyChanged(string name)

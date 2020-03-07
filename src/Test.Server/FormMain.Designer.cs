@@ -46,37 +46,39 @@
             this.CH3 = new System.Windows.Forms.TextBox();
             this.CH2 = new System.Windows.Forms.TextBox();
             this.CH1 = new System.Windows.Forms.TextBox();
+            this.panel3 = new System.Windows.Forms.Panel();
             this.btnExecuteAllTests = new System.Windows.Forms.Button();
             this.lblTests = new System.Windows.Forms.Label();
             this.PanelMain = new System.Windows.Forms.Panel();
             this.PanelMainTrace = new System.Windows.Forms.Panel();
             this.dGrid = new System.Windows.Forms.DataGridView();
+            this.PnlTestsHeader = new System.Windows.Forms.Panel();
+            this.btnClearLog = new System.Windows.Forms.Button();
+            this.lblTraceLog = new System.Windows.Forms.Label();
+            this.lblErrors = new System.Windows.Forms.Label();
             this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.lblTraceLog = new System.Windows.Forms.Label();
+            this.ColumnStack = new System.Windows.Forms.DataGridViewButtonColumn();
             this.TestServer4 = new SocketMeister.Test.Server();
             this.TestServer3 = new SocketMeister.Test.Server();
             this.TestServer2 = new SocketMeister.Test.Server();
             this.TestServer1 = new SocketMeister.Test.Server();
             this.ControlPolicyServer = new SocketMeister.Test.Server();
             this.ControlServer = new SocketMeister.Test.Server();
-            this.PnlTestsHeader = new System.Windows.Forms.Panel();
-            this.btnClearLog = new System.Windows.Forms.Button();
-            this.panel3 = new System.Windows.Forms.Panel();
             this.pnlControl.SuspendLayout();
             this.panelControlHeader.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.PanelMainTests.SuspendLayout();
             this.pnlTests.SuspendLayout();
+            this.panel3.SuspendLayout();
             this.PanelMain.SuspendLayout();
             this.PanelMainTrace.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dGrid)).BeginInit();
             this.PnlTestsHeader.SuspendLayout();
-            this.panel3.SuspendLayout();
             this.SuspendLayout();
             // 
             // pnlControl
@@ -245,6 +247,17 @@
             this.CH1.TabIndex = 0;
             this.CH1.Text = "ID";
             // 
+            // panel3
+            // 
+            this.panel3.Controls.Add(this.btnExecuteAllTests);
+            this.panel3.Controls.Add(this.lblTests);
+            this.panel3.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel3.Location = new System.Drawing.Point(3, 3);
+            this.panel3.Name = "panel3";
+            this.panel3.Padding = new System.Windows.Forms.Padding(3);
+            this.panel3.Size = new System.Drawing.Size(793, 27);
+            this.panel3.TabIndex = 36;
+            // 
             // btnExecuteAllTests
             // 
             this.btnExecuteAllTests.Dock = System.Windows.Forms.DockStyle.Right;
@@ -264,7 +277,7 @@
             this.lblTests.Name = "lblTests";
             this.lblTests.Size = new System.Drawing.Size(143, 21);
             this.lblTests.TabIndex = 30;
-            this.lblTests.Text = "Tests";
+            this.lblTests.Text = "Tests: 0";
             this.lblTests.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // PanelMain
@@ -308,7 +321,8 @@
             this.dataGridViewTextBoxColumn2,
             this.dataGridViewTextBoxColumn3,
             this.dataGridViewTextBoxColumn4,
-            this.dataGridViewTextBoxColumn5});
+            this.dataGridViewTextBoxColumn5,
+            this.ColumnStack});
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
             dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -339,6 +353,52 @@
             this.dGrid.ShowRowErrors = false;
             this.dGrid.Size = new System.Drawing.Size(580, 182);
             this.dGrid.TabIndex = 31;
+            this.dGrid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dGrid_CellContentClick);
+            // 
+            // PnlTestsHeader
+            // 
+            this.PnlTestsHeader.Controls.Add(this.lblErrors);
+            this.PnlTestsHeader.Controls.Add(this.btnClearLog);
+            this.PnlTestsHeader.Controls.Add(this.lblTraceLog);
+            this.PnlTestsHeader.Dock = System.Windows.Forms.DockStyle.Top;
+            this.PnlTestsHeader.Location = new System.Drawing.Point(3, 3);
+            this.PnlTestsHeader.Name = "PnlTestsHeader";
+            this.PnlTestsHeader.Padding = new System.Windows.Forms.Padding(3);
+            this.PnlTestsHeader.Size = new System.Drawing.Size(580, 27);
+            this.PnlTestsHeader.TabIndex = 32;
+            // 
+            // btnClearLog
+            // 
+            this.btnClearLog.Dock = System.Windows.Forms.DockStyle.Right;
+            this.btnClearLog.Location = new System.Drawing.Point(462, 3);
+            this.btnClearLog.Name = "btnClearLog";
+            this.btnClearLog.Size = new System.Drawing.Size(115, 21);
+            this.btnClearLog.TabIndex = 31;
+            this.btnClearLog.Text = "Clear Trace Log";
+            this.btnClearLog.UseVisualStyleBackColor = true;
+            this.btnClearLog.Click += new System.EventHandler(this.btnClearLog_Click);
+            // 
+            // lblTraceLog
+            // 
+            this.lblTraceLog.Dock = System.Windows.Forms.DockStyle.Left;
+            this.lblTraceLog.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblTraceLog.Location = new System.Drawing.Point(3, 3);
+            this.lblTraceLog.Name = "lblTraceLog";
+            this.lblTraceLog.Size = new System.Drawing.Size(126, 21);
+            this.lblTraceLog.TabIndex = 30;
+            this.lblTraceLog.Text = "Trace Log: 0";
+            this.lblTraceLog.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // lblErrors
+            // 
+            this.lblErrors.Dock = System.Windows.Forms.DockStyle.Left;
+            this.lblErrors.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblErrors.Location = new System.Drawing.Point(129, 3);
+            this.lblErrors.Name = "lblErrors";
+            this.lblErrors.Size = new System.Drawing.Size(89, 21);
+            this.lblErrors.TabIndex = 32;
+            this.lblErrors.Text = "Errors: 0";
+            this.lblErrors.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // dataGridViewTextBoxColumn1
             // 
@@ -380,16 +440,13 @@
             this.dataGridViewTextBoxColumn5.ReadOnly = true;
             this.dataGridViewTextBoxColumn5.Width = 75;
             // 
-            // lblTraceLog
+            // ColumnStack
             // 
-            this.lblTraceLog.Dock = System.Windows.Forms.DockStyle.Left;
-            this.lblTraceLog.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblTraceLog.Location = new System.Drawing.Point(3, 3);
-            this.lblTraceLog.Name = "lblTraceLog";
-            this.lblTraceLog.Size = new System.Drawing.Size(139, 21);
-            this.lblTraceLog.TabIndex = 30;
-            this.lblTraceLog.Text = "Trace Log";
-            this.lblTraceLog.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.ColumnStack.HeaderText = "Stack";
+            this.ColumnStack.Name = "ColumnStack";
+            this.ColumnStack.ReadOnly = true;
+            this.ColumnStack.Text = "Stack";
+            this.ColumnStack.Width = 41;
             // 
             // TestServer4
             // 
@@ -455,39 +512,6 @@
             this.ControlServer.Size = new System.Drawing.Size(300, 27);
             this.ControlServer.TabIndex = 4;
             // 
-            // PnlTestsHeader
-            // 
-            this.PnlTestsHeader.Controls.Add(this.btnClearLog);
-            this.PnlTestsHeader.Controls.Add(this.lblTraceLog);
-            this.PnlTestsHeader.Dock = System.Windows.Forms.DockStyle.Top;
-            this.PnlTestsHeader.Location = new System.Drawing.Point(3, 3);
-            this.PnlTestsHeader.Name = "PnlTestsHeader";
-            this.PnlTestsHeader.Padding = new System.Windows.Forms.Padding(3);
-            this.PnlTestsHeader.Size = new System.Drawing.Size(580, 27);
-            this.PnlTestsHeader.TabIndex = 32;
-            // 
-            // btnClearLog
-            // 
-            this.btnClearLog.Dock = System.Windows.Forms.DockStyle.Right;
-            this.btnClearLog.Location = new System.Drawing.Point(462, 3);
-            this.btnClearLog.Name = "btnClearLog";
-            this.btnClearLog.Size = new System.Drawing.Size(115, 21);
-            this.btnClearLog.TabIndex = 31;
-            this.btnClearLog.Text = "Clear Trace Log";
-            this.btnClearLog.UseVisualStyleBackColor = true;
-            this.btnClearLog.Click += new System.EventHandler(this.btnClearLog_Click);
-            // 
-            // panel3
-            // 
-            this.panel3.Controls.Add(this.btnExecuteAllTests);
-            this.panel3.Controls.Add(this.lblTests);
-            this.panel3.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel3.Location = new System.Drawing.Point(3, 3);
-            this.panel3.Name = "panel3";
-            this.panel3.Padding = new System.Windows.Forms.Padding(3);
-            this.panel3.Size = new System.Drawing.Size(793, 27);
-            this.panel3.TabIndex = 36;
-            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -510,11 +534,11 @@
             this.PanelMainTests.ResumeLayout(false);
             this.pnlTests.ResumeLayout(false);
             this.pnlTests.PerformLayout();
+            this.panel3.ResumeLayout(false);
             this.PanelMain.ResumeLayout(false);
             this.PanelMainTrace.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dGrid)).EndInit();
             this.PnlTestsHeader.ResumeLayout(false);
-            this.panel3.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -540,12 +564,6 @@
         private System.Windows.Forms.Label lblTests;
         private System.Windows.Forms.Panel PanelMain;
         private System.Windows.Forms.Panel PanelMainTrace;
-        private System.Windows.Forms.DataGridView dGrid;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn4;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn5;
         private System.Windows.Forms.Label lblTraceLog;
         private System.Windows.Forms.Panel pnlTests;
         private System.Windows.Forms.TextBox CH4;
@@ -555,6 +573,14 @@
         private System.Windows.Forms.Panel PnlTestsHeader;
         private System.Windows.Forms.Button btnClearLog;
         private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.Label lblErrors;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn4;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn5;
+        private System.Windows.Forms.DataGridViewButtonColumn ColumnStack;
+        private System.Windows.Forms.DataGridView dGrid;
     }
 }
 

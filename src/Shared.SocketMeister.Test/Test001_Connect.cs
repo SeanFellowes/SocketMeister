@@ -34,6 +34,8 @@ namespace SocketMeister
                     }
                 }
 
+                throw new FieldAccessException("Bad things hewflkm welfkm ewlkfm welfkmlm Error regfergergregreg erg reg reg re greg re greg re gtsrh yrthjtyfj tyj jy tyfju ytfj ytj ytj tydj tydj dtyjdcfth dfyjcgjy cfyj cgjy ycjvgukgyukyfutkjg fyuk ftyj fyuk ftyjt dyh t");
+
                 Status = TestStatus.Successful;
                 RaiseTraceEventRaised("Test completed successfully", SeverityType.Information, 1);
 

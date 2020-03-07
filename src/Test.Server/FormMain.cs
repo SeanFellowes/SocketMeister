@@ -27,6 +27,7 @@ namespace SocketMeister.Test
         private readonly AllTests allTests = new AllTests();
         private ITest currentTest = null;
         private int currentTestPtr = 0;
+        private int errors = 0;
         private Executing executeMode = Executing.Stopped;
         private readonly BindingList<LogEntry> gridItems;
         private readonly List<Label> lCol1 = new List<Label>();
@@ -66,7 +67,7 @@ namespace SocketMeister.Test
                 AllowEdit = false
             };
             dGrid.DataSource = gridItems;
-            lblTests.Text = "Tests (" + allTests.Count + ")";
+            lblTests.Text = "Tests: " + allTests.Count;
 
             //  START CONTROL ITEMS
             ControlServer.Start();
@@ -258,7 +259,7 @@ namespace SocketMeister.Test
 
         }
 
-        private void InsertListboxItem(string source, SocketMeister.TraceEventArgs args)
+        private void InsertListboxItem(string source, TraceEventArgs args)
         {
             if (dGrid.InvokeRequired)
             {
@@ -266,7 +267,7 @@ namespace SocketMeister.Test
             }
             else
             {
-                LogEntry logEntry = new LogEntry(source, args.Message, args.Severity, args.EventId);
+                LogEntry logEntry = new LogEntry(source, args.Message, args.Severity, args.EventId, args.StackTrace);
                 //while (gridItems.Count > 1000)
                 //{
                 //    gridItems.RemoveAt(gridItems.Count - 1);
@@ -274,8 +275,17 @@ namespace SocketMeister.Test
                 if (gridItems.Count == 0) gridItems.Add(logEntry);
                 else gridItems.Insert(0, logEntry);
 
-                lblTraceLog.Text = "Trace Log (" + gridItems.Count + ")";
+                lblTraceLog.Text = "Trace Log:" + gridItems.Count;
                 lblTraceLog.Refresh();
+
+                if (args.Severity == SeverityType.Error)
+                {
+                    errors++;
+                    lblErrors.Text = "Errors: " + errors.ToString(); ;
+                    lblErrors.ForeColor = Color.White;
+                    lblErrors.BackColor = Color.DarkRed;
+                }
+
             }
         }
 
@@ -561,7 +571,24 @@ namespace SocketMeister.Test
         private void btnClearLog_Click(object sender, EventArgs e)
         {
             gridItems.Clear();
-            lblTraceLog.Text = "Trace Log";
+            errors = 0;
+            lblTraceLog.Text = "Trace Log: 0";
+            lblErrors.Text = "Errors: 0";
+            lblErrors.ForeColor = Color.Black;
+            lblErrors.BackColor = Color.Transparent;
+        }
+
+        private void dGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            var senderGrid = (DataGridView)sender;
+
+            if (senderGrid.Columns[e.ColumnIndex] is DataGridViewButtonColumn &&
+                e.RowIndex >= 0)
+            {
+                LogEntry li = gridItems[e.RowIndex];
+                if (li.StackTrace == null) MessageBox.Show("No stack trace", "No stack trace", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                else MessageBox.Show(li.StackTrace, "Stack trace", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
     }
 }
