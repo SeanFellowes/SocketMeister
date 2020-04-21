@@ -28,6 +28,7 @@ Global
 		Shared.SocketMeister.Test\Shared.SocketMeister.Test.projitems*{1d9dfe4d-dc5d-406d-ae81-aef1b1d546d5}*SharedItemsImports = 4
 		Shared.SocketMeister\Shared.SocketMeister.projitems*{1d9dfe4d-dc5d-406d-ae81-aef1b1d546d5}*SharedItemsImports = 4
 		Shared.SocketMeister.Test.Client\Shared.SocketMeister.Test.Client.projitems*{2c586d07-661c-4156-8409-a9f2c7a31b54}*SharedItemsImports = 13
+		Shared.SocketMeister\Shared.SocketMeister.projitems*{37be6cd5-9876-438a-b946-0aa155b13ef5}*SharedItemsImports = 5
 		Shared.SocketMeister\Shared.SocketMeister.projitems*{4dedd745-2f5a-4b4a-acfe-a1d8c07110d4}*SharedItemsImports = 4
 		Shared.SocketMeister.Test.Server\Shared.SocketMeister.Test.Server.projitems*{563e814d-0faf-4614-921e-63e33aab847a}*SharedItemsImports = 13
 		Shared.SocketMeister\Shared.SocketMeister.projitems*{719e367c-132f-4c9d-ad8e-db25f59e707b}*SharedItemsImports = 4
