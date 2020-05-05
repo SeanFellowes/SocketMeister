@@ -1,8 +1,8 @@
 ﻿#if !SILVERLIGHT && !SMNOSERVER
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading;
 
 namespace SocketMeister
@@ -15,21 +15,21 @@ namespace SocketMeister
     {
         internal class Clients
         {
-            private readonly object classLock = new object();
-            private readonly List<Client> list = new List<Client>();
+            private readonly List<Client> _list = new List<Client>();
+            private readonly object _lock = new object();
 
             /// <summary>
-            /// Event raised when a client connects to the socket server (Raised in a seperate thread)
+            /// TO BE DEPRICATED. Use ClientsChangedEventArgs. Event raised when a client connects to the socket server (Raised in a seperate thread)
             /// </summary>
             public event EventHandler<ClientConnectedEventArgs> ClientConnected;
 
             /// <summary>
-            /// Event raised when a client disconnects from the socket server (Raised in a seperate thread)
+            /// TO BE DEPRICATED. Use ClientsChangedEventArgs. Event raised when a client disconnects from the socket server (Raised in a seperate thread)
             /// </summary>
             public event EventHandler<ClientDisconnectedEventArgs> ClientDisconnected;
 
             /// <summary>
-            /// Event raised when when there is a change to the clients connected to the socket server
+            /// Event raised when a client connects or disconnects from the socket server (Raised in a seperate thread)
             /// </summary>
             public event EventHandler<ClientsChangedEventArgs> ClientsChanged;
 
@@ -41,51 +41,43 @@ namespace SocketMeister
             /// <summary>
             /// Total number of syschronous and asynchronous clients connected
             /// </summary>
-            public int Count { get { lock (classLock) { return list.Count; } } }
+            public int Count { get { lock (_lock) { return _list.Count; } } }
 
-            public void Add(Client client)
+            public void Add(Client Client)
             {
-                if (client == null) return;
-
+                if (Client == null) return;
                 int clientCount = 0;
-                lock (classLock) 
+
+                lock (_lock) 
                 { 
-                    list.Add(client);
-                    clientCount = list.Count;
+                    _list.Add(Client);
+                    clientCount = _list.Count;
                 }
-                NotifyClientConnected(client, clientCount);
+                NotifyClientConnected(Client, clientCount);
             }
 
-            public void Disconnect(Client client)
+            public void Disconnect(Client Client)
             {
-                if (client == null) return;
-
+                if (Client == null) return;
                 int clientCount = 0;
-                lock (classLock)
+                lock (_lock)
                 {
-                    list.Remove(client);
-                    clientCount = list.Count;
+                    _list.Remove(Client);
+                    clientCount = _list.Count;
                 }
 
-                try
-                {
-                    client.ClientSocket.Shutdown(SocketShutdown.Both);
-                }
+                try { Client.ClientSocket.Shutdown(SocketShutdown.Both); }
                 catch (Exception ex)
                 {
-                    NotifyExceptionRaised(ex);
+                    NotifyTraceEventRaised(ex);
                 }
-
-                try
-                {
-                    client.ClientSocket.Close();
-                }
+                try { Client.ClientSocket.Close(); }
                 catch (Exception ex)
                 {
-                    NotifyExceptionRaised(ex);
+                    NotifyTraceEventRaised(ex);
                 }
 
-                NotifyClientDisconnected(client, clientCount);
+                NotifyClientDisconnected(Client, clientCount);
             }
 
             public void DisconnectAll()
@@ -125,8 +117,7 @@ namespace SocketMeister
                 }
             }
 
-
-            private void NotifyExceptionRaised(Exception error)
+            private void NotifyTraceEventRaised(Exception error)
             {
                 if (TraceEventRaised != null)
                 {
@@ -139,7 +130,6 @@ namespace SocketMeister
                         TraceEventRaised?.Invoke(this, new TraceEventArgs(error, 5008));
                     }
                     )).Start();
-
                 }
             }
 
@@ -151,15 +141,15 @@ namespace SocketMeister
             /// <returns>List of clients</returns>
             public List<Client> ToList()
             {
-                lock (classLock)
+                List<Client> rVal = new List<Client>();
+                lock (_lock)
                 {
-                    List<Client> rVal = new List<Client>(list.Count);
-                    foreach (Client cl in list)
+                    foreach (Client cl in _list)
                     {
                         rVal.Add(cl);
                     }
-                    return rVal;
                 }
+                return rVal;
             }
         }
     }

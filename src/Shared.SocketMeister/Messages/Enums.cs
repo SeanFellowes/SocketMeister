@@ -1,4 +1,8 @@
-﻿namespace SocketMeister.Messages
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace SocketMeister.Messages
 {
     /// <summary>
     /// Internal message types

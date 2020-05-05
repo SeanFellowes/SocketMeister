@@ -66,7 +66,7 @@ namespace SocketMeister.Test
             }
             if (policyServer != null)
             {
-                policyServer.SocketServiceStatusChanged -= PolicyServer_SocketServiceStatusChanged;
+                policyServer.SocketServerStatusChanged -= PolicyServer_SocketServiceStatusChanged;
                 policyServer.TraceEventRaised -= SocketServer_TraceEventRaised;
             }
         }
@@ -105,13 +105,13 @@ namespace SocketMeister.Test
             }
         }
 
-        public ServiceStatus Status
+        public SocketServer.SocketServerStatus Status
         {
             get
             {
                 if (policyServer != null) return policyServer.Status;
                 else if (socketServer != null) return socketServer.Status;
-                else return ServiceStatus.Stopped;
+                else return SocketServer.SocketServerStatus.Stopped;
             }
         }
 
@@ -126,7 +126,7 @@ namespace SocketMeister.Test
         }
 
 
-        private void SocketServer_ListenerStateChanged(object sender, SocketServer.ServerStatusEventArgs e)
+        private void SocketServer_ListenerStateChanged(object sender, SocketServer.SocketServerStatusChangedEventArgs e)
         {
             ChangeStatus(e.Status);
         }
@@ -138,25 +138,25 @@ namespace SocketMeister.Test
         }
 
 
-        private void ChangeStatus(ServiceStatus Status)
+        private void ChangeStatus(SocketServer.SocketServerStatus Status)
         {
             try
             {
                 if (InvokeRequired) Invoke(new MethodInvoker(delegate { ChangeStatus(Status); }));
                 else
                 {
-                    if (Status == ServiceStatus.Started)
+                    if (Status == SocketServer.SocketServerStatus.Started)
                     {
                         LabelStatus.Text = "Started";
                         StatusIndicator.BackColor = Color.DarkGreen;
                         this.Cursor = Cursors.Default;
                     }
-                    else if (Status == ServiceStatus.Starting)
+                    else if (Status == SocketServer.SocketServerStatus.Starting)
                     {
                         LabelStatus.Text = "Starting...";
                         StatusIndicator.BackColor = Color.Yellow;
                     }
-                    else if (Status == ServiceStatus.Stopped)
+                    else if (Status == SocketServer.SocketServerStatus.Stopped)
                     {
                         LabelStatus.Text = "Stopped";
                         StatusIndicator.BackColor = Color.Red;
@@ -185,7 +185,7 @@ namespace SocketMeister.Test
                 if (ServerType == ServerType.SocketServer)
                 {
                     if (socketServer == null) return false;
-                    if (socketServer.Status == ServiceStatus.Started)
+                    if (socketServer.Status == SocketServer.SocketServerStatus.Started)
                     {
                         this.Cursor = Cursors.WaitCursor;
                         socketServer.Stop();
@@ -196,7 +196,7 @@ namespace SocketMeister.Test
                 else
                 {
                     if (policyServer == null) return false;
-                    if (policyServer.Status == ServiceStatus.Started)
+                    if (policyServer.Status == SocketServer.SocketServerStatus.Started)
                     {
                         this.Cursor = Cursors.WaitCursor;
                         policyServer.Stop();
@@ -258,7 +258,7 @@ namespace SocketMeister.Test
             else
             {
                 policyServer = new PolicyServer();
-                policyServer.SocketServiceStatusChanged += PolicyServer_SocketServiceStatusChanged;
+                policyServer.SocketServerStatusChanged += PolicyServer_SocketServiceStatusChanged;
                 policyServer.TraceEventRaised += SocketServer_TraceEventRaised;
                 policyServer.Start();
             }

@@ -1,52 +1,31 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Threading;
 
 namespace SocketMeister.Messages
 {
-    internal class MessageBase : IDisposable
+    internal class MessageBase
     {
-        private readonly object classLock = new object();
-        private bool disposed = false;
-        private AutoResetEvent sendReceiveCompleteEvent = null;
-        private readonly MessageTypes messageType;
-        private SendReceiveStatus sendReceiveStatus = SendReceiveStatus.Unsent;
-        private readonly DateTime timeout;
-        private readonly int timeoutMilliseconds;
+        private AutoResetEvent _sendReceiveCompleteEvent = null;
+        private readonly object _lock = new object();
+        private readonly MessageTypes _messageType;
+        private SendReceiveStatus _sendReceiveStatus = SendReceiveStatus.Unsent;
+        private readonly DateTime _timeout;
+        private readonly int _timeoutMilliseconds;
 
         internal MessageBase(MessageTypes MessageType)
         {
-            messageType = MessageType;
+            _messageType = MessageType;
         }
 
 
-        internal MessageBase(MessageTypes messageType, int timeoutMilliseconds)
+        internal MessageBase(MessageTypes MessageType, int TimeoutMilliseconds)
         {
-            this.messageType = messageType;
-            this.timeoutMilliseconds = timeoutMilliseconds;
-            timeout = DateTime.Now.AddMilliseconds(timeoutMilliseconds);
-        }
-
-        // Public implementation of Dispose pattern callable by consumers.
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        // Protected implementation of Dispose pattern.
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposed) return;
-
-            if (disposing)
-            {
-#if !NET20 && !NET35
-                sendReceiveCompleteEvent.Dispose();
-#endif
-            }
-
-            disposed = true;
+            _messageType = MessageType;
+            _timeoutMilliseconds = TimeoutMilliseconds;
+            _timeout = DateTime.Now.AddMilliseconds(TimeoutMilliseconds);
         }
 
 
@@ -55,32 +34,32 @@ namespace SocketMeister.Messages
         /// </summary>
         public AutoResetEvent SendReceiveCompleteEvent
         {
-            get { lock (classLock) { return sendReceiveCompleteEvent; } }
-            set { lock (classLock) { sendReceiveCompleteEvent = value; } }
+            get { lock (_lock) { return _sendReceiveCompleteEvent; } }
+            set { lock (_lock) { _sendReceiveCompleteEvent = value; } }
         }
 
 
-        internal static object[] DeserializeParameters(BinaryReader reader)
+        internal static object[] DeserializeParameters(BinaryReader bR)
         {
-            int paramCount = reader.ReadInt32();
+            int paramCount = bR.ReadInt32();
             object[] parameters = new object[paramCount];
             for (int ptr = 0; ptr < paramCount; ptr++)
             {
-                ParameterTypes ParamType = (ParameterTypes)reader.ReadInt16();
+                ParameterTypes ParamType = (ParameterTypes)bR.ReadInt16();
 
                 if (ParamType == ParameterTypes.Null) parameters[ptr] = null;
-                else if (ParamType == ParameterTypes.BoolParam) parameters[ptr] = reader.ReadBoolean();
-                else if (ParamType == ParameterTypes.Int16Param) parameters[ptr] = reader.ReadInt16();
-                else if (ParamType == ParameterTypes.Int32Param) parameters[ptr] = reader.ReadInt32();
-                else if (ParamType == ParameterTypes.Int64Param) parameters[ptr] = reader.ReadInt64();
-                else if (ParamType == ParameterTypes.UInt16Param) parameters[ptr] = reader.ReadUInt16();
-                else if (ParamType == ParameterTypes.UInt32Param) parameters[ptr] = reader.ReadUInt32();
-                else if (ParamType == ParameterTypes.UInt64Param) parameters[ptr] = reader.ReadUInt64();
-                else if (ParamType == ParameterTypes.StringParam) parameters[ptr] = reader.ReadString();
-                else if (ParamType == ParameterTypes.DateTimeParam) parameters[ptr] = new DateTime(reader.ReadInt64());
-                else if (ParamType == ParameterTypes.DoubleParam) parameters[ptr] = reader.ReadDouble();
-                else if (ParamType == ParameterTypes.ByteParam) parameters[ptr] = reader.ReadByte();
-                else if (ParamType == ParameterTypes.ByteArrayParam) parameters[ptr] = reader.ReadBytes(reader.ReadInt32());
+                else if (ParamType == ParameterTypes.BoolParam) parameters[ptr] = bR.ReadBoolean();
+                else if (ParamType == ParameterTypes.Int16Param) parameters[ptr] = bR.ReadInt16();
+                else if (ParamType == ParameterTypes.Int32Param) parameters[ptr] = bR.ReadInt32();
+                else if (ParamType == ParameterTypes.Int64Param) parameters[ptr] = bR.ReadInt64();
+                else if (ParamType == ParameterTypes.UInt16Param) parameters[ptr] = bR.ReadUInt16();
+                else if (ParamType == ParameterTypes.UInt32Param) parameters[ptr] = bR.ReadUInt32();
+                else if (ParamType == ParameterTypes.UInt64Param) parameters[ptr] = bR.ReadUInt64();
+                else if (ParamType == ParameterTypes.StringParam) parameters[ptr] = bR.ReadString();
+                else if (ParamType == ParameterTypes.DateTimeParam) parameters[ptr] = new DateTime(bR.ReadInt64());
+                else if (ParamType == ParameterTypes.DoubleParam) parameters[ptr] = bR.ReadDouble();
+                else if (ParamType == ParameterTypes.ByteParam) parameters[ptr] = bR.ReadByte();
+                else if (ParamType == ParameterTypes.ByteArrayParam) parameters[ptr] = bR.ReadBytes(bR.ReadInt32());
 #if !SILVERLIGHT
                 else throw new InvalidDataException("Cannot deserialize parameter " + ptr + ". There is no deserialize code for type " + ParamType.ToString());
 #else
@@ -90,24 +69,24 @@ namespace SocketMeister.Messages
             return parameters;
         }
 
-        public MessageTypes MessageType { get { return messageType; } }
+        public MessageTypes MessageType { get { return _messageType; } }
 
         public SendReceiveStatus SendReceiveStatus
         {
             get
             {
-                lock (classLock)
+                lock (_lock)
                 {
-                    if (sendReceiveStatus == SendReceiveStatus.ResponseReceived) return SendReceiveStatus.ResponseReceived;
-                    else if (DateTime.Now >= timeout) return SendReceiveStatus.Timeout;
-                    else return sendReceiveStatus;
+                    if (_sendReceiveStatus == SendReceiveStatus.ResponseReceived) return SendReceiveStatus.ResponseReceived;
+                    else if (DateTime.Now >= _timeout) return SendReceiveStatus.Timeout;
+                    else return _sendReceiveStatus;
                 }
             }
             set
             {
-                lock (classLock)
+                lock (_lock)
                 {
-                    if (sendReceiveStatus != SendReceiveStatus.ResponseReceived) sendReceiveStatus = value;
+                    if (_sendReceiveStatus != SendReceiveStatus.ResponseReceived) _sendReceiveStatus = value;
                 }
             }
         }
@@ -116,27 +95,27 @@ namespace SocketMeister.Messages
         /// <summary>
         /// Number of milliseconds to wait before a timeout will occur.
         /// </summary>
-        public int TimeoutMilliseconds { get { return timeoutMilliseconds; } }
+        public int TimeoutMilliseconds { get { return _timeoutMilliseconds; } }
 
 
-        internal static void SerializeParameters(BinaryWriter writer, object[] parameters)
+        internal static void SerializeParameters(BinaryWriter bWriter, object[] Parameters)
         {
-            writer.Write(parameters.Length);
+            bWriter.Write(Parameters.Length);
 
-            for (int ptr = 0; ptr < parameters.Length; ptr++)
+            for (int ptr = 0; ptr < Parameters.Length; ptr++)
             {
-                if (parameters[ptr] == null)
+                if (Parameters[ptr] == null)
                 {
-                    writer.Write((Int16)ParameterTypes.Null);
+                    bWriter.Write((Int16)ParameterTypes.Null);
                     continue;
                 }
 
-                Type ParamType = parameters[ptr].GetType();
+                Type ParamType = Parameters[ptr].GetType();
 
                 if (ParamType == typeof(bool))
                 {
-                    writer.Write((Int16)ParameterTypes.BoolParam);
-                    writer.Write((bool)parameters[ptr]);
+                    bWriter.Write((Int16)ParameterTypes.BoolParam);
+                    bWriter.Write((bool)Parameters[ptr]);
                 }
                 //else if (ParamType == typeof(Nullable))
                 //{
@@ -145,65 +124,65 @@ namespace SocketMeister.Messages
                 //}
                 else if (ParamType == typeof(DateTime))
                 {
-                    writer.Write((Int16)ParameterTypes.DateTimeParam);
-                    writer.Write(((DateTime)parameters[ptr]).Ticks);
+                    bWriter.Write((Int16)ParameterTypes.DateTimeParam);
+                    bWriter.Write(((DateTime)Parameters[ptr]).Ticks);
                 }
                 else if (ParamType == typeof(Double))
                 {
-                    writer.Write((Int16)ParameterTypes.DoubleParam);
-                    writer.Write((Double)parameters[ptr]);
+                    bWriter.Write((Int16)ParameterTypes.DoubleParam);
+                    bWriter.Write((Double)Parameters[ptr]);
                 }
                 else if (ParamType == typeof(Int16))
                 {
-                    writer.Write((Int16)ParameterTypes.Int16Param);
-                    writer.Write((Int16)parameters[ptr]);
+                    bWriter.Write((Int16)ParameterTypes.Int16Param);
+                    bWriter.Write((Int16)Parameters[ptr]);
                 }
                 else if (ParamType == typeof(Int32))
                 {
-                    writer.Write((Int16)ParameterTypes.Int32Param);
-                    writer.Write((Int32)parameters[ptr]);
+                    bWriter.Write((Int16)ParameterTypes.Int32Param);
+                    bWriter.Write((Int32)Parameters[ptr]);
                 }
                 else if (ParamType == typeof(Int64))
                 {
-                    writer.Write((Int16)ParameterTypes.Int64Param);
-                    writer.Write((Int64)parameters[ptr]);
+                    bWriter.Write((Int16)ParameterTypes.Int64Param);
+                    bWriter.Write((Int64)Parameters[ptr]);
                 }
                 else if (ParamType == typeof(UInt16))
                 {
-                    writer.Write((Int16)ParameterTypes.UInt16Param);
-                    writer.Write((UInt16)parameters[ptr]);
+                    bWriter.Write((Int16)ParameterTypes.UInt16Param);
+                    bWriter.Write((UInt16)Parameters[ptr]);
                 }
                 else if (ParamType == typeof(UInt32))
                 {
-                    writer.Write((Int16)ParameterTypes.UInt32Param);
-                    writer.Write((UInt32)parameters[ptr]);
+                    bWriter.Write((Int16)ParameterTypes.UInt32Param);
+                    bWriter.Write((UInt32)Parameters[ptr]);
                 }
                 else if (ParamType == typeof(UInt64))
                 {
-                    writer.Write((Int16)ParameterTypes.UInt64Param);
-                    writer.Write((UInt64)parameters[ptr]);
+                    bWriter.Write((Int16)ParameterTypes.UInt64Param);
+                    bWriter.Write((UInt64)Parameters[ptr]);
                 }
                 else if (ParamType == typeof(string))
                 {
-                    writer.Write((Int16)ParameterTypes.StringParam);
-                    writer.Write((string)parameters[ptr]);
+                    bWriter.Write((Int16)ParameterTypes.StringParam);
+                    bWriter.Write((string)Parameters[ptr]);
                 }
                 else if (ParamType == typeof(Byte))
                 {
-                    writer.Write((Int16)ParameterTypes.ByteParam);
-                    writer.Write((Byte)parameters[ptr]);
+                    bWriter.Write((Int16)ParameterTypes.ByteParam);
+                    bWriter.Write((Byte)Parameters[ptr]);
                 }
                 else if (ParamType == typeof(Byte[]))
                 {
                     //  PREFIX THE DATA WITH AN int OF THE LENGTH, FOLLOWED BY THE DATA (WE NEED THE PREFIX TO DESERIALIZE)
-                    writer.Write((Int16)ParameterTypes.ByteArrayParam);
-                    Byte[] ToWrite = (Byte[])parameters[ptr];
-                    writer.Write((Int32)ToWrite.Length);
-                    writer.Write(ToWrite);
+                    bWriter.Write((Int16)ParameterTypes.ByteArrayParam);
+                    Byte[] ToWrite = (Byte[])Parameters[ptr];
+                    bWriter.Write((Int32)ToWrite.Length);
+                    bWriter.Write(ToWrite);
                 }
                 else
                 {
-                    throw new ArgumentException("Request parameter " + (ptr + 1) + " is an unsupported type (" + ParamType.Name + ").", nameof(parameters));
+                    throw new ArgumentException("Request parameter " + (ptr + 1) + " is an unsupported type (" + ParamType.Name + ").", "Parameters");
                 }
             }
         }

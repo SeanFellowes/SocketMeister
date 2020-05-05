@@ -31,7 +31,7 @@ namespace SocketMeister
             /// Constructor
             /// </summary>
             /// <param name="status">Current status of the service</param>
-            public ServerStatusEventArgs(ServiceStatus status)
+            public ServerStatusEventArgs(SocketServer.SocketServerStatus status)
             {
                 Status = status;
             }
@@ -39,7 +39,7 @@ namespace SocketMeister
             /// <summary>
             /// Execution status of the service.
             /// </summary>
-            public ServiceStatus Status { get; set; } = ServiceStatus.Stopped;
+            public SocketServer.SocketServerStatus Status { get; set; } = SocketServer.SocketServerStatus.Stopped;
         }
 
 

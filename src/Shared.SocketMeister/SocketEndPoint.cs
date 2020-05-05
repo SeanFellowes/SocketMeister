@@ -1,7 +1,9 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
+using System.Threading;
 
 namespace SocketMeister
 {
@@ -11,49 +13,46 @@ namespace SocketMeister
 #if SMISPUBLIC
     public class SocketEndPoint : IDisposable
 #else
-    [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses", MessageId = "isChecked")]
     internal class SocketEndPoint : IDisposable
 #endif
     {
-        private readonly object classLock = new object();
-        private DateTime dontReconnectUntil = DateTime.Now;
-        private readonly IPEndPoint ipEndPoint = null;
-        private readonly string iPAddress = null;
-        private readonly ushort port = 0;
-        private readonly Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        private DateTime _dontReconnectUntil = DateTime.Now;
+        private readonly IPEndPoint _ipEndPoint = null;
+        private readonly string _iPAddress = null;
+        private readonly object _lock = new object();
+        private readonly ushort _port = 0;
+        private readonly Socket _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
         /// <summary>
         /// Default constructor
         /// </summary>
-        /// <param name="iPAddress">IP Address of the server to connect to</param>
-        /// <param name="port">Port number of the socket listener to connect to</param>
-        [SuppressMessage("Microsoft.Performance", "IDE0018:VariableDeclarationCanBeInlined", MessageId = "NotSupportedBeforeDotNet4")]
-        public SocketEndPoint(string iPAddress, int port)
+        /// <param name="IPAddress">IP Address of the server to connect to</param>
+        /// <param name="Port">Port number of the socket listener to connect to</param>
+        public SocketEndPoint(string IPAddress, int Port)
         {
             //  VALIDATE
-            if (string.IsNullOrEmpty(iPAddress) == true) throw new Exception("IP Address cannot be null or empty");
-            if (port < 1024 || port > ushort.MaxValue) throw new Exception("Port " + port + " must be between 1024 and " + ushort.MaxValue);
+            if (string.IsNullOrEmpty(IPAddress) == true) throw new Exception("IP Address cannot be null or empty");
+            if (Port < 1024 || Port > ushort.MaxValue) throw new Exception("Port " + Port + " must be between 1024 and " + ushort.MaxValue);
 
-            this.iPAddress = iPAddress;
-            this.port = Convert.ToUInt16(port);
+            _iPAddress = IPAddress;
+            _port = Convert.ToUInt16(Port);
 
             //  TRY TO CREATE IpAddress
-            IPAddress IPAddr;
-            if (System.Net.IPAddress.TryParse(this.iPAddress, out IPAddr))
+            if (System.Net.IPAddress.TryParse(_iPAddress, out IPAddress IPAddr))
             {
                 switch (IPAddr.AddressFamily)
                 {
                     case AddressFamily.InterNetwork:
                         break;  //  OKAY
                     case AddressFamily.InterNetworkV6:
-                        throw new Exception("IP address (" + iPAddress + ") cannot be of type 'InterNetworkV6'. Only IPv4 (e.g. '192.168.23.56') values are acceptable");
+                        throw new Exception("IP address (" + IPAddress + ") cannot be of type 'InterNetworkV6'. Only IPv4 (e.g. '192.168.23.56') values are acceptable");
                     default:
                         break;  //  OKAY
                 }
             }
-            else throw new Exception("Unable to create an IPAddress from the provided IPAddress '" + iPAddress + "' and Port " + port);
+            else throw new Exception("Unable to create an IPAddress from the provided IPAddress '" + IPAddress + "' and Port " + Port);
 
-            ipEndPoint = new IPEndPoint(IPAddr, this.port);
+            _ipEndPoint = new IPEndPoint(IPAddr, _port);
 
         }
 
@@ -74,11 +73,13 @@ namespace SocketMeister
         {
             if (disposing)
             {
-                //  NOTE: If you application uses .NET 2.0 or .NET 3.5. add NET20 or NET35 as a conditional compilation symbol, in your project's Build properties
+                //  NOTE: You may need to define NET20 or NET35 as a conditional compilation symbol in your project's Build properties
 #if !NET35 && !NET20
-                socket.Dispose(); 
+                try { _socket.Dispose(); }
+                catch { }
 #else
-                if (socket.Connected == true) socket.Close();
+                try { _socket.Close(); }
+                catch { }
 #endif
             }
         }
@@ -89,31 +90,31 @@ namespace SocketMeister
         /// </summary>
         internal DateTime DontReconnectUntil
         {
-            get { lock (classLock) { return dontReconnectUntil; } }
-            set { lock (classLock) { dontReconnectUntil = value; } }
+            get { lock (_lock) { return _dontReconnectUntil; } }
+            set { lock (_lock) { _dontReconnectUntil = value; } }
         }
 
         /// <summary>
         /// IP Address of the server to connect to
         /// </summary>
-        public string IPAddress { get { return iPAddress; } }
+        public string IPAddress { get { return _iPAddress; } }
 
         /// <summary>
         /// IPEndpoint
         /// </summary>
-        internal IPEndPoint IPEndPoint { get { return ipEndPoint; } }
+        internal IPEndPoint IPEndPoint { get { return _ipEndPoint; } }
 
         /// <summary>
         /// Port number of the socket listener to connect to
         /// </summary>
-        public ushort Port { get { return port; } }
+        public ushort Port { get { return _port; } }
 
         /// <summary>
         /// TCP Socket in use for the current destination.
         /// </summary>
         internal Socket Socket
         {
-            get { lock (classLock) { return socket; } }
+            get { lock (_lock) { return _socket; } }
         }
 
         /// <summary>
@@ -121,17 +122,17 @@ namespace SocketMeister
         /// </summary>
         public void CloseSocket()
         {
-            lock (classLock)
+            lock (_lock)
             {
-                if ( socket.Connected == true)
-                {
-                    socket.Shutdown(SocketShutdown.Both);
+                try { _socket.Shutdown(SocketShutdown.Both); }
+                catch { }
 #if SILVERLIGHT
-                    socket.Close(); 
+                try { _socket.Close(); }
+                catch { }
 #else
-                    socket.Disconnect(true);
+                try { _socket.Disconnect(true); }
+                catch { }
 #endif
-                }
             }
         }
     }

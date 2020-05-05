@@ -1,5 +1,7 @@
 ﻿#if !SILVERLIGHT && !SMNOSERVER
 using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace SocketMeister
 {
@@ -10,13 +12,13 @@ namespace SocketMeister
 #endif
     {
         /// <summary>
-        /// Event raised when a client connects to the socket server.
+        /// TO BE DEPRICATED. Use ClientsChangedEventArgs. Event raised when a client connects to the socket server.
         /// </summary>
         public class ClientConnectedEventArgs : EventArgs
         {
-            internal ClientConnectedEventArgs(Client client)
+            internal ClientConnectedEventArgs(Client Client)
             {
-                Client = client;
+                this.Client = Client;
             }
 
             /// <summary>
@@ -24,6 +26,23 @@ namespace SocketMeister
             /// </summary>
             public Client Client { get; }
         }
+
+        /// <summary>
+        /// TO BE DEPRICATED. Use ClientsChangedEventArgs. Event raised when a client disconnects from the socket server.
+        /// </summary>
+        public class ClientDisconnectedEventArgs : EventArgs
+        {
+            internal ClientDisconnectedEventArgs(Client Client)
+            {
+                this.Client = Client;
+            }
+
+            /// <summary>
+            /// The client which disconnected
+            /// </summary>
+            public Client Client { get; }
+        }
+
 
         /// <summary>
         /// Event raised when there is a change to the clients connected to the socket server.
@@ -42,21 +61,6 @@ namespace SocketMeister
         }
 
 
-        /// <summary>
-        /// Event raised when a client disconnects from the socket server.
-        /// </summary>
-        public class ClientDisconnectedEventArgs : EventArgs
-        {
-            internal ClientDisconnectedEventArgs(Client client)
-            {
-                Client = client;
-            }
-
-            /// <summary>
-            /// The client which disconnected
-            /// </summary>
-            public Client Client { get; }
-        }
 
 
         /// <summary>
@@ -64,10 +68,10 @@ namespace SocketMeister
         /// </summary>
         public class MessageReceivedEventArgs : EventArgs
         {
-            internal MessageReceivedEventArgs(Client client, object[] parameters)
+            internal MessageReceivedEventArgs(Client Client, object[] Parameters)
             {
-                Client = client;
-                Parameters = parameters;
+                this.Client = Client;
+                this.Parameters = Parameters;
             }
 
             /// <summary>
@@ -86,7 +90,7 @@ namespace SocketMeister
         /// </summary>
         public class RequestReceivedEventArgs : MessageReceivedEventArgs
         {
-            internal RequestReceivedEventArgs(Client client, object[] parameters) : base(client, parameters) { }
+            internal RequestReceivedEventArgs(Client Client, object[] Parameters) : base(Client, Parameters) { }
 
             /// <summary>
             /// The byte array which is to be returned to the client. Null is returned if a 'Response' value is not provided when processing the 'RequestReceived' event.
@@ -95,23 +99,29 @@ namespace SocketMeister
         }
 
         /// <summary>
-        /// Status of a socket service.
+        /// Execution status of a service changed. Includes the new status
         /// </summary>
-        public class ServerStatusEventArgs : EventArgs
+        public class SocketServerStatusChangedEventArgs : EventArgs
         {
+
+            /// <summary>
+            /// Default constructor
+            /// </summary>
+            public SocketServerStatusChangedEventArgs() { }
+
             /// <summary>
             /// Constructor
             /// </summary>
-            /// <param name="status">Current status of the service</param>
-            public ServerStatusEventArgs(ServiceStatus status)
+            /// <param name="Status">Current status of the service</param>
+            public SocketServerStatusChangedEventArgs(SocketServerStatus Status)
             {
-                Status = status;
+                this.Status = Status;
             }
 
             /// <summary>
             /// Execution status of the service.
             /// </summary>
-            public ServiceStatus Status { get; set; } = ServiceStatus.Stopped;
+            public SocketServerStatus Status { get; set; } = SocketServerStatus.Stopped;
         }
 
     }

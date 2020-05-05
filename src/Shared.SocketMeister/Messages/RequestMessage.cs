@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Net.Sockets;
 
 
 namespace SocketMeister.Messages
@@ -7,15 +8,15 @@ namespace SocketMeister.Messages
 #if !SILVERLIGHT && !SMNOSERVER
     internal partial class RequestMessage
     {
-        private SocketServer.Client remoteClient = null;
+        private SocketServer.Client _remoteClient = null;
 
         /// <summary>
         /// The remote client which sent this RequestMessage (value null on SocketClient)
         /// </summary>
         internal SocketServer.Client RemoteClient
         {
-            get { lock (classLock) { return remoteClient; } }
-            set { lock (classLock) { remoteClient = value; } }
+            get { lock (_lock) { return _remoteClient; } }
+            set { lock (_lock) { _remoteClient = value; } }
         }
     }
 #endif
@@ -26,78 +27,60 @@ namespace SocketMeister.Messages
     internal partial class RequestMessage : MessageBase, IMessage
     {
         //  REQUEST ID
-        private static long maxRequestId = 0;
-        private static readonly object lockMaxRequestId = new object();
+        private static long _maxRequestId = 0;
+        private static readonly object _lockMaxRequestId = new object();
 
         //  REQUEST VARIABLES
-        private readonly bool isLongPolling = false;
-        private readonly byte[] parameterBytes = null;
-        private readonly object[] parameters = null;
-        private readonly long requestId;
+        private readonly bool _isLongPolling = false;
+        private readonly byte[] _parameterBytes = null;
+        private readonly object[] _parameters = null;
+        private readonly long _requestId;
 
         //  INTERNAL (NOT SENT IN MESSAGE DATA)
-        private readonly object classLock = new object();
-        bool disposed = false;
-        private ResponseMessage response = null;
+        private readonly object _lock = new object();
+        private ResponseMessage _response = null;
 
 
         /// <summary>
         /// RequestMessage constructor
         /// </summary>
-        /// <param name="parameters">Array of parameters to send with the request. There must be at least 1 parameter.</param>
-        /// <param name="timeoutMilliseconds">The maximum number of milliseconds to wait for a response before timing out.</param>
-        /// <param name="isLongPolling">The maximum number of milliseconds to wait for a response before timing out.</param>
-        public RequestMessage(object[] parameters, int timeoutMilliseconds, bool isLongPolling = false) : base(MessageTypes.RequestMessage, timeoutMilliseconds)
+        /// <param name="Parameters">Array of parameters to send with the request. There must be at least 1 parameter.</param>
+        /// <param name="TimeoutMilliseconds">The maximum number of milliseconds to wait for a response before timing out.</param>
+        /// <param name="IsLongPolling">The maximum number of milliseconds to wait for a response before timing out.</param>
+        public RequestMessage(object[] Parameters, int TimeoutMilliseconds, bool IsLongPolling = false) : base(MessageTypes.RequestMessage, TimeoutMilliseconds)
         {
-            this.parameters = parameters;
-            this.isLongPolling = isLongPolling;
+            _parameters = Parameters;
+            _isLongPolling = IsLongPolling;
 
             //  CREATE A REQUEST ID
-            lock (lockMaxRequestId)
+            lock (_lockMaxRequestId)
             {
-                if (maxRequestId + 1 > long.MaxValue) maxRequestId = 1;
-                else maxRequestId += 1;
-                requestId = maxRequestId;
+                if (_maxRequestId + 1 > long.MaxValue) _maxRequestId = 1;
+                else _maxRequestId = _maxRequestId + 1;
+                _requestId = _maxRequestId;
             }
 
             //  SERIALIZE REQUEST MESSAGE
             using (BinaryWriter writer = new BinaryWriter(new MemoryStream()))
             {
-                writer.Write(requestId);
-                writer.Write(this.isLongPolling);
-                SerializeParameters(writer, parameters);
+                writer.Write(_requestId);
+                writer.Write(_isLongPolling);
+                SerializeParameters(writer, Parameters);
                 using (BinaryReader reader = new BinaryReader(writer.BaseStream))
                 {
                     reader.BaseStream.Position = 0;
-                    parameterBytes = reader.ReadBytes(Convert.ToInt32(reader.BaseStream.Length));
+                    _parameterBytes = reader.ReadBytes(Convert.ToInt32(reader.BaseStream.Length));
                 }
             }
         }
 
 
-        internal RequestMessage(BinaryReader reader) : base(MessageTypes.RequestMessage)
+        internal RequestMessage(BinaryReader bR) : base(MessageTypes.RequestMessage)
         {
-            requestId = reader.ReadInt64();
-            isLongPolling = reader.ReadBoolean();
-            parameters = DeserializeParameters(reader);
+            _requestId = bR.ReadInt64();
+            _isLongPolling = bR.ReadBoolean();
+            _parameters = DeserializeParameters(bR);
         }
-
-        // Protected implementation of Dispose pattern.
-        protected override void Dispose(bool disposing)
-        {
-            if (disposed)
-                return;
-
-            if (disposing)
-            {
-                if (response != null) response.Dispose();
-            }
-
-            disposed = true;
-            // Call base class implementation.
-            base.Dispose(disposing);
-        }
-
 
 
         /// <summary>
@@ -105,7 +88,7 @@ namespace SocketMeister.Messages
         /// </summary>
         public object[] Parameters
         {
-            get { return parameters; }
+            get { return _parameters; }
         }
 
         /// <summary>
@@ -113,7 +96,7 @@ namespace SocketMeister.Messages
         /// </summary>
         public bool IsLongPolling
         {
-            get { return isLongPolling; }
+            get { return _isLongPolling; }
         }
 
 
@@ -122,18 +105,18 @@ namespace SocketMeister.Messages
         /// </summary>
         public long RequestId
         {
-            get { return requestId; }
+            get { return _requestId; }
         }
 
         public ResponseMessage Response
         {
-            get { lock (classLock) { return response; } }
-            set { lock (classLock) { response = value; } }
+            get { lock (_lock) { return _response; } }
+            set { lock (_lock) { _response = value; } }
         }
 
         public void AppendBytes(BinaryWriter Writer)
         {
-            Writer.Write(parameterBytes);
+            Writer.Write(_parameterBytes);
         }
     }
 }

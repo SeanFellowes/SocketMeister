@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace SocketMeister
 {
@@ -17,31 +19,31 @@ namespace SocketMeister
         /// </summary>
         public class ConnectionStatusChangedEventArgs : EventArgs
         {
-            private readonly object classLock = new object();
-            private string iPAddress = "";
-            private ushort port = 0;
-            private ConnectionStatuses status = ConnectionStatuses.Disconnected;
+            private string _iPAddress = "";
+            private readonly object _lock = new object();
+            private ushort _port = 0;
+            private ConnectionStatuses _status = ConnectionStatuses.Disconnected;
 
             /// <summary>
             /// Default constructor
             /// </summary>
-            /// <param name="status">The status of the socket</param>
-            internal ConnectionStatusChangedEventArgs(ConnectionStatuses status)
+            /// <param name="Status">The status of the socket</param>
+            internal ConnectionStatusChangedEventArgs(ConnectionStatuses Status)
             {
-                this.status = status;
+                _status = Status;
             }
 
             /// <summary>
             /// Default constructor
             /// </summary>
-            /// <param name="status">The status of the socket</param>
-            /// <param name="iPAddress">Destination TCP/IP Port.</param>
-            /// <param name="port"></param>
-            internal ConnectionStatusChangedEventArgs(ConnectionStatuses status, string iPAddress, ushort port)
+            /// <param name="Status">The status of the socket</param>
+            /// <param name="IPAddress">Destination TCP/IP Port.</param>
+            /// <param name="Port"></param>
+            internal ConnectionStatusChangedEventArgs(ConnectionStatuses Status, string IPAddress, ushort Port)
             {
-                this.status = status;
-                this.iPAddress = iPAddress;
-                this.port = port;
+                _status = Status;
+                _iPAddress = IPAddress;
+                _port = Port;
             }
 
             /// <summary>
@@ -49,8 +51,8 @@ namespace SocketMeister
             /// </summary>
             public string IPAddress
             {
-                get { lock (classLock) { return iPAddress; } }
-                set { lock (classLock) { iPAddress = value; } }
+                get { lock (_lock) { return _iPAddress; } }
+                set { lock (_lock) { _iPAddress = value; } }
             }
 
             /// <summary>
@@ -58,8 +60,8 @@ namespace SocketMeister
             /// </summary>
             public ushort Port
             {
-                get { lock (classLock) { return port; } }
-                set { lock (classLock) { port = value; } }
+                get { lock (_lock) { return _port; } }
+                set { lock (_lock) { _port = value; } }
             }
 
             /// <summary>
@@ -67,8 +69,8 @@ namespace SocketMeister
             /// </summary>
             public ConnectionStatuses Status
             {
-                get { lock (classLock) { return status; } }
-                set { lock (classLock) { status = value; } }
+                get { lock (_lock) { return _status; } }
+                set { lock (_lock) { _status = value; } }
             }
 
             /// <summary>
@@ -76,14 +78,14 @@ namespace SocketMeister
             /// </summary>
             public string StatusDescription
             {
-                get { lock (classLock) { return GetStatusDescription(); } }
+                get { lock (_lock) { return GetStatusDescription(); } }
             }
             private string GetStatusDescription()
             {
-                if (status == ConnectionStatuses.Connected) return "Connected";
-                else if (status == ConnectionStatuses.Connecting) return "Connecting";
-                else if (status == ConnectionStatuses.Disconnected) return "Disconnected";
-                else if (status == ConnectionStatuses.Disconnecting) return "Disconnecting";
+                if (_status == ConnectionStatuses.Connected) return "Connected";
+                else if (_status == ConnectionStatuses.Connecting) return "Connecting";
+                else if (_status == ConnectionStatuses.Disconnected) return "Disconnected";
+                else if (_status == ConnectionStatuses.Disconnecting) return "Disconnecting";
                 else return "Unknown";
             }
 
@@ -98,17 +100,17 @@ namespace SocketMeister
         /// </summary>
         public class MessageReceivedEventArgs : EventArgs
         {
-            private readonly object[] parameters;
+            private readonly object[] _parameters;
 
-            internal MessageReceivedEventArgs(object[] parameters)
+            internal MessageReceivedEventArgs(object[] Parameters)
             {
-                this.parameters = parameters;
+                _parameters = Parameters;
             }
 
             /// <summary>
             /// The parameters provided with the message.
             /// </summary>
-            public object[] Parameters { get { return parameters; } }
+            public object[] Parameters { get { return _parameters; } }
         }
 
     }

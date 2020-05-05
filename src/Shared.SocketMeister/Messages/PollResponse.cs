@@ -1,4 +1,7 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 namespace SocketMeister.Messages
 {
@@ -9,7 +12,15 @@ namespace SocketMeister.Messages
     {
         public PollResponse() : base(MessageTypes.PollResponse) { }
 
-        public void AppendBytes(BinaryWriter writer)
+        /// <summary>
+        /// Fastest was to build this is to create it directly from the SocketEnvelope buffer.
+        /// </summary>
+        /// <param name="Reader">Binary Reader</param>
+        public PollResponse(BinaryReader Reader) : base(MessageTypes.PollResponse)
+        {
+        }
+
+        public void AppendBytes(BinaryWriter Writer)
         {
         }
     }

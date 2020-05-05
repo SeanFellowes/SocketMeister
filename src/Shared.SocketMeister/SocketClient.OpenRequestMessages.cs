@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using SocketMeister.Messages;
 
 
@@ -19,12 +20,12 @@ namespace SocketMeister
         /// </summary>
         internal class OpenRequestMessages
         {
-            private readonly object classLock = new object();
-            private readonly List<RequestMessage> list = new List<RequestMessage>();
+            private List<RequestMessage> _list = new List<RequestMessage>();
+            private readonly object _lock = new object();
 
-            internal void Add(RequestMessage addItem)
+            internal void Add(RequestMessage AddItem)
             {
-                lock (classLock) { list.Add(addItem); }
+                lock (_lock) { _list.Add(AddItem); }
             }
 
             /// <summary>
@@ -32,25 +33,25 @@ namespace SocketMeister
             /// </summary>
             public int Count
             {
-                get { lock (classLock) { return list.Count; } }
+                get { lock (_lock) { return _list.Count; } }
             }
 
 
-            internal RequestMessage Find(long requestID)
+            internal RequestMessage Find(long RequestID)
             {
-                lock (classLock)
+                lock (_lock)
                 {
-                    foreach (RequestMessage message in list)
+                    foreach (RequestMessage message in _list)
                     {
-                        if (message.RequestId == requestID) return message;
+                        if (message.RequestId == RequestID) return message;
                     }
                 }
                 return null;
             }
 
-            internal void Remove(RequestMessage removeItem)
+            internal void Remove(RequestMessage RemoveItem)
             {
-                lock (classLock) { list.Remove(removeItem); }
+                lock (_lock) { _list.Remove(RemoveItem); }
             }
 
             /// <summary>
@@ -58,9 +59,9 @@ namespace SocketMeister
             /// </summary>
             internal void ResetToUnsent()
             {
-                lock (classLock)
+                lock (_lock)
                 {
-                    foreach (RequestMessage message in list)
+                    foreach (RequestMessage message in _list)
                     {
                         if (message.SendReceiveStatus != SendReceiveStatus.ResponseReceived) message.SendReceiveStatus = SendReceiveStatus.Unsent;
                     }

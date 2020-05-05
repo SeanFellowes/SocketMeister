@@ -34,7 +34,7 @@ namespace SocketMeister
 
             //  CONNECT TO THE TEST SERVER ON THE CONTROL CHANNEL AT PORT 4505. THIS WILL RECEIVE INSTRUCTIONS FROM THE TEST SERVER
             List<SocketEndPoint> endPoints = new List<SocketEndPoint>() { new SocketEndPoint("127.0.0.1", 4505) };
-            controlSocket = new SocketClient(endPoints);
+            controlSocket = new SocketClient(endPoints, true);
             controlSocket.ConnectionStatusChanged += controlSocket_ConnectionStatusChanged;
         }
 

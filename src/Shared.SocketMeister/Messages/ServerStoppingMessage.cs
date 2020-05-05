@@ -1,24 +1,28 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 namespace SocketMeister.Messages
 {
     internal class ServerStoppingMessage : MessageBase, IMessage
     {
         //  INTERNAL (NOT SENT IN MESSAGE DATA)
-        private readonly int maxWaitMilliseconds;
+        private readonly object _lock = new object();
+        private readonly int _maxWaitMilliseconds;
 
-        public ServerStoppingMessage(int maxWaitMilliseconds) : base(MessageTypes.ServerStoppingMessage)
+        public ServerStoppingMessage(int MaxWaitMilliseconds) : base(MessageTypes.ServerStoppingMessage)
         {
-            this.maxWaitMilliseconds = maxWaitMilliseconds;
+            _maxWaitMilliseconds = MaxWaitMilliseconds;
         }
 
         /// <summary>
         /// Fastest was to build this is to create it directly from the SocketEnvelope buffer.
         /// </summary>
-        /// <param name="reader">Binary Reader</param>
-        public ServerStoppingMessage(BinaryReader reader) : base(MessageTypes.ServerStoppingMessage)
+        /// <param name="Reader">Binary Reader</param>
+        public ServerStoppingMessage(BinaryReader Reader) : base(MessageTypes.ServerStoppingMessage)
         {
-            maxWaitMilliseconds = reader.ReadInt32();
+            _maxWaitMilliseconds = Reader.ReadInt32();
         }
 
         /// <summary>
@@ -26,14 +30,14 @@ namespace SocketMeister.Messages
         /// </summary>
         public int MaxWaitMilliseconds
         {
-            get { return maxWaitMilliseconds; }
+            get { return _maxWaitMilliseconds; }
         }
 
 
 
-        public void AppendBytes(BinaryWriter writer)
+        public void AppendBytes(BinaryWriter Writer)
         {
-            writer.Write(maxWaitMilliseconds);
+            Writer.Write(_maxWaitMilliseconds);
         }
 
 
