@@ -1,13 +1,14 @@
-﻿using System;
+﻿#pragma warning disable CA1303 // Do not pass literals as localized parameters
+#pragma warning disable CA1031 // Do not catch general exception types
+#pragma warning disable IDE0017 // Simplify object initialization
+
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using SocketMeister.Messages;
-
-#pragma warning disable CA1031 // Do not catch general exception types
-#pragma warning disable IDE0017 // Simplify object initialization
 
 namespace SocketMeister
 {
@@ -125,7 +126,9 @@ namespace SocketMeister
             _sendEventArgsPool = new SocketAsyncEventArgsPool(CLIENT_SEND_EVENT_ARGS_POOL_SIZE);
             for (int i = 0; i < CLIENT_SEND_EVENT_ARGS_POOL_SIZE; i++)
             {
+#pragma warning disable CA2000 // Dispose objects before losing scope
                 SocketAsyncEventArgs eArgs = new SocketAsyncEventArgs();
+#pragma warning restore CA2000 // Dispose objects before losing scope
                 eArgs.SetBuffer(new byte[SEND_RECEIVE_BUFFER_SIZE], 0, SEND_RECEIVE_BUFFER_SIZE);
                 eArgs.Completed += ProcessSend;
                 _sendEventArgsPool.Push(eArgs);
@@ -772,5 +775,6 @@ namespace SocketMeister
 
 #pragma warning restore IDE0017 // Simplify object initialization
 #pragma warning restore CA1031 // Do not catch general exception types
+#pragma warning restore CA1303 // Do not pass literals as localized parameters
 
 }

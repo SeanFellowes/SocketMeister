@@ -1,4 +1,6 @@
 ﻿#pragma warning disable CA1031 // Do not catch general exception types
+#pragma warning disable CA1001 // Types that own disposable fields should be disposable
+
 #if !SILVERLIGHT && !SMNOSERVER
 using System;
 using System.Collections.Generic;
@@ -156,4 +158,6 @@ namespace SocketMeister
     }
 }
 #endif
+
 #pragma warning restore CA1031 // Do not catch general exception types
+#pragma warning restore CA1001 // Types that own disposable fields should be disposable

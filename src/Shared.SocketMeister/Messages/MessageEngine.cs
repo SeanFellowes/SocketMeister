@@ -1,4 +1,5 @@
-﻿
+﻿#pragma warning disable CA1303 // Do not pass literals as localized parameters
+
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -402,3 +403,7 @@ namespace SocketMeister.Messages
 
     }
 }
+
+
+#pragma warning restore CA1303 // Do not pass literals as localized parameters
+

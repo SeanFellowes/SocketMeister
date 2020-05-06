@@ -1,4 +1,6 @@
 ﻿#pragma warning disable CA1031 // Do not catch general exception types
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
+
 #if !SILVERLIGHT && !SMNOSERVER
 using System;
 using System.Collections.Generic;
@@ -312,3 +314,5 @@ namespace SocketMeister
 }
 #endif
 #pragma warning restore CA1031 // Do not catch general exception types
+#pragma warning restore CA1303 // Do not pass literals as localized parameters
+
