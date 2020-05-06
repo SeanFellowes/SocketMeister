@@ -337,52 +337,62 @@ namespace SocketMeister.Test
             foreach (ITest test in allTests)
             {
                 //  COL 1 (ID)
-                Label lb = new Label();
-                lb.Text = test.Id.ToString();
+                Label lb = new Label
+                {
+                    Text = test.Id.ToString(),
 
-                lb.TextAlign = ContentAlignment.MiddleRight;
-                lb.BorderStyle = BorderStyle.FixedSingle;
-                lb.Font = font;
+                    TextAlign = ContentAlignment.MiddleRight,
+                    BorderStyle = BorderStyle.FixedSingle,
+                    Font = font
+                };
                 lCol1.Add(lb);
                 pnlTests.Controls.Add(lb);
 
                 //  COL 2 (Description)
-                lb = new Label();
-                lb.Text = test.Description;
-                lb.TextAlign = ContentAlignment.MiddleLeft;
-                lb.BorderStyle = BorderStyle.FixedSingle;
-                lb.Font = font;
+                lb = new Label
+                {
+                    Text = test.Description,
+                    TextAlign = ContentAlignment.MiddleLeft,
+                    BorderStyle = BorderStyle.FixedSingle,
+                    Font = font
+                };
                 lCol2.Add(lb);
                 pnlTests.Controls.Add(lb);
 
                 //  COL 3 (Status)
-                lb = new Label();
-                lb.Text = "";
-                lb.TextAlign = ContentAlignment.MiddleLeft;
-                lb.BorderStyle = BorderStyle.FixedSingle;
-                lb.Font = font;
-                lb.Anchor = AnchorStyles.Top;
-              
+                lb = new Label
+                {
+                    Text = "",
+                    TextAlign = ContentAlignment.MiddleLeft,
+                    BorderStyle = BorderStyle.FixedSingle,
+                    Font = font,
+                    Anchor = AnchorStyles.Top
+                };
+
                 lCol3.Add(lb);
                 pnlTests.Controls.Add(lb);
 
                 //  COL 4 (Percent COmplete)
-                lb = new Label();
-                lb.Text = "";
-                lb.TextAlign = ContentAlignment.MiddleRight;
-                lb.BorderStyle = BorderStyle.FixedSingle;
-                lb.Font = font;
+                lb = new Label
+                {
+                    Text = "",
+                    TextAlign = ContentAlignment.MiddleRight,
+                    BorderStyle = BorderStyle.FixedSingle,
+                    Font = font
+                };
                 lCol4.Add(lb);
                 pnlTests.Controls.Add(lb);
 
                 //  COL 5 (BUTTON)
-                Button bt = new Button();
-                bt.Text = "Execute";
-                bt.TextAlign = ContentAlignment.MiddleCenter;
-                bt.Font = font;
-                bt.Width = 100;
-                bt.Height = rowHeight;
-                bt.Tag = test;
+                Button bt = new Button
+                {
+                    Text = "Execute",
+                    TextAlign = ContentAlignment.MiddleCenter,
+                    Font = font,
+                    Width = 100,
+                    Height = rowHeight,
+                    Tag = test
+                };
                 lCol5.Add(bt);
                 pnlTests.Controls.Add(bt);
                 bt.Click += ExecuteButton_Click;
@@ -522,7 +532,7 @@ namespace SocketMeister.Test
             catch { }
         }
 
-        private void pnlTests_Resize(object sender, EventArgs e)
+        private void PnlTests_Resize(object sender, EventArgs e)
         {
             try
             {
@@ -543,7 +553,7 @@ namespace SocketMeister.Test
             catch { }
         }
 
-        private void btnExecuteAllTests_Click(object sender, EventArgs e)
+        private void BtnExecuteAllTests_Click(object sender, EventArgs e)
         {
             if (executeMode == Executing.Stopped)
             {
@@ -568,7 +578,7 @@ namespace SocketMeister.Test
             }
         }
 
-        private void btnClearLog_Click(object sender, EventArgs e)
+        private void BtnClearLog_Click(object sender, EventArgs e)
         {
             gridItems.Clear();
             errors = 0;
@@ -578,7 +588,7 @@ namespace SocketMeister.Test
             lblErrors.BackColor = Color.Transparent;
         }
 
-        private void dGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private void DGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             var senderGrid = (DataGridView)sender;
 

@@ -95,6 +95,9 @@
     <Compile Include="..\Shared.SocketMeister.Test\Test001_Connect.cs">
       <Link>Shared.SocketMeister.Test\Test001_Connect.cs</Link>
     </Compile>
+    <Compile Include="..\Shared.SocketMeister.Test\TestBase.cs">
+      <Link>Shared.SocketMeister.Test\TestBase.cs</Link>
+    </Compile>
     <Compile Include="..\Shared.SocketMeister.Test\Testing\ControlMessage.cs">
       <Link>Shared.SocketMeister.Test\Testing\ControlMessage.cs</Link>
     </Compile>

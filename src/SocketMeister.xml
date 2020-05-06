@@ -4,298 +4,9 @@
         <name>SocketMeister</name>
     </assembly>
     <members>
-        <member name="T:SocketMeister.SocketServer">
+        <member name="T:SocketMeister.TraceEventArgs">
             <summary>
-            TCP/IP socket server which listens for client connections and raises events when messages are received
-            </summary>
-        </member>
-        <member name="T:SocketMeister.SocketServer.SocketServerStatus">
-            <summary>
-            Execution status of a service
-            </summary>
-        </member>
-        <member name="F:SocketMeister.SocketServer.SocketServerStatus.Stopped">
-            <summary>
-            Service is stopped
-            </summary>
-        </member>
-        <member name="F:SocketMeister.SocketServer.SocketServerStatus.Starting">
-            <summary>
-            Service is starting
-            </summary>
-        </member>
-        <member name="F:SocketMeister.SocketServer.SocketServerStatus.Started">
-            <summary>
-            Service is started
-            </summary>
-        </member>
-        <member name="F:SocketMeister.SocketServer.SocketServerStatus.Stopping">
-            <summary>
-            Service is stopping
-            </summary>
-        </member>
-        <member name="T:SocketMeister.SocketServer.Client">
-            <summary>
-            Remote client which has connected to the socket server
-            </summary>
-        </member>
-        <member name="P:SocketMeister.SocketServer.Client.ClientId">
-            <summary>
-            Unique GUID assigned to each client
-            </summary>
-        </member>
-        <member name="P:SocketMeister.SocketServer.Client.ClientSocket">
-            <summary>
-            Socket which the client is transmitting data on.
-            </summary>
-        </member>
-        <member name="P:SocketMeister.SocketServer.Client.ConnectTimestamp">
-            <summary>
-            Date and time which the client connected.
-            </summary>
-        </member>
-        <member name="F:SocketMeister.SocketServer.Client.ReceiveBuffer">
-            <summary>
-            Byte array to directly receive data from the socket. 
-            </summary>
-        </member>
-        <member name="P:SocketMeister.SocketServer.Client.ReceiveEnvelope">
-            <summary>
-            Class which processes raw data directly from the socket and converts into usable messages.
-            </summary>
-        </member>
-        <member name="M:SocketMeister.SocketServer.Client.SendMessage(System.Object[],System.Int32)">
-            <summary>
-            Send a message to this client
-            </summary>
-            <param name="Parameters">Parameters to send to the client.</param>
-            <param name="TimeoutMilliseconds">Number of milliseconds to attempt to send the message before throwing a TimeoutException.</param>
-        </member>
-        <member name="E:SocketMeister.SocketServer.Clients.ClientConnected">
-            <summary>
-            TO BE DEPRICATED. Use ClientsChangedEventArgs. Event raised when a client connects to the socket server (Raised in a seperate thread)
-            </summary>
-        </member>
-        <member name="E:SocketMeister.SocketServer.Clients.ClientDisconnected">
-            <summary>
-            TO BE DEPRICATED. Use ClientsChangedEventArgs. Event raised when a client disconnects from the socket server (Raised in a seperate thread)
-            </summary>
-        </member>
-        <member name="E:SocketMeister.SocketServer.Clients.ClientsChanged">
-            <summary>
-            Event raised when a client connects or disconnects from the socket server (Raised in a seperate thread)
-            </summary>
-        </member>
-        <member name="E:SocketMeister.SocketServer.Clients.TraceEventRaised">
-            <summary>
-            Raised when an exception occurs.
-            </summary>
-        </member>
-        <member name="P:SocketMeister.SocketServer.Clients.Count">
-            <summary>
-            Total number of syschronous and asynchronous clients connected
-            </summary>
-        </member>
-        <member name="M:SocketMeister.SocketServer.Clients.ToList">
-            <summary>
-            Returns a list of clients which are connected to the socket server
-            </summary>
-            <returns>List of clients</returns>
-        </member>
-        <member name="F:SocketMeister.SocketServer.MAX_WAIT_FOR_CLIENT_DISCONNECT_WHEN_STOPPING">
-            <summary>
-            The maximum number of milliseconds to wait for clients to disconnect whien stopping the socket server
-            </summary>
-        </member>
-        <member name="E:SocketMeister.SocketServer.ClientConnected">
-            <summary>
-            Event raised when a client connects to the socket server (Raised in a seperate thread)
-            </summary>
-        </member>
-        <member name="E:SocketMeister.SocketServer.ClientDisconnected">
-            <summary>
-            Event raised when a client disconnects from the socket server (Raised in a seperate thread)
-            </summary>
-        </member>
-        <member name="E:SocketMeister.SocketServer.ClientsChanged">
-            <summary>
-            Event raised when when there is a change to the clients connected to the socket server
-            </summary>
-        </member>
-        <member name="E:SocketMeister.SocketServer.ExceptionRaised">
-            <summary>
-            TO BE DEPRICATED. USE TraceEventRaised. Raised when an exception occurs.
-            </summary>
-        </member>
-        <member name="E:SocketMeister.SocketServer.ListenerStateChanged">
-            <summary>
-            Reaised when the status of the socket listener changes.
-            </summary>
-        </member>
-        <member name="E:SocketMeister.SocketServer.MessageReceived">
-            <summary>
-            Raised when a message is received from a client.
-            </summary>
-        </member>
-        <member name="E:SocketMeister.SocketServer.RequestReceived">
-            <summary>
-            Raised when a request message is received from a client. A response can be provided which will be returned to the client.
-            </summary>
-        </member>
-        <member name="E:SocketMeister.SocketServer.TraceEventRaised">
-            <summary>
-            Raised when an trace log event has been raised.
-            </summary>
-        </member>
-        <member name="M:SocketMeister.SocketServer.#ctor(System.Int32,System.Boolean)">
-            <summary>
-            Constructor
-            </summary>
-            <param name="Port">Port that this socket server will listen on</param>
-            <param name="EnableCompression">Enable compression on message data</param>
-        </member>
-        <member name="P:SocketMeister.SocketServer.EndPoint">
-            <summary>
-            The IP Address and Port that this socket server is using to communicate (e.g. 10.200.50.25:6000).
-            </summary>
-        </member>
-        <member name="P:SocketMeister.SocketServer.ListenerState">
-            <summary>
-            To be depricated. Replace with "Status". Status of the socket listener
-            </summary>
-        </member>
-        <member name="P:SocketMeister.SocketServer.RequestsInProgress">
-            <summary>
-            The number of client requests currently being executed.
-            </summary>
-        </member>
-        <member name="P:SocketMeister.SocketServer.IsStopRequested">
-            <summary>
-            Whether the socket service is in the process of stopping.
-            </summary>
-        </member>
-        <member name="M:SocketMeister.SocketServer.BroadcastMessage(System.Object[],System.Int32)">
-            <summary>
-            Send a message to all connected clients. Exceptions will not halt this process, but generate 'ExceptionRaised' events. 
-            </summary>
-            <param name="Parameters">Parameters to send with the message</param>
-            <param name="TimeoutMilliseconds">Number of milliseconds to wait before timing out</param>
-        </member>
-        <member name="P:SocketMeister.SocketServer.ClientCount">
-            <summary>
-            Number of clients connected to the socket server.
-            </summary>
-        </member>
-        <member name="M:SocketMeister.SocketServer.GetClients">
-            <summary>
-            Returns a list of clients which are connected to the socket server
-            </summary>
-            <returns>List of clients</returns>
-        </member>
-        <member name="M:SocketMeister.SocketServer.Start">
-            <summary>
-            Starts the socket server. It will begin listening for incoming connections.
-            </summary>
-        </member>
-        <member name="M:SocketMeister.SocketServer.Stop">
-            <summary>
-            Sends a message to all clients to disconnect, waits for in progress requests to finish, then stops the socket server. 
-            </summary>
-        </member>
-        <member name="T:SocketMeister.SocketServer.ClientConnectedEventArgs">
-            <summary>
-            TO BE DEPRICATED. Use ClientsChangedEventArgs. Event raised when a client connects to the socket server.
-            </summary>
-        </member>
-        <member name="P:SocketMeister.SocketServer.ClientConnectedEventArgs.Client">
-            <summary>
-            The client which connected
-            </summary>
-        </member>
-        <member name="T:SocketMeister.SocketServer.ClientDisconnectedEventArgs">
-            <summary>
-            TO BE DEPRICATED. Use ClientsChangedEventArgs. Event raised when a client disconnects from the socket server.
-            </summary>
-        </member>
-        <member name="P:SocketMeister.SocketServer.ClientDisconnectedEventArgs.Client">
-            <summary>
-            The client which disconnected
-            </summary>
-        </member>
-        <member name="T:SocketMeister.SocketServer.ClientsChangedEventArgs">
-            <summary>
-            Event raised when there is a change to the clients connected to the socket server.
-            </summary>
-        </member>
-        <member name="P:SocketMeister.SocketServer.ClientsChangedEventArgs.Count">
-            <summary>
-            The numb er of clients connected to the socket server
-            </summary>
-        </member>
-        <member name="T:SocketMeister.SocketServer.MessageReceivedEventArgs">
-            <summary>
-            Values provided when a message is received from a client. 
-            </summary>
-        </member>
-        <member name="P:SocketMeister.SocketServer.MessageReceivedEventArgs.Client">
-            <summary>
-            The client which initiated the message.
-            </summary>
-        </member>
-        <member name="P:SocketMeister.SocketServer.MessageReceivedEventArgs.Parameters">
-            <summary>
-            The parameters provided with the message.
-            </summary>
-        </member>
-        <member name="T:SocketMeister.SocketServer.RequestReceivedEventArgs">
-            <summary>
-            Values provided when a request is received from a client. 
-            </summary>
-        </member>
-        <member name="P:SocketMeister.SocketServer.RequestReceivedEventArgs.Response">
-            <summary>
-            The byte array which is to be returned to the client. Null is returned if a 'Response' value is not provided when processing the 'RequestReceived' event.
-            </summary>
-        </member>
-        <member name="T:SocketMeister.SocketServer.SocketServerStatusChangedEventArgs">
-            <summary>
-            Execution status of a service changed. Includes the new status
-            </summary>
-        </member>
-        <member name="M:SocketMeister.SocketServer.SocketServerStatusChangedEventArgs.#ctor">
-            <summary>
-            Default constructor
-            </summary>
-        </member>
-        <member name="M:SocketMeister.SocketServer.SocketServerStatusChangedEventArgs.#ctor(SocketMeister.SocketServer.SocketServerStatus)">
-            <summary>
-            Constructor
-            </summary>
-            <param name="Status">Current status of the service</param>
-        </member>
-        <member name="P:SocketMeister.SocketServer.SocketServerStatusChangedEventArgs.Status">
-            <summary>
-            Execution status of the service.
-            </summary>
-        </member>
-        <member name="T:SocketMeister.SeverityType">
-            <summary>
-            Severity of a trace event
-            </summary>
-        </member>
-        <member name="F:SocketMeister.SeverityType.Information">
-            <summary>
-            Information
-            </summary>
-        </member>
-        <member name="F:SocketMeister.SeverityType.Warning">
-            <summary>
-            Warning
-            </summary>
-        </member>
-        <member name="F:SocketMeister.SeverityType.Error">
-            <summary>
-            Error
+            Events and Exceptions raised for analysis and logging purposes
             </summary>
         </member>
         <member name="M:SocketMeister.TraceEventArgs.#ctor(System.String,SocketMeister.SeverityType,System.Int32)">
@@ -353,6 +64,51 @@
         <member name="P:SocketMeister.TraceEventArgs.StackTrace">
             <summary>
             Optional stack trace information.
+            </summary>
+        </member>
+        <member name="T:SocketMeister.SeverityType">
+            <summary>
+            Severity of a trace event
+            </summary>
+        </member>
+        <member name="F:SocketMeister.SeverityType.Information">
+            <summary>
+            Information
+            </summary>
+        </member>
+        <member name="F:SocketMeister.SeverityType.Warning">
+            <summary>
+            Warning
+            </summary>
+        </member>
+        <member name="F:SocketMeister.SeverityType.Error">
+            <summary>
+            Error
+            </summary>
+        </member>
+        <member name="T:SocketMeister.SocketServerStatus">
+            <summary>
+            Execution status of a service
+            </summary>
+        </member>
+        <member name="F:SocketMeister.SocketServerStatus.Stopped">
+            <summary>
+            Service is stopped
+            </summary>
+        </member>
+        <member name="F:SocketMeister.SocketServerStatus.Starting">
+            <summary>
+            Service is starting
+            </summary>
+        </member>
+        <member name="F:SocketMeister.SocketServerStatus.Started">
+            <summary>
+            Service is started
+            </summary>
+        </member>
+        <member name="F:SocketMeister.SocketServerStatus.Stopping">
+            <summary>
+            Service is stopping
             </summary>
         </member>
         <member name="T:SocketMeister.Messages.MessageTypes">
@@ -1044,7 +800,7 @@
             Status of a socket service.
             </summary>
         </member>
-        <member name="M:SocketMeister.PolicyServer.ServerStatusEventArgs.#ctor(SocketMeister.SocketServer.SocketServerStatus)">
+        <member name="M:SocketMeister.PolicyServer.ServerStatusEventArgs.#ctor(SocketMeister.SocketServerStatus)">
             <summary>
             Constructor
             </summary>
@@ -1098,6 +854,255 @@
         <member name="M:SocketMeister.PolicyServer.Stop">
             <summary>
             Stop the socket server. This is a background operation. Your code can (optionally) poll the 'SocketServer.SocketServerStatus' property or catch the 'SocketServer.SocketServerStatusChanged' Event.
+            </summary>
+        </member>
+        <member name="T:SocketMeister.SocketServer">
+            <summary>
+            TCP/IP socket server which listens for client connections and raises events when messages are received
+            </summary>
+        </member>
+        <member name="T:SocketMeister.SocketServer.Client">
+            <summary>
+            Remote client which has connected to the socket server
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketServer.Client.ClientId">
+            <summary>
+            Unique GUID assigned to each client
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketServer.Client.ClientSocket">
+            <summary>
+            Socket which the client is transmitting data on.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketServer.Client.ConnectTimestamp">
+            <summary>
+            Date and time which the client connected.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.SocketServer.Client.ReceiveBuffer">
+            <summary>
+            Byte array to directly receive data from the socket. 
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketServer.Client.ReceiveEnvelope">
+            <summary>
+            Class which processes raw data directly from the socket and converts into usable messages.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketServer.Client.SendMessage(System.Object[],System.Int32)">
+            <summary>
+            Send a message to this client
+            </summary>
+            <param name="Parameters">Parameters to send to the client.</param>
+            <param name="TimeoutMilliseconds">Number of milliseconds to attempt to send the message before throwing a TimeoutException.</param>
+        </member>
+        <member name="E:SocketMeister.SocketServer.Clients.ClientConnected">
+            <summary>
+            TO BE DEPRICATED. Use ClientsChangedEventArgs. Event raised when a client connects to the socket server (Raised in a seperate thread)
+            </summary>
+        </member>
+        <member name="E:SocketMeister.SocketServer.Clients.ClientDisconnected">
+            <summary>
+            TO BE DEPRICATED. Use ClientsChangedEventArgs. Event raised when a client disconnects from the socket server (Raised in a seperate thread)
+            </summary>
+        </member>
+        <member name="E:SocketMeister.SocketServer.Clients.ClientsChanged">
+            <summary>
+            Event raised when a client connects or disconnects from the socket server (Raised in a seperate thread)
+            </summary>
+        </member>
+        <member name="E:SocketMeister.SocketServer.Clients.TraceEventRaised">
+            <summary>
+            Raised when an exception occurs.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketServer.Clients.Count">
+            <summary>
+            Total number of syschronous and asynchronous clients connected
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketServer.Clients.ToList">
+            <summary>
+            Returns a list of clients which are connected to the socket server
+            </summary>
+            <returns>List of clients</returns>
+        </member>
+        <member name="F:SocketMeister.SocketServer.MAX_WAIT_FOR_CLIENT_DISCONNECT_WHEN_STOPPING">
+            <summary>
+            The maximum number of milliseconds to wait for clients to disconnect whien stopping the socket server
+            </summary>
+        </member>
+        <member name="E:SocketMeister.SocketServer.ClientConnected">
+            <summary>
+            Event raised when a client connects to the socket server (Raised in a seperate thread)
+            </summary>
+        </member>
+        <member name="E:SocketMeister.SocketServer.ClientDisconnected">
+            <summary>
+            Event raised when a client disconnects from the socket server (Raised in a seperate thread)
+            </summary>
+        </member>
+        <member name="E:SocketMeister.SocketServer.ClientsChanged">
+            <summary>
+            Event raised when when there is a change to the clients connected to the socket server
+            </summary>
+        </member>
+        <member name="E:SocketMeister.SocketServer.ExceptionRaised">
+            <summary>
+            TO BE DEPRICATED. USE TraceEventRaised. Raised when an exception occurs.
+            </summary>
+        </member>
+        <member name="E:SocketMeister.SocketServer.ListenerStateChanged">
+            <summary>
+            Reaised when the status of the socket listener changes.
+            </summary>
+        </member>
+        <member name="E:SocketMeister.SocketServer.MessageReceived">
+            <summary>
+            Raised when a message is received from a client.
+            </summary>
+        </member>
+        <member name="E:SocketMeister.SocketServer.RequestReceived">
+            <summary>
+            Raised when a request message is received from a client. A response can be provided which will be returned to the client.
+            </summary>
+        </member>
+        <member name="E:SocketMeister.SocketServer.TraceEventRaised">
+            <summary>
+            Raised when an trace log event has been raised.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketServer.#ctor(System.Int32,System.Boolean)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="Port">Port that this socket server will listen on</param>
+            <param name="EnableCompression">Enable compression on message data</param>
+        </member>
+        <member name="P:SocketMeister.SocketServer.EndPoint">
+            <summary>
+            The IP Address and Port that this socket server is using to communicate (e.g. 10.200.50.25:6000).
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketServer.ListenerState">
+            <summary>
+            To be depricated. Replace with "Status". Status of the socket listener
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketServer.RequestsInProgress">
+            <summary>
+            The number of client requests currently being executed.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketServer.IsStopRequested">
+            <summary>
+            Whether the socket service is in the process of stopping.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketServer.BroadcastMessage(System.Object[],System.Int32)">
+            <summary>
+            Send a message to all connected clients. Exceptions will not halt this process, but generate 'ExceptionRaised' events. 
+            </summary>
+            <param name="Parameters">Parameters to send with the message</param>
+            <param name="TimeoutMilliseconds">Number of milliseconds to wait before timing out</param>
+        </member>
+        <member name="P:SocketMeister.SocketServer.ClientCount">
+            <summary>
+            Number of clients connected to the socket server.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketServer.GetClients">
+            <summary>
+            Returns a list of clients which are connected to the socket server
+            </summary>
+            <returns>List of clients</returns>
+        </member>
+        <member name="M:SocketMeister.SocketServer.Start">
+            <summary>
+            Starts the socket server. It will begin listening for incoming connections.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketServer.Stop">
+            <summary>
+            Sends a message to all clients to disconnect, waits for in progress requests to finish, then stops the socket server. 
+            </summary>
+        </member>
+        <member name="T:SocketMeister.SocketServer.ClientConnectedEventArgs">
+            <summary>
+            TO BE DEPRICATED. Use ClientsChangedEventArgs. Event raised when a client connects to the socket server.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketServer.ClientConnectedEventArgs.Client">
+            <summary>
+            The client which connected
+            </summary>
+        </member>
+        <member name="T:SocketMeister.SocketServer.ClientDisconnectedEventArgs">
+            <summary>
+            TO BE DEPRICATED. Use ClientsChangedEventArgs. Event raised when a client disconnects from the socket server.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketServer.ClientDisconnectedEventArgs.Client">
+            <summary>
+            The client which disconnected
+            </summary>
+        </member>
+        <member name="T:SocketMeister.SocketServer.ClientsChangedEventArgs">
+            <summary>
+            Event raised when there is a change to the clients connected to the socket server.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketServer.ClientsChangedEventArgs.Count">
+            <summary>
+            The numb er of clients connected to the socket server
+            </summary>
+        </member>
+        <member name="T:SocketMeister.SocketServer.MessageReceivedEventArgs">
+            <summary>
+            Values provided when a message is received from a client. 
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketServer.MessageReceivedEventArgs.Client">
+            <summary>
+            The client which initiated the message.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketServer.MessageReceivedEventArgs.Parameters">
+            <summary>
+            The parameters provided with the message.
+            </summary>
+        </member>
+        <member name="T:SocketMeister.SocketServer.RequestReceivedEventArgs">
+            <summary>
+            Values provided when a request is received from a client. 
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketServer.RequestReceivedEventArgs.Response">
+            <summary>
+            The byte array which is to be returned to the client. Null is returned if a 'Response' value is not provided when processing the 'RequestReceived' event.
+            </summary>
+        </member>
+        <member name="T:SocketMeister.SocketServer.SocketServerStatusChangedEventArgs">
+            <summary>
+            Execution status of a service changed. Includes the new status
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketServer.SocketServerStatusChangedEventArgs.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketServer.SocketServerStatusChangedEventArgs.#ctor(SocketMeister.SocketServerStatus)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="Status">Current status of the service</param>
+        </member>
+        <member name="P:SocketMeister.SocketServer.SocketServerStatusChangedEventArgs.Status">
+            <summary>
+            Execution status of the service.
             </summary>
         </member>
     </members>

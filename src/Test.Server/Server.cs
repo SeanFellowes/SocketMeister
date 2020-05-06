@@ -105,13 +105,13 @@ namespace SocketMeister.Test
             }
         }
 
-        public SocketServer.SocketServerStatus Status
+        public SocketServerStatus Status
         {
             get
             {
                 if (policyServer != null) return policyServer.Status;
                 else if (socketServer != null) return socketServer.Status;
-                else return SocketServer.SocketServerStatus.Stopped;
+                else return SocketServerStatus.Stopped;
             }
         }
 
@@ -138,25 +138,25 @@ namespace SocketMeister.Test
         }
 
 
-        private void ChangeStatus(SocketServer.SocketServerStatus Status)
+        private void ChangeStatus(SocketServerStatus Status)
         {
             try
             {
                 if (InvokeRequired) Invoke(new MethodInvoker(delegate { ChangeStatus(Status); }));
                 else
                 {
-                    if (Status == SocketServer.SocketServerStatus.Started)
+                    if (Status == SocketServerStatus.Started)
                     {
                         LabelStatus.Text = "Started";
                         StatusIndicator.BackColor = Color.DarkGreen;
                         this.Cursor = Cursors.Default;
                     }
-                    else if (Status == SocketServer.SocketServerStatus.Starting)
+                    else if (Status == SocketServerStatus.Starting)
                     {
                         LabelStatus.Text = "Starting...";
                         StatusIndicator.BackColor = Color.Yellow;
                     }
-                    else if (Status == SocketServer.SocketServerStatus.Stopped)
+                    else if (Status == SocketServerStatus.Stopped)
                     {
                         LabelStatus.Text = "Stopped";
                         StatusIndicator.BackColor = Color.Red;
@@ -185,7 +185,7 @@ namespace SocketMeister.Test
                 if (ServerType == ServerType.SocketServer)
                 {
                     if (socketServer == null) return false;
-                    if (socketServer.Status == SocketServer.SocketServerStatus.Started)
+                    if (socketServer.Status ==  SocketServerStatus.Started)
                     {
                         this.Cursor = Cursors.WaitCursor;
                         socketServer.Stop();
@@ -196,7 +196,7 @@ namespace SocketMeister.Test
                 else
                 {
                     if (policyServer == null) return false;
-                    if (policyServer.Status == SocketServer.SocketServerStatus.Started)
+                    if (policyServer.Status == SocketServerStatus.Started)
                     {
                         this.Cursor = Cursors.WaitCursor;
                         policyServer.Stop();
@@ -228,8 +228,8 @@ namespace SocketMeister.Test
 
                 //  START IN THE BACKGROUND
                 BackgroundWorker bgStartService = new BackgroundWorker();
-                bgStartService.DoWork += bgStartService_DoWork;
-                bgStartService.RunWorkerCompleted += bgStartService_RunWorkerCompleted;
+                bgStartService.DoWork += BgStartService_DoWork;
+                bgStartService.RunWorkerCompleted += BgStartService_RunWorkerCompleted;
                 bgStartService.RunWorkerAsync();
             }
             catch (Exception ex)
@@ -243,7 +243,7 @@ namespace SocketMeister.Test
 
 
 
-        private void bgStartService_DoWork(object sender, DoWorkEventArgs e)
+        private void BgStartService_DoWork(object sender, DoWorkEventArgs e)
         {
             if (serverType == ServerType.SocketServer)
             {
@@ -288,9 +288,9 @@ namespace SocketMeister.Test
             TraceEventRaised?.Invoke(this, e);
         }
 
-        private void bgStartService_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private void BgStartService_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            if (InvokeRequired) Invoke(new MethodInvoker(delegate { bgStartService_RunWorkerCompleted(sender, e); }));
+            if (InvokeRequired) Invoke(new MethodInvoker(delegate { BgStartService_RunWorkerCompleted(sender, e); }));
             else
             {
                 this.Cursor = Cursors.Default;

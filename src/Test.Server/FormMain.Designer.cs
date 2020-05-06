@@ -204,7 +204,7 @@
             this.pnlTests.Name = "pnlTests";
             this.pnlTests.Size = new System.Drawing.Size(793, 311);
             this.pnlTests.TabIndex = 35;
-            this.pnlTests.Resize += new System.EventHandler(this.pnlTests_Resize);
+            this.pnlTests.Resize += new System.EventHandler(this.PnlTests_Resize);
             // 
             // CH4
             // 
@@ -267,7 +267,7 @@
             this.btnExecuteAllTests.TabIndex = 1;
             this.btnExecuteAllTests.Text = "Execute All Tests";
             this.btnExecuteAllTests.UseVisualStyleBackColor = true;
-            this.btnExecuteAllTests.Click += new System.EventHandler(this.btnExecuteAllTests_Click);
+            this.btnExecuteAllTests.Click += new System.EventHandler(this.BtnExecuteAllTests_Click);
             // 
             // lblTests
             // 
@@ -353,7 +353,7 @@
             this.dGrid.ShowRowErrors = false;
             this.dGrid.Size = new System.Drawing.Size(580, 182);
             this.dGrid.TabIndex = 31;
-            this.dGrid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dGrid_CellContentClick);
+            this.dGrid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DGrid_CellContentClick);
             // 
             // PnlTestsHeader
             // 
@@ -376,7 +376,7 @@
             this.btnClearLog.TabIndex = 31;
             this.btnClearLog.Text = "Clear Trace Log";
             this.btnClearLog.UseVisualStyleBackColor = true;
-            this.btnClearLog.Click += new System.EventHandler(this.btnClearLog_Click);
+            this.btnClearLog.Click += new System.EventHandler(this.BtnClearLog_Click);
             // 
             // lblTraceLog
             // 

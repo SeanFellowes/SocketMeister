@@ -43,7 +43,9 @@ namespace SocketMeister
             _port = Convert.ToUInt16(Port);
 
             //  TRY TO CREATE IpAddress
-            System.Net.IPAddress IPAddr = null;
+#pragma warning disable IDE0018 // Inline variable declaration
+            System.Net.IPAddress IPAddr;
+#pragma warning restore IDE0018 // Inline variable declaration
             if (System.Net.IPAddress.TryParse(_iPAddress, out IPAddr))
             {
                 switch (IPAddr.AddressFamily)
