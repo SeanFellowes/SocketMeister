@@ -1,4 +1,5 @@
-﻿using System;
+﻿#pragma warning disable CA1031 // Do not catch general exception types
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
@@ -10,11 +11,13 @@ namespace SocketMeister
     /// <summary>
     /// Client Socket to a SocketServer end point
     /// </summary>
+#pragma warning disable CA1812 // Avoid uninstantiated internal classes
 #if SMISPUBLIC
     public class SocketEndPoint : IDisposable
 #else
     internal class SocketEndPoint : IDisposable
 #endif
+#pragma warning restore CA1812 // Avoid uninstantiated internal classes
     {
         private DateTime _dontReconnectUntil = DateTime.Now;
         private readonly IPEndPoint _ipEndPoint = null;
@@ -137,3 +140,6 @@ namespace SocketMeister
         }
     }
 }
+
+#pragma warning restore CA1031 // Do not catch general exception types
+

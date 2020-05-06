@@ -21,7 +21,6 @@ namespace SocketMeister
             private readonly Guid _clientId = Guid.NewGuid();
             private readonly Socket _clientSocket;
             private readonly DateTime _connectTimestamp = DateTime.Now;
-            private readonly object _lock = new object();
             private readonly MessageEngine _receivedEnvelope;
             private readonly SocketServer _socketServer;
 

@@ -1,4 +1,5 @@
-﻿#if !SILVERLIGHT && !SMNOSERVER
+﻿#pragma warning disable CA1031 // Do not catch general exception types
+#if !SILVERLIGHT && !SMNOSERVER
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -113,18 +114,18 @@ namespace SocketMeister
         //  *********************
         //  ** PUBLIC METHODS ***
         //  *********************
-        private static IPAddress GetLocalIPAddress()
-        {
-            var host = Dns.GetHostEntry(Dns.GetHostName());
-            foreach (IPAddress ip in host.AddressList)
-            {
-                if (ip.AddressFamily == AddressFamily.InterNetwork)
-                {
-                    return ip;
-                }
-            }
-            throw new Exception("No network adapters with an IPv4 address in the system!");
-        }
+        //private static IPAddress GetLocalIPAddress()
+        //{
+        //    var host = Dns.GetHostEntry(Dns.GetHostName());
+        //    foreach (IPAddress ip in host.AddressList)
+        //    {
+        //        if (ip.AddressFamily == AddressFamily.InterNetwork)
+        //        {
+        //            return ip;
+        //        }
+        //    }
+        //    throw new Exception("No network adapters with an IPv4 address in the system!");
+        //}
 
 
         public static string GetLocalIPv4(NetworkInterfaceType type)
@@ -178,7 +179,7 @@ namespace SocketMeister
                         //  REGISTER AS STARTED AND START THE MESSAGE SENDER (NOTE: WILL NOT RUN UNLESS SocketServer.SocketServerStatus = STARTED
                         this.Status = SocketServer.SocketServerStatus.Started;
 
-                        TraceEventRaised?.Invoke(this, new TraceEventArgs("Policy server started on port " + ServicePort.ToString(),  SeverityType.Information, 10023));
+                        TraceEventRaised?.Invoke(this, new TraceEventArgs("Policy server started on port " + ServicePort.ToString(CultureInfo.InvariantCulture),  SeverityType.Information, 10023));
                     }
                     catch (Exception ex)
                     {
@@ -310,3 +311,4 @@ namespace SocketMeister
     }
 }
 #endif
+#pragma warning restore CA1031 // Do not catch general exception types

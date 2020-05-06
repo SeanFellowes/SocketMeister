@@ -1,4 +1,5 @@
-﻿#if !SILVERLIGHT && !SMNOSERVER
+﻿#pragma warning disable CA1031 // Do not catch general exception types
+#if !SILVERLIGHT && !SMNOSERVER
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
@@ -155,3 +156,4 @@ namespace SocketMeister
     }
 }
 #endif
+#pragma warning restore CA1031 // Do not catch general exception types

@@ -67,7 +67,9 @@ namespace SocketMeister
 #endif
                     listener = null;
                 }
+#pragma warning disable CA1031 // Do not catch general exception types
                 catch { }
+#pragma warning restore CA1031 // Do not catch general exception types
             }
 
             private void Listen(IPAddress address, int port, GetSocketCallBack callback, int maximumConnections)
@@ -111,14 +113,18 @@ namespace SocketMeister
                     IsRunningChanged?.Invoke(this, new PolicyServerIsRunningChangedArgs { IsRunning = false });
                     if (sex.ErrorCode != 10004 && TraceEventRaised != null) IsRunningChanged(this, new PolicyServerIsRunningChangedArgs { IsRunning = false });
                 }
+#pragma warning disable CA1031 // Do not catch general exception types
                 catch (Exception ex)
                 {
                     IsRunning = false;
                     IsRunningChanged?.Invoke(this, new PolicyServerIsRunningChangedArgs { IsRunning = false });
                     TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 1234));
                 }
+#pragma warning restore CA1031 // Do not catch general exception types
                 try { listener.Close(); }
+#pragma warning disable CA1031 // Do not catch general exception types
                 catch { IsRunning = false; }
+#pragma warning restore CA1031 // Do not catch general exception types
             }
 
 

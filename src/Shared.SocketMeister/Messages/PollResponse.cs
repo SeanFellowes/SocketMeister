@@ -12,13 +12,13 @@ namespace SocketMeister.Messages
     {
         public PollResponse() : base(MessageTypes.PollResponse) { }
 
-        /// <summary>
-        /// Fastest was to build this is to create it directly from the SocketEnvelope buffer.
-        /// </summary>
-        /// <param name="Reader">Binary Reader</param>
-        public PollResponse(BinaryReader Reader) : base(MessageTypes.PollResponse)
-        {
-        }
+        ///// <summary>
+        ///// Fastest was to build this is to create it directly from the SocketEnvelope buffer.
+        ///// </summary>
+        ///// <param name="Reader">Binary Reader</param>
+        //public PollResponse(BinaryReader Reader) : base(MessageTypes.PollResponse)
+        //{
+        //}
 
         public void AppendBytes(BinaryWriter Writer)
         {

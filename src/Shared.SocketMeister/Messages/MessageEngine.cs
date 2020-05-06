@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using SocketMeister.Messages;
 
@@ -34,7 +35,7 @@ namespace SocketMeister.Messages
 
         internal class ParseHistory
         {
-            private List<Parse> _items = new List<Parse>();
+            private readonly List<Parse> _items = new List<Parse>();
 
             public void Add(Parse message)
             {
@@ -49,7 +50,7 @@ namespace SocketMeister.Messages
                     string T = Environment.NewLine + Environment.NewLine + "Receive History" + Environment.NewLine;
                     foreach (Parse m in _items)
                     {
-                        T += "#" + m.MessageNumber + " " + m.ReceivedDateTime.ToString("HH:mm:ss.fff");
+                        T += "#" + m.MessageNumber + " " + m.ReceivedDateTime.ToString("HH:mm:ss.fff", CultureInfo.InvariantCulture);
                         T += ", MessageType: " + m.MessageType;
                         T += ", MessageLength: " + m.MessageLength + " (" + m.MessageLengthUncompressed + " uncompressed)";
                         T += ", SocketBytesRead: " + m.SocketBytesRead + "(BufSize: " + m.SocketBufferLength + ")";
@@ -65,8 +66,10 @@ namespace SocketMeister.Messages
 
         public const int HEADERLENGTH = 11;
 
+#pragma warning disable IDE0052 // Remove unread private members
         private readonly bool _enableCompression;
-        private ParseHistory _history = new ParseHistory();
+#pragma warning restore IDE0052 // Remove unread private members
+        private readonly ParseHistory _history = new ParseHistory();
         private bool _messageIsCompressed = false;
         private int _messageLength = 0;
         private int _messageLengthUncompressed = 0;
@@ -74,13 +77,17 @@ namespace SocketMeister.Messages
         private readonly byte[] _headerBuffer = new byte[11];
         private int _headerBufferPtr = 0;
         private bool _headerReceived = false;
+#pragma warning disable CA1825 // Avoid zero-length array allocations.
         private byte[] _receiveBuffer = new byte[0];
+#pragma warning restore CA1825 // Avoid zero-length array allocations.
         private int _receiveBufferPtr = 0;
         private long _statMessageNumber = 1;
         private bool _statMessageReceived;
         private int _statSocketBufferLength;
         private int _statSocketBytesRead;
+#pragma warning disable CA1825 // Avoid zero-length array allocations.
         private byte[] _uncompressedBuffer = new byte[0];
+#pragma warning restore CA1825 // Avoid zero-length array allocations.
 
         internal MessageEngine(bool EnableCompression)
         {
@@ -135,19 +142,21 @@ namespace SocketMeister.Messages
                         //_sendBytes[3] = (byte)_uncompressedLength;
                     }
                 }
+#pragma warning disable CA1031 // Do not catch general exception types
                 catch (Exception ex)
                 {
                     string msg = "Error processing Message Body. _messageLength: " + _messageLength + "(" + _messageLengthUncompressed + " uncompressed), ReceivedByesCount: " + SocketBytesRead + ", SocketReceiveBuffer.Length: " + SocketReceiveBuffer.Length;
                     msg += ", SocketReceiveBufferPtr: " + SocketReceiveBufferPtr;
                     msg += ", _receiveBuffer.Length: " + _receiveBuffer.Length + ", _receiveBufferPtr: " + _receiveBufferPtr;
                     msg += ", bytesRequired: " + bytesRequired + ", BytesPossible: " + bytesPossible;
-                    msg += ", _messageType: " + _messageType.ToString() + ", _messageIsCompressed: " + _messageIsCompressed.ToString();
+                    msg += ", _messageType: " + _messageType.ToString() + ", _messageIsCompressed: " + _messageIsCompressed.ToString(CultureInfo.InvariantCulture);
                     msg += ", MessageCount: " + _statMessageNumber;
                     msg += _history.Text;
                     msg += Environment.NewLine + Environment.NewLine;
                     msg += ex.Message;
                     throw new Exception(msg);
                 }
+#pragma warning restore CA1031 // Do not catch general exception types
             }
             if (_headerReceived == true && (SocketReceiveBufferPtr < SocketBytesRead || _messageLength == 0))
             {
@@ -171,19 +180,21 @@ namespace SocketMeister.Messages
                         return true;
                     }
                 }
+#pragma warning disable CA1031 // Do not catch general exception types
                 catch (Exception ex)
                 {
                     string msg = "Error processing Message Body. _messageLength: " + _messageLength + "(" + _messageLengthUncompressed + " uncompressed), ReceivedByesCount: " + SocketBytesRead + ", SocketReceiveBuffer.Length: " + SocketReceiveBuffer.Length;
                     msg += ", SocketReceiveBufferPtr: " + SocketReceiveBufferPtr;
                     msg += ", _receiveBuffer.Length: " + _receiveBuffer.Length + ", _receiveBufferPtr: " + _receiveBufferPtr;
                     msg += ", bytesRequired: " + bytesRequired + ", BytesPossible: " + bytesPossible;
-                    msg += ", _messageType: " + _messageType.ToString() + ", _messageIsCompressed: " + _messageIsCompressed.ToString();
+                    msg += ", _messageType: " + _messageType.ToString() + ", _messageIsCompressed: " + _messageIsCompressed.ToString(CultureInfo.InvariantCulture);
                     msg += ", MessageCount: " + _statMessageNumber;
                     msg += _history.Text;
                     msg += Environment.NewLine + Environment.NewLine;
                     msg += ex.Message;
                     throw new Exception(msg);
                 }
+#pragma warning restore CA1031 // Do not catch general exception types
 
             }
             AddParseAttemptDetails();
@@ -202,7 +213,7 @@ namespace SocketMeister.Messages
             using (BinaryWriter writer = new BinaryWriter(new MemoryStream()))
             {
                 //  WRITE HEADER
-                writer.Write(Convert.ToInt16(SendObject.MessageType));
+                writer.Write(Convert.ToInt16(SendObject.MessageType, CultureInfo.InvariantCulture));
 
                 if (Compress == false)
                 {

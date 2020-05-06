@@ -56,7 +56,7 @@ namespace SocketMeister.Messages
             lock (_lockMaxRequestId)
             {
                 if (_maxRequestId + 1 > long.MaxValue) _maxRequestId = 1;
-                else _maxRequestId = _maxRequestId + 1;
+                else _maxRequestId += 1;
                 _requestId = _maxRequestId;
             }
 

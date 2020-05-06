@@ -20,7 +20,7 @@ namespace SocketMeister
         /// </summary>
         internal class OpenRequestMessages
         {
-            private List<RequestMessage> _list = new List<RequestMessage>();
+            private readonly List<RequestMessage> _list = new List<RequestMessage>();
             private readonly object _lock = new object();
 
             internal void Add(RequestMessage AddItem)

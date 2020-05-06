@@ -11,7 +11,7 @@ namespace SocketMeister
     {
         private readonly TestClientHarness clientSide;
         private readonly Guid guid = System.Guid.NewGuid();
-        private bool controlServerReceivedGuid = false;
+        //private bool controlServerReceivedGuid = false;
 
         public TestActor()
         {

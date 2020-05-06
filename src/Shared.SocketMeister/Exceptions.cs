@@ -13,8 +13,8 @@ namespace SocketMeister
     internal class ExceptionEventArgs : EventArgs
 #endif
     {
-        private int _eventId;
-        private Exception _exception;
+        private readonly int _eventId;
+        private readonly Exception _exception;
 
         /// <summary>
         /// Constructor

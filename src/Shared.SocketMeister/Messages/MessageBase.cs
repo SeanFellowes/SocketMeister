@@ -182,7 +182,7 @@ namespace SocketMeister.Messages
                 }
                 else
                 {
-                    throw new ArgumentException("Request parameter " + (ptr + 1) + " is an unsupported type (" + ParamType.Name + ").", "Parameters");
+                    throw new ArgumentException("Request parameter " + (ptr + 1) + " is an unsupported type (" + ParamType.Name + ").", nameof(Parameters));
                 }
             }
         }

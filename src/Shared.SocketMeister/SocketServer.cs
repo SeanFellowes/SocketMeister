@@ -1,6 +1,8 @@
-﻿#if !SILVERLIGHT && !SMNOSERVER
+﻿#pragma warning disable CA1031 // Do not catch general exception types
+#if !SILVERLIGHT && !SMNOSERVER
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -12,18 +14,20 @@ namespace SocketMeister
     /// <summary>
     /// TCP/IP socket server which listens for client connections and raises events when messages are received
     /// </summary>
+#pragma warning disable CA1001 // Types that own disposable fields should be disposable
 #if SMISPUBLIC
     public partial class SocketServer
 #else
     internal partial class SocketServer
 #endif
+#pragma warning restore CA1001 // Types that own disposable fields should be disposable
     {
         /// <summary>
         /// The maximum number of milliseconds to wait for clients to disconnect whien stopping the socket server
         /// </summary>
         private const int MAX_WAIT_FOR_CLIENT_DISCONNECT_WHEN_STOPPING = 20000;
 
-        private ManualResetEvent _allDone = new ManualResetEvent(false);
+        private readonly ManualResetEvent _allDone = new ManualResetEvent(false);
         private readonly Clients _connectedClients = new Clients();
         private readonly bool _enableCompression;
         private readonly string _endPoint;
@@ -33,7 +37,7 @@ namespace SocketMeister
         private readonly object _lock = new object();
         private int _requestsInProgress = 0;
         private bool _isStopRequested;
-        private Thread _threadListener = null;
+        private readonly Thread _threadListener = null;
 
         /// <summary>
         /// Event raised when a client connects to the socket server (Raised in a seperate thread)
@@ -76,6 +80,7 @@ namespace SocketMeister
         public event EventHandler<TraceEventArgs> TraceEventRaised;
 
 
+
         /// <summary>
         /// Constructor
         /// </summary>
@@ -86,15 +91,17 @@ namespace SocketMeister
             _enableCompression = EnableCompression;
 
             //  SETUP BACKGROUND PROCESS TO FOR LISTENING
-            _threadListener = new Thread(new ThreadStart(bgListen));
-            _threadListener.IsBackground = true;
+            _threadListener = new Thread(new ThreadStart(BgListen))
+            {
+                IsBackground = true
+            };
 
             //  CONNECT TO ALL INTERFACES (I.P. 0.0.0.0 IS ALL)
             IPAddress ipAddress = IPAddress.Parse("0.0.0.0");
             _localEndPoint = new IPEndPoint(ipAddress, Port);
 
             //  LOCAL IP ADDRESS AND PORT (USED FOR DIAGNOSTIC MESSAGES)
-            _endPoint = GetLocalIPAddress().ToString() + ":" + Port.ToString();
+            _endPoint = GetLocalIPAddress().ToString() + ":" + Port.ToString(CultureInfo.InvariantCulture);
 
             // Create a TCP/IP socket.  
             _listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -144,7 +151,9 @@ namespace SocketMeister
         /// <summary>
         /// Whether the socket service is in the process of stopping.
         /// </summary>
+#pragma warning disable IDE0052 // Remove unread private members
         private bool IsStopRequested { get { lock (_lock) { return _isStopRequested; } } set { lock (_lock) { _isStopRequested = value; } } }
+#pragma warning restore IDE0052 // Remove unread private members
 
 
 
@@ -279,8 +288,10 @@ namespace SocketMeister
                     try { handler.Close(); }
                     catch { }
                     return;
-                }));
-                bgReceive.IsBackground = true;
+                }))
+                {
+                    IsBackground = true
+                };
                 bgReceive.Start();
             }
             else
@@ -299,8 +310,10 @@ namespace SocketMeister
                     Client remoteClient = new Client(this, handler, _enableCompression);
                     _connectedClients.Add(remoteClient);
                     handler.BeginReceive(remoteClient.ReceiveBuffer, 0, SocketClient.SEND_RECEIVE_BUFFER_SIZE, 0, new AsyncCallback(ReadCallback), remoteClient);
-                }));
-                bgReceive.IsBackground = true;
+                }))
+                {
+                    IsBackground = true
+                };
                 bgReceive.Start();
             }
 
@@ -337,8 +350,8 @@ namespace SocketMeister
                             }
                             else
                             {
-                                lock (_lock) { _requestsInProgress = _requestsInProgress + 1; }
-                                ThreadPool.QueueUserWorkItem(bgProcessRequestMessage, request);
+                                lock (_lock) { _requestsInProgress += 1; }
+                                ThreadPool.QueueUserWorkItem(BgProcessRequestMessage, request);
                             }
                         }
                         else if (receiveEnvelope.MessageType == MessageTypes.Message)
@@ -347,7 +360,7 @@ namespace SocketMeister
                             {
                                 Message message = receiveEnvelope.GetMessage();
                                 message.RemoteClient = remoteClient;
-                                ThreadPool.QueueUserWorkItem(bgProcessMessage, message);
+                                ThreadPool.QueueUserWorkItem(BgProcessMessage, message);
                             }
                         }
                         else if (receiveEnvelope.MessageType == MessageTypes.ClientDisconnectMessage)
@@ -365,10 +378,10 @@ namespace SocketMeister
                         {
                             if (ListenerState == SocketServerStatus.Started)
                             {
-                                lock (_lock) { _requestsInProgress = _requestsInProgress + 1; }
+                                lock (_lock) { _requestsInProgress += 1; }
                                 new Thread(new ThreadStart(delegate
                                 {
-                                    bgProcessPollRequest(remoteClient);
+                                    BgProcessPollRequest(remoteClient);
                                 }
                                 )).Start();
                             }
@@ -394,7 +407,7 @@ namespace SocketMeister
             }
         }
 
-        private void bgListen()
+        private void BgListen()
         {
             // Bind the socket to the local endpoint and listen for incoming connections.  
             try
@@ -422,7 +435,7 @@ namespace SocketMeister
             }
         }
 
-        private void bgProcessMessage(object state)
+        private void BgProcessMessage(object state)
         {
             Messages.Message request = (Messages.Message)state;
             try
@@ -435,7 +448,7 @@ namespace SocketMeister
             }
         }
 
-        private void bgProcessPollRequest(object state)
+        private void BgProcessPollRequest(object state)
         {
             Client remoteClient = (Client)state;
             try
@@ -449,11 +462,11 @@ namespace SocketMeister
             }
             finally
             {
-                lock (_lock) { _requestsInProgress = _requestsInProgress - 1; }
+                lock (_lock) { _requestsInProgress -= 1; }
             }
         }
 
-        private void bgProcessRequestMessage(object state)
+        private void BgProcessRequestMessage(object state)
         {
             RequestMessage request = (RequestMessage)state;
             try
@@ -475,7 +488,7 @@ namespace SocketMeister
             }
             finally
             {
-                lock (_lock) { _requestsInProgress = _requestsInProgress - 1; }
+                lock (_lock) { _requestsInProgress -= 1; }
             }
         }
 
@@ -610,3 +623,4 @@ namespace SocketMeister
     }
 }
 #endif
+#pragma warning restore CA1031 // Do not catch general exception types

@@ -150,14 +150,14 @@ namespace SocketMeister.Messages
                 if (outputBuffer == null || outputBuffer.Length < outputByteCountGuess)
                     outputBuffer = new byte[outputByteCountGuess];
 
-                int byteCount = lzf_compress(inputBytes, ref outputBuffer, inputLength);
+                int byteCount = Lzf_compress(inputBytes, ref outputBuffer, inputLength);
 
                 // If byteCount is 0, increase buffer size and try again.
                 while (byteCount == 0)
                 {
                     outputByteCountGuess *= 2;
                     outputBuffer = new byte[outputByteCountGuess];
-                    byteCount = lzf_compress(inputBytes, ref outputBuffer, inputLength);
+                    byteCount = Lzf_compress(inputBytes, ref outputBuffer, inputLength);
                 }
 
                 return byteCount;
@@ -214,14 +214,14 @@ namespace SocketMeister.Messages
                 if (outputBuffer == null || outputBuffer.Length < outputByteCountGuess)
                     outputBuffer = new byte[outputByteCountGuess];
 
-                int byteCount = lzf_decompress(inputBytes, ref outputBuffer, inputLength);
+                int byteCount = Lzf_decompress(inputBytes, ref outputBuffer, inputLength);
 
                 // If byteCount is 0, increase buffer size and try again.
                 while (byteCount == 0)
                 {
                     outputByteCountGuess *= 2;
                     outputBuffer = new byte[outputByteCountGuess];
-                    byteCount = lzf_decompress(inputBytes, ref outputBuffer, inputLength);
+                    byteCount = Lzf_decompress(inputBytes, ref outputBuffer, inputLength);
                 }
 
                 return byteCount;
@@ -238,7 +238,7 @@ namespace SocketMeister.Messages
             /// <param name="output">Reference to a buffer which will contain the compressed data.</param>
             /// <param name="inputLength">Length of input bytes to process.</param>
             /// <returns>The size of the compressed archive in the output buffer.</returns>
-            private static int lzf_compress(byte[] input, ref byte[] output, int inputLength)
+            private static int Lzf_compress(byte[] input, ref byte[] output, int inputLength)
             {
                 int outputLength = output.Length;
 
@@ -365,7 +365,7 @@ namespace SocketMeister.Messages
             /// <param name="output">Reference to a buffer which will contain the decompressed data.</param>
             /// <param name="inputLength">Length of input bytes to process.</param>
             /// <returns>The size of the decompressed archive in the output buffer.</returns>
-            private static int lzf_decompress(byte[] input, ref byte[] output, int inputLength)
+            private static int Lzf_decompress(byte[] input, ref byte[] output, int inputLength)
             {
                 int outputLength = output.Length;
 

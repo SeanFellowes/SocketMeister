@@ -6,6 +6,9 @@ using System.Text;
 using System.Threading;
 using SocketMeister.Messages;
 
+#pragma warning disable CA1031 // Do not catch general exception types
+#pragma warning disable IDE0017 // Simplify object initialization
+
 namespace SocketMeister
 {
     /// <summary>
@@ -20,27 +23,27 @@ namespace SocketMeister
         /// <summary>
         /// The number of simultaneous send operations which can take place. Value should be between 2 and 15
         /// </summary>
-        private readonly static int CLIENT_SEND_EVENT_ARGS_POOL_SIZE = 10;
+        private const int CLIENT_SEND_EVENT_ARGS_POOL_SIZE = 10;
 
         /// <summary>
         /// If a poll response has not been received from the server after a number of seconds, the socketet client will be disconnected.
         /// </summary>
-        private readonly static int DISCONNECT_AFTER_NO_POLL_RESPONSE_SECONDS = 30;
+        private const int DISCONNECT_AFTER_NO_POLL_RESPONSE_SECONDS = 30;
 
         /// <summary>
         /// When a shutdown occurs, particularly because of network failure or server shutdown, delay attempting to reconnect to that server, giving the server some time to complete it's shutdown process.
         /// </summary>
-        private readonly static int DONT_RECONNECT_DELAY_AFTER_SHUTDOWN = 15;
+        private const int DONT_RECONNECT_DELAY_AFTER_SHUTDOWN = 15;
 
         /// <summary>
         /// The frequency, in seconds, that this client will poll the server, to ensure the socket is alive.
         /// </summary>
-        private readonly static int POLLING_FREQUENCY = 10;
+        private const int POLLING_FREQUENCY = 10;
 
         /// <summary>
         /// The buffer size to use for sending and receiving data. Note: This value is also used by the 'SocketServer' class.
         /// </summary>
-        internal readonly static int SEND_RECEIVE_BUFFER_SIZE = 65536;
+        internal const int SEND_RECEIVE_BUFFER_SIZE = 65536;
 
         private SocketAsyncEventArgs _asyncEventArgsConnect = null;
         private SocketAsyncEventArgs _asyncEventArgsPolling = null;
@@ -48,8 +51,14 @@ namespace SocketMeister
         private readonly ManualResetEvent _autoResetConnectEvent = new ManualResetEvent(false);
         private readonly ManualResetEvent _autoResetPollEvent = new ManualResetEvent(false);
         private ConnectionStatuses _connectionStatus = ConnectionStatuses.Disconnected;
+#pragma warning disable CA2213 // Disposable fields should be disposed
         private SocketEndPoint _currentEndPoint = null;
+#pragma warning restore CA2213 // Disposable fields should be disposed
+#pragma warning disable IDE0044 // Add readonly modifier
+#pragma warning disable IDE0052 // Remove unread private members
         private bool _enableCompression;
+#pragma warning restore IDE0052 // Remove unread private members
+#pragma warning restore IDE0044 // Add readonly modifier
         private readonly List<SocketEndPoint> _endPoints = null;
         private bool _isBackgroundConnectRunning;
         private bool _isBackgroundPollingRunning;
@@ -86,8 +95,8 @@ namespace SocketMeister
         /// <param name="EnableCompression">Whether compression will be applied to data.</param>
         public SocketClient(List<SocketEndPoint> EndPoints, bool EnableCompression)
         {
-            if (EndPoints == null) throw new ArgumentNullException("EndPoints");
-            else if (EndPoints.Count == 0) throw new ArgumentException("EndPoints");
+            if (EndPoints == null) throw new ArgumentNullException(nameof(EndPoints));
+            else if (EndPoints.Count == 0) throw new ArgumentException("EndPoints must contain at least 1 value", nameof(EndPoints));
 
             _enableCompression = EnableCompression;
             _receiveEngine = new MessageEngine(EnableCompression);
@@ -129,7 +138,7 @@ namespace SocketMeister
             _asyncEventArgsPolling.SetBuffer(new byte[SEND_RECEIVE_BUFFER_SIZE], 0, SEND_RECEIVE_BUFFER_SIZE);
             _asyncEventArgsPolling.Completed += ProcessSendPollRequest;
 
-            bgConnectToServer();
+            BgConnectToServer();
         }
 
         /// <summary>
@@ -283,7 +292,7 @@ namespace SocketMeister
 
                 //  FINALIZE AND RE-ATTEMPT CONNECTION IS WE ARE NOT STOPPING
                 ConnectionStatus = ConnectionStatuses.Disconnected;
-                if (IsStopAllRequested == false) bgConnectToServer();
+                if (IsStopAllRequested == false) BgConnectToServer();
 
             }));
             bgDisconnect.IsBackground = true;
@@ -296,7 +305,7 @@ namespace SocketMeister
         /// <summary>
         /// Background process which creates a connection with one of the servers specified
         /// </summary>
-        private void bgConnectToServer()
+        private void BgConnectToServer()
         {
             lock (_lock)
             {
@@ -332,7 +341,7 @@ namespace SocketMeister
 
                             if (ConnectionStatus == ConnectionStatuses.Connected)
                             {
-                                bgPollServer();
+                                BgPollServer();
                                 break;
                             }
                         }
@@ -350,7 +359,7 @@ namespace SocketMeister
         /// <summary>
         /// Background process which polls the server to determine if the socket is alive
         /// </summary>
-        private void bgPollServer()
+        private void BgPollServer()
         {
             Thread bgPolling = new Thread(new ThreadStart(delegate
             {
@@ -466,7 +475,9 @@ namespace SocketMeister
         }
 
 
+#pragma warning disable IDE0051 // Remove unused private members
         private void DelaySending()
+#pragma warning restore IDE0051 // Remove unused private members
         {
             int inProgress = 0;
             lock (_lock) { inProgress = _openRequests.Count; }
@@ -487,8 +498,8 @@ namespace SocketMeister
         public byte[] SendRequest(object[] Parameters, int TimeoutMilliseconds = 60000, bool IsLongPolling = false)
         {
             if (IsStopAllRequested) throw new Exception("Request cannot be sent. The socket client is stopped or stopping");
-            if (Parameters == null) throw new ArgumentException("Request parameters cannot be null.", "Parameters");
-            if (Parameters.Length == 0) throw new ArgumentException("At least 1 request parameter is required.", "Parameters");
+            if (Parameters == null) throw new ArgumentException("Request parameters cannot be null.", nameof(Parameters));
+            if (Parameters.Length == 0) throw new ArgumentException("At least 1 request parameter is required.", nameof(Parameters));
             DateTime startTime = DateTime.Now;
             DateTime maxWait = startTime.AddMilliseconds(TimeoutMilliseconds);
             while (ConnectionStatus != ConnectionStatuses.Connected && IsStopAllRequested == false)
@@ -512,7 +523,7 @@ namespace SocketMeister
 
             byte[] sendBytes = MessageEngine.GenerateSendBytes(Request, false);
 
-            SocketAsyncEventArgs sendEventArgs = null;
+            SocketAsyncEventArgs sendEventArgs;
 
             while (true == true)
             {
@@ -758,4 +769,8 @@ namespace SocketMeister
 
         #endregion
     }
+
+#pragma warning restore IDE0017 // Simplify object initialization
+#pragma warning restore CA1031 // Do not catch general exception types
+
 }
