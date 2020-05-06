@@ -43,7 +43,8 @@ namespace SocketMeister
             _port = Convert.ToUInt16(Port);
 
             //  TRY TO CREATE IpAddress
-            if (System.Net.IPAddress.TryParse(_iPAddress, out IPAddress IPAddr))
+            System.Net.IPAddress IPAddr = null;
+            if (System.Net.IPAddress.TryParse(_iPAddress, out IPAddr))
             {
                 switch (IPAddr.AddressFamily)
                 {
