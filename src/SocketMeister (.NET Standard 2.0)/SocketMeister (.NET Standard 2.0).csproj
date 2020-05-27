@@ -5,11 +5,11 @@
     <RootNamespace>SocketMeister</RootNamespace>
     <AssemblyName>SocketMeister</AssemblyName>
     <Authors>Sean Fellowes</Authors>
-    <Description>Performant TCP socket server and client for .NET</Description>
+    <Description>Performant TCP socket server and client for .NET. Client features automated reconnect within single and multiple server environments.</Description>
     <Copyright>Copyright © 2010-2020 Sean Fellowes</Copyright>
     <PackageProjectUrl>https://github.com/SeanFellowes/SocketMeister</PackageProjectUrl>
     <RepositoryUrl>https://github.com/SeanFellowes/SocketMeister</RepositoryUrl>
-    <Version>2.0.0</Version>
+    <Version>2.0.1</Version>
     <PackageTags>tcp socket</PackageTags>
     <Company />
     <PackageReleaseNotes>Resolved fxCop issues</PackageReleaseNotes>

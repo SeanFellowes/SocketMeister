@@ -53,21 +53,22 @@
             this.PanelMainTrace = new System.Windows.Forms.Panel();
             this.dGrid = new System.Windows.Forms.DataGridView();
             this.PnlTestsHeader = new System.Windows.Forms.Panel();
+            this.lblErrors = new System.Windows.Forms.Label();
             this.btnClearLog = new System.Windows.Forms.Button();
             this.lblTraceLog = new System.Windows.Forms.Label();
-            this.lblErrors = new System.Windows.Forms.Label();
-            this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ColumnStack = new System.Windows.Forms.DataGridViewButtonColumn();
             this.TestServer4 = new SocketMeister.Test.Server();
             this.TestServer3 = new SocketMeister.Test.Server();
             this.TestServer2 = new SocketMeister.Test.Server();
             this.TestServer1 = new SocketMeister.Test.Server();
             this.ControlPolicyServer = new SocketMeister.Test.Server();
             this.ControlServer = new SocketMeister.Test.Server();
+            this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColumnStack = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.StackTrace = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.pnlControl.SuspendLayout();
             this.panelControlHeader.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -322,7 +323,8 @@
             this.dataGridViewTextBoxColumn3,
             this.dataGridViewTextBoxColumn4,
             this.dataGridViewTextBoxColumn5,
-            this.ColumnStack});
+            this.ColumnStack,
+            this.StackTrace});
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
             dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -367,6 +369,17 @@
             this.PnlTestsHeader.Size = new System.Drawing.Size(580, 27);
             this.PnlTestsHeader.TabIndex = 32;
             // 
+            // lblErrors
+            // 
+            this.lblErrors.Dock = System.Windows.Forms.DockStyle.Left;
+            this.lblErrors.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblErrors.Location = new System.Drawing.Point(129, 3);
+            this.lblErrors.Name = "lblErrors";
+            this.lblErrors.Size = new System.Drawing.Size(89, 21);
+            this.lblErrors.TabIndex = 32;
+            this.lblErrors.Text = "Errors: 0";
+            this.lblErrors.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
             // btnClearLog
             // 
             this.btnClearLog.Dock = System.Windows.Forms.DockStyle.Right;
@@ -388,65 +401,6 @@
             this.lblTraceLog.TabIndex = 30;
             this.lblTraceLog.Text = "Trace Log: 0";
             this.lblTraceLog.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // lblErrors
-            // 
-            this.lblErrors.Dock = System.Windows.Forms.DockStyle.Left;
-            this.lblErrors.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblErrors.Location = new System.Drawing.Point(129, 3);
-            this.lblErrors.Name = "lblErrors";
-            this.lblErrors.Size = new System.Drawing.Size(89, 21);
-            this.lblErrors.TabIndex = 32;
-            this.lblErrors.Text = "Errors: 0";
-            this.lblErrors.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // dataGridViewTextBoxColumn1
-            // 
-            this.dataGridViewTextBoxColumn1.DataPropertyName = "TimeStamp";
-            this.dataGridViewTextBoxColumn1.HeaderText = "TimeStamp";
-            this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
-            this.dataGridViewTextBoxColumn1.ReadOnly = true;
-            this.dataGridViewTextBoxColumn1.Width = 85;
-            // 
-            // dataGridViewTextBoxColumn2
-            // 
-            this.dataGridViewTextBoxColumn2.DataPropertyName = "Source";
-            this.dataGridViewTextBoxColumn2.HeaderText = "Source";
-            this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
-            this.dataGridViewTextBoxColumn2.ReadOnly = true;
-            this.dataGridViewTextBoxColumn2.Width = 66;
-            // 
-            // dataGridViewTextBoxColumn3
-            // 
-            this.dataGridViewTextBoxColumn3.DataPropertyName = "Severity";
-            this.dataGridViewTextBoxColumn3.HeaderText = "Severity";
-            this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
-            this.dataGridViewTextBoxColumn3.ReadOnly = true;
-            this.dataGridViewTextBoxColumn3.Width = 70;
-            // 
-            // dataGridViewTextBoxColumn4
-            // 
-            this.dataGridViewTextBoxColumn4.DataPropertyName = "EventId";
-            this.dataGridViewTextBoxColumn4.HeaderText = "EventId";
-            this.dataGridViewTextBoxColumn4.Name = "dataGridViewTextBoxColumn4";
-            this.dataGridViewTextBoxColumn4.ReadOnly = true;
-            this.dataGridViewTextBoxColumn4.Width = 69;
-            // 
-            // dataGridViewTextBoxColumn5
-            // 
-            this.dataGridViewTextBoxColumn5.DataPropertyName = "Message";
-            this.dataGridViewTextBoxColumn5.HeaderText = "Message";
-            this.dataGridViewTextBoxColumn5.Name = "dataGridViewTextBoxColumn5";
-            this.dataGridViewTextBoxColumn5.ReadOnly = true;
-            this.dataGridViewTextBoxColumn5.Width = 75;
-            // 
-            // ColumnStack
-            // 
-            this.ColumnStack.HeaderText = "Stack";
-            this.ColumnStack.Name = "ColumnStack";
-            this.ColumnStack.ReadOnly = true;
-            this.ColumnStack.Text = "Stack";
-            this.ColumnStack.Width = 41;
             // 
             // TestServer4
             // 
@@ -512,6 +466,62 @@
             this.ControlServer.Size = new System.Drawing.Size(300, 27);
             this.ControlServer.TabIndex = 4;
             // 
+            // dataGridViewTextBoxColumn1
+            // 
+            this.dataGridViewTextBoxColumn1.DataPropertyName = "TimeStamp";
+            this.dataGridViewTextBoxColumn1.HeaderText = "TimeStamp";
+            this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
+            this.dataGridViewTextBoxColumn1.ReadOnly = true;
+            this.dataGridViewTextBoxColumn1.Width = 85;
+            // 
+            // dataGridViewTextBoxColumn2
+            // 
+            this.dataGridViewTextBoxColumn2.DataPropertyName = "Source";
+            this.dataGridViewTextBoxColumn2.HeaderText = "Source";
+            this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
+            this.dataGridViewTextBoxColumn2.ReadOnly = true;
+            this.dataGridViewTextBoxColumn2.Width = 66;
+            // 
+            // dataGridViewTextBoxColumn3
+            // 
+            this.dataGridViewTextBoxColumn3.DataPropertyName = "Severity";
+            this.dataGridViewTextBoxColumn3.HeaderText = "Severity";
+            this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
+            this.dataGridViewTextBoxColumn3.ReadOnly = true;
+            this.dataGridViewTextBoxColumn3.Width = 70;
+            // 
+            // dataGridViewTextBoxColumn4
+            // 
+            this.dataGridViewTextBoxColumn4.DataPropertyName = "EventId";
+            this.dataGridViewTextBoxColumn4.HeaderText = "EventId";
+            this.dataGridViewTextBoxColumn4.Name = "dataGridViewTextBoxColumn4";
+            this.dataGridViewTextBoxColumn4.ReadOnly = true;
+            this.dataGridViewTextBoxColumn4.Width = 69;
+            // 
+            // dataGridViewTextBoxColumn5
+            // 
+            this.dataGridViewTextBoxColumn5.DataPropertyName = "Message";
+            this.dataGridViewTextBoxColumn5.HeaderText = "Message";
+            this.dataGridViewTextBoxColumn5.Name = "dataGridViewTextBoxColumn5";
+            this.dataGridViewTextBoxColumn5.ReadOnly = true;
+            this.dataGridViewTextBoxColumn5.Width = 75;
+            // 
+            // ColumnStack
+            // 
+            this.ColumnStack.HeaderText = "Stack";
+            this.ColumnStack.Name = "ColumnStack";
+            this.ColumnStack.ReadOnly = true;
+            this.ColumnStack.Text = "Stack";
+            this.ColumnStack.Width = 41;
+            // 
+            // StackTrace
+            // 
+            this.StackTrace.DataPropertyName = "StackTrace";
+            this.StackTrace.HeaderText = "StackTrace";
+            this.StackTrace.Name = "StackTrace";
+            this.StackTrace.ReadOnly = true;
+            this.StackTrace.Width = 88;
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -524,6 +534,7 @@
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "FormMain";
             this.Text = "SocketMeister Server Tester";
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormMain_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormMain_FormClosed);
             this.Load += new System.EventHandler(this.FormMain_Load);
@@ -574,13 +585,14 @@
         private System.Windows.Forms.Button btnClearLog;
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.Label lblErrors;
+        private System.Windows.Forms.DataGridView dGrid;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn4;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn5;
         private System.Windows.Forms.DataGridViewButtonColumn ColumnStack;
-        private System.Windows.Forms.DataGridView dGrid;
+        private System.Windows.Forms.DataGridViewTextBoxColumn StackTrace;
     }
 }
 

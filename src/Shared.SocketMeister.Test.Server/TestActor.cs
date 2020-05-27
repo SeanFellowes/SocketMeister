@@ -10,19 +10,19 @@ namespace SocketMeister
     internal class TestActor
     {
         private readonly TestClientHarness clientSide;
-        private readonly Guid guid = System.Guid.NewGuid();
+        //private readonly Guid guid = System.Guid.NewGuid();
         //private bool controlServerReceivedGuid = false;
 
         public TestActor()
         {
-            clientSide = new TestClientHarness(guid);
+            clientSide = new TestClientHarness(12345);
         }
 
 
-        /// <summary>
-        /// GUID for this actor
-        /// </summary>
-        public string Guid {  get { return guid.ToString(); } }
+        ///// <summary>
+        ///// GUID for this actor
+        ///// </summary>
+        //public int ClientId {  get { return _clie; } }
 
         /// <summary>
         /// Called then ControlServer received a request from the TestClientHarness

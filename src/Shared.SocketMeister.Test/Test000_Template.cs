@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 
 namespace SocketMeister
 {
-    internal class Test001 : TestBase, ITest
+    internal class Test000 : TestBase, ITest
     {
         /// <summary>
         /// Constructor
         /// </summary>
-        public Test001(int Id) : base (Id, "1 Cli, Connect, Valid Operations, Disconnect")
+        public Test000(int Id) : base(Id, "Template for other tests")
         {
             base.Parent = this;
             base.ExecuteTest += Execute;
@@ -21,22 +20,21 @@ namespace SocketMeister
         {
             try
             {
-                int ClientId01 = base.OpenClient();
-                //for (int r = 0; r < 20; r++)
-                //{
-                //    PercentComplete = Convert.ToInt32(((r + 1.0) / 20) * 100.0);
-                //    RaiseTraceEventRaised("Loop " + r.ToString(), SeverityType.Information, 1);
+                for (int r = 0; r < 20; r++)
+                {
+                    PercentComplete = Convert.ToInt32(((r + 1.0) / 20) * 100.0);
+                    RaiseTraceEventRaised("Loop " + r.ToString(), SeverityType.Information, 1);
 
-                //    //  IS THIS TO BE STOPPED?
-                //    if (Status == TestStatus.Stopping)
-                //    {
-                //        Status = TestStatus.Stopped;
-                //        RaiseTraceEventRaised("Test was stopped before completing", SeverityType.Information, 1);
-                //        return;
-                //    }
+                    //  IS THIS TO BE STOPPED?
+                    if (Status == TestStatus.Stopping)
+                    {
+                        Status = TestStatus.Stopped;
+                        RaiseTraceEventRaised("Test was stopped before completing", SeverityType.Information, 1);
+                        return;
+                    }
 
-                //    Thread.Sleep(1000);
-                //}
+                    Thread.Sleep(1000);
+                }
 
                 //  TEST THROW EXCEPTION (SHOULD APPEAR ON SCREEN)
                 //throw new FieldAccessException("Bad things hewflkm welfkm ewlkfm welfkmlm Error regfergergregreg erg reg reg re greg re greg re gtsrh yrthjtyfj tyj jy tyfju ytfj ytj ytj tydj tydj dtyjdcfth dfyjcgjy cfyj cgjy ycjvgukgyukyfutkjg fyuk ftyj fyuk ftyjt dyh t");

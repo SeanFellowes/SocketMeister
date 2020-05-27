@@ -17,15 +17,15 @@ namespace Test.Client.WinForms
         {
             InitializeComponent();
 
-
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
             try
             {
+                this.Text = "SocketMeister Test Client (" + Program.ClientId.ToString() + ")";
                 Guid guid = Guid.NewGuid();
-                harness = new SocketMeister.TestClientHarness(guid);
+                harness = new SocketMeister.TestClientHarness(Program.ClientId);
                 harness.ControlConnectionFailed += Harness_ControlConnectionFailed;
             }
             catch
@@ -41,7 +41,8 @@ namespace Test.Client.WinForms
             this.Invoke((MethodInvoker)delegate {
                 this.Close();
             });
-            Application.Exit();
+            System.Threading.Thread.Sleep(500);
+            Environment.Exit(2);
         }
     }
 }

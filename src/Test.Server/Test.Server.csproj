@@ -104,6 +104,12 @@
   <ItemGroup>
     <Content Include="Service.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Test.Client.WinForms\Test.Client.WinForms.csproj">
+      <Project>{81ccdf22-aa24-41d6-bf0c-3f8e4072bf70}</Project>
+      <Name>Test.Client.WinForms</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="..\Shared.SocketMeister\Shared.SocketMeister.projitems" Label="Shared" />
   <Import Project="..\Shared.SocketMeister.Test\Shared.SocketMeister.Test.projitems" Label="Shared" />
   <Import Project="..\Shared.SocketMeister.Test.Client\Shared.SocketMeister.Test.Client.projitems" Label="Shared" />

@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>SocketMeister.Silverlight</id>
+    <version>2.0.1</version>
+    <authors>Sean Fellowes</authors>
+    <owners>Sean Fellowes</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+    <projectUrl>https://github.com/SeanFellowes/SocketMeister</projectUrl>
+    <icon>icon_128.png</icon>
+    <description>Performant TCP socket client for Silverlight, to connect to a SocketMeister Server</description>
+    <summary>Performant TCP socket client for Silverlight</summary>
+    <releaseNotes>Resolved fxCop issues</releaseNotes>
+    <copyright>Copyright © 2010-2020 Sean Fellowes</copyright>
+    <tags>tcp socket silverlight</tags>
+    <language>en-US</language>
+    <repository type="git" url="https://github.com/SeanFellowes/SocketMeister" />
+    <dependencies>
+      <group targetFramework="Silverlight5.0" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="..\src\SocketMeister (Silverlight)\Bin\Release\SocketMeister.dll" target="lib\sl5\SocketMeister.dll" />
+    <file src="..\src\SocketMeister (Silverlight)\Bin\Release\SocketMeister.xml" target="lib\sl5\SocketMeister.xml" />
+    <file src="..\src\SocketMeister (Silverlight)\Bin\Release\SocketMeister.pdb" target="lib\sl5\SocketMeister.pdb" />
+    <file src="..\images\icon_128.png" target="icon_128.png" />
+  </files>
+</package>

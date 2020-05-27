@@ -10,7 +10,7 @@ namespace SocketMeister
     {
         private readonly SocketClient controlSocket = null;
         private readonly DispatcherTimer controlConnectedTimer = null;
-        private readonly string guid;
+        private readonly int clientId;
 
         /// <summary>
         /// Event raised when a status of a socket connection has changed
@@ -23,9 +23,9 @@ namespace SocketMeister
         public event EventHandler<EventArgs> ControlConnectionFailed;
 
 
-        public TestClientHarness(Guid GUID)
+        public TestClientHarness(int ClientId)
         {
-            guid = GUID.ToString();
+            clientId = ClientId;
 
             controlConnectedTimer = new DispatcherTimer();
             controlConnectedTimer.Interval = new TimeSpan(0, 0, 10);
@@ -73,7 +73,7 @@ namespace SocketMeister
             {
                 object[] parms = new object[2];
                 parms[0] =  ControlMessage.ClientConnected;
-                parms[1] = guid;
+                parms[1] = clientId;
                 controlSocket.SendRequest(parms);
             }
 
