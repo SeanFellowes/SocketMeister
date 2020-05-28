@@ -36,6 +36,7 @@ namespace SocketMeister
             List<SocketEndPoint> endPoints = new List<SocketEndPoint>() { new SocketEndPoint("127.0.0.1", 4505) };
             controlSocket = new SocketClient(endPoints, true);
             controlSocket.ConnectionStatusChanged += controlSocket_ConnectionStatusChanged;
+
         }
 
         private void ControlConnectedTimer_Tick(object sender, EventArgs e)

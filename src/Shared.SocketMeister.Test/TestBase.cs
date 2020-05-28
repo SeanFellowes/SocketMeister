@@ -17,6 +17,7 @@ namespace SocketMeister
         private ITest _parent = null;
         private int _percentComplete = 0;
         private TestStatus _status = TestStatus.NotStarted;
+        private readonly TestHarnessClientCollection _clientCollection = new TestHarnessClientCollection();
 
         public event EventHandler<EventArgs> ExecuteTest;
         public event EventHandler<TestPercentCompleteChangedEventArgs> PercentCompleteChanged;

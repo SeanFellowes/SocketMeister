@@ -24,7 +24,7 @@ namespace SocketMeister.Test
         private const int executeButtonWidth = 90;
         private const int spacer = 0;
 
-        private readonly AllTests allTests = new AllTests();
+        private readonly TestHarness allTests = new TestHarness();
         private ITest currentTest = null;
         private int currentTestPtr = 0;
         private int errors = 0;
@@ -67,14 +67,6 @@ namespace SocketMeister.Test
                 AllowEdit = false
             };
             dGrid.DataSource = gridItems;
-
-            //dGrid.Columns[6].DisplayIndex = 0; // or 1, 2, 3 etc
-            //dGrid.Columns[5].DisplayIndex = 1; // or 1, 2, 3 etc
-            //dGrid.Columns[4].DisplayIndex = 2; // or 1, 2, 3 etc
-            //dGrid.Columns[0].DisplayIndex = 3; // or 1, 2, 3 etc
-            //dGrid.Columns[2].DisplayIndex = 4; // or 1, 2, 3 etc
-            //dGrid.Columns[1].DisplayIndex = 5; // or 1, 2, 3 etc
-            //dGrid.Columns[3].DisplayIndex = 6; // or 1, 2, 3 etc
 
             lblTests.Text = "Tests: " + allTests.Count;
 
