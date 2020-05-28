@@ -24,5 +24,6 @@ namespace SocketMeister
         object Lock { get; }
         int PercentComplete { get; }
         TestStatus Status { get; }
+        TestHarness TestHarness { get; }
     }
 }

@@ -10,7 +10,7 @@ namespace SocketMeister
         /// <summary>
         /// Constructor
         /// </summary>
-        public Test000(int Id) : base(Id, "Template for other tests")
+        public Test000(TestHarness TestHarness, int Id) : base(TestHarness, Id, "Template for other tests")
         {
             base.Parent = this;
             base.ExecuteTest += Execute;

@@ -9,23 +9,22 @@ namespace SocketMeister
 {
     internal class TestBase
     {
-        private static int _clientId = 0;
-
         private readonly int _id;
         private readonly string _description;
         private readonly object _lock = new object();
         private ITest _parent = null;
         private int _percentComplete = 0;
         private TestStatus _status = TestStatus.NotStarted;
-        private readonly TestHarnessClientCollection _clientCollection = new TestHarnessClientCollection();
+        private readonly TestHarness _testHarness;
 
         public event EventHandler<EventArgs> ExecuteTest;
         public event EventHandler<TestPercentCompleteChangedEventArgs> PercentCompleteChanged;
         public event EventHandler<TestStatusChangedEventArgs> StatusChanged;
         public event EventHandler<TraceEventArgs> TraceEventRaised;
 
-        public TestBase (int Id, string Description)
+        public TestBase (TestHarness TestHarness, int Id, string Description)
         {
+            _testHarness = TestHarness;
             _id = Id;
             _description = Description;
         }
@@ -72,6 +71,9 @@ namespace SocketMeister
             }
         }
 
+        //  Test Harness
+        public TestHarness TestHarness {  get { return _testHarness; } }
+
         public void RaiseTraceEventRaised(string message, SeverityType severity, int eventId)
         {
             if (Parent == null) throw new NullReferenceException("Base class property 'Parent'has not been set");
@@ -112,45 +114,6 @@ namespace SocketMeister
 
 
 
-        public void CloseClient(string ClientId)
-        {
-
-        }
-
-        public int OpenClient()
-        {
-            int clientId;
-            lock(_lock)
-            {
-                _clientId++;
-                clientId = _clientId;
-            }
-
-            Process process = new Process();
-            process.StartInfo.FileName = @"SocketMeister.Test.Client.WinForms.exe";
-            process.StartInfo.Arguments = clientId.ToString();
-            process.StartInfo.CreateNoWindow = false;
-            process.StartInfo.UseShellExecute = true;
-            process.Start();
-            DateTime maxWait = DateTime.Now.AddMilliseconds(5000);
-            while (DateTime.Now < maxWait)
-            {
-                if (process.HasExited == true)
-                {
-                    maxWait = DateTime.Now.AddHours(-1);
-                    if (process.ExitCode == 1) throw new ApplicationException("Client failed to start. Missing ClientId from process arguments.");
-                    else if (process.ExitCode == 3) throw new ApplicationException("Client failed to start. ClientId must be numeric. This is the first parameter");
-                    else if (process.ExitCode == 2) throw new ApplicationException("Client failed to start. Couldn't connect to control port 4505 (Used to sent test instructions and results between test clients and the test server).");
-                    else throw new ApplicationException("Client failed to start. Unknown reason.");
-                }
-
-                //  CHECK TO SEE IF THE CLIENT HAS CONNECTED
-
-                Thread.Sleep(250);
-            }
-
-            return clientId;
-        }
 
 
 

@@ -24,7 +24,7 @@ namespace SocketMeister.Test
         private const int executeButtonWidth = 90;
         private const int spacer = 0;
 
-        private readonly TestHarness allTests = new TestHarness();
+        private readonly TestHarness testHarness = new TestHarness();
         private ITest currentTest = null;
         private int currentTestPtr = 0;
         private int errors = 0;
@@ -51,7 +51,7 @@ namespace SocketMeister.Test
             TestServer4.TraceEventRaised += TraceEventRaised;
 
             //  REGISTER FOR EVENTS FROM TESTS
-            foreach (ITest test in allTests)
+            foreach (ITest test in testHarness)
             {
                 test.PercentCompleteChanged += Test_PercentCompleteChanged;
                 test.StatusChanged += Test_TestStatusChanged;
@@ -68,7 +68,7 @@ namespace SocketMeister.Test
             };
             dGrid.DataSource = gridItems;
 
-            lblTests.Text = "Tests: " + allTests.Count;
+            lblTests.Text = "Tests: " + testHarness.Count;
 
             //  START CONTROL ITEMS
             ControlServer.Start();
@@ -83,7 +83,7 @@ namespace SocketMeister.Test
             else
             {
                 ITest test = (ITest)sender;
-                int testIndex = allTests.IndexOf(test);
+                int testIndex = testHarness.IndexOf(test);
                 if (testIndex < 0) return;
                 lCol4[testIndex].Text = e.PercentComplete.ToString() + " %";
             }
@@ -95,7 +95,7 @@ namespace SocketMeister.Test
             else
             {
                 ITest test = (ITest)sender;
-                int testIndex = allTests.IndexOf(test);
+                int testIndex = testHarness.IndexOf(test);
                 if (testIndex < 0) return;
 
                 bool allTestsComplete = false;
@@ -154,7 +154,7 @@ namespace SocketMeister.Test
                 }
 
 
-                for (int index = 0; index < allTests.Count; index++)
+                for (int index = 0; index < testHarness.Count; index++)
                 {
 
                     if (index == testIndex)
@@ -199,7 +199,7 @@ namespace SocketMeister.Test
                 if (executeNextTest == true)
                 {
                     currentTestPtr++;
-                    if (currentTestPtr < allTests.Count)
+                    if (currentTestPtr < testHarness.Count)
                     {
                         currentTest = (ITest)lCol5[currentTestPtr].Tag;
                         currentTest.Start();
@@ -214,7 +214,7 @@ namespace SocketMeister.Test
                 {
                     executeMode = Executing.Stopped;
                     currentTest = null;
-                    for (int index = 0; index < allTests.Count; index++)
+                    for (int index = 0; index < testHarness.Count; index++)
                     {
                         lCol5[index].Visible = true;
                     }
@@ -229,12 +229,19 @@ namespace SocketMeister.Test
             int r = Convert.ToInt32(e.Parameters[0]);
             if (r == Testing.ControlMessage.ClientConnected)
             {
-
+                int ClientId = Convert.ToInt32(e.Parameters[1]);
+                TestHarnessClient client = testHarness.Clients[ClientId];
+                if (client != null)
+                {
+                    //  ASSIGN THE SOcketMeister Server Client to the class. When connecting a test harness client, this value is checked for NOT null (Connected).
+                    client.Client = e.Client;
+                }
             }
         }
 
         private void ControlServer_MessageReceived(object sender, SocketServer.MessageReceivedEventArgs e)
         {
+            string ggg = "ertretre";
         }
 
         private void TraceEventRaised(object sender, TraceEventArgs e)
@@ -335,7 +342,7 @@ namespace SocketMeister.Test
             CH3.Top = 0;
             CH4.Top = 0;
 
-            foreach (ITest test in allTests)
+            foreach (ITest test in testHarness)
             {
                 //  COL 1 (ID)
                 Label lb = new Label
@@ -430,7 +437,7 @@ namespace SocketMeister.Test
             if (InvokeRequired) Invoke(new MethodInvoker(delegate { SetTestNotification(Test, Value); }));
             else
             {
-                int index = allTests.IndexOf(Test);
+                int index = testHarness.IndexOf(Test);
                 if (index < 0) return;
                 if (Value == TestStatus.Failed)
                 {
@@ -558,11 +565,11 @@ namespace SocketMeister.Test
         {
             if (executeMode == Executing.Stopped)
             {
-                foreach (ITest test in allTests)
+                foreach (ITest test in testHarness)
                 {
                     test.Reset();
                 }
-                for (int index = 0; index < allTests.Count; index++)
+                for (int index = 0; index < testHarness.Count; index++)
                 {
                     lCol5[index].Visible = false;
                 }

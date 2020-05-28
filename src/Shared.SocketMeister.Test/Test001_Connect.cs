@@ -11,7 +11,7 @@ namespace SocketMeister
         /// <summary>
         /// Constructor
         /// </summary>
-        public Test001(int Id) : base (Id, "1 Cli, Connect, Valid Operations, Disconnect")
+        public Test001(TestHarness TestHarness, int Id) : base (TestHarness, Id, "1 Cli, Connect, Valid Operations, Disconnect")
         {
             base.Parent = this;
             base.ExecuteTest += Execute;
@@ -21,7 +21,8 @@ namespace SocketMeister
         {
             try
             {
-                int ClientId01 = base.OpenClient();
+                TestHarnessClient ClientId01 = base.TestHarness.Clients.AddClient();
+
                 //for (int r = 0; r < 20; r++)
                 //{
                 //    PercentComplete = Convert.ToInt32(((r + 1.0) / 20) * 100.0);
@@ -41,6 +42,12 @@ namespace SocketMeister
                 //  TEST THROW EXCEPTION (SHOULD APPEAR ON SCREEN)
                 //throw new FieldAccessException("Bad things hewflkm welfkm ewlkfm welfkmlm Error regfergergregreg erg reg reg re greg re greg re gtsrh yrthjtyfj tyj jy tyfju ytfj ytj ytj tydj tydj dtyjdcfth dfyjcgjy cfyj cgjy ycjvgukgyukyfutkjg fyuk ftyj fyuk ftyjt dyh t");
 
+                DateTime end = DateTime.Now.AddSeconds(200);
+                while (DateTime.Now < end)
+                {
+
+                }
+
                 Status = TestStatus.Successful;
                 RaiseTraceEventRaised("Test completed successfully", SeverityType.Information, 1);
 
@@ -49,6 +56,11 @@ namespace SocketMeister
             {
                 Status = TestStatus.Failed;
                 RaiseTraceEventRaised(ex, 1);
+            }
+            finally
+            {
+                //  CLEANUP
+                base.TestHarness.Clients.DisconnectAllClients();
             }
         }
 
