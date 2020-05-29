@@ -15,34 +15,34 @@ namespace SocketMeister.Test.Client.Silverlight
     public partial class MainPage : UserControl
     {
         private readonly Guid guid = System.Guid.NewGuid();
-        private TestClientHarness testClient = null;
+        private TestHarnessClient testClient = null;
 
         public MainPage()
         {
             InitializeComponent();
             StatusColour.Background = new SolidColorBrush(Color.FromArgb(255, 234, 144, 15));
             StatusText.Text = "Connecting to test server...";
-            testClient = new TestClientHarness(guid);
+            testClient = new TestHarnessClient(999);
             testClient.ConnectionStatusChanged += TestClient_ConnectionStatusChanged;
 
         }
 
-        private void TestClient_ConnectionStatusChanged(object sender, Testing.ConnectionStatusChangedEventArgs e)
+        private void TestClient_ConnectionStatusChanged(object sender, TestHarnessClientConnectionStatusChangedEventArgs e)
         {
             Deployment.Current.Dispatcher.BeginInvoke(() =>
             {
                 StatusText.Text = e.IPAddress + ":" + e.Port;
-                if (e.Status == Testing.ConnectionStatus.Connected)
+                if (e.Status ==  TestHarnessClientConnectionStatus.Connected)
                 {
                     StatusColour.Background = new SolidColorBrush(Color.FromArgb(255, 0, 150, 0));
                     StatusText.Text = "Connected to " + e.IPAddress + ":" + e.Port;
                 }
-                else if (e.Status == Testing.ConnectionStatus.Connecting)
+                else if (e.Status == TestHarnessClientConnectionStatus.Connecting)
                 {
                     StatusColour.Background = new SolidColorBrush(Color.FromArgb(255, 234, 144, 15));
                     StatusText.Text = "Connecting to " + e.IPAddress + ":" + e.Port;
                 }
-                else if (e.Status == Testing.ConnectionStatus.Disconnecting)
+                else if (e.Status == TestHarnessClientConnectionStatus.Disconnecting)
                 {
                     StatusColour.Background = new SolidColorBrush(Color.FromArgb(255, 250, 34, 34));
                     StatusText.Text = "Disconnecting from " + e.IPAddress + ":" + e.Port;

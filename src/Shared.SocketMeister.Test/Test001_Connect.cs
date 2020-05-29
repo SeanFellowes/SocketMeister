@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
+#if TESTHARNESS
+using System.Net.Http.Headers;
+#endif
 
 namespace SocketMeister
 {

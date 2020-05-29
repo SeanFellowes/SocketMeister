@@ -43,7 +43,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>Bin\Debug</OutputPath>
-    <DefineConstants>DEBUG;TRACE;SILVERLIGHT</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;SILVERLIGHT TESTHARNESSCLIENT</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
@@ -53,7 +53,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>Bin\Release</OutputPath>
-    <DefineConstants>TRACE;SILVERLIGHT</DefineConstants>
+    <DefineConstants>TRACE;SILVERLIGHT TESTHARNESSCLIENT</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
@@ -71,18 +71,6 @@
     <Reference Include="System.Windows.Browser" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Shared.SocketMeister.Test.Client\TestClientHarness.cs">
-      <Link>Shared.SocketMeister.Test.Client\TestClientHarness.cs</Link>
-    </Compile>
-    <Compile Include="..\Shared.SocketMeister.Test.Client\Testing\Enums.cs">
-      <Link>Shared.SocketMeister.Test.Client\Testing\Enums.cs</Link>
-    </Compile>
-    <Compile Include="..\Shared.SocketMeister.Test.Client\Testing\Events.cs">
-      <Link>Shared.SocketMeister.Test.Client\Testing\Events.cs</Link>
-    </Compile>
-    <Compile Include="..\Shared.SocketMeister.Test\AllTests.cs">
-      <Link>Shared.SocketMeister.Test\AllTests.cs</Link>
-    </Compile>
     <Compile Include="..\Shared.SocketMeister.Test\Enums.cs">
       <Link>Shared.SocketMeister.Test\Enums.cs</Link>
     </Compile>
@@ -92,11 +80,23 @@
     <Compile Include="..\Shared.SocketMeister.Test\ITest.cs">
       <Link>Shared.SocketMeister.Test\ITest.cs</Link>
     </Compile>
+    <Compile Include="..\Shared.SocketMeister.Test\Test000_Template.cs">
+      <Link>Shared.SocketMeister.Test\Test000_Template.cs</Link>
+    </Compile>
     <Compile Include="..\Shared.SocketMeister.Test\Test001_Connect.cs">
       <Link>Shared.SocketMeister.Test\Test001_Connect.cs</Link>
     </Compile>
     <Compile Include="..\Shared.SocketMeister.Test\TestBase.cs">
       <Link>Shared.SocketMeister.Test\TestBase.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister.Test\TestHarness.cs">
+      <Link>Shared.SocketMeister.Test\TestHarness.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister.Test\TestHarnessClient.cs">
+      <Link>Shared.SocketMeister.Test\TestHarnessClient.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister.Test\TestHarnessClientCollection.cs">
+      <Link>Shared.SocketMeister.Test\TestHarnessClientCollection.cs</Link>
     </Compile>
     <Compile Include="..\Shared.SocketMeister.Test\Testing\ControlMessage.cs">
       <Link>Shared.SocketMeister.Test\Testing\ControlMessage.cs</Link>

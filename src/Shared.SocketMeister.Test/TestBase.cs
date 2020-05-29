@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Management.Instrumentation;
 using System.Text;
 using System.Threading;
+
+#if TESTHARNESS
+using System.Management.Instrumentation;
+#endif
 
 namespace SocketMeister
 {
