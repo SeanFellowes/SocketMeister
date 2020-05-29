@@ -13,7 +13,7 @@ namespace SocketMeister
     internal class TestHarnessClientCollection : IEnumerable<TestHarnessClient>
     {
         private readonly Dictionary<int, TestHarnessClient> _dictClientId = new Dictionary<int, TestHarnessClient>();
-        private readonly List<TestHarnessClient> _list = new List<TestHarnessClient>();
+        private readonly List<TestHarnessClient> _listClient = new List<TestHarnessClient>();
         private static readonly object _lock = new object();
 
         public TestHarnessClientCollection()
@@ -32,12 +32,12 @@ namespace SocketMeister
 
         IEnumerator<TestHarnessClient> IEnumerable<TestHarnessClient>.GetEnumerator()
         {
-            return _list.GetEnumerator();
+            return _listClient.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return _list.GetEnumerator();
+            return _listClient.GetEnumerator();
         }
 
 
@@ -49,7 +49,7 @@ namespace SocketMeister
         public TestHarnessClient AddClient()
         {
             TestHarnessClient newClient = new TestHarnessClient(this);
-            _list.Add(newClient);
+            _listClient.Add(newClient);
             _dictClientId.Add(newClient.ClientId, newClient);
             try
             {
@@ -57,7 +57,7 @@ namespace SocketMeister
             }
             catch
             {
-                _list.Remove(newClient);
+                _listClient.Remove(newClient);
                 _dictClientId.Remove(newClient.ClientId);
                 throw;
             }
@@ -90,12 +90,12 @@ namespace SocketMeister
             List<TestHarnessClient> items;
             lock (_lock) 
             { 
-                items = _list.ToList(); 
+                items = _listClient.ToList(); 
             }
 
             foreach(TestHarnessClient item in items)
             {
-
+                item.Disconnect();
             }
             
         }

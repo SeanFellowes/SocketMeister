@@ -17,7 +17,7 @@ namespace SocketMeister
     /// <summary>
     /// A SocketClient's connection status to a SocketServer.
     /// </summary>
-    public enum TestHarnessClientConnectionStatus
+    internal enum TestHarnessClientConnectionStatus
     {
         /// <summary>
         /// Socket is disconnected.

@@ -44,7 +44,7 @@ namespace SocketMeister
     /// <summary>
     /// Information provided when a SocketClient connection to a socket server changes status
     /// </summary>
-    public class TestHarnessClientConnectionStatusChangedEventArgs : EventArgs
+    internal class TestHarnessClientConnectionStatusChangedEventArgs : EventArgs
     {
         private readonly object classLock = new object();
         private string iPAddress = "";

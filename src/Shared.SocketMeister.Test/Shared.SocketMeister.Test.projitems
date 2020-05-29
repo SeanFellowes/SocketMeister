@@ -9,6 +9,7 @@
     <Import_RootNamespace>SocketMeister</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)ClientBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TestHarness.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events.cs" />
@@ -16,6 +17,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Test000_Template.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Test001_Connect.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TestBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TestClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TestHarnessClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TestHarnessClientCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Testing\ControlMessage.cs" />

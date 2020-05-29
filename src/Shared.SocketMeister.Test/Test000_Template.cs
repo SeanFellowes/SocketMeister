@@ -15,7 +15,7 @@ namespace SocketMeister
             base.Parent = this;
             base.ExecuteTest += Execute;
         }
-#elif TESTHARNESSCLIENT
+#elif TESTCLIENT
         public Test000(int Id) : base(Id, TestDescription)
         {
             base.Parent = this;

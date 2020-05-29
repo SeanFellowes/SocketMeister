@@ -35,7 +35,7 @@ namespace SocketMeister
             _id = Id;
             _description = Description;
         }
-#elif TESTHARNESSCLIENT
+#elif TESTCLIENT
         public TestBase(int Id, string Description)
         {
             _id = Id;
