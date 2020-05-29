@@ -1,4 +1,5 @@
-﻿using Microsoft.SqlServer.Server;
+﻿#if TESTHARNESS
+using Microsoft.SqlServer.Server;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -49,3 +50,6 @@ namespace SocketMeister
 
 
 }
+
+
+#endif

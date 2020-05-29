@@ -12,7 +12,7 @@ namespace Test.Client.WinForms
 {
     public partial class Form1 : Form
     {
-        SocketMeister.TestClientHarness harness = null;
+        SocketMeister.TestHarnessClient harness = null;
 
         public Form1()
         {
@@ -25,7 +25,7 @@ namespace Test.Client.WinForms
             {
                 this.Text = "SocketMeister Test Client (" + Program.ClientId.ToString() + ")";
                 Guid guid = Guid.NewGuid();
-                harness = new SocketMeister.TestClientHarness(Program.ClientId);
+                harness = new SocketMeister.TestHarnessClient(Program.ClientId);
                 harness.ControlConnectionFailed += Harness_ControlConnectionFailed;
             }
             catch

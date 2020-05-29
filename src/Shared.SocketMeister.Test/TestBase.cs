@@ -15,19 +15,30 @@ namespace SocketMeister
         private ITest _parent = null;
         private int _percentComplete = 0;
         private TestStatus _status = TestStatus.NotStarted;
+
+#if TESTHARNESS
         private readonly TestHarness _testHarness;
+#endif
 
         public event EventHandler<EventArgs> ExecuteTest;
         public event EventHandler<TestPercentCompleteChangedEventArgs> PercentCompleteChanged;
         public event EventHandler<TestStatusChangedEventArgs> StatusChanged;
         public event EventHandler<TraceEventArgs> TraceEventRaised;
 
+#if TESTHARNESS
         public TestBase (TestHarness TestHarness, int Id, string Description)
         {
             _testHarness = TestHarness;
             _id = Id;
             _description = Description;
         }
+#elif TESTHARNESSCLIENT
+        public TestBase(int Id, string Description)
+        {
+            _id = Id;
+            _description = Description;
+        }
+#endif
 
         public string Description { get { return _description; } }
 
@@ -71,8 +82,10 @@ namespace SocketMeister
             }
         }
 
+#if TESTHARNESS
         //  Test Harness
         public TestHarness TestHarness {  get { return _testHarness; } }
+#endif
 
         public void RaiseTraceEventRaised(string message, SeverityType severity, int eventId)
         {

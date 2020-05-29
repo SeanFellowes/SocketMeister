@@ -1,7 +1,9 @@
-﻿using System;
+﻿#if TESTHARNESS
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Xml;
 
@@ -39,8 +41,9 @@ namespace SocketMeister
         }
 
 
+
         /// <summary>
-        /// Adds a client to the list and connects it to the test harness control TCP port (Port 4505)
+        /// Adds a client to the list and connects it to the test harness control TCP port (Port 4505). Opens an instance of the WinForms client app for each client.
         /// </summary>
         /// <returns>The connected (to the test harness control port) client.</returns>
         public TestHarnessClient AddClient()
@@ -62,13 +65,39 @@ namespace SocketMeister
             return newClient;
         }
 
+        /// <summary>
+        /// Adds multiple test harness clients (opens an instance of the WinForms client app for each client)
+        /// </summary>
+        /// <param name="NumberOfClients">Number of test harness clients to run</param>
+        /// <returns>List of TestHarnessClient objects</returns>
+        public List<TestHarnessClient> AddClients(int NumberOfClients)
+        {
+            List<TestHarnessClient> rVal = new List<TestHarnessClient>();
+            for (int ctr = 1; ctr <= NumberOfClients; ctr++)
+            {
+                rVal.Add(AddClient());
+            }
+            return rVal;
+        }
+
+
 
         /// <summary>
         /// Disconnects all clients
         /// </summary>
-        public void DisconnectAllClients()
+        public void DisconnectClients()
         {
+            List<TestHarnessClient> items;
+            lock (_lock) 
+            { 
+                items = _list.ToList(); 
+            }
 
+            foreach(TestHarnessClient item in items)
+            {
+
+            }
+            
         }
 
 
@@ -76,3 +105,6 @@ namespace SocketMeister
 
 
 }
+
+
+#endif

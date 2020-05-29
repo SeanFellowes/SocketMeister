@@ -8,10 +8,12 @@ namespace SocketMeister
 
     internal interface ITest 
     {
+#if TESTHARNESS
         event EventHandler<EventArgs> ExecuteTest;
         event EventHandler<TestPercentCompleteChangedEventArgs> PercentCompleteChanged;
         event EventHandler<TestStatusChangedEventArgs> StatusChanged;
         event EventHandler<TraceEventArgs> TraceEventRaised;
+#endif
 
         void Reset();
 
@@ -24,6 +26,9 @@ namespace SocketMeister
         object Lock { get; }
         int PercentComplete { get; }
         TestStatus Status { get; }
+
+#if TESTHARNESS
         TestHarness TestHarness { get; }
+#endif
     }
 }

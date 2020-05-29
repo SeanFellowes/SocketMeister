@@ -13,4 +13,28 @@ namespace SocketMeister
         Failed = 100,
         Stopped = 200
     }
+
+    /// <summary>
+    /// A SocketClient's connection status to a SocketServer.
+    /// </summary>
+    public enum TestHarnessClientConnectionStatus
+    {
+        /// <summary>
+        /// Socket is disconnected.
+        /// </summary>
+        Disconnected = 0,
+        /// <summary>
+        /// Socket is attempting to connect.
+        /// </summary>
+        Connecting = 1,
+        /// <summary>
+        /// Socket is connected.
+        /// </summary>
+        Connected = 2,
+        /// <summary>
+        /// Socket is disconnecting;
+        /// </summary>
+        Disconnecting = 3
+    }
+
 }

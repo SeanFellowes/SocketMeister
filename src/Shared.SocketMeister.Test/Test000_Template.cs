@@ -7,20 +7,28 @@ namespace SocketMeister
 {
     internal class Test000 : TestBase, ITest
     {
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        public Test000(TestHarness TestHarness, int Id) : base(TestHarness, Id, "Template for other tests")
+        private const string TestDescription = "Template for other tests";
+
+#if TESTHARNESS
+        public Test000(TestHarness TestHarness, int Id) : base(TestHarness, Id, TestDescription)
         {
             base.Parent = this;
             base.ExecuteTest += Execute;
         }
+#elif TESTHARNESSCLIENT
+        public Test000(int Id) : base(Id, TestDescription)
+        {
+            base.Parent = this;
+        }
+#endif
 
+
+#if TESTHARNESS
         private void Execute(object sender, EventArgs e)
         {
             try
             {
-                for (int r = 0; r < 20; r++)
+                for (int r = 0; r < 5; r++)
                 {
                     PercentComplete = Convert.ToInt32(((r + 1.0) / 20) * 100.0);
                     RaiseTraceEventRaised("Loop " + r.ToString(), SeverityType.Information, 1);
@@ -33,7 +41,7 @@ namespace SocketMeister
                         return;
                     }
 
-                    Thread.Sleep(1000);
+                    Thread.Sleep(500);
                 }
 
                 //  TEST THROW EXCEPTION (SHOULD APPEAR ON SCREEN)
@@ -49,6 +57,7 @@ namespace SocketMeister
                 RaiseTraceEventRaised(ex, 1);
             }
         }
+#endif
 
     }
 }
