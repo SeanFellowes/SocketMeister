@@ -9,8 +9,6 @@
     <Import_RootNamespace>SocketMeister</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)TestClientHarness.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Testing\Enums.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Testing\Events.cs" />
+    <Folder Include="$(MSBuildThisFileDirectory)Testing\" />
   </ItemGroup>
 </Project>
