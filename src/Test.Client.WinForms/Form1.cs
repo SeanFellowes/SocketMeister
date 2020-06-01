@@ -7,12 +7,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SocketMeister.Testing;
 
 namespace Test.Client.WinForms
 {
     public partial class Form1 : Form
     {
-        private SocketMeister.TestClient client = null;
+        private TestClient client = null;
 
         public Form1()
         {
@@ -25,7 +26,7 @@ namespace Test.Client.WinForms
             {
                 this.Text = "SocketMeister Test Client (" + Program.ClientId.ToString() + ")";
                 Guid guid = Guid.NewGuid();
-                client = new SocketMeister.TestClient(Program.ClientId);
+                client = new TestClient(Program.ClientId);
                 client.ControlConnectionFailed += Harness_ControlConnectionFailed;
             }
             catch

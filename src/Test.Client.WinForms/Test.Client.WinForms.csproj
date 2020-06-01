@@ -88,6 +88,6 @@
     <Content Include="Test01.ico" />
   </ItemGroup>
   <Import Project="..\Shared.SocketMeister\Shared.SocketMeister.projitems" Label="Shared" />
-  <Import Project="..\Shared.SocketMeister.Test\Shared.SocketMeister.Test.projitems" Label="Shared" />
+  <Import Project="..\Shared.SocketMeister.Testing\Shared.SocketMeister.Testing.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
