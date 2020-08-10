@@ -14,7 +14,6 @@ namespace SocketMeister.Testing
     /// </summary>
     internal partial class TestHarnessClient : ClientBase
     {
-
         private readonly SocketClient controlSocket = null;
         private readonly DispatcherTimer controlConnectedTimer = null;
 
@@ -31,7 +30,7 @@ namespace SocketMeister.Testing
 
         public TestHarnessClient(int ClientId)
         {
-            base.ClientId = ClientId;
+            this.ClientId = ClientId;
 
             controlConnectedTimer = new DispatcherTimer();
             controlConnectedTimer.Interval = new TimeSpan(0, 0, 10);
