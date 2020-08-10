@@ -63,7 +63,7 @@ namespace SocketMeister
             /// <param name="TimeoutMilliseconds">Number of milliseconds to attempt to send the message before throwing a TimeoutException.</param>
             public void SendMessage(object[] Parameters, int TimeoutMilliseconds = 60000)
             {
-                Messages.Message message = new Messages.Message(Parameters, TimeoutMilliseconds);
+                Message message = new Message(Parameters, TimeoutMilliseconds);
                 _socketServer.SendMessage(this, message, true);
             }
         }

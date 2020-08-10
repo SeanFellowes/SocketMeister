@@ -14,29 +14,19 @@ namespace SocketMeister.Test
 {
     public partial class FormMain : Form
     {
-        private enum Executing
-        {
-            Stopped = 0,
-            SingleTest = 1,
-            AllTests = 2,
-            StoppingAllTests = 20
-        }
         private const int rowHeight = 18;
         private const int executeButtonWidth = 90;
         private const int spacer = 0;
 
         private readonly TestHarness testHarness = new TestHarness();
-        private ITest currentTest = null;
         private int currentTestPtr = 0;
         private int errors = 0;
-        private Executing executeMode = Executing.Stopped;
         private readonly BindingList<LogEntry> gridItems;
         private readonly List<Label> lCol1 = new List<Label>();
         private readonly List<Label> lCol2 = new List<Label>();
         private readonly List<Label> lCol3 = new List<Label>();
         private readonly List<Label> lCol4 = new List<Label>();
         private readonly List<Button> lCol5 = new List<Button>();
-
 
         public FormMain()
         {
@@ -110,16 +100,16 @@ namespace SocketMeister.Test
                     statusColor = Color.DarkRed;
                     statusText = "Failed";
                     executeThisTestEnabled = true;
-                    if (executeMode == Executing.AllTests) executeNextTest = true;
-                    else if (executeMode == Executing.StoppingAllTests) allTestsComplete = true;
+                    if (testHarness.ExecuteMode == Executing.AllTests) executeNextTest = true;
+                    else if (testHarness.ExecuteMode == Executing.StoppingAllTests) allTestsComplete = true;
                 }
                 else if (e.Status == TestStatus.Stopped)
                 {
                     statusColor = Color.DarkRed;
                     statusText = "Stopped";
                     executeThisTestEnabled = true;
-                    if (executeMode == Executing.AllTests) executeNextTest = true;
-                    else if (executeMode == Executing.StoppingAllTests) allTestsComplete = true;
+                    if (testHarness.ExecuteMode == Executing.AllTests) executeNextTest = true;
+                    else if (testHarness.ExecuteMode == Executing.StoppingAllTests) allTestsComplete = true;
                 }
                 else if (e.Status == TestStatus.InProgress)
                 {
@@ -138,16 +128,16 @@ namespace SocketMeister.Test
                     statusColor = Color.White;
                     statusText = "Not Started";
                     executeThisTestEnabled = true;
-                    if (executeMode == Executing.AllTests) executeNextTest = true;
-                    else if (executeMode == Executing.StoppingAllTests) allTestsComplete = true;
+                    if (testHarness.ExecuteMode == Executing.AllTests) executeNextTest = true;
+                    else if (testHarness.ExecuteMode == Executing.StoppingAllTests) allTestsComplete = true;
                 }
                 else if (e.Status == TestStatus.Successful)
                 {
                     statusColor = Color.DarkSlateBlue;
                     statusText = "Successful";
                     executeThisTestEnabled = true;
-                    if (executeMode == Executing.AllTests) executeNextTest = true;
-                    else if (executeMode == Executing.StoppingAllTests) allTestsComplete = true;
+                    if (testHarness.ExecuteMode == Executing.AllTests) executeNextTest = true;
+                    else if (testHarness.ExecuteMode == Executing.StoppingAllTests) allTestsComplete = true;
                 }
                 else
                 {
@@ -202,8 +192,8 @@ namespace SocketMeister.Test
                     currentTestPtr++;
                     if (currentTestPtr < testHarness.Count)
                     {
-                        currentTest = (ITest)lCol5[currentTestPtr].Tag;
-                        currentTest.Start();
+                        ITest nextTest = (ITest)lCol5[currentTestPtr].Tag;
+                        nextTest.Start();
                     }
                     else
                     {
@@ -213,8 +203,7 @@ namespace SocketMeister.Test
                 
                 if (allTestsComplete == true)
                 {
-                    executeMode = Executing.Stopped;
-                    currentTest = null;
+                    testHarness.ExecuteMode = Executing.Stopped;
                     for (int index = 0; index < testHarness.Count; index++)
                     {
                         lCol5[index].Visible = true;
@@ -228,7 +217,7 @@ namespace SocketMeister.Test
         private void ControlServer_RequestReceived(object sender, SocketServer.RequestReceivedEventArgs e)
         {
             int r = Convert.ToInt32(e.Parameters[0]);
-            if (r == Testing.ControlMessage.ClientConnected)
+            if (r == ControlMessage.ClientConnected)
             {
                 int ClientId = Convert.ToInt32(e.Parameters[1]);
                 TestHarnessClient client = testHarness.Clients[ClientId];
@@ -261,11 +250,15 @@ namespace SocketMeister.Test
 
         private void FormMain_Load(object sender, EventArgs e)
         {
+            this.WindowState = FormWindowState.Normal;
             this.Top = 0;
             this.Left = 0;
             this.Height = Screen.PrimaryScreen.WorkingArea.Height;
-            this.Width = Convert.ToInt32(Screen.PrimaryScreen.WorkingArea.Width * .5);
 
+            if (Screen.PrimaryScreen.WorkingArea.Width > 5000)
+                this.Width = Convert.ToInt32(Screen.PrimaryScreen.WorkingArea.Width * .33);
+            else
+                this.Width = Convert.ToInt32(Screen.PrimaryScreen.WorkingArea.Width * .5);
         }
 
         private void InsertListboxItem(string source, TraceEventArgs args)
@@ -418,15 +411,15 @@ namespace SocketMeister.Test
                 {
                     ITest test = (ITest)((Button)sender).Tag;
 
-                    if (executeMode == Executing.AllTests)
+                    if (testHarness.ExecuteMode == Executing.AllTests)
                     {
                         test.Start();
                     }
-                    else if (executeMode == Executing.Stopped)
+                    else if (testHarness.ExecuteMode == Executing.Stopped)
                     {
                         test.Start();
                     }
-                    else if (executeMode == Executing.SingleTest)
+                    else if (testHarness.ExecuteMode == Executing.SingleTest)
                     {
                         test.Stop();
                     }
@@ -564,7 +557,7 @@ namespace SocketMeister.Test
 
         private void BtnExecuteAllTests_Click(object sender, EventArgs e)
         {
-            if (executeMode == Executing.Stopped)
+            if (testHarness.ExecuteMode == Executing.Stopped)
             {
                 foreach (ITest test in testHarness)
                 {
@@ -575,15 +568,15 @@ namespace SocketMeister.Test
                     lCol5[index].Visible = false;
                 }
 
-                executeMode = Executing.AllTests;
+                testHarness.ExecuteMode = Executing.AllTests;
                 currentTestPtr = 0;
                 btnExecuteAllTests.Text = "Stop";
                 ExecuteButton_Click(lCol5[currentTestPtr], new EventArgs());
             }
-            else if (executeMode == Executing.AllTests)
+            else if (testHarness.ExecuteMode == Executing.AllTests)
             {
-                executeMode = Executing.StoppingAllTests;
-                if (currentTest != null) currentTest.Stop();
+                testHarness.ExecuteMode = Executing.StoppingAllTests;
+                if (testHarness.CurrentTest != null) testHarness.CurrentTest.Stop();
             }
         }
 

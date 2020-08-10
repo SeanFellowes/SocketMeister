@@ -42,10 +42,15 @@ namespace SocketMeister.Testing
             //  CONNECT TO THE TEST SERVER ON THE CONTROL CHANNEL AT PORT 4505. THIS WILL RECEIVE INSTRUCTIONS FROM THE TEST SERVER
             List<SocketEndPoint> endPoints = new List<SocketEndPoint>() { new SocketEndPoint("127.0.0.1", 4505) };
             controlSocket = new SocketClient(endPoints, true);
-            controlSocket.ConnectionStatusChanged += controlSocket_ConnectionStatusChanged;
+            controlSocket.ConnectionStatusChanged += ControlSocket_ConnectionStatusChanged;
+            controlSocket.MessageReceived += ControlSocket_MessageReceived;
 
         }
 
+        private void ControlSocket_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
 
 
         /// <summary>
@@ -76,7 +81,7 @@ namespace SocketMeister.Testing
         }
 
 
-        private void controlSocket_ConnectionStatusChanged(object sender, SocketClient.ConnectionStatusChangedEventArgs e)
+        private void ControlSocket_ConnectionStatusChanged(object sender, SocketClient.ConnectionStatusChangedEventArgs e)
         {
             //  SEND A CONTROL MESSAGE TO THE SERVER
             if (e.Status == SocketClient.ConnectionStatuses.Connected)

@@ -9,13 +9,13 @@ namespace SocketMeister.Testing
         public const int ClientConnected = 1;
 
         /// <summary>
-        /// Test harness sends this to a test client when it wants the client to disconnect and the client app to close.
+        /// Test harness sends this to a test client when it wants the client to disconnect and the client app to exit.
         /// </summary>
-        public const int DisconnectClient = 2;
+        public const int ExitClient = 2;
 
-        /// <summary>
-        /// When a test client receives a DisconnectClient message is sends the server a ClientDisconnecting message before the client app closes.
-        /// </summary>
-        public const int ClientDisconnecting = 3;
+        ///// <summary>
+        ///// When a test client receives a DisconnectClient message is sends the server a ClientDisconnecting message before the client app closes.
+        ///// </summary>
+        //public const int ClientDisconnecting = 3;
     }
 }

@@ -80,7 +80,7 @@ namespace SocketMeister.Testing
                     if (_status == value) return;
                     _status = value; 
                 }
-                if (Parent == null) throw new NullReferenceException("Base class property 'Parent'has not been set");
+                if (Parent == null) throw new NullReferenceException("Base class property '" + nameof(Parent) + "' has not been set");
                 StatusChanged?.Invoke(Parent, new TestStatusChangedEventArgs(value));
             }
         }

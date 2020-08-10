@@ -48,9 +48,6 @@ namespace SocketMeister.Testing
 
 
 
-
-
-
         public void Connect(int MaxWaitMilliseconds = 5000)
         {
             Process process = new Process();
@@ -64,7 +61,6 @@ namespace SocketMeister.Testing
             {
                 if (process.HasExited == true)
                 {
-                    maxWait = DateTime.Now.AddHours(-1);
                     if (process.ExitCode == 1) throw new ApplicationException("Client failed to start. Missing ClientId from process arguments.");
                     else if (process.ExitCode == 3) throw new ApplicationException("Client failed to start. ClientId must be numeric. This is the first parameter");
                     else if (process.ExitCode == 2) throw new ApplicationException("Client failed to start. Couldn't connect to control port 4505 (Used to sent test instructions and results between test clients and the test server).");
@@ -83,13 +79,14 @@ namespace SocketMeister.Testing
             throw new ApplicationException("Client did not connect within " + MaxWaitMilliseconds + " milliseconds");
         }
 
+
         /// <summary>
         /// Sends a message 
         /// </summary>
         public void Disconnect()
         {
             object[] parms = new object[2];
-            parms[0] = ControlMessage.DisconnectClient;
+            parms[0] = ControlMessage.ExitClient;
             Client.SendMessage(parms);
 
             //  Wait zzzz miniseconds for the client to send a ClientDisconnecting message.

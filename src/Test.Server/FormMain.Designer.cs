@@ -52,6 +52,13 @@
             this.PanelMain = new System.Windows.Forms.Panel();
             this.PanelMainTrace = new System.Windows.Forms.Panel();
             this.dGrid = new System.Windows.Forms.DataGridView();
+            this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColumnStack = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.StackTrace = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PnlTestsHeader = new System.Windows.Forms.Panel();
             this.lblErrors = new System.Windows.Forms.Label();
             this.btnClearLog = new System.Windows.Forms.Button();
@@ -62,13 +69,6 @@
             this.TestServer1 = new SocketMeister.Test.Server();
             this.ControlPolicyServer = new SocketMeister.Test.Server();
             this.ControlServer = new SocketMeister.Test.Server();
-            this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ColumnStack = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.StackTrace = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.pnlControl.SuspendLayout();
             this.panelControlHeader.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -357,6 +357,62 @@
             this.dGrid.TabIndex = 31;
             this.dGrid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DGrid_CellContentClick);
             // 
+            // dataGridViewTextBoxColumn1
+            // 
+            this.dataGridViewTextBoxColumn1.DataPropertyName = "TimeStamp";
+            this.dataGridViewTextBoxColumn1.HeaderText = "TimeStamp";
+            this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
+            this.dataGridViewTextBoxColumn1.ReadOnly = true;
+            this.dataGridViewTextBoxColumn1.Width = 85;
+            // 
+            // dataGridViewTextBoxColumn2
+            // 
+            this.dataGridViewTextBoxColumn2.DataPropertyName = "Source";
+            this.dataGridViewTextBoxColumn2.HeaderText = "Source";
+            this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
+            this.dataGridViewTextBoxColumn2.ReadOnly = true;
+            this.dataGridViewTextBoxColumn2.Width = 66;
+            // 
+            // dataGridViewTextBoxColumn3
+            // 
+            this.dataGridViewTextBoxColumn3.DataPropertyName = "Severity";
+            this.dataGridViewTextBoxColumn3.HeaderText = "Severity";
+            this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
+            this.dataGridViewTextBoxColumn3.ReadOnly = true;
+            this.dataGridViewTextBoxColumn3.Width = 70;
+            // 
+            // dataGridViewTextBoxColumn4
+            // 
+            this.dataGridViewTextBoxColumn4.DataPropertyName = "EventId";
+            this.dataGridViewTextBoxColumn4.HeaderText = "EventId";
+            this.dataGridViewTextBoxColumn4.Name = "dataGridViewTextBoxColumn4";
+            this.dataGridViewTextBoxColumn4.ReadOnly = true;
+            this.dataGridViewTextBoxColumn4.Width = 69;
+            // 
+            // dataGridViewTextBoxColumn5
+            // 
+            this.dataGridViewTextBoxColumn5.DataPropertyName = "Message";
+            this.dataGridViewTextBoxColumn5.HeaderText = "Message";
+            this.dataGridViewTextBoxColumn5.Name = "dataGridViewTextBoxColumn5";
+            this.dataGridViewTextBoxColumn5.ReadOnly = true;
+            this.dataGridViewTextBoxColumn5.Width = 75;
+            // 
+            // ColumnStack
+            // 
+            this.ColumnStack.HeaderText = "Stack";
+            this.ColumnStack.Name = "ColumnStack";
+            this.ColumnStack.ReadOnly = true;
+            this.ColumnStack.Text = "Stack";
+            this.ColumnStack.Width = 41;
+            // 
+            // StackTrace
+            // 
+            this.StackTrace.DataPropertyName = "StackTrace";
+            this.StackTrace.HeaderText = "StackTrace";
+            this.StackTrace.Name = "StackTrace";
+            this.StackTrace.ReadOnly = true;
+            this.StackTrace.Width = 88;
+            // 
             // PnlTestsHeader
             // 
             this.PnlTestsHeader.Controls.Add(this.lblErrors);
@@ -466,62 +522,6 @@
             this.ControlServer.Size = new System.Drawing.Size(300, 27);
             this.ControlServer.TabIndex = 4;
             // 
-            // dataGridViewTextBoxColumn1
-            // 
-            this.dataGridViewTextBoxColumn1.DataPropertyName = "TimeStamp";
-            this.dataGridViewTextBoxColumn1.HeaderText = "TimeStamp";
-            this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
-            this.dataGridViewTextBoxColumn1.ReadOnly = true;
-            this.dataGridViewTextBoxColumn1.Width = 85;
-            // 
-            // dataGridViewTextBoxColumn2
-            // 
-            this.dataGridViewTextBoxColumn2.DataPropertyName = "Source";
-            this.dataGridViewTextBoxColumn2.HeaderText = "Source";
-            this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
-            this.dataGridViewTextBoxColumn2.ReadOnly = true;
-            this.dataGridViewTextBoxColumn2.Width = 66;
-            // 
-            // dataGridViewTextBoxColumn3
-            // 
-            this.dataGridViewTextBoxColumn3.DataPropertyName = "Severity";
-            this.dataGridViewTextBoxColumn3.HeaderText = "Severity";
-            this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
-            this.dataGridViewTextBoxColumn3.ReadOnly = true;
-            this.dataGridViewTextBoxColumn3.Width = 70;
-            // 
-            // dataGridViewTextBoxColumn4
-            // 
-            this.dataGridViewTextBoxColumn4.DataPropertyName = "EventId";
-            this.dataGridViewTextBoxColumn4.HeaderText = "EventId";
-            this.dataGridViewTextBoxColumn4.Name = "dataGridViewTextBoxColumn4";
-            this.dataGridViewTextBoxColumn4.ReadOnly = true;
-            this.dataGridViewTextBoxColumn4.Width = 69;
-            // 
-            // dataGridViewTextBoxColumn5
-            // 
-            this.dataGridViewTextBoxColumn5.DataPropertyName = "Message";
-            this.dataGridViewTextBoxColumn5.HeaderText = "Message";
-            this.dataGridViewTextBoxColumn5.Name = "dataGridViewTextBoxColumn5";
-            this.dataGridViewTextBoxColumn5.ReadOnly = true;
-            this.dataGridViewTextBoxColumn5.Width = 75;
-            // 
-            // ColumnStack
-            // 
-            this.ColumnStack.HeaderText = "Stack";
-            this.ColumnStack.Name = "ColumnStack";
-            this.ColumnStack.ReadOnly = true;
-            this.ColumnStack.Text = "Stack";
-            this.ColumnStack.Width = 41;
-            // 
-            // StackTrace
-            // 
-            this.StackTrace.DataPropertyName = "StackTrace";
-            this.StackTrace.HeaderText = "StackTrace";
-            this.StackTrace.Name = "StackTrace";
-            this.StackTrace.ReadOnly = true;
-            this.StackTrace.Width = 88;
-            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -533,8 +533,9 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "FormMain";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "SocketMeister Server Tester";
-            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            this.WindowState = System.Windows.Forms.FormWindowState.Minimized;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormMain_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormMain_FormClosed);
             this.Load += new System.EventHandler(this.FormMain_Load);
