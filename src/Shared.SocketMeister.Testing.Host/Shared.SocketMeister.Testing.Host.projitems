@@ -6,8 +6,11 @@
     <SharedGUID>10c93b09-3026-445b-8106-3828aa7ffcd2</SharedGUID>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
-    <Import_RootNamespace>Shared.SocketMeister.Testing.Host</Import_RootNamespace>
+    <Import_RootNamespace>SocketMeister.Testing</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)TestHarness.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TestHarnessClient (Host).cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TestHarnessClientCollection.cs" />
   </ItemGroup>
 </Project>

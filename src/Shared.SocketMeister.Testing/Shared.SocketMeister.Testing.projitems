@@ -14,12 +14,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Enums.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ITest.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Test000_Template.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Test001_Connect.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)TestBase.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)TestHarnessClient %28Client%29.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)TestHarness.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)TestHarnessClient %28Host%29.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)TestHarnessClientCollection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tests\Test000_Template.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tests\Test001_Connect.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tests\TestBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TestHarnessClient.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Tests\" />
   </ItemGroup>
 </Project>
