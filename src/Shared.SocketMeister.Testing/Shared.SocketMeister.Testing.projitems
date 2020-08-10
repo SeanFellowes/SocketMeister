@@ -19,7 +19,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)TestBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TestHarnessClient %28Client%29.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TestHarness.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)TestHarnessClient %28Server%29.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TestHarnessClient %28Host%29.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TestHarnessClientCollection.cs" />
   </ItemGroup>
 </Project>

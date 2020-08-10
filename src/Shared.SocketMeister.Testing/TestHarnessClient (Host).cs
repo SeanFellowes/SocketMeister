@@ -11,7 +11,7 @@ using SocketMeister.Testing;
 namespace SocketMeister.Testing
 {
     /// <summary>
-    /// Test Harness Client (SERVER SIDE)
+    /// Test Harness Client (TEST HOST)
     /// </summary>
     internal partial class TestHarnessClient : ClientBase
     {
