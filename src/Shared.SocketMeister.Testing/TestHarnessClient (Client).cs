@@ -11,9 +11,9 @@ using SocketMeister.Testing;
 namespace SocketMeister.Testing
 {
     /// <summary>
-    /// Test Harness Client
+    /// Test Harness Client (CLIENT SIDE)
     /// </summary>
-    internal partial class TestClient : ClientBase
+    internal partial class TestHarnessClient : ClientBase
     {
 
         private readonly SocketClient controlSocket = null;
@@ -30,7 +30,7 @@ namespace SocketMeister.Testing
         public event EventHandler<EventArgs> ControlConnectionFailed;
 
 
-        public TestClient(int ClientId)
+        public TestHarnessClient(int ClientId)
         {
             base.ClientId = ClientId;
 

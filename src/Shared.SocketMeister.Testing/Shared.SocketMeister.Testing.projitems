@@ -17,9 +17,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Test000_Template.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Test001_Connect.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TestBase.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)TestClient.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TestHarnessClient %28Client%29.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TestHarness.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)TestHarnessClient.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TestHarnessClient %28Server%29.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TestHarnessClientCollection.cs" />
   </ItemGroup>
 </Project>
