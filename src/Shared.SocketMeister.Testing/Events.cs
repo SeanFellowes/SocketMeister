@@ -40,6 +40,24 @@ namespace SocketMeister.Testing
     }
 
 
+    internal class ClientEventArgs : EventArgs
+    {
+        private readonly Client _client;
+
+        internal ClientEventArgs(Client Client)
+        {
+            _client = Client;
+        }
+
+        public Client Client
+        {
+            get { return _client; }
+        }
+
+    }
+
+
+
 
     /// <summary>
     /// Information provided when a SocketClient connection to a socket server changes status

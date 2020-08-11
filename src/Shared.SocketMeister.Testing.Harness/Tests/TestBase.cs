@@ -12,128 +12,57 @@ namespace SocketMeister.Testing.Tests
 {
     internal partial class TestBase
     {
-        private readonly int _id;
-        private readonly string _description;
-        private readonly object _lock = new object();
-        private ITest _parent = null;
-        private int _percentComplete = 0;
-        private TestStatus _status = TestStatus.NotStarted;
 
-#if TESTHARNESS
         private readonly TestHarness _testHarness;
-#endif
 
-        public event EventHandler<EventArgs> ExecuteTest;
-        public event EventHandler<TestPercentCompleteChangedEventArgs> PercentCompleteChanged;
-        public event EventHandler<TestStatusChangedEventArgs> StatusChanged;
-        public event EventHandler<TraceEventArgs> TraceEventRaised;
-
-#if TESTHARNESS
         public TestBase (TestHarness TestHarness, int Id, string Description)
         {
             _testHarness = TestHarness;
             _id = Id;
             _description = Description;
         }
-#elif TESTCLIENT
-        public TestBase(int Id, string Description)
-        {
-            _id = Id;
-            _description = Description;
-        }
-#endif
 
-        public string Description { get { return _description; } }
-
-        public int Id { get { return _id; } }
-
-        public object Lock {  get {  return _lock; } } 
-
-        internal ITest Parent 
-        { 
-            get { lock (_lock) { return _parent; } } 
-            set { lock (_lock) { _parent = value; } } 
-        }
-
-        public int PercentComplete
-        {
-            get { return _percentComplete; }
-            internal set
-            {
-                lock (_lock) 
-                { 
-                    if (_percentComplete == value) return; 
-                    _percentComplete = value; 
-                }
-                if (Parent == null) throw new NullReferenceException("Base class property 'Parent'has not been set");
-                PercentCompleteChanged?.Invoke(Parent, new TestPercentCompleteChangedEventArgs(value));
-            }
-        }
-
-        public TestStatus Status
-        {
-            get { lock (_lock) { return _status; } }
-            internal set
-            {
-                lock (_lock) 
-                {
-                    if (_status == value) return;
-                    _status = value; 
-                }
-                if (Parent == null) throw new NullReferenceException("Base class property '" + nameof(Parent) + "' has not been set");
-                StatusChanged?.Invoke(Parent, new TestStatusChangedEventArgs(value));
-            }
-        }
-
-#if TESTHARNESS
         //  Test Harness
         public TestHarness TestHarness {  get { return _testHarness; } }
-#endif
-
-        public void RaiseTraceEventRaised(string message, SeverityType severity, int eventId)
-        {
-            if (Parent == null) throw new NullReferenceException("Base class property 'Parent'has not been set");
-            TraceEventRaised?.Invoke(Parent, new TraceEventArgs(message, severity, eventId));
-        }
-
-        public void RaiseTraceEventRaised(Exception ex, int eventId)
-        {
-            if (Parent == null) throw new NullReferenceException("Base class property 'Parent'has not been set");
-            TraceEventRaised?.Invoke(Parent, new TraceEventArgs(ex, eventId));
-        }
 
 
-        public void Reset()
-        {
-            Status = TestStatus.NotStarted;
-            PercentComplete = 0;
-        }
+        ///// <summary>
+        ///// Adds a client to the list and connects it to the test harness control TCP port (Port 4505). Opens an instance of the WinForms client app for each client.
+        ///// </summary>
+        ///// <returns>The connected (to the test harness control port) client.</returns>
+        //public Client AddClient()
+        //{
+        //    Client newClient = new Client(this);
+        //    _listClient.Add(newClient);
+        //    _dictClientId.Add(newClient.ClientId, newClient);
+        //    try
+        //    {
+        //        newClient.Connect();
+        //    }
+        //    catch
+        //    {
+        //        _listClient.Remove(newClient);
+        //        _dictClientId.Remove(newClient.ClientId);
+        //        throw;
+        //    }
 
-        public void Start()
-        {
-            Status = TestStatus.InProgress;
-            RaiseTraceEventRaised("Starting Test", SeverityType.Information, 1);
-            if (ExecuteTest != null)
-            {
-                new Thread(new ThreadStart(delegate
-                {
-                    ExecuteTest(Parent, new EventArgs());
-                })).Start();
-            }
-        }
+        //    return newClient;
+        //}
 
-        public void Stop()
-        {
-            if (Status != TestStatus.InProgress) return;
-            Status = TestStatus.Stopping;
-        }
-
-
-
-
-
-
-
+        ///// <summary>
+        ///// Adds multiple test harness clients (opens an instance of the WinForms client app for each client)
+        ///// </summary>
+        ///// <param name="NumberOfClients">Number of test harness clients to run</param>
+        ///// <returns>List of TestHarnessClient objects</returns>
+        //public List<Client> AddClients(int NumberOfClients)
+        //{
+        //    List<Client> rVal = new List<Client>();
+        //    for (int ctr = 1; ctr <= NumberOfClients; ctr++)
+        //    {
+        //        rVal.Add(AddClient());
+        //    }
+        //    return rVal;
+        //}
 
     }
 }

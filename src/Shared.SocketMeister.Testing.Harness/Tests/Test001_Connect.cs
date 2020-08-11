@@ -12,21 +12,13 @@ namespace SocketMeister.Testing.Tests
     {
         private const string TestDescription = "1 Client, Connect, Valid Operations, Disconnect";
 
-#if TESTHARNESS
         public Test001(TestHarness TestHarness, int Id) : base(TestHarness, Id, TestDescription)
         {
             base.Parent = this;
             base.ExecuteTest += Execute;
         }
-#elif TESTCLIENT
-        public Test001(int Id) : base(Id, TestDescription) 
-        {
-            base.Parent = this;   
-        }
-#endif
 
 
-#if TESTHARNESS
         private void Execute(object sender, EventArgs e)
         {
             try
@@ -80,7 +72,6 @@ namespace SocketMeister.Testing.Tests
                 base.TestHarness.Clients.DisconnectClients();
             }
         }
-#endif
 
 
     }
