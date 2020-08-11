@@ -19,7 +19,7 @@ namespace SocketMeister.Testing.Tests
             base.ExecuteTest += Execute;
         }
 #elif TESTCLIENT
-        public Test001(int Id) : base(Id, TestDescription)
+        public Test001(int Id) : base(Id, TestDescription) 
         {
             base.Parent = this;
         }
