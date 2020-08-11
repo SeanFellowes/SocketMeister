@@ -18,7 +18,7 @@ namespace SocketMeister.Testing
     internal class TestHarness : List<ITest>
     {
         private readonly object classLock = new object();
-        private TestHarnessClientCollection _clients = new TestHarnessClientCollection();
+        private ClientCollection _clients = new ClientCollection();
         private ITest _currentTest = null;
         private Executing _executeMode = Executing.Stopped;
         private static readonly object _lock = new object();
@@ -54,7 +54,7 @@ namespace SocketMeister.Testing
         /// <summary>
         /// Test Harness Client Collection used during testing.
         /// </summary>
-        public TestHarnessClientCollection Clients {  get { return _clients; } }
+        public ClientCollection Clients {  get { return _clients; } }
 
 
         public ITest CurrentTest

@@ -14,7 +14,7 @@ namespace SocketMeister.Testing
     /// </summary>
     internal partial class Client
     {
-        private readonly TestHarnessClientCollection _parentCollection;
+        private readonly ClientCollection _parentCollection;
         private SocketServer.Client _socketClient = null;
 
 
@@ -22,7 +22,7 @@ namespace SocketMeister.Testing
         /// Default constructor. Should only be called from TestHarnessClientCollection. Automatically connects to the test harness control port (Port 4505)
         /// </summary>
         /// <param name="ParentCollection"></param>
-        public Client(TestHarnessClientCollection ParentCollection)
+        public Client(ClientCollection ParentCollection)
         {
             _parentCollection = ParentCollection;
             ClientId = TestHarness.GetNextClientId();
@@ -42,7 +42,7 @@ namespace SocketMeister.Testing
         /// <summary>
         /// TestHarnessClientCollection that this client belongs to
         /// </summary>
-        public TestHarnessClientCollection ParentCollection { get { return _parentCollection; } }
+        public ClientCollection ParentCollection { get { return _parentCollection; } }
 
 
 
