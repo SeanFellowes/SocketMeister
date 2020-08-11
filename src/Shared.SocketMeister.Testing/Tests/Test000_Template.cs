@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 
-namespace SocketMeister.Testing
+namespace SocketMeister.Testing.Tests
 {
     internal class Test000 : TestBase, ITest
     {

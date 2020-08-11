@@ -6,7 +6,7 @@ using System.Threading;
 using System.Net.Http.Headers;
 #endif
 
-namespace SocketMeister.Testing
+namespace SocketMeister.Testing.Tests
 {
     internal class Test001 : TestBase, ITest
     {

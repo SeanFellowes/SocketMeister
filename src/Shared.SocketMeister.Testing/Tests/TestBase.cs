@@ -8,7 +8,7 @@ using System.Threading;
 using System.Management.Instrumentation;
 #endif
 
-namespace SocketMeister.Testing
+namespace SocketMeister.Testing.Tests
 {
     internal class TestBase
     {

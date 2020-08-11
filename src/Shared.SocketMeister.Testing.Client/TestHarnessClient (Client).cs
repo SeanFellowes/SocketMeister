@@ -12,7 +12,7 @@ namespace SocketMeister.Testing
     /// <summary>
     /// Test Harness Client (CLIENT SIDE)
     /// </summary>
-    internal partial class TestHarnessClient : ClientBase
+    internal partial class TestHarnessClient
     {
         private readonly SocketClient controlSocket = null;
         private readonly DispatcherTimer controlConnectedTimer = null;

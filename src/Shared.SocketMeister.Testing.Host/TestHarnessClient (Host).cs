@@ -12,7 +12,7 @@ namespace SocketMeister.Testing
     /// <summary>
     /// Test Harness Client (TEST HOST)
     /// </summary>
-    internal partial class TestHarnessClient : ClientBase
+    internal partial class TestHarnessClient
     {
         private readonly TestHarnessClientCollection _parentCollection;
         private SocketServer.Client _client = null;
@@ -35,8 +35,8 @@ namespace SocketMeister.Testing
         /// </summary>
         public SocketServer.Client Client
         {
-            get { lock (Lock) { return _client; } }
-            set { lock (Lock) { _client = value; } }
+            get { lock (LockClass) { return _client; } }
+            set { lock (LockClass) { _client = value; } }
         }
 
         /// <summary>
