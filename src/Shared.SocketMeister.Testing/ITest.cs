@@ -5,16 +5,11 @@ using System.Text;
 namespace SocketMeister.Testing
 {
 
-
-    internal interface ITest 
+    /// <summary>
+    /// ITest Interface 
+    /// </summary>
+    internal partial interface ITest 
     {
-#if TESTHARNESS
-        event EventHandler<EventArgs> ExecuteTest;
-        event EventHandler<TestPercentCompleteChangedEventArgs> PercentCompleteChanged;
-        event EventHandler<TestStatusChangedEventArgs> StatusChanged;
-        event EventHandler<TraceEventArgs> TraceEventRaised;
-#endif
-
         void Reset();
 
         void Start();
@@ -27,8 +22,5 @@ namespace SocketMeister.Testing
         int PercentComplete { get; }
         TestStatus Status { get; }
 
-#if TESTHARNESS
-        TestHarness TestHarness { get; }
-#endif
     }
 }
