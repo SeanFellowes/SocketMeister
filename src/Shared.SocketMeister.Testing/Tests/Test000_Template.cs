@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace SocketMeister.Testing.Tests
 {
-    internal class Test000 : TestBase, ITest
+    internal partial class Test000 : TestBase, ITest
     {
         private const string TestDescription = "Template for other tests";
 

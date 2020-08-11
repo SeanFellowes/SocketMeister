@@ -12,17 +12,17 @@ namespace SocketMeister.Testing
     /// <summary>
     /// Test Harness Client (TEST HOST)
     /// </summary>
-    internal partial class TestHarnessClient
+    internal partial class Client
     {
         private readonly TestHarnessClientCollection _parentCollection;
-        private SocketServer.Client _client = null;
+        private SocketServer.Client _socketClient = null;
 
 
         /// <summary>
         /// Default constructor. Should only be called from TestHarnessClientCollection. Automatically connects to the test harness control port (Port 4505)
         /// </summary>
         /// <param name="ParentCollection"></param>
-        public TestHarnessClient(TestHarnessClientCollection ParentCollection)
+        public Client(TestHarnessClientCollection ParentCollection)
         {
             _parentCollection = ParentCollection;
             ClientId = TestHarness.GetNextClientId();
@@ -33,10 +33,10 @@ namespace SocketMeister.Testing
         /// <summary>
         /// Socketmeister client (from the server perspective)
         /// </summary>
-        public SocketServer.Client Client
+        public SocketServer.Client SocketClient
         {
-            get { lock (LockClass) { return _client; } }
-            set { lock (LockClass) { _client = value; } }
+            get { lock (LockClass) { return _socketClient; } }
+            set { lock (LockClass) { _socketClient = value; } }
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace SocketMeister.Testing
                 }
 
                 //  CHECK TO SEE IF THE CLIENT HAS CONNECTED
-                if (_client != null)
+                if (_socketClient != null)
                 {
                     //  CONNECTED
                     return;
@@ -86,7 +86,7 @@ namespace SocketMeister.Testing
         {
             object[] parms = new object[2];
             parms[0] = ControlMessage.ExitClient;
-            Client.SendMessage(parms);
+            SocketClient.SendMessage(parms);
 
             //  Wait zzzz miniseconds for the client to send a ClientDisconnecting message.
         }

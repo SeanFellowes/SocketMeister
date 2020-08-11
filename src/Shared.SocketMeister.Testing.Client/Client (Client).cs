@@ -12,7 +12,7 @@ namespace SocketMeister.Testing
     /// <summary>
     /// Test Harness Client (CLIENT SIDE)
     /// </summary>
-    internal partial class TestHarnessClient
+    internal partial class Client
     {
         private readonly SocketClient controlSocket = null;
         private readonly DispatcherTimer controlConnectedTimer = null;
@@ -28,7 +28,7 @@ namespace SocketMeister.Testing
         public event EventHandler<EventArgs> ControlConnectionFailed;
 
 
-        public TestHarnessClient(int ClientId)
+        public Client(int ClientId)
         {
             this.ClientId = ClientId;
 

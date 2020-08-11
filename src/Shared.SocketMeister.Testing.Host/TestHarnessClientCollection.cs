@@ -9,27 +9,27 @@ using System.Xml;
 namespace SocketMeister.Testing
 {
 
-    internal class TestHarnessClientCollection : IEnumerable<TestHarnessClient>
+    internal class TestHarnessClientCollection : IEnumerable<Client>
     {
-        private readonly Dictionary<int, TestHarnessClient> _dictClientId = new Dictionary<int, TestHarnessClient>();
-        private readonly List<TestHarnessClient> _listClient = new List<TestHarnessClient>();
+        private readonly Dictionary<int, Client> _dictClientId = new Dictionary<int, Client>();
+        private readonly List<Client> _listClient = new List<Client>();
         private static readonly object _lock = new object();
 
         public TestHarnessClientCollection()
         {
         }
 
-        public TestHarnessClient this[int ClientId]
+        public Client this[int ClientId]
         {
             get
             {
-                TestHarnessClient client;
+                Client client;
                 if (_dictClientId.TryGetValue(ClientId, out client) == true) return client;
                 else return null;
             }
         }
 
-        IEnumerator<TestHarnessClient> IEnumerable<TestHarnessClient>.GetEnumerator()
+        IEnumerator<Client> IEnumerable<Client>.GetEnumerator()
         {
             return _listClient.GetEnumerator();
         }
@@ -45,9 +45,9 @@ namespace SocketMeister.Testing
         /// Adds a client to the list and connects it to the test harness control TCP port (Port 4505). Opens an instance of the WinForms client app for each client.
         /// </summary>
         /// <returns>The connected (to the test harness control port) client.</returns>
-        public TestHarnessClient AddClient()
+        public Client AddClient()
         {
-            TestHarnessClient newClient = new TestHarnessClient(this);
+            Client newClient = new Client(this);
             _listClient.Add(newClient);
             _dictClientId.Add(newClient.ClientId, newClient);
             try
@@ -69,9 +69,9 @@ namespace SocketMeister.Testing
         /// </summary>
         /// <param name="NumberOfClients">Number of test harness clients to run</param>
         /// <returns>List of TestHarnessClient objects</returns>
-        public List<TestHarnessClient> AddClients(int NumberOfClients)
+        public List<Client> AddClients(int NumberOfClients)
         {
-            List<TestHarnessClient> rVal = new List<TestHarnessClient>();
+            List<Client> rVal = new List<Client>();
             for (int ctr = 1; ctr <= NumberOfClients; ctr++)
             {
                 rVal.Add(AddClient());
@@ -86,13 +86,13 @@ namespace SocketMeister.Testing
         /// </summary>
         public void DisconnectClients()
         {
-            List<TestHarnessClient> items;
+            List<Client> items;
             lock (_lock) 
             { 
                 items = _listClient.ToList(); 
             }
 
-            foreach(TestHarnessClient item in items)
+            foreach(Client item in items)
             {
                 item.Disconnect();
             }

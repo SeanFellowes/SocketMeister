@@ -10,7 +10,7 @@ using System.Management.Instrumentation;
 
 namespace SocketMeister.Testing.Tests
 {
-    internal class TestBase
+    internal partial class TestBase
     {
         private readonly int _id;
         private readonly string _description;

@@ -220,11 +220,11 @@ namespace SocketMeister.Test
             if (r == ControlMessage.ClientConnected)
             {
                 int ClientId = Convert.ToInt32(e.Parameters[1]);
-                TestHarnessClient client = testHarness.Clients[ClientId];
+                Testing.Client client = testHarness.Clients[ClientId];
                 if (client != null)
                 {
                     //  ASSIGN THE SOcketMeister Server Client to the class. When connecting a test harness client, this value is checked for NOT null (Connected).
-                    client.Client = e.Client;
+                    client.SocketClient = e.Client;
                 }
             }
         }

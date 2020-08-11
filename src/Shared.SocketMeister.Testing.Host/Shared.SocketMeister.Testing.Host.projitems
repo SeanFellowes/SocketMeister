@@ -11,7 +11,7 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)ITest %28Host%29.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TestHarness.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)TestHarnessClient (Host).cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Client %28Host%29.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TestHarnessClientCollection.cs" />
   </ItemGroup>
 </Project>

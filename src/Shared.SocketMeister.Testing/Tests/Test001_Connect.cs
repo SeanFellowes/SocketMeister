@@ -8,7 +8,7 @@ using System.Net.Http.Headers;
 
 namespace SocketMeister.Testing.Tests
 {
-    internal class Test001 : TestBase, ITest
+    internal partial class Test001 : TestBase, ITest
     {
         private const string TestDescription = "1 Client, Connect, Valid Operations, Disconnect";
 
@@ -31,7 +31,7 @@ namespace SocketMeister.Testing.Tests
         {
             try
             {
-                TestHarnessClient ClientId01 = base.TestHarness.Clients.AddClient();
+                Client ClientId01 = base.TestHarness.Clients.AddClient();
 
                 //for (int r = 0; r < 20; r++)
                 //{
