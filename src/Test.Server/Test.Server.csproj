@@ -112,6 +112,6 @@
   </ItemGroup>
   <Import Project="..\Shared.SocketMeister\Shared.SocketMeister.projitems" Label="Shared" />
   <Import Project="..\Shared.SocketMeister.Testing\Shared.SocketMeister.Testing.projitems" Label="Shared" />
-  <Import Project="..\Shared.SocketMeister.Testing.Host\Shared.SocketMeister.Testing.Host.projitems" Label="Shared" />
+  <Import Project="..\Shared.SocketMeister.Testing.Harness\Shared.SocketMeister.Testing.Harness.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
