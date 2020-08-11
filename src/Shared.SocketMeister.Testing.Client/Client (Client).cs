@@ -30,7 +30,7 @@ namespace SocketMeister.Testing
 
         public Client(int ClientId)
         {
-            this.ClientId = ClientId;
+            this.ClientId = ClientId; 
 
             controlConnectedTimer = new DispatcherTimer();
             controlConnectedTimer.Interval = new TimeSpan(0, 0, 10);

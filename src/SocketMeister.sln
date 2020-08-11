@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocketMeister (.NET 3.5)", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocketMeister (.NET 4.7.2)", "SocketMeister (.NET 4.7.2)\SocketMeister (.NET 4.7.2).csproj", "{719E367C-132F-4C9D-AD8E-DB25F59E707B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Server", "Test.Server\Test.Server.csproj", "{1D9DFE4D-DC5D-406D-AE81-AEF1B1D546D5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Harness", "Test.Server\Test.Harness.csproj", "{1D9DFE4D-DC5D-406D-AE81-AEF1B1D546D5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Client.WinForms", "Test.Client.WinForms\Test.Client.WinForms.csproj", "{81CCDF22-AA24-41D6-BF0C-3F8E4072BF70}"
 EndProject
