@@ -21,7 +21,7 @@ namespace SocketMeister.Testing.Tests
 #elif TESTCLIENT
         public Test001(int Id) : base(Id, TestDescription) 
         {
-            base.Parent = this;
+            base.Parent = this;   
         }
 #endif
 
