@@ -10,7 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 
-namespace SocketMeister.Test.Client.Silverlight
+namespace Test.Client.Silverlight
 {
     public partial class App : Application
     {
