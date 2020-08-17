@@ -10,7 +10,7 @@ namespace SocketMeister.Testing.Tests
         private const string TestDescription = "Template for other tests";
 
 #if TESTHARNESS
-        public Test000(TestHarness TestHarness, int Id) : base(TestHarness, Id, TestDescription)
+        public Test000(int Id) : base( Id, TestDescription)
         {
             base.Parent = this;
             base.ExecuteTest += Execute;

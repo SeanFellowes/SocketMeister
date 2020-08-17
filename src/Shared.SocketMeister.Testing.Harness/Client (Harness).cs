@@ -14,20 +14,26 @@ namespace SocketMeister.Testing
     /// </summary>
     internal partial class Client
     {
-        private readonly ClientCollection _parentCollection;
+        private static int _maxClientId = 0;
         private SocketServer.Client _socketClient = null;
 
 
         /// <summary>
         /// Default constructor. Should only be called from TestHarnessClientCollection. Automatically connects to the test harness control port (Port 4505)
         /// </summary>
-        /// <param name="ParentCollection"></param>
-        public Client(ClientCollection ParentCollection)
+        public Client()
         {
-            _parentCollection = ParentCollection;
-            ClientId = TestHarness.GetNextClientId();
+            lock (LockClass)
+            {
+                _maxClientId++;
+                _clientId = _maxClientId;
+            }
         }
 
+        public Client(int ClientId)
+        {
+            _clientId = ClientId;
+        }
 
 
         /// <summary>
@@ -39,15 +45,12 @@ namespace SocketMeister.Testing
             set { lock (LockClass) { _socketClient = value; } }
         }
 
+
         /// <summary>
-        /// TestHarnessClientCollection that this client belongs to
+        /// Launches and instance of the test application and waits for it to connect a socket back so the harness can control it
         /// </summary>
-        public ClientCollection ParentCollection { get { return _parentCollection; } }
-
-
-
-
-        public void Connect(int MaxWaitMilliseconds = 5000)
+        /// <param name="MaxWaitMilliseconds"></param>
+        public void LaunchClientApplication(int MaxWaitMilliseconds = 5000)
         {
             Process process = new Process();
             process.StartInfo.FileName = @"SocketMeister.Test.Client.WinForms.exe";
@@ -90,8 +93,6 @@ namespace SocketMeister.Testing
 
             //  Wait zzzz miniseconds for the client to send a ClientDisconnecting message.
         }
-
-
 
 
 

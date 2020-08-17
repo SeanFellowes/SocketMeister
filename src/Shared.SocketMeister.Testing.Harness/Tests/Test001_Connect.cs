@@ -12,7 +12,7 @@ namespace SocketMeister.Testing.Tests
     {
         private const string TestDescription = "1 Client, Connect, Valid Operations, Disconnect";
 
-        public Test001(TestHarness TestHarness, int Id) : base(TestHarness, Id, TestDescription)
+        public Test001(int Id) : base(Id, TestDescription)
         {
             base.Parent = this;
             base.ExecuteTest += Execute;
@@ -23,7 +23,7 @@ namespace SocketMeister.Testing.Tests
         {
             try
             {
-                Client ClientId01 = base.TestHarness.Clients.AddClient();
+                Client ClientId01 = base.AddClient();
 
                 //for (int r = 0; r < 20; r++)
                 //{
@@ -69,7 +69,8 @@ namespace SocketMeister.Testing.Tests
             finally
             {
                 //  CLEANUP
-                base.TestHarness.Clients.DisconnectClients();
+                //  SEAN SEAN SEAN - ADD THIS (OR SOMETHING SIMILAR) BACK IN
+                //base.TestHarness.Clients.DisconnectClients();
             }
         }
 

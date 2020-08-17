@@ -28,9 +28,9 @@ namespace SocketMeister.Testing
         public event EventHandler<EventArgs> ControlConnectionFailed;
 
 
-        public Client(int ClientId)
+        public Client(int ClientId, string HarnessControllerIPAddress, int HarnessControllerPort)
         {
-            this.ClientId = ClientId; 
+            _clientId = ClientId;
 
             controlConnectedTimer = new DispatcherTimer();
             controlConnectedTimer.Interval = new TimeSpan(0, 0, 10);
@@ -38,7 +38,7 @@ namespace SocketMeister.Testing
             controlConnectedTimer.Start();
 
             //  CONNECT TO THE TEST SERVER ON THE CONTROL CHANNEL AT PORT 4505. THIS WILL RECEIVE INSTRUCTIONS FROM THE TEST SERVER
-            List<SocketEndPoint> endPoints = new List<SocketEndPoint>() { new SocketEndPoint("127.0.0.1", 4505) };
+            List<SocketEndPoint> endPoints = new List<SocketEndPoint>() { new SocketEndPoint(HarnessControllerIPAddress, HarnessControllerPort) };
             controlSocket = new SocketClient(endPoints, true);
             controlSocket.ConnectionStatusChanged += ControlSocket_ConnectionStatusChanged;
             controlSocket.MessageReceived += ControlSocket_MessageReceived;
@@ -85,7 +85,7 @@ namespace SocketMeister.Testing
             if (e.Status == SocketClient.ConnectionStatuses.Connected)
             {
                 object[] parms = new object[2];
-                parms[0] = ControlMessage.ClientConnected;
+                parms[0] = ControlMessage.ClientControllerConnected;
                 parms[1] = ClientId;
                 controlSocket.SendRequest(parms);
             }

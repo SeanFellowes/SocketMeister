@@ -12,9 +12,8 @@ namespace SocketMeister.Testing
     {
         event EventHandler<EventArgs> ExecuteTest;
         event EventHandler<TestPercentCompleteChangedEventArgs> PercentCompleteChanged;
-        event EventHandler<TestStatusChangedEventArgs> StatusChanged;
         event EventHandler<TraceEventArgs> TraceEventRaised;
 
-        TestHarness TestHarness { get; }
+        //TestHarness TestHarness { get; }
     }
 }

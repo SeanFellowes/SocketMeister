@@ -61,6 +61,12 @@
     </Compile>
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="LogEntry.cs" />
+    <Compile Include="CPolicyServer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CPolicyServer.Designer.cs">
+      <DependentUpon>CPolicyServer.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Server.cs">
@@ -69,6 +75,9 @@
     <Compile Include="Server.Designer.cs">
       <DependentUpon>Server.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="CPolicyServer.resx">
+      <DependentUpon>CPolicyServer.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FormMain.resx">
       <DependentUpon>FormMain.cs</DependentUpon>
     </EmbeddedResource>

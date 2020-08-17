@@ -13,11 +13,6 @@ namespace SocketMeister.Testing.Tests
     internal partial class TestBase
     {
 
-        public TestBase(int Id, string Description)
-        {
-            _id = Id;
-            _description = Description;
-        }
 
 
 

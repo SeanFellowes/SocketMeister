@@ -25,18 +25,24 @@ namespace SocketMeister.Testing
 
     internal class TestStatusChangedEventArgs : EventArgs
     {
-        private readonly TestStatus status;
+        private readonly TestStatus _status;
+        private readonly ITest _test;
 
-        internal TestStatusChangedEventArgs(TestStatus Status)
+        internal TestStatusChangedEventArgs(ITest Test, TestStatus Status)
         {
-            status = Status;
+            _test = Test;
+            _status = Status;
         }
 
         public TestStatus Status
         {
-            get { return status; }
+            get { return _status; }
         }
 
+        public ITest Test
+        {
+            get { return _test; }
+        }
     }
 
 

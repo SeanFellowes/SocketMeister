@@ -90,6 +90,7 @@ namespace SocketMeister
         /// </summary>
         public IPAddress IPAddress { get; private set; }
 
+        public int Port {  get { return ServicePort; } }
 
         /// <summary>
         /// The current status of the sockted server. Statuses include Stopped, Starting, Started and Stopping

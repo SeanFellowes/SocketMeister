@@ -1,5 +1,4 @@
-﻿#if !SILVERLIGHT && !SMNOSERVER
-using System;
+﻿using System;
 
 namespace SocketMeister
 {
@@ -50,4 +49,3 @@ namespace SocketMeister
     }
 
 }
-#endif

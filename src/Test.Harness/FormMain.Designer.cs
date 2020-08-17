@@ -67,8 +67,8 @@
             this.TestServer3 = new SocketMeister.Test.Server();
             this.TestServer2 = new SocketMeister.Test.Server();
             this.TestServer1 = new SocketMeister.Test.Server();
-            this.ControlPolicyServer = new SocketMeister.Test.Server();
             this.ControlServer = new SocketMeister.Test.Server();
+            this.ControlPolicyServer = new SocketMeister.Test.CPolicyServer();
             this.pnlControl.SuspendLayout();
             this.panelControlHeader.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -115,8 +115,8 @@
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(714, 26);
             this.label2.TabIndex = 1;
-            this.label2.Text = "Provides connectivity to clients for the purposes of controlling automated tests." +
-    "";
+            this.label2.Text = "A special socket for communicating instructions and results between the test harn" +
+    "ess and multiple test clients.";
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // label1
@@ -128,7 +128,7 @@
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(116, 26);
             this.label1.TabIndex = 0;
-            this.label1.Text = "Control";
+            this.label1.Text = "Controller";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // panel1
@@ -467,6 +467,7 @@
             this.TestServer4.Port = 4513;
             this.TestServer4.ServerType = SocketMeister.Test.ServerType.SocketServer;
             this.TestServer4.Size = new System.Drawing.Size(300, 31);
+            this.TestServer4.SocketServer = null;
             this.TestServer4.TabIndex = 8;
             // 
             // TestServer3
@@ -478,6 +479,7 @@
             this.TestServer3.Port = 4511;
             this.TestServer3.ServerType = SocketMeister.Test.ServerType.SocketServer;
             this.TestServer3.Size = new System.Drawing.Size(300, 31);
+            this.TestServer3.SocketServer = null;
             this.TestServer3.TabIndex = 7;
             // 
             // TestServer2
@@ -489,6 +491,7 @@
             this.TestServer2.Port = 4512;
             this.TestServer2.ServerType = SocketMeister.Test.ServerType.SocketServer;
             this.TestServer2.Size = new System.Drawing.Size(300, 31);
+            this.TestServer2.SocketServer = null;
             this.TestServer2.TabIndex = 6;
             // 
             // TestServer1
@@ -499,18 +502,8 @@
             this.TestServer1.Port = 4510;
             this.TestServer1.ServerType = SocketMeister.Test.ServerType.SocketServer;
             this.TestServer1.Size = new System.Drawing.Size(300, 31);
+            this.TestServer1.SocketServer = null;
             this.TestServer1.TabIndex = 4;
-            // 
-            // ControlPolicyServer
-            // 
-            this.ControlPolicyServer.BackColor = System.Drawing.Color.OldLace;
-            this.ControlPolicyServer.Location = new System.Drawing.Point(307, 41);
-            this.ControlPolicyServer.Margin = new System.Windows.Forms.Padding(2);
-            this.ControlPolicyServer.Name = "ControlPolicyServer";
-            this.ControlPolicyServer.Port = 943;
-            this.ControlPolicyServer.ServerType = SocketMeister.Test.ServerType.PolicyServer;
-            this.ControlPolicyServer.Size = new System.Drawing.Size(300, 27);
-            this.ControlPolicyServer.TabIndex = 5;
             // 
             // ControlServer
             // 
@@ -520,7 +513,17 @@
             this.ControlServer.Port = 4505;
             this.ControlServer.ServerType = SocketMeister.Test.ServerType.SocketServer;
             this.ControlServer.Size = new System.Drawing.Size(300, 27);
+            this.ControlServer.SocketServer = null;
             this.ControlServer.TabIndex = 4;
+            // 
+            // ControlPolicyServer
+            // 
+            this.ControlPolicyServer.BackColor = System.Drawing.Color.Linen;
+            this.ControlPolicyServer.Location = new System.Drawing.Point(318, 42);
+            this.ControlPolicyServer.Name = "ControlPolicyServer";
+            this.ControlPolicyServer.PolicyServer = null;
+            this.ControlPolicyServer.Size = new System.Drawing.Size(289, 26);
+            this.ControlPolicyServer.TabIndex = 6;
             // 
             // FormMain
             // 
@@ -558,7 +561,6 @@
         #endregion
 
         private System.Windows.Forms.Panel pnlControl;
-        private Server ControlPolicyServer;
         private Server ControlServer;
         private System.Windows.Forms.Panel panelControlHeader;
         private System.Windows.Forms.Label label2;
@@ -594,6 +596,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn5;
         private System.Windows.Forms.DataGridViewButtonColumn ColumnStack;
         private System.Windows.Forms.DataGridViewTextBoxColumn StackTrace;
+        private CPolicyServer ControlPolicyServer;
     }
 }
 

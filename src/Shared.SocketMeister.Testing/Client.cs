@@ -18,7 +18,6 @@ namespace SocketMeister.Testing
         public int ClientId
         {
             get { lock (_lockClass) { return _clientId; } }
-            set { lock (_lockClass) { _clientId = value; } }
         }
 
         /// <summary>

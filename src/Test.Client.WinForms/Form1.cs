@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using SocketMeister;
@@ -27,7 +28,7 @@ namespace Test.Client.WinForms
             {
                 this.Text = "SocketMeister Test Client (" + Program.ClientId.ToString() + ")";
                 Guid guid = Guid.NewGuid();
-                client = new SocketMeister.Testing.Client(Program.ClientId);
+                client = new SocketMeister.Testing.Client(Program.ClientId, Program.HarnessControllerIPAddress, Program.HarnessControllerPort);
                 client.ControlConnectionFailed += Harness_ControlConnectionFailed;
             }
             catch
@@ -43,7 +44,7 @@ namespace Test.Client.WinForms
             this.Invoke((MethodInvoker)delegate {
                 this.Close();
             });
-            System.Threading.Thread.Sleep(500);
+            Thread.Sleep(500);
             Environment.Exit(2);
         }
     }

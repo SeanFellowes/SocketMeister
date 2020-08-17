@@ -10,6 +10,8 @@ namespace Test.Client.WinForms
     static class Program
     {
         static public int ClientId;
+        static public string HarnessControllerIPAddress = "127.0.0.1";
+        static public int HarnessControllerPort = 4505;
 
         /// <summary>
         /// The main entry point for the application.
@@ -20,6 +22,12 @@ namespace Test.Client.WinForms
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
+#if DEBUG
+            //  IN DEBUG, SET THE CLIENT ID TO int.MaxValue. THE HARNESS WILL WAIT (A BIT) FOR THIS TO 
+            //  CONNECT. IMPORTANT: THIS SETUP ALLOWS DEBUGGING OF BOTH THIS CLIENT AND THE HARNESS.
+            ClientId = int.MaxValue;
+            Application.Run(new Form1());
+#else
             string[] args = Environment.GetCommandLineArgs();
             if (args.Length < 2)
             {
@@ -36,6 +44,7 @@ namespace Test.Client.WinForms
                     Application.Run(new Form1());
                 }
             }
+#endif
         }
     }
 }

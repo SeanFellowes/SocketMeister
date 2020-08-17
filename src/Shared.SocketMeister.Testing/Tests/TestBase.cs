@@ -35,6 +35,13 @@ namespace SocketMeister.Testing.Tests
         public event EventHandler<TraceEventArgs> TraceEventRaised;
 
 
+        public TestBase(int Id, string Description)
+        {
+            _id = Id;
+            _description = Description;
+        }
+
+
         public string Description { get { return _description; } }
 
         public int Id { get { return _id; } }
@@ -57,7 +64,7 @@ namespace SocketMeister.Testing.Tests
                     if (_percentComplete == value) return;
                     _percentComplete = value;
                 }
-                if (Parent == null) throw new NullReferenceException("Base class property 'Parent'has not been set");
+                if (Parent == null) throw new NullReferenceException("Base class property '" + nameof(Parent) + "' has not been set");
                 PercentCompleteChanged?.Invoke(Parent, new TestPercentCompleteChangedEventArgs(value));
             }
         }
@@ -73,7 +80,7 @@ namespace SocketMeister.Testing.Tests
                     _status = value;
                 }
                 if (Parent == null) throw new NullReferenceException("Base class property '" + nameof(Parent) + "' has not been set");
-                StatusChanged?.Invoke(Parent, new TestStatusChangedEventArgs(value));
+                StatusChanged?.Invoke(Parent, new TestStatusChangedEventArgs(_parent, value));
             }
         }
 
