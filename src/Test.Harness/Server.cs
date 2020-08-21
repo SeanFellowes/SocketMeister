@@ -11,19 +11,10 @@ using SocketMeister;
 
 namespace SocketMeister.Test
 {
-    public enum ServerType
-    {
-        SocketServer = 0,
-        PolicyServer = 1
-    }
-
     public partial class Server : UserControl
     {
-        public const int PolicyPort = 943;
-
         private readonly object lockControl = new object();
         private int port = 4502;
-        private ServerType serverType = ServerType.SocketServer;
         private SocketServer socketServer = null;
 
         /// <summary>
@@ -84,36 +75,6 @@ namespace SocketMeister.Test
                 SetLabel();
             }
         }
-
-        public ServerType ServerType
-        {
-            get { return serverType; }
-            set
-            {
-                serverType = value;
-                SetLabel();
-                if (serverType == ServerType.PolicyServer)
-                {
-                    SessionCountIcon.Visible = false;
-                    SessionCountLabel.Visible = false;
-                }
-                else
-                {
-                    SessionCountIcon.Visible = true;
-                    SessionCountLabel.Visible = true;
-                }
-            }
-        }
-
-        //public SocketServerStatus Status
-        //{
-        //    get
-        //    {
-        //        if (policyServer != null) return policyServer.Status;
-        //        else if (socketServer != null) return socketServer.Status;
-        //        else return SocketServerStatus.Stopped;
-        //    }
-        //}
 
         private void BtnStart_Click(object sender, EventArgs e)
         {
@@ -177,28 +138,14 @@ namespace SocketMeister.Test
         {
             try
             {
-                if (ServerType == ServerType.SocketServer)
+                if (socketServer == null) return false;
+                if (socketServer.Status ==  SocketServerStatus.Started)
                 {
-                    if (socketServer == null) return false;
-                    if (socketServer.Status ==  SocketServerStatus.Started)
-                    {
-                        this.Cursor = Cursors.WaitCursor;
-                        socketServer.Stop();
-                        return true;
-                    }
-                    return false;
+                    this.Cursor = Cursors.WaitCursor;
+                    socketServer.Stop();
+                    return true;
                 }
-                else
-                {
-                    //if (policyServer == null) return false;
-                    //if (policyServer.Status == SocketServerStatus.Started)
-                    //{
-                    //    this.Cursor = Cursors.WaitCursor;
-                    //    policyServer.Stop();
-                    //    return true;
-                    //}
-                    return false;
-                }
+                return false;
             }
             catch (Exception ex)
             {
@@ -210,8 +157,7 @@ namespace SocketMeister.Test
 
         private void SetLabel()
         {
-            if (serverType == ServerType.SocketServer) LabelPort.Text = "Socket server on port " + port.ToString();
-            else LabelPort.Text = "Policy server on port " + PolicyPort.ToString();
+            LabelPort.Text = "Socket server on port " + port.ToString();
         }
 
         public void Start()
@@ -240,20 +186,13 @@ namespace SocketMeister.Test
 
         private void BgStartService_DoWork(object sender, DoWorkEventArgs e)
         {
-            if (serverType == ServerType.SocketServer)
-            {
-                socketServer = new SocketServer(port, true);
-                socketServer.ClientsChanged += SocketServer_ClientsChanged;
-                socketServer.ListenerStateChanged += SocketServer_ListenerStateChanged;
-                socketServer.TraceEventRaised += SocketServer_TraceEventRaised;
-                socketServer.MessageReceived += SocketServer_MessageReceived;
-                socketServer.RequestReceived += SocketServer_RequestReceived;
-                socketServer.Start();
-            }
-            //else
-            //{
-            //    policyServer.Start();
-            //}
+            socketServer = new SocketServer(port, true);
+            socketServer.ClientsChanged += SocketServer_ClientsChanged;
+            socketServer.ListenerStateChanged += SocketServer_ListenerStateChanged;
+            socketServer.TraceEventRaised += SocketServer_TraceEventRaised;
+            socketServer.MessageReceived += SocketServer_MessageReceived;
+            socketServer.RequestReceived += SocketServer_RequestReceived;
+            socketServer.Start();
         }
 
         private void SocketServer_MessageReceived(object sender, SocketServer.MessageReceivedEventArgs e)

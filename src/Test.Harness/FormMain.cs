@@ -265,12 +265,13 @@ namespace SocketMeister.Test
 
         private void TraceEventRaised(object sender, TraceEventArgs e)
         {
-            if (sender.GetType() == typeof(SocketMeister.Test.Server))
+            Type senderType = sender.GetType();
+            if (senderType == typeof(SocketMeister.Test.Server))
             {
                 SocketMeister.Test.Server server = (Server)sender;
                 InsertListboxItem(server.Port.ToString(), e);
             }
-            else if(sender.GetType() == typeof(SocketMeister.Test.CPolicyServer))
+            else if(senderType == typeof(PolicyServer))
             {
                 SocketMeister.PolicyServer ps = (PolicyServer)sender;
                 InsertListboxItem(ps.Port.ToString(), e);

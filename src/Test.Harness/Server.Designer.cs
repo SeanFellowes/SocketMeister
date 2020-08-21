@@ -37,6 +37,7 @@
             this.StatusIndicator = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
             this.LabelPort = new System.Windows.Forms.Label();
+            this.cPolicyServer1 = new SocketMeister.Test.CPolicyServer();
             this.panel1.SuspendLayout();
             this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SessionCountIcon)).BeginInit();
@@ -151,10 +152,19 @@
             this.LabelPort.Text = "Socket Server on Port 65000";
             this.LabelPort.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // cPolicyServer1
+            // 
+            this.cPolicyServer1.Location = new System.Drawing.Point(0, 0);
+            this.cPolicyServer1.Name = "cPolicyServer1";
+            this.cPolicyServer1.PolicyServer = null;
+            this.cPolicyServer1.Size = new System.Drawing.Size(508, 150);
+            this.cPolicyServer1.TabIndex = 1;
+            // 
             // Server
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.cPolicyServer1);
             this.Controls.Add(this.panel1);
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "Server";
@@ -179,5 +189,6 @@
         private System.Windows.Forms.Label LabelPort;
         private System.Windows.Forms.PictureBox SessionCountIcon;
         private System.Windows.Forms.Label SessionCountLabel;
+        private CPolicyServer cPolicyServer1;
     }
 }

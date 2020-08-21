@@ -21,8 +21,7 @@ namespace SocketMeister.Testing
     internal class TestHarness : IDisposable
     {
         //  Silverlight ports are between 4502-4534
-        public const int PolicyPort = 943;
-
+        public const int SilverlightPolicyPort = 943;
 
         private readonly object classLock = new object();
         private ClientCollection _clients = new ClientCollection();

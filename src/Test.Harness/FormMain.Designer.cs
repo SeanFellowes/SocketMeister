@@ -465,7 +465,6 @@
             this.TestServer4.Margin = new System.Windows.Forms.Padding(2);
             this.TestServer4.Name = "TestServer4";
             this.TestServer4.Port = 4513;
-            this.TestServer4.ServerType = SocketMeister.Test.ServerType.SocketServer;
             this.TestServer4.Size = new System.Drawing.Size(300, 31);
             this.TestServer4.SocketServer = null;
             this.TestServer4.TabIndex = 8;
@@ -477,7 +476,6 @@
             this.TestServer3.Margin = new System.Windows.Forms.Padding(2);
             this.TestServer3.Name = "TestServer3";
             this.TestServer3.Port = 4511;
-            this.TestServer3.ServerType = SocketMeister.Test.ServerType.SocketServer;
             this.TestServer3.Size = new System.Drawing.Size(300, 31);
             this.TestServer3.SocketServer = null;
             this.TestServer3.TabIndex = 7;
@@ -489,7 +487,6 @@
             this.TestServer2.Margin = new System.Windows.Forms.Padding(2);
             this.TestServer2.Name = "TestServer2";
             this.TestServer2.Port = 4512;
-            this.TestServer2.ServerType = SocketMeister.Test.ServerType.SocketServer;
             this.TestServer2.Size = new System.Drawing.Size(300, 31);
             this.TestServer2.SocketServer = null;
             this.TestServer2.TabIndex = 6;
@@ -500,7 +497,6 @@
             this.TestServer1.Margin = new System.Windows.Forms.Padding(2);
             this.TestServer1.Name = "TestServer1";
             this.TestServer1.Port = 4510;
-            this.TestServer1.ServerType = SocketMeister.Test.ServerType.SocketServer;
             this.TestServer1.Size = new System.Drawing.Size(300, 31);
             this.TestServer1.SocketServer = null;
             this.TestServer1.TabIndex = 4;
@@ -511,7 +507,6 @@
             this.ControlServer.Margin = new System.Windows.Forms.Padding(2);
             this.ControlServer.Name = "ControlServer";
             this.ControlServer.Port = 4505;
-            this.ControlServer.ServerType = SocketMeister.Test.ServerType.SocketServer;
             this.ControlServer.Size = new System.Drawing.Size(300, 27);
             this.ControlServer.SocketServer = null;
             this.ControlServer.TabIndex = 4;
