@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Threading;
-using System.Windows.Threading;
 using SocketMeister.Testing;
 
 
@@ -15,7 +14,6 @@ namespace SocketMeister.Testing
     internal partial class TestClient
     {
         private readonly SocketClient controlSocket = null;
-        private readonly DispatcherTimer controlConnectedTimer = null;
 
         /// <summary>
         /// Event raised when a status of a socket connection has changed
@@ -32,16 +30,37 @@ namespace SocketMeister.Testing
         {
             _clientId = ClientId;
 
-            controlConnectedTimer = new DispatcherTimer();
-            controlConnectedTimer.Interval = new TimeSpan(0, 0, 10);
-            controlConnectedTimer.Tick += ControlConnectedTimer_Tick;
-            controlConnectedTimer.Start();
+            Thread bgFailIfDisconnected = new Thread(new ThreadStart(delegate
+            {
+                DateTime waitUntil = DateTime.Now.AddMilliseconds(500);
+                while (true == true)
+                {
+                    if (DateTime.Now > waitUntil && ( controlSocket == null || controlSocket.ConnectionStatus != SocketClient.ConnectionStatuses.Connected))
+                    {
+                        try
+                        {
+                            if (controlSocket != null) controlSocket.Stop();
+                        }
+                        catch { }
+                        ControlConnectionFailed?.Invoke(this, new EventArgs());
+                        break;
+                    }
+                    Thread.Sleep(250);
+                }
+            }));
+            bgFailIfDisconnected.IsBackground = true;
+            bgFailIfDisconnected.Start();
 
             //  CONNECT TO THE TEST SERVER ON THE CONTROL CHANNEL AT PORT 4505. THIS WILL RECEIVE INSTRUCTIONS FROM THE TEST SERVER
             List<SocketEndPoint> endPoints = new List<SocketEndPoint>() { new SocketEndPoint(HarnessControllerIPAddress, HarnessControllerPort) };
             controlSocket = new SocketClient(endPoints, true);
             controlSocket.ConnectionStatusChanged += ControlSocket_ConnectionStatusChanged;
             controlSocket.MessageReceived += ControlSocket_MessageReceived;
+
+        }
+
+        private void bg()
+        {
 
         }
 
@@ -57,25 +76,6 @@ namespace SocketMeister.Testing
         public TestHarnessClientConnectionStatus ConnectionStatus
         {
             get { return (TestHarnessClientConnectionStatus)controlSocket.ConnectionStatus; }
-        }
-
-
-        private void ControlConnectedTimer_Tick(object sender, EventArgs e)
-        {
-            controlConnectedTimer.Stop();
-            if (controlSocket == null || controlSocket.ConnectionStatus != SocketClient.ConnectionStatuses.Connected)
-            {
-                try
-                {
-                    if (controlSocket != null) controlSocket.Stop();
-                }
-                catch { }
-                ControlConnectionFailed?.Invoke(this, new EventArgs());
-            }
-            else
-            {
-                controlConnectedTimer.Start();
-            }
         }
 
 

@@ -8,4 +8,14 @@
     <RootNamespace>SocketMeister.Testing</RootNamespace>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;TESTCLIENT</DefineConstants>
+  </PropertyGroup>
+
+  <Import Project="..\Shared.SocketMeister\Shared.SocketMeister.projitems" Label="Shared" />
+
+  <Import Project="..\Shared.SocketMeister.Testing.Client\Shared.SocketMeister.Testing.Client.projitems" Label="Shared" />
+
+  <Import Project="..\Shared.SocketMeister.Testing\Shared.SocketMeister.Testing.projitems" Label="Shared" />
+
 </Project>

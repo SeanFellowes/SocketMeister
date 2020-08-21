@@ -15,7 +15,7 @@ namespace Test.Client.WinForms
 {
     public partial class Form1 : Form
     {
-        private SocketMeister.Testing.TestClient client = null;
+        private TestClient client = null;
 
         public Form1()
         {

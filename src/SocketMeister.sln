@@ -23,10 +23,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test.Server.WinForms", "Tes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Client.WinForms.OLD", "Test.Client.WinForms.OLD\Test.Client.WinForms.OLD.csproj", "{81CCDF22-AA24-41D6-BF0C-3F8E4072BF70}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Client.WinForms", "Test.Client.WinForms\Test.Client.WinForms.csproj", "{0F02EB8A-BB7C-446A-A67C-B6EFE186FF19}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test.Client.WinForms", "Test.Client.WinForms\Test.Client.WinForms.csproj", "{0F02EB8A-BB7C-446A-A67C-B6EFE186FF19}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Shared.SocketMeister.Testing.Client\Shared.SocketMeister.Testing.Client.projitems*{0f02eb8a-bb7c-446a-a67c-b6efe186ff19}*SharedItemsImports = 5
+		Shared.SocketMeister.Testing\Shared.SocketMeister.Testing.projitems*{0f02eb8a-bb7c-446a-a67c-b6efe186ff19}*SharedItemsImports = 5
+		Shared.SocketMeister\Shared.SocketMeister.projitems*{0f02eb8a-bb7c-446a-a67c-b6efe186ff19}*SharedItemsImports = 5
 		Shared.SocketMeister.Testing.Harness\Shared.SocketMeister.Testing.Harness.projitems*{1d9dfe4d-dc5d-406d-ae81-aef1b1d546d5}*SharedItemsImports = 4
 		Shared.SocketMeister.Testing\Shared.SocketMeister.Testing.projitems*{1d9dfe4d-dc5d-406d-ae81-aef1b1d546d5}*SharedItemsImports = 4
 		Shared.SocketMeister\Shared.SocketMeister.projitems*{1d9dfe4d-dc5d-406d-ae81-aef1b1d546d5}*SharedItemsImports = 4
