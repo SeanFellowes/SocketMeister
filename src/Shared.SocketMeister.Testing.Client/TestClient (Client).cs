@@ -32,16 +32,12 @@ namespace SocketMeister.Testing
 
             Thread bgFailIfDisconnected = new Thread(new ThreadStart(delegate
             {
-                DateTime waitUntil = DateTime.Now.AddMilliseconds(500);
+                DateTime waitUntil = DateTime.Now.AddMilliseconds(5000);
                 while (true == true)
                 {
                     if (DateTime.Now > waitUntil && ( controlSocket == null || controlSocket.ConnectionStatus != SocketClient.ConnectionStatuses.Connected))
                     {
-                        try
-                        {
-                            if (controlSocket != null) controlSocket.Stop();
-                        }
-                        catch { }
+                        if (controlSocket != null) controlSocket.Stop();
                         ControlConnectionFailed?.Invoke(this, new EventArgs());
                         break;
                     }

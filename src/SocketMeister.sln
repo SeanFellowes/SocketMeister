@@ -21,18 +21,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test.Server.WinForms", "Tes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test.Client.WinForms", "Test.Client.WinForms\Test.Client.WinForms.csproj", "{0F02EB8A-BB7C-446A-A67C-B6EFE186FF19}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Harness.WinForms", "Test.Harness.WinForms\Test.Harness.WinForms.csproj", "{9924CB98-FE69-473B-B173-24AC6D0D9F81}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Harness.OLD", "Test.Harness.OLD\Test.Harness.OLD.csproj", "{1D9DFE4D-DC5D-406D-AE81-AEF1B1D546D5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test.Harness.WinForms", "Test.Harness.WinForms\Test.Harness.WinForms.csproj", "{9924CB98-FE69-473B-B173-24AC6D0D9F81}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Shared.SocketMeister.Testing.Client\Shared.SocketMeister.Testing.Client.projitems*{0f02eb8a-bb7c-446a-a67c-b6efe186ff19}*SharedItemsImports = 5
 		Shared.SocketMeister.Testing\Shared.SocketMeister.Testing.projitems*{0f02eb8a-bb7c-446a-a67c-b6efe186ff19}*SharedItemsImports = 5
 		Shared.SocketMeister\Shared.SocketMeister.projitems*{0f02eb8a-bb7c-446a-a67c-b6efe186ff19}*SharedItemsImports = 5
-		Shared.SocketMeister.Testing.Harness\Shared.SocketMeister.Testing.Harness.projitems*{1d9dfe4d-dc5d-406d-ae81-aef1b1d546d5}*SharedItemsImports = 4
-		Shared.SocketMeister.Testing\Shared.SocketMeister.Testing.projitems*{1d9dfe4d-dc5d-406d-ae81-aef1b1d546d5}*SharedItemsImports = 4
-		Shared.SocketMeister\Shared.SocketMeister.projitems*{1d9dfe4d-dc5d-406d-ae81-aef1b1d546d5}*SharedItemsImports = 4
 		Shared.SocketMeister\Shared.SocketMeister.projitems*{37be6cd5-9876-438a-b946-0aa155b13ef5}*SharedItemsImports = 5
 		Shared.SocketMeister\Shared.SocketMeister.projitems*{4dedd745-2f5a-4b4a-acfe-a1d8c07110d4}*SharedItemsImports = 4
 		Shared.SocketMeister\Shared.SocketMeister.projitems*{719e367c-132f-4c9d-ad8e-db25f59e707b}*SharedItemsImports = 4
@@ -178,26 +173,6 @@ Global
 		{9924CB98-FE69-473B-B173-24AC6D0D9F81}.Release|x64.Build.0 = Release|Any CPU
 		{9924CB98-FE69-473B-B173-24AC6D0D9F81}.Release|x86.ActiveCfg = Release|Any CPU
 		{9924CB98-FE69-473B-B173-24AC6D0D9F81}.Release|x86.Build.0 = Release|Any CPU
-		{1D9DFE4D-DC5D-406D-AE81-AEF1B1D546D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1D9DFE4D-DC5D-406D-AE81-AEF1B1D546D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1D9DFE4D-DC5D-406D-AE81-AEF1B1D546D5}.Debug|ARM.ActiveCfg = Debug|Any CPU
-		{1D9DFE4D-DC5D-406D-AE81-AEF1B1D546D5}.Debug|ARM.Build.0 = Debug|Any CPU
-		{1D9DFE4D-DC5D-406D-AE81-AEF1B1D546D5}.Debug|ARM64.ActiveCfg = Debug|Any CPU
-		{1D9DFE4D-DC5D-406D-AE81-AEF1B1D546D5}.Debug|ARM64.Build.0 = Debug|Any CPU
-		{1D9DFE4D-DC5D-406D-AE81-AEF1B1D546D5}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{1D9DFE4D-DC5D-406D-AE81-AEF1B1D546D5}.Debug|x64.Build.0 = Debug|Any CPU
-		{1D9DFE4D-DC5D-406D-AE81-AEF1B1D546D5}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{1D9DFE4D-DC5D-406D-AE81-AEF1B1D546D5}.Debug|x86.Build.0 = Debug|Any CPU
-		{1D9DFE4D-DC5D-406D-AE81-AEF1B1D546D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1D9DFE4D-DC5D-406D-AE81-AEF1B1D546D5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1D9DFE4D-DC5D-406D-AE81-AEF1B1D546D5}.Release|ARM.ActiveCfg = Release|Any CPU
-		{1D9DFE4D-DC5D-406D-AE81-AEF1B1D546D5}.Release|ARM.Build.0 = Release|Any CPU
-		{1D9DFE4D-DC5D-406D-AE81-AEF1B1D546D5}.Release|ARM64.ActiveCfg = Release|Any CPU
-		{1D9DFE4D-DC5D-406D-AE81-AEF1B1D546D5}.Release|ARM64.Build.0 = Release|Any CPU
-		{1D9DFE4D-DC5D-406D-AE81-AEF1B1D546D5}.Release|x64.ActiveCfg = Release|Any CPU
-		{1D9DFE4D-DC5D-406D-AE81-AEF1B1D546D5}.Release|x64.Build.0 = Release|Any CPU
-		{1D9DFE4D-DC5D-406D-AE81-AEF1B1D546D5}.Release|x86.ActiveCfg = Release|Any CPU
-		{1D9DFE4D-DC5D-406D-AE81-AEF1B1D546D5}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

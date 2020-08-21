@@ -35,7 +35,6 @@ namespace Test.Client.WinForms
                 this.Close();
                 Application.Exit();
             }
-
         }
 
         private void Harness_ControlConnectionFailed(object sender, EventArgs e)
