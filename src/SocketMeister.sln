@@ -11,8 +11,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocketMeister (.NET 3.5)", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocketMeister (.NET 4.7.2)", "SocketMeister (.NET 4.7.2)\SocketMeister (.NET 4.7.2).csproj", "{719E367C-132F-4C9D-AD8E-DB25F59E707B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Client.WinForms.OLD", "Test.Client.WinForms\Test.Client.WinForms.OLD.csproj", "{81CCDF22-AA24-41D6-BF0C-3F8E4072BF70}"
-EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared.SocketMeister.Testing", "Shared.SocketMeister.Testing\Shared.SocketMeister.Testing.shproj", "{C1465F45-1A63-427C-8EAB-FF3D7518224A}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared.SocketMeister.Testing.Client", "Shared.SocketMeister.Testing.Client\Shared.SocketMeister.Testing.Client.shproj", "{72C2CE76-A954-4194-9FDD-D7ED4332FA48}"
@@ -34,9 +32,6 @@ Global
 		Shared.SocketMeister.Testing.Client\Shared.SocketMeister.Testing.Client.projitems*{72c2ce76-a954-4194-9fdd-d7ed4332fa48}*SharedItemsImports = 13
 		Shared.SocketMeister.Testing.Harness\Shared.SocketMeister.Testing.Harness.projitems*{75699ac7-3ce3-4946-aa6a-98a932dab76e}*SharedItemsImports = 13
 		Shared.SocketMeister\Shared.SocketMeister.projitems*{7fe383ec-5fd4-4d60-beeb-149e51549260}*SharedItemsImports = 13
-		Shared.SocketMeister.Testing.Client\Shared.SocketMeister.Testing.Client.projitems*{81ccdf22-aa24-41d6-bf0c-3f8e4072bf70}*SharedItemsImports = 4
-		Shared.SocketMeister.Testing\Shared.SocketMeister.Testing.projitems*{81ccdf22-aa24-41d6-bf0c-3f8e4072bf70}*SharedItemsImports = 4
-		Shared.SocketMeister\Shared.SocketMeister.projitems*{81ccdf22-aa24-41d6-bf0c-3f8e4072bf70}*SharedItemsImports = 4
 		Shared.SocketMeister.Testing\Shared.SocketMeister.Testing.projitems*{c1465f45-1a63-427c-8eab-ff3d7518224a}*SharedItemsImports = 13
 		Shared.SocketMeister\Shared.SocketMeister.projitems*{fd22adc4-4ecb-46d4-8379-8158c18dc483}*SharedItemsImports = 5
 	EndGlobalSection
@@ -113,26 +108,6 @@ Global
 		{719E367C-132F-4C9D-AD8E-DB25F59E707B}.Release|x64.Build.0 = Release|Any CPU
 		{719E367C-132F-4C9D-AD8E-DB25F59E707B}.Release|x86.ActiveCfg = Release|Any CPU
 		{719E367C-132F-4C9D-AD8E-DB25F59E707B}.Release|x86.Build.0 = Release|Any CPU
-		{81CCDF22-AA24-41D6-BF0C-3F8E4072BF70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{81CCDF22-AA24-41D6-BF0C-3F8E4072BF70}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{81CCDF22-AA24-41D6-BF0C-3F8E4072BF70}.Debug|ARM.ActiveCfg = Debug|Any CPU
-		{81CCDF22-AA24-41D6-BF0C-3F8E4072BF70}.Debug|ARM.Build.0 = Debug|Any CPU
-		{81CCDF22-AA24-41D6-BF0C-3F8E4072BF70}.Debug|ARM64.ActiveCfg = Debug|Any CPU
-		{81CCDF22-AA24-41D6-BF0C-3F8E4072BF70}.Debug|ARM64.Build.0 = Debug|Any CPU
-		{81CCDF22-AA24-41D6-BF0C-3F8E4072BF70}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{81CCDF22-AA24-41D6-BF0C-3F8E4072BF70}.Debug|x64.Build.0 = Debug|Any CPU
-		{81CCDF22-AA24-41D6-BF0C-3F8E4072BF70}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{81CCDF22-AA24-41D6-BF0C-3F8E4072BF70}.Debug|x86.Build.0 = Debug|Any CPU
-		{81CCDF22-AA24-41D6-BF0C-3F8E4072BF70}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{81CCDF22-AA24-41D6-BF0C-3F8E4072BF70}.Release|Any CPU.Build.0 = Release|Any CPU
-		{81CCDF22-AA24-41D6-BF0C-3F8E4072BF70}.Release|ARM.ActiveCfg = Release|Any CPU
-		{81CCDF22-AA24-41D6-BF0C-3F8E4072BF70}.Release|ARM.Build.0 = Release|Any CPU
-		{81CCDF22-AA24-41D6-BF0C-3F8E4072BF70}.Release|ARM64.ActiveCfg = Release|Any CPU
-		{81CCDF22-AA24-41D6-BF0C-3F8E4072BF70}.Release|ARM64.Build.0 = Release|Any CPU
-		{81CCDF22-AA24-41D6-BF0C-3F8E4072BF70}.Release|x64.ActiveCfg = Release|Any CPU
-		{81CCDF22-AA24-41D6-BF0C-3F8E4072BF70}.Release|x64.Build.0 = Release|Any CPU
-		{81CCDF22-AA24-41D6-BF0C-3F8E4072BF70}.Release|x86.ActiveCfg = Release|Any CPU
-		{81CCDF22-AA24-41D6-BF0C-3F8E4072BF70}.Release|x86.Build.0 = Release|Any CPU
 		{1D9DFE4D-DC5D-406D-AE81-AEF1B1D546D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1D9DFE4D-DC5D-406D-AE81-AEF1B1D546D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1D9DFE4D-DC5D-406D-AE81-AEF1B1D546D5}.Debug|ARM.ActiveCfg = Debug|Any CPU
