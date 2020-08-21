@@ -12,7 +12,7 @@ using SocketMeister.Testing;
 
 namespace SocketMeister.Test
 {
-    public partial class FormMain : Form
+    public partial class TestHarnessMainForm : Form
     {
         private const int rowHeight = 18;
         private const int executeButtonWidth = 90;
@@ -28,7 +28,7 @@ namespace SocketMeister.Test
         private readonly List<Label> lCol4 = new List<Label>();
         private readonly List<Button> lCol5 = new List<Button>();
 
-        public FormMain()
+        public TestHarnessMainForm()
         {
             InitializeComponent();
 

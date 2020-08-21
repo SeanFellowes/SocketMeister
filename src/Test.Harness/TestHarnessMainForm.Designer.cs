@@ -1,6 +1,6 @@
 ﻿namespace SocketMeister.Test
 {
-    partial class FormMain
+    partial class TestHarnessMainForm
     {
         /// <summary>
         /// Required designer variable.
@@ -31,7 +31,7 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TestHarnessMainForm));
             this.pnlControl = new System.Windows.Forms.Panel();
             this.panelControlHeader = new System.Windows.Forms.Panel();
             this.label2 = new System.Windows.Forms.Label();
