@@ -58,7 +58,7 @@ namespace SocketMeister.Testing
             //  SETUP FIXED CLIENT
             _fixedTestClient = new TestClient(int.MaxValue);
 #if !DEBUG
-            _fixedClient.LaunchClientApplication();
+            _fixedTestClient.LaunchClientApplication();
 #endif
 
             new Thread(delegate ()
