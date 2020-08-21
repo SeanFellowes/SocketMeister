@@ -243,12 +243,12 @@ namespace SocketMeister.Test
                 if (ClientId == int.MaxValue)
                 {
                     //  FIXED CLIENT HAS PHONED HOME
-                    testHarness.FixedClient.SocketClient = e.Client;
+                    testHarness.FixedTestClient.SocketClient = e.Client;
                 }
                 else
                 {
                     //  ANOTHER CLIENT HAS PHONED HOME. FIND THE CLIENT
-                    Testing.TestClient client = testHarness.Clients[ClientId];
+                    Testing.TestClient client = testHarness.TestClientCollection[ClientId];
                     if (client != null)
                     {
                         //  ASSIGN THE SocketMeister Server Client to the class. When connecting a test harness client, this value is checked for NOT null (Connected).

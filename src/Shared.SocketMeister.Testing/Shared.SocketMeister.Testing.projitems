@@ -13,7 +13,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Enums.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ITest.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)TestClientController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TestClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TestCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\TestBase.cs" />
   </ItemGroup>

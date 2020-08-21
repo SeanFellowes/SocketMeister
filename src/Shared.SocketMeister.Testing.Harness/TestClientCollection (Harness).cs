@@ -9,13 +9,13 @@ using System.Xml;
 namespace SocketMeister.Testing
 {
 
-    internal class ClientCollection : IEnumerable<TestClient>
+    internal class TestClientCollection : IEnumerable<TestClient>
     {
         private readonly Dictionary<int, TestClient> _dictClientId = new Dictionary<int, TestClient>();
         private readonly List<TestClient> _listClient = new List<TestClient>();
         private static readonly object _lock = new object();
 
-        public ClientCollection()
+        public TestClientCollection()
         {
         }
 

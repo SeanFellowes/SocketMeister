@@ -24,11 +24,11 @@ namespace SocketMeister.Testing
         public const int SilverlightPolicyPort = 943;
 
         private readonly object classLock = new object();
-        private ClientCollection _clients = new ClientCollection();
+        private TestClientCollection _testClientCollection = new TestClientCollection();
         private ITest _currentTest = null;
         private Executing _executeMode = Executing.Stopped;
         private static readonly object _lock = new object();
-        private readonly TestClient _fixedClient;
+        private readonly TestClient _fixedTestClient;
         private readonly PolicyServer policyServer;
         private readonly TestCollection _tests;
 
@@ -56,7 +56,7 @@ namespace SocketMeister.Testing
 
 
             //  SETUP FIXED CLIENT
-            _fixedClient = new TestClient(int.MaxValue);
+            _fixedTestClient = new TestClient(int.MaxValue);
 #if !DEBUG
             _fixedClient.LaunchClientApplication();
 #endif
@@ -68,7 +68,7 @@ namespace SocketMeister.Testing
                 {
                     if (DateTime.Now > maxWait)
                         throw new TimeoutException("Visual Studio debug mode timed out waiting for the fixed client to connect. Make sure both the harness and client applications are set as Startup Projects.");
-                    else if (_fixedClient.SocketClient != null)
+                    else if (_fixedTestClient.SocketClient != null)
                         break;
                     else
                         Thread.Sleep(1000);
@@ -168,7 +168,7 @@ namespace SocketMeister.Testing
         /// <summary>
         /// Test Harness Client Collection used during testing.
         /// </summary>
-        public ClientCollection Clients { get { return _clients; } }
+        public TestClientCollection TestClientCollection { get { return _testClientCollection; } }
 
         /// <summary>
         /// Policy Server for Silverlight Clients
@@ -194,7 +194,10 @@ namespace SocketMeister.Testing
             }
         }
 
-        public TestClient FixedClient {  get { return _fixedClient; } }
+        /// <summary>
+        /// A test client which stays open for all testing. This is also where debugging takes place.
+        /// </summary>
+        public TestClient FixedTestClient {  get { return _fixedTestClient; } }
 
         private void Test_StatusChanged(object sender, TestStatusChangedEventArgs e)
         {
