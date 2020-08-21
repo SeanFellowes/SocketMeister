@@ -17,14 +17,15 @@ namespace Test.Client.Silverlight
     public partial class MainPage : UserControl
     {
         private readonly Guid guid = System.Guid.NewGuid();
-        private  SocketMeister.Testing.Client testClient = null;
+        private  SocketMeister.Testing.TestClient testClient = null;
 
         public MainPage()
         {
             InitializeComponent();
             StatusColour.Background = new SolidColorBrush(Color.FromArgb(255, 234, 144, 15));
             StatusText.Text = "Connecting to test server...";
-            testClient = new  SocketMeister.Testing.Client(999);
+            //  SEAN SEAN SEAN - GET THIS WORKING
+            //testClient = new TestClient(999);
             testClient.ConnectionStatusChanged += TestClient_ConnectionStatusChanged;
 
         }

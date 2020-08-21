@@ -53,7 +53,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>Bin\Release</OutputPath>
-    <DefineConstants>TRACE;SILVERLIGHT TESTHARNESSCLIENT</DefineConstants>
+    <DefineConstants>TRACE;SILVERLIGHT TESTCLIENT</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
@@ -71,14 +71,20 @@
     <Reference Include="System.Windows.Browser" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Shared.SocketMeister.Testing.Client\Client %28Client%29.cs">
-      <Link>Shared.SocketMeister.Testing.Client\Client %28Client%29.cs</Link>
-    </Compile>
     <Compile Include="..\Shared.SocketMeister.Testing.Client\ITest %28Client%29.cs">
       <Link>Shared.SocketMeister.Testing.Client\ITest %28Client%29.cs</Link>
     </Compile>
-    <Compile Include="..\Shared.SocketMeister.Testing\Client.cs">
-      <Link>Shared.SocketMeister.Testing\Client.cs</Link>
+    <Compile Include="..\Shared.SocketMeister.Testing.Client\TestClient %28Client%29.cs">
+      <Link>Shared.SocketMeister.Testing.Client\TestClient %28Client%29.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister.Testing.Client\Tests\Test000_Template %28Client%29.cs">
+      <Link>Shared.SocketMeister.Testing.Client\Tests\Test000_Template %28Client%29.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister.Testing.Client\Tests\Test001_Connect %28Client%29.cs">
+      <Link>Shared.SocketMeister.Testing.Client\Tests\Test001_Connect %28Client%29.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister.Testing.Client\Tests\TestBase.cs">
+      <Link>Shared.SocketMeister.Testing.Client\Tests\TestBase.cs</Link>
     </Compile>
     <Compile Include="..\Shared.SocketMeister.Testing\ControlMessage.cs">
       <Link>Shared.SocketMeister.Testing\ControlMessage.cs</Link>
@@ -92,11 +98,11 @@
     <Compile Include="..\Shared.SocketMeister.Testing\ITest.cs">
       <Link>Shared.SocketMeister.Testing\ITest.cs</Link>
     </Compile>
-    <Compile Include="..\Shared.SocketMeister.Testing\Tests\Test000_Template.cs">
-      <Link>Shared.SocketMeister.Testing\Tests\Test000_Template.cs</Link>
+    <Compile Include="..\Shared.SocketMeister.Testing\TestClient.cs">
+      <Link>Shared.SocketMeister.Testing\TestClient.cs</Link>
     </Compile>
-    <Compile Include="..\Shared.SocketMeister.Testing\Tests\Test001_Connect.cs">
-      <Link>Shared.SocketMeister.Testing\Tests\Test001_Connect.cs</Link>
+    <Compile Include="..\Shared.SocketMeister.Testing\TestCollection.cs">
+      <Link>Shared.SocketMeister.Testing\TestCollection.cs</Link>
     </Compile>
     <Compile Include="..\Shared.SocketMeister.Testing\Tests\TestBase.cs">
       <Link>Shared.SocketMeister.Testing\Tests\TestBase.cs</Link>

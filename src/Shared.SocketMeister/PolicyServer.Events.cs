@@ -1,5 +1,7 @@
 ﻿using System;
 
+#if !SILVERLIGHT && !SMNOSERVER
+
 namespace SocketMeister
 {
 #if SMISPUBLIC
@@ -49,3 +51,4 @@ namespace SocketMeister
     }
 
 }
+#endif
