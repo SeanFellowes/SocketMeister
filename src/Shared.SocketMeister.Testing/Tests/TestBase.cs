@@ -4,9 +4,9 @@ using System.Diagnostics;
 using System.Text;
 using System.Threading;
 
-#if TESTHARNESS
-using System.Management.Instrumentation;
-#endif
+//#if TESTHARNESS
+//using System.Management.Instrumentation;
+//#endif
 
 namespace SocketMeister.Testing.Tests
 {

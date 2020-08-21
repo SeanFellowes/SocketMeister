@@ -75,9 +75,6 @@
     <Compile Include="SocketServerOverview.Designer.cs">
       <DependentUpon>SocketServerOverview.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="CPolicyServer.resx">
-      <DependentUpon>PolicyServerOverview.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="TestHarnessMainForm.resx">
       <DependentUpon>TestHarnessMainForm.cs</DependentUpon>
     </EmbeddedResource>
