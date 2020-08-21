@@ -28,7 +28,7 @@ namespace SocketMeister.Testing
         private ITest _currentTest = null;
         private Executing _executeMode = Executing.Stopped;
         private static readonly object _lock = new object();
-        private readonly TestClientController _fixedClient;
+        private readonly TestClient _fixedClient;
         private readonly PolicyServer policyServer;
         private readonly TestCollection _tests;
 
@@ -56,7 +56,7 @@ namespace SocketMeister.Testing
 
 
             //  SETUP FIXED CLIENT
-            _fixedClient = new TestClientController(int.MaxValue);
+            _fixedClient = new TestClient(int.MaxValue);
 #if !DEBUG
             _fixedClient.LaunchClientApplication();
 #endif
@@ -194,7 +194,7 @@ namespace SocketMeister.Testing
             }
         }
 
-        public TestClientController FixedClient {  get { return _fixedClient; } }
+        public TestClient FixedClient {  get { return _fixedClient; } }
 
         private void Test_StatusChanged(object sender, TestStatusChangedEventArgs e)
         {

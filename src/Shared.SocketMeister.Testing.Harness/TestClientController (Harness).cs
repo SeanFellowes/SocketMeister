@@ -12,7 +12,7 @@ namespace SocketMeister.Testing
     /// <summary>
     /// Test Harness Client (TEST HOST)
     /// </summary>
-    internal partial class TestClientController
+    internal partial class TestClient
     {
         private static int _maxClientId = 0;
         private SocketServer.Client _socketClient = null;
@@ -21,7 +21,7 @@ namespace SocketMeister.Testing
         /// <summary>
         /// Default constructor. Should only be called from TestHarnessClientCollection. Automatically connects to the test harness control port (Port 4505)
         /// </summary>
-        public TestClientController()
+        public TestClient()
         {
             lock (LockClass)
             {
@@ -30,7 +30,7 @@ namespace SocketMeister.Testing
             }
         }
 
-        public TestClientController(int ClientId)
+        public TestClient(int ClientId)
         {
             _clientId = ClientId;
         }

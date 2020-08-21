@@ -248,7 +248,7 @@ namespace SocketMeister.Test
                 else
                 {
                     //  ANOTHER CLIENT HAS PHONED HOME. FIND THE CLIENT
-                    Testing.TestClientController client = testHarness.Clients[ClientId];
+                    Testing.TestClient client = testHarness.Clients[ClientId];
                     if (client != null)
                     {
                         //  ASSIGN THE SocketMeister Server Client to the class. When connecting a test harness client, this value is checked for NOT null (Connected).
