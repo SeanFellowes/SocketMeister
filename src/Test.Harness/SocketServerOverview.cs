@@ -11,7 +11,7 @@ using SocketMeister;
 
 namespace SocketMeister.Test
 {
-    public partial class Server : UserControl
+    public partial class SocketServerOverview : UserControl
     {
         private readonly object lockControl = new object();
         private int port = 4502;
@@ -34,7 +34,7 @@ namespace SocketMeister.Test
 
 
 
-        public Server()
+        public SocketServerOverview()
         {
             InitializeComponent();
             SetLabel();

@@ -11,7 +11,7 @@ using SocketMeister;
 
 namespace SocketMeister.Test
 {
-    public partial class CPolicyServer : UserControl
+    public partial class PolicyServerOverview : UserControl
     {
         public const int Port = 943;
 
@@ -23,7 +23,7 @@ namespace SocketMeister.Test
         /// </summary>
         internal event EventHandler<TraceEventArgs> TraceEventRaised;
 
-        public CPolicyServer()
+        public PolicyServerOverview()
         {
             InitializeComponent();
         }

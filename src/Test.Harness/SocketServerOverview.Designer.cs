@@ -1,6 +1,6 @@
 ﻿namespace SocketMeister.Test
 {
-    partial class Server
+    partial class SocketServerOverview
     {
         /// <summary> 
         /// Required designer variable.
@@ -37,7 +37,7 @@
             this.StatusIndicator = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
             this.LabelPort = new System.Windows.Forms.Label();
-            this.cPolicyServer1 = new SocketMeister.Test.CPolicyServer();
+            this.cPolicyServer1 = new SocketMeister.Test.PolicyServerOverview();
             this.panel1.SuspendLayout();
             this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SessionCountIcon)).BeginInit();
@@ -189,6 +189,6 @@
         private System.Windows.Forms.Label LabelPort;
         private System.Windows.Forms.PictureBox SessionCountIcon;
         private System.Windows.Forms.Label SessionCountLabel;
-        private CPolicyServer cPolicyServer1;
+        private PolicyServerOverview cPolicyServer1;
     }
 }

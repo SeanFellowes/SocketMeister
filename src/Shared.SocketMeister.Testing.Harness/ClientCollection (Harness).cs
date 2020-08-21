@@ -9,27 +9,27 @@ using System.Xml;
 namespace SocketMeister.Testing
 {
 
-    internal class ClientCollection : IEnumerable<Client>
+    internal class ClientCollection : IEnumerable<TestClientController>
     {
-        private readonly Dictionary<int, Client> _dictClientId = new Dictionary<int, Client>();
-        private readonly List<Client> _listClient = new List<Client>();
+        private readonly Dictionary<int, TestClientController> _dictClientId = new Dictionary<int, TestClientController>();
+        private readonly List<TestClientController> _listClient = new List<TestClientController>();
         private static readonly object _lock = new object();
 
         public ClientCollection()
         {
         }
 
-        public Client this[int ClientId]
+        public TestClientController this[int ClientId]
         {
             get
             {
-                Client client;
+                TestClientController client;
                 if (_dictClientId.TryGetValue(ClientId, out client) == true) return client;
                 else return null;
             }
         }
 
-        IEnumerator<Client> IEnumerable<Client>.GetEnumerator()
+        IEnumerator<TestClientController> IEnumerable<TestClientController>.GetEnumerator()
         {
             return _listClient.GetEnumerator();
         }
@@ -86,13 +86,13 @@ namespace SocketMeister.Testing
         /// </summary>
         public void DisconnectClients()
         {
-            List<Client> items;
+            List<TestClientController> items;
             lock (_lock) 
             { 
                 items = _listClient.ToList(); 
             }
 
-            foreach(Client item in items)
+            foreach(TestClientController item in items)
             {
                 item.Disconnect();
             }

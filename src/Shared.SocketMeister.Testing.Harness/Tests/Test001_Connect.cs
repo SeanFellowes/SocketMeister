@@ -23,7 +23,7 @@ namespace SocketMeister.Testing.Tests
         {
             try
             {
-                Client ClientId01 = base.AddClient();
+                TestClientController ClientId01 = base.AddClient();
 
                 //for (int r = 0; r < 20; r++)
                 //{

@@ -61,22 +61,22 @@
     </Compile>
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="LogEntry.cs" />
-    <Compile Include="CPolicyServer.cs">
+    <Compile Include="PolicyServerOverview.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="CPolicyServer.Designer.cs">
-      <DependentUpon>CPolicyServer.cs</DependentUpon>
+      <DependentUpon>PolicyServerOverview.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Server.cs">
+    <Compile Include="SocketServerOverview.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Server.Designer.cs">
-      <DependentUpon>Server.cs</DependentUpon>
+    <Compile Include="SocketServerOverview.Designer.cs">
+      <DependentUpon>SocketServerOverview.cs</DependentUpon>
     </Compile>
     <EmbeddedResource Include="CPolicyServer.resx">
-      <DependentUpon>CPolicyServer.cs</DependentUpon>
+      <DependentUpon>PolicyServerOverview.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormMain.resx">
       <DependentUpon>FormMain.cs</DependentUpon>
@@ -91,8 +91,8 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="Server.resx">
-      <DependentUpon>Server.cs</DependentUpon>
+    <EmbeddedResource Include="SocketServerOverview.resx">
+      <DependentUpon>SocketServerOverview.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

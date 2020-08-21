@@ -48,14 +48,14 @@ namespace SocketMeister.Testing
 
     internal class ClientEventArgs : EventArgs
     {
-        private readonly Client _client;
+        private readonly TestClientController _client;
 
-        internal ClientEventArgs(Client Client)
+        internal ClientEventArgs(TestClientController Client)
         {
             _client = Client;
         }
 
-        public Client Client
+        public TestClientController Client
         {
             get { return _client; }
         }

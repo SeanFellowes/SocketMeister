@@ -18,7 +18,7 @@ namespace SocketMeister.Test
         private const int executeButtonWidth = 90;
         private const int spacer = 0;
 
-        private readonly TestHarness testHarness = new TestHarness();
+        private readonly TestHarnessController testHarness = new TestHarnessController();
         private int currentTestPtr = 0;
         private int errors = 0;
         private readonly BindingList<LogEntry> gridItems;
@@ -248,7 +248,7 @@ namespace SocketMeister.Test
                 else
                 {
                     //  ANOTHER CLIENT HAS PHONED HOME. FIND THE CLIENT
-                    Testing.Client client = testHarness.Clients[ClientId];
+                    Testing.TestClientController client = testHarness.Clients[ClientId];
                     if (client != null)
                     {
                         //  ASSIGN THE SocketMeister Server Client to the class. When connecting a test harness client, this value is checked for NOT null (Connected).
@@ -266,9 +266,9 @@ namespace SocketMeister.Test
         private void TraceEventRaised(object sender, TraceEventArgs e)
         {
             Type senderType = sender.GetType();
-            if (senderType == typeof(SocketMeister.Test.Server))
+            if (senderType == typeof(SocketMeister.Test.SocketServerOverview))
             {
-                SocketMeister.Test.Server server = (Server)sender;
+                SocketMeister.Test.SocketServerOverview server = (SocketServerOverview)sender;
                 InsertListboxItem(server.Port.ToString(), e);
             }
             else if(senderType == typeof(PolicyServer))

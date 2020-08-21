@@ -1,6 +1,6 @@
 ﻿namespace SocketMeister.Test
 {
-    partial class CPolicyServer
+    partial class PolicyServerOverview
     {
         /// <summary> 
         /// Required designer variable.

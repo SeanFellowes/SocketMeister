@@ -19,9 +19,9 @@ namespace SocketMeister.Testing.Tests
         /// Adds a client to the list and connects it to the test harness control TCP port (Port 4505). Opens an instance of the WinForms client app for each client.
         /// </summary>
         /// <returns>The connected (to the test harness control port) client.</returns>
-        public Client AddClient()
+        public TestClientController AddClient()
         {
-            Client newClient = new Client();
+            TestClientController newClient = new TestClientController();
             if (ClientCreated != null) ClientCreated(this, new ClientEventArgs(newClient));
             try
             {
@@ -41,9 +41,9 @@ namespace SocketMeister.Testing.Tests
         /// </summary>
         /// <param name="NumberOfClients">Number of test harness clients to run</param>
         /// <returns>List of TestHarnessClient objects</returns>
-        public List<Client> AddClients(int NumberOfClients)
+        public List<TestClientController> AddClients(int NumberOfClients)
         {
-            List<Client> rVal = new List<Client>();
+            List<TestClientController> rVal = new List<TestClientController>();
             for (int ctr = 1; ctr <= NumberOfClients; ctr++)
             {
                 rVal.Add(AddClient());

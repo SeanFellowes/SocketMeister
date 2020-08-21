@@ -18,7 +18,7 @@ namespace SocketMeister.Testing
         StoppingAllTests = 20
     }
 
-    internal class TestHarness : IDisposable
+    internal class TestHarnessController : IDisposable
     {
         //  Silverlight ports are between 4502-4534
         public const int SilverlightPolicyPort = 943;
@@ -28,7 +28,7 @@ namespace SocketMeister.Testing
         private ITest _currentTest = null;
         private Executing _executeMode = Executing.Stopped;
         private static readonly object _lock = new object();
-        private readonly Client _fixedClient;
+        private readonly TestClientController _fixedClient;
         private readonly PolicyServer policyServer;
         private readonly TestCollection _tests;
 
@@ -45,7 +45,7 @@ namespace SocketMeister.Testing
 
 
 
-        public TestHarness()
+        public TestHarnessController()
         {
             _tests = new TestCollection();
 
@@ -56,7 +56,7 @@ namespace SocketMeister.Testing
 
 
             //  SETUP FIXED CLIENT
-            _fixedClient = new Client(int.MaxValue);
+            _fixedClient = new TestClientController(int.MaxValue);
 #if !DEBUG
             _fixedClient.LaunchClientApplication();
 #endif
@@ -194,7 +194,7 @@ namespace SocketMeister.Testing
             }
         }
 
-        public Client FixedClient {  get { return _fixedClient; } }
+        public TestClientController FixedClient {  get { return _fixedClient; } }
 
         private void Test_StatusChanged(object sender, TestStatusChangedEventArgs e)
         {

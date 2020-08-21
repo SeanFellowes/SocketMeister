@@ -63,12 +63,12 @@
             this.lblErrors = new System.Windows.Forms.Label();
             this.btnClearLog = new System.Windows.Forms.Button();
             this.lblTraceLog = new System.Windows.Forms.Label();
-            this.TestServer4 = new SocketMeister.Test.Server();
-            this.TestServer3 = new SocketMeister.Test.Server();
-            this.TestServer2 = new SocketMeister.Test.Server();
-            this.TestServer1 = new SocketMeister.Test.Server();
-            this.ControlServer = new SocketMeister.Test.Server();
-            this.ControlPolicyServer = new SocketMeister.Test.CPolicyServer();
+            this.TestServer4 = new SocketMeister.Test.SocketServerOverview();
+            this.TestServer3 = new SocketMeister.Test.SocketServerOverview();
+            this.TestServer2 = new SocketMeister.Test.SocketServerOverview();
+            this.TestServer1 = new SocketMeister.Test.SocketServerOverview();
+            this.ControlServer = new SocketMeister.Test.SocketServerOverview();
+            this.ControlPolicyServer = new SocketMeister.Test.PolicyServerOverview();
             this.pnlControl.SuspendLayout();
             this.panelControlHeader.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -556,18 +556,18 @@
         #endregion
 
         private System.Windows.Forms.Panel pnlControl;
-        private Server ControlServer;
+        private SocketServerOverview ControlServer;
         private System.Windows.Forms.Panel panelControlHeader;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Panel panel1;
-        private Server TestServer2;
-        private Server TestServer1;
+        private SocketServerOverview TestServer2;
+        private SocketServerOverview TestServer1;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
-        private Server TestServer4;
-        private Server TestServer3;
+        private SocketServerOverview TestServer4;
+        private SocketServerOverview TestServer3;
         private System.Windows.Forms.Panel PanelMainTests;
         private System.Windows.Forms.Button btnExecuteAllTests;
         private System.Windows.Forms.Label lblTests;
@@ -591,7 +591,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn5;
         private System.Windows.Forms.DataGridViewButtonColumn ColumnStack;
         private System.Windows.Forms.DataGridViewTextBoxColumn StackTrace;
-        private CPolicyServer ControlPolicyServer;
+        private PolicyServerOverview ControlPolicyServer;
     }
 }
 
