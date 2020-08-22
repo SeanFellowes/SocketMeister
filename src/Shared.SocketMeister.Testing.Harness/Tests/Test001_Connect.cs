@@ -10,13 +10,13 @@ namespace SocketMeister.Testing.Tests
 {
     internal partial class Test001 : TestBase, ITest
     {
-        private const string TestDescription = "1 Client, Connect, Valid Operations, Disconnect";
+        //private const string TestDescription = "1 Client, Connect, Valid Operations, Disconnect";
 
-        public Test001(int Id) : base(Id, TestDescription)
-        {
-            base.Parent = this;
-            base.ExecuteTest += Execute;
-        }
+        //public Test001(int Id) : base(Id, TestDescription)
+        //{
+        //    base.Parent = this;
+        //    base.ExecuteTest += Execute;
+        //}
 
 
         private void Execute(object sender, EventArgs e)
