@@ -28,7 +28,7 @@ namespace SocketMeister.Testing
         private ITest _currentTest = null;
         private Executing _executeMode = Executing.Stopped;
         private static readonly object _lock = new object();
-        private readonly TestClient _fixedTestClient;
+        private readonly ClientController _fixedTestClient;
         private readonly PolicyServer policyServer;
         private readonly TestCollection _tests;
 
@@ -56,7 +56,7 @@ namespace SocketMeister.Testing
 
 
             //  SETUP FIXED CLIENT
-            _fixedTestClient = new TestClient(int.MaxValue);
+            _fixedTestClient = new ClientController(int.MaxValue);
 #if !DEBUG
             _fixedTestClient.LaunchClientApplication();
 #endif
@@ -197,7 +197,7 @@ namespace SocketMeister.Testing
         /// <summary>
         /// A test client which stays open for all testing. This is also where debugging takes place.
         /// </summary>
-        public TestClient FixedTestClient {  get { return _fixedTestClient; } }
+        public ClientController FixedTestClient {  get { return _fixedTestClient; } }
 
         private void Test_StatusChanged(object sender, TestStatusChangedEventArgs e)
         {

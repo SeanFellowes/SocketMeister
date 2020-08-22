@@ -14,7 +14,7 @@ namespace Test.Client.WinForms
 {
     public partial class TestClientMainForm : Form
     {
-        private TestClient client = null;
+        private ClientController client = null;
 
         public TestClientMainForm()
         {
@@ -27,7 +27,7 @@ namespace Test.Client.WinForms
             {
                 this.Text = "SocketMeister Test Client (" + Program.ClientId.ToString() + ")";
                 Guid guid = Guid.NewGuid();
-                client = new TestClient(Program.ClientId, Program.HarnessControllerIPAddress, Program.HarnessControllerPort);
+                client = new ClientController(Program.ClientId, Program.HarnessControllerIPAddress, Program.HarnessControllerPort);
                 client.ControlConnectionFailed += Harness_ControlConnectionFailed;
             }
             catch

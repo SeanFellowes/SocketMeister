@@ -9,7 +9,7 @@ namespace SocketMeister.Testing
     /// <summary>
     /// Test Harness Client (SHARED)
     /// </summary>
-    internal partial class TestClient
+    internal partial class ClientController
     {
         private int _clientId;
         private readonly object _lockClass = new object();
