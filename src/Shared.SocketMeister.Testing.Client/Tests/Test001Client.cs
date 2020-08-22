@@ -8,11 +8,9 @@ using System.Net.Http.Headers;
 
 namespace SocketMeister.Testing.Tests
 {
-    internal partial class Test001 : TestBase, ITest
+    internal class Test001Client : Test001Base
     {
-        private const string TestDescription = "1 Client, Connect, Valid Operations, Disconnect";
-
-        public Test001(int Id) : base(Id, TestDescription) 
+        public Test001Client() 
         {
             base.Parent = this;   
         }
