@@ -4,15 +4,14 @@ using System.Diagnostics;
 using System.Text;
 using System.Threading;
 
-//#if TESTHARNESS
-//using System.Management.Instrumentation;
-//#endif
 
 namespace SocketMeister.Testing.Tests
 {
     internal partial class TestBase
     {
 
+        private static int _maxClientId = 0;
+        private static readonly object _lockMaxClientId = new object();
 
 
         /// <summary>
@@ -21,7 +20,13 @@ namespace SocketMeister.Testing.Tests
         /// <returns>The connected (to the test harness control port) client.</returns>
         public ClientController AddClient()
         {
-            ClientController newClient = new ClientController();
+            int nextClientId = 0;
+            lock (_lockMaxClientId)
+            {
+                _maxClientId++;
+                nextClientId = _maxClientId;
+            }
+            ClientController newClient = new ClientController(nextClientId);
             if (ClientCreated != null) ClientCreated(this, new ClientEventArgs(newClient));
             try
             {

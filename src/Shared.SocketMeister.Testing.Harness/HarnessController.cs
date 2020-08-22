@@ -18,7 +18,7 @@ namespace SocketMeister.Testing
         StoppingAllTests = 20
     }
 
-    internal class TestHarnessController : IDisposable
+    internal class HarnessController : IDisposable
     {
         //  Silverlight ports are between 4502-4534
         public const int SilverlightPolicyPort = 943;
@@ -45,7 +45,7 @@ namespace SocketMeister.Testing
 
 
 
-        public TestHarnessController()
+        public HarnessController()
         {
             _tests = new TestCollection();
 

@@ -18,7 +18,7 @@ namespace SocketMeister.Test
         private const int executeButtonWidth = 90;
         private const int spacer = 0;
 
-        private readonly TestHarnessController testHarness = new TestHarnessController();
+        private readonly HarnessController testHarness = new HarnessController();
         private int currentTestPtr = 0;
         private int errors = 0;
         private readonly BindingList<LogEntry> gridItems;
