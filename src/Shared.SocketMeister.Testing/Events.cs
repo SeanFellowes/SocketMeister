@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SocketMeister.Testing
 {
-    internal class TestPercentCompleteChangedEventArgs : EventArgs
+    internal partial class TestPercentCompleteChangedEventArgs : EventArgs
     {
         private readonly int percentComplete;
 

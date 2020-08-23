@@ -18,17 +18,17 @@ namespace SocketMeister.Testing
         StoppingAllTests = 20
     }
 
-    internal class HarnessController : IDisposable
+    internal partial class HarnessClient : IDisposable
     {
         //  Silverlight ports are between 4502-4534
         public const int SilverlightPolicyPort = 943;
 
         private readonly object classLock = new object();
-        private TestClientCollection _testClientCollection = new TestClientCollection();
+        private HarnessClientCollection _testClientCollection = new HarnessClientCollection();
         private ITestOnHarness _currentTest = null;
         private Executing _executeMode = Executing.Stopped;
         private static readonly object _lock = new object();
-        private readonly ClientController _fixedTestClient;
+        private readonly HarnessClient _fixedTestClient;
         private readonly PolicyServer policyServer;
         private readonly TestCollection _tests;
 
@@ -45,7 +45,7 @@ namespace SocketMeister.Testing
 
 
 
-        public HarnessController()
+        public HarnessClient()
         {
             _tests = new TestCollection();
 
@@ -56,7 +56,7 @@ namespace SocketMeister.Testing
 
 
             //  SETUP FIXED CLIENT
-            _fixedTestClient = new ClientController(int.MaxValue);
+            _fixedTestClient = new HarnessClient(int.MaxValue);
 #if !DEBUG
             _fixedTestClient.LaunchClientApplication();
 #endif
@@ -168,7 +168,7 @@ namespace SocketMeister.Testing
         /// <summary>
         /// Test Harness Client Collection used during testing.
         /// </summary>
-        public TestClientCollection TestClientCollection { get { return _testClientCollection; } }
+        public HarnessClientCollection TestClientCollection { get { return _testClientCollection; } }
 
         /// <summary>
         /// Policy Server for Silverlight Clients
@@ -197,7 +197,7 @@ namespace SocketMeister.Testing
         /// <summary>
         /// A test client which stays open for all testing. This is also where debugging takes place.
         /// </summary>
-        public ClientController FixedTestClient {  get { return _fixedTestClient; } }
+        public HarnessClient FixedTestClient {  get { return _fixedTestClient; } }
 
         private void Test_StatusChanged(object sender, TestStatusChangedEventArgs e)
         {

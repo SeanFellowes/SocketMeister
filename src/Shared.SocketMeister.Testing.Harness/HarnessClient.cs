@@ -11,11 +11,13 @@ namespace SocketMeister.Testing
     /// <summary>
     /// Test Harness Client (TEST HOST)
     /// </summary>
-    internal partial class ClientController
+    internal partial class HarnessClient
     {
+        private int _clientId;
         private SocketServer.Client _socketClient = null;
+        private readonly object _lockClass = new object();
 
-        public ClientController(int ClientId)
+        public HarnessClient(int ClientId)
         {
             _clientId = ClientId;
         }
@@ -29,6 +31,18 @@ namespace SocketMeister.Testing
             get { lock (LockClass) { return _socketClient; } }
             set { lock (LockClass) { _socketClient = value; } }
         }
+
+
+        public int ClientId
+        {
+            get { lock (_lockClass) { return _clientId; } }
+        }
+
+        /// <summary>
+        /// Lock to provide threadsafe operations
+        /// </summary>
+        public object LockClass { get { return _lockClass; } }
+
 
 
         /// <summary>

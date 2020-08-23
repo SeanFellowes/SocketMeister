@@ -13,12 +13,23 @@ namespace SocketMeister.Testing.Tests
         private static int _maxClientId = 0;
         private static readonly object _lockMaxClientId = new object();
 
+        /// <summary>
+        /// Raised when a test creates a client
+        /// </summary>
+        public event EventHandler<HarnessClientEventArgs> ClientCreated;
+
+        /// <summary>
+        /// Raised when an an attempt to establish a socket for control messages between a client and server failed.   
+        /// </summary>
+        public event EventHandler<HarnessClientEventArgs> ClientConnectFailed;
+
+
 
         /// <summary>
         /// Adds a client to the list and connects it to the test harness control TCP port (Port 4505). Opens an instance of the WinForms client app for each client.
         /// </summary>
         /// <returns>The connected (to the test harness control port) client.</returns>
-        public ClientController AddClient()
+        public HarnessClient AddClient()
         {
             int nextClientId = 0;
             lock (_lockMaxClientId)
@@ -26,15 +37,15 @@ namespace SocketMeister.Testing.Tests
                 _maxClientId++;
                 nextClientId = _maxClientId;
             }
-            ClientController newClient = new ClientController(nextClientId);
-            if (ClientCreated != null) ClientCreated(this, new ClientEventArgs(newClient));
+            HarnessClient newClient = new HarnessClient(nextClientId);
+            if (ClientCreated != null) ClientCreated(this, new HarnessClientEventArgs(newClient));
             try
             {
                 newClient.LaunchClientApplication();
             }
             catch
             {
-                if (ClientConnectFailed != null) ClientConnectFailed(this, new ClientEventArgs(newClient));
+                if (ClientConnectFailed != null) ClientConnectFailed(this, new HarnessClientEventArgs(newClient));
                 throw;
             }
 
@@ -46,9 +57,9 @@ namespace SocketMeister.Testing.Tests
         /// </summary>
         /// <param name="NumberOfClients">Number of test harness clients to run</param>
         /// <returns>List of TestHarnessClient objects</returns>
-        public List<ClientController> AddClients(int NumberOfClients)
+        public List<HarnessClient> AddClients(int NumberOfClients)
         {
-            List<ClientController> rVal = new List<ClientController>();
+            List<HarnessClient> rVal = new List<HarnessClient>();
             for (int ctr = 1; ctr <= NumberOfClients; ctr++)
             {
                 rVal.Add(AddClient());

@@ -18,7 +18,7 @@ namespace SocketMeister.Test
         private const int executeButtonWidth = 90;
         private const int spacer = 0;
 
-        private readonly HarnessController testHarness = new HarnessController();
+        private readonly HarnessClient testHarness = new HarnessClient();
         private int currentTestPtr = 0;
         private int errors = 0;
         private readonly BindingList<LogEntry> gridItems;
@@ -248,7 +248,7 @@ namespace SocketMeister.Test
                 else
                 {
                     //  ANOTHER CLIENT HAS PHONED HOME. FIND THE CLIENT
-                    Testing.ClientController client = testHarness.TestClientCollection[ClientId];
+                    HarnessClient client = testHarness.TestClientCollection[ClientId];
                     if (client != null)
                     {
                         //  ASSIGN THE SocketMeister Server Client to the class. When connecting a test harness client, this value is checked for NOT null (Connected).

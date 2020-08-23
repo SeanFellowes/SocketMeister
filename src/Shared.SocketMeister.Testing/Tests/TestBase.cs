@@ -19,16 +19,6 @@ namespace SocketMeister.Testing.Tests
         private int _percentComplete = 0;
         private TestStatus _status = TestStatus.NotStarted;
 
-        /// <summary>
-        /// Raised when a test creates a client
-        /// </summary>
-        public event EventHandler<ClientEventArgs> ClientCreated;
-
-        /// <summary>
-        /// Raised when an an attempt to establish a socket for control messages between a client and server failed.   
-        /// </summary>
-        public event EventHandler<ClientEventArgs> ClientConnectFailed;
-
         public event EventHandler<EventArgs> ExecuteTest;
         public event EventHandler<TestPercentCompleteChangedEventArgs> PercentCompleteChanged;
         public event EventHandler<TestStatusChangedEventArgs> StatusChanged;

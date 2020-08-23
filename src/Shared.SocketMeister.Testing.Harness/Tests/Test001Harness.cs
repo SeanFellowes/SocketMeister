@@ -20,7 +20,7 @@ namespace SocketMeister.Testing.Tests
         {
             try
             {
-                ClientController ClientId01 = base.AddClient();
+                HarnessClient ClientId01 = base.AddClient();
 
                 //for (int r = 0; r < 20; r++)
                 //{
