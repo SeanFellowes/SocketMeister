@@ -17,7 +17,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)ITestOnClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ITestOnHarness.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TestCollection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tests\Test000Client.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\Test001Base.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tests\Test001Client.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\TestBase.cs" />
   </ItemGroup>
 </Project>
