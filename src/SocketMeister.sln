@@ -13,8 +13,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocketMeister (.NET 4.7.2)"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared.SocketMeister.Testing", "Shared.SocketMeister.Testing\Shared.SocketMeister.Testing.shproj", "{C1465F45-1A63-427C-8EAB-FF3D7518224A}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared.SocketMeister.Testing.Client", "Shared.SocketMeister.Testing.Client\Shared.SocketMeister.Testing.Client.shproj", "{72C2CE76-A954-4194-9FDD-D7ED4332FA48}"
-EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared.SocketMeister.Testing.Harness", "Shared.SocketMeister.Testing.Harness\Shared.SocketMeister.Testing.Harness.shproj", "{75699AC7-3CE3-4946-AA6A-98A932DAB76E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test.Server.WinForms", "Test.Server.WinForms\Test.Server.WinForms.csproj", "{FD22ADC4-4ECB-46D4-8379-8158C18DC483}"
@@ -25,16 +23,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test.Harness.WinForms", "Te
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		Shared.SocketMeister.Testing.Client\Shared.SocketMeister.Testing.Client.projitems*{0f02eb8a-bb7c-446a-a67c-b6efe186ff19}*SharedItemsImports = 5
 		Shared.SocketMeister.Testing\Shared.SocketMeister.Testing.projitems*{0f02eb8a-bb7c-446a-a67c-b6efe186ff19}*SharedItemsImports = 5
 		Shared.SocketMeister\Shared.SocketMeister.projitems*{0f02eb8a-bb7c-446a-a67c-b6efe186ff19}*SharedItemsImports = 5
 		Shared.SocketMeister\Shared.SocketMeister.projitems*{37be6cd5-9876-438a-b946-0aa155b13ef5}*SharedItemsImports = 5
 		Shared.SocketMeister\Shared.SocketMeister.projitems*{4dedd745-2f5a-4b4a-acfe-a1d8c07110d4}*SharedItemsImports = 4
 		Shared.SocketMeister\Shared.SocketMeister.projitems*{719e367c-132f-4c9d-ad8e-db25f59e707b}*SharedItemsImports = 4
-		Shared.SocketMeister.Testing.Client\Shared.SocketMeister.Testing.Client.projitems*{72c2ce76-a954-4194-9fdd-d7ed4332fa48}*SharedItemsImports = 13
 		Shared.SocketMeister.Testing.Harness\Shared.SocketMeister.Testing.Harness.projitems*{75699ac7-3ce3-4946-aa6a-98a932dab76e}*SharedItemsImports = 13
 		Shared.SocketMeister\Shared.SocketMeister.projitems*{7fe383ec-5fd4-4d60-beeb-149e51549260}*SharedItemsImports = 13
-		Shared.SocketMeister.Testing.Client\Shared.SocketMeister.Testing.Client.projitems*{9924cb98-fe69-473b-b173-24ac6d0d9f81}*SharedItemsImports = 5
 		Shared.SocketMeister.Testing.Harness\Shared.SocketMeister.Testing.Harness.projitems*{9924cb98-fe69-473b-b173-24ac6d0d9f81}*SharedItemsImports = 5
 		Shared.SocketMeister.Testing\Shared.SocketMeister.Testing.projitems*{9924cb98-fe69-473b-b173-24ac6d0d9f81}*SharedItemsImports = 5
 		Shared.SocketMeister\Shared.SocketMeister.projitems*{9924cb98-fe69-473b-b173-24ac6d0d9f81}*SharedItemsImports = 5
