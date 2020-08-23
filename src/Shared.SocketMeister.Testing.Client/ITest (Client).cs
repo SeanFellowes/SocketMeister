@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿//using System;
+//using System.Collections.Generic;
+//using System.Text;
 
-namespace SocketMeister.Testing
-{
+//namespace SocketMeister.Testing
+//{
 
-    /// <summary>
-    /// ITest Interface (CLIENT)
-    /// </summary>
-    internal partial interface ITest
-    {
-    }
-}
+//    /// <summary>
+//    /// ITest Interface (CLIENT)
+//    /// </summary>
+//    internal partial interface ITest
+//    {
+//    }
+//}

@@ -8,14 +8,8 @@ namespace SocketMeister.Testing
     /// <summary>
     /// ITest Interface 
     /// </summary>
-    internal partial interface ITest 
+    internal interface ITest 
     {
-        void Reset();
-
-        void Start();
-
-        void Stop();
-
         string Description { get; }
         int Id { get; }
         object Lock { get; }

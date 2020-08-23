@@ -45,7 +45,7 @@ namespace SocketMeister.Test
             TestServer4.TraceEventRaised += TraceEventRaised;
 
             //  REGISTER FOR EVENTS FROM TESTS
-            foreach (ITest test in testHarness.Tests)
+            foreach (ITestOnHarness test in testHarness.Tests)
             {
                 test.PercentCompleteChanged += Test_PercentCompleteChanged;
                 test.StatusChanged += Test_TestStatusChanged;
@@ -93,7 +93,7 @@ namespace SocketMeister.Test
             if (InvokeRequired) Invoke(new MethodInvoker(delegate { Test_PercentCompleteChanged(sender, e); }));
             else
             {
-                ITest test = (ITest)sender;
+                ITestOnHarness test = (ITestOnHarness)sender;
                 int testIndex = testHarness.Tests.IndexOf(test);
                 if (testIndex < 0) return;
                 lCol4[testIndex].Text = e.PercentComplete.ToString() + " %";
@@ -105,7 +105,7 @@ namespace SocketMeister.Test
             if (InvokeRequired) Invoke(new MethodInvoker(delegate { Test_TestStatusChanged(sender, e); }));
             else
             {
-                ITest test = (ITest)sender;
+                ITestOnHarness test = (ITestOnHarness)sender;
                 int testIndex = testHarness.Tests.IndexOf(test);
                 if (testIndex < 0) return;
 
@@ -212,7 +212,7 @@ namespace SocketMeister.Test
                     currentTestPtr++;
                     if (currentTestPtr < testHarness.Tests.Count)
                     {
-                        ITest nextTest = (ITest)lCol5[currentTestPtr].Tag;
+                        ITestOnHarness nextTest = (ITestOnHarness)lCol5[currentTestPtr].Tag;
                         nextTest.Start();
                     }
                     else
@@ -437,7 +437,7 @@ namespace SocketMeister.Test
             new Thread(
                 new ThreadStart(delegate
                 {
-                    ITest test = (ITest)((Button)sender).Tag;
+                    ITestOnHarness test = (ITestOnHarness)((Button)sender).Tag;
 
                     if (testHarness.ExecuteMode == Executing.AllTests)
                     {
@@ -454,7 +454,7 @@ namespace SocketMeister.Test
                 })).Start();
         }
 
-        private void SetTestNotification(ITest Test, TestStatus Value)
+        private void SetTestNotification(ITestOnHarness Test, TestStatus Value)
         {
             if (InvokeRequired) Invoke(new MethodInvoker(delegate { SetTestNotification(Test, Value); }));
             else
@@ -587,7 +587,7 @@ namespace SocketMeister.Test
         {
             if (testHarness.ExecuteMode == Executing.Stopped)
             {
-                foreach (ITest test in testHarness.Tests)
+                foreach (ITestOnHarness test in testHarness.Tests)
                 {
                     test.Reset();
                 }

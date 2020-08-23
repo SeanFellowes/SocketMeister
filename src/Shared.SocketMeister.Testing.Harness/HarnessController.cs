@@ -25,7 +25,7 @@ namespace SocketMeister.Testing
 
         private readonly object classLock = new object();
         private TestClientCollection _testClientCollection = new TestClientCollection();
-        private ITest _currentTest = null;
+        private ITestOnHarness _currentTest = null;
         private Executing _executeMode = Executing.Stopped;
         private static readonly object _lock = new object();
         private readonly ClientController _fixedTestClient;
@@ -181,7 +181,7 @@ namespace SocketMeister.Testing
         public TestCollection Tests { get { return _tests; } }
 
 
-        public ITest CurrentTest
+        public ITestOnHarness CurrentTest
         {
             get { lock (classLock) { return _currentTest; } }
             private set 
@@ -201,7 +201,7 @@ namespace SocketMeister.Testing
 
         private void Test_StatusChanged(object sender, TestStatusChangedEventArgs e)
         {
-            ITest test = (ITest)sender;
+            ITestOnHarness test = (ITestOnHarness)sender;
             if (e.Status == TestStatus.Failed) CurrentTest = null;
             else if (e.Status == TestStatus.InProgress) CurrentTest = test;
             else if (e.Status == TestStatus.NotStarted) CurrentTest = null;

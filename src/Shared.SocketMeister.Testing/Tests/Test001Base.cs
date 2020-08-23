@@ -17,11 +17,7 @@ namespace SocketMeister.Testing.Tests
         {
         }
 
-        internal new ITest Parent
-        {
-            get { return base.Parent; }
-            set { base.Parent = value;  }
-        }
+
 
 
 

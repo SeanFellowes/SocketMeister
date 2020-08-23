@@ -1,19 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿//using System;
+//using System.Collections.Generic;
+//using System.Text;
 
-namespace SocketMeister.Testing
-{
+//namespace SocketMeister.Testing
+//{
 
-    /// <summary>
-    /// ITest Interface (HOST)
-    /// </summary>
-    internal partial interface ITest
-    {
-        event EventHandler<EventArgs> ExecuteTest;
-        event EventHandler<TestPercentCompleteChangedEventArgs> PercentCompleteChanged;
-        event EventHandler<TraceEventArgs> TraceEventRaised;
+//    /// <summary>
+//    /// ITest Interface (HOST)
+//    /// </summary>
+//    internal partial interface ITest
+//    {
 
-        //TestHarness TestHarness { get; }
-    }
-}
+//        //TestHarness TestHarness { get; }
+//    }
+//}

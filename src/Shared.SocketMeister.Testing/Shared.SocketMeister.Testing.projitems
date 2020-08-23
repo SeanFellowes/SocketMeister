@@ -14,6 +14,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Events.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ITest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ClientController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ITestOnClient.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ITestOnHarness.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TestCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\Test001Base.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\TestBase.cs" />
