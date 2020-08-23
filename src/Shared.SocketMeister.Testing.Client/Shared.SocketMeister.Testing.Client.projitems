@@ -9,7 +9,7 @@
     <Import_RootNamespace>SocketMeister.Testing</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Tests\Test000Template.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tests\Test000Client.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\Test001Client.cs" />
   </ItemGroup>
 </Project>
