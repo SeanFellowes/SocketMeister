@@ -8,7 +8,7 @@ namespace SocketMeister.Testing
     /// <summary>
     /// ITest Interface 
     /// </summary>
-    internal partial interface ITestOnHarness : ITest
+    internal partial interface ITestOnHarness : ITest<ITestOnHarness>
     {
         void Reset();
 
@@ -23,7 +23,7 @@ namespace SocketMeister.Testing
         int PercentComplete { get; }
         TestStatus Status { get; }
 
-        event EventHandler<TestStatusChangedEventArgs> StatusChanged;
+        event EventHandler<HarnessTestStatusChangedEventArgs<ITestOnHarness>> StatusChanged;
 
 
     }

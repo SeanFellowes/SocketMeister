@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace SocketMeister.Testing.Tests
 {
-    internal partial class TestBase<T> : ITest
+    internal partial class TestBase<T> : ITest<T>
     {
         private readonly int _id;
         private readonly string _description;

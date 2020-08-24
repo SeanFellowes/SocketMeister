@@ -23,27 +23,6 @@ namespace SocketMeister.Testing
     }
 
 
-    internal class TestStatusChangedEventArgs : EventArgs
-    {
-        private readonly TestStatus _status;
-        private readonly ITest _test;
-
-        internal TestStatusChangedEventArgs(ITest Test, TestStatus Status)
-        {
-            _test = Test;
-            _status = Status;
-        }
-
-        public TestStatus Status
-        {
-            get { return _status; }
-        }
-
-        public ITest Test
-        {
-            get { return _test; }
-        }
-    }
 
 
     internal class ClientEventArgs : EventArgs

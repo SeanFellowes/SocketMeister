@@ -100,7 +100,7 @@ namespace SocketMeister.Test
             }
         }
 
-        private void Test_TestStatusChanged(object sender, TestStatusChangedEventArgs e)
+        private void Test_TestStatusChanged(object sender, HarnessTestStatusChangedEventArgs<ITestOnHarness> e)
         {
             if (InvokeRequired) Invoke(new MethodInvoker(delegate { Test_TestStatusChanged(sender, e); }));
             else
@@ -284,7 +284,7 @@ namespace SocketMeister.Test
 
         private void Test_TraceEventRaised(object sender, TraceEventArgs e)
         {
-            ITest test = (ITest)sender;
+            ITestOnHarness test = (ITestOnHarness)sender;
             InsertListboxItem("Test " + test.Id.ToString(), e);
         }
 
@@ -364,7 +364,7 @@ namespace SocketMeister.Test
             CH3.Top = 0;
             CH4.Top = 0;
 
-            foreach (ITest test in testHarness.Tests)
+            foreach (ITestOnHarness test in testHarness.Tests)
             {
                 //  COL 1 (ID)
                 Label lb = new Label

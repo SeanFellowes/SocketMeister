@@ -22,6 +22,27 @@ namespace SocketMeister.Testing
     }
 
 
+    internal class HarnessTestStatusChangedEventArgs<T> : EventArgs
+    {
+        private readonly TestStatus _status;
+        private readonly T _test;
+
+        internal HarnessTestStatusChangedEventArgs(T Test, TestStatus Status)
+        {
+            _test = Test;
+            _status = Status;
+        }
+
+        public TestStatus Status
+        {
+            get { return _status; }
+        }
+
+        public T Test
+        {
+            get { return _test; }
+        }
+    }
 
 
 }

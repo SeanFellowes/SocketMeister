@@ -12,13 +12,12 @@ namespace SocketMeister.Testing.Tests
         private readonly int _id;
         private readonly string _description;
         private readonly object _lock = new object();
-        private ITest _parent = null;
+        private ITestOnClient _parent = null;
         private int _percentComplete = 0;
         private TestStatus _status = TestStatus.NotStarted;
 
         public event EventHandler<EventArgs> ExecuteTest;
         public event EventHandler<TestPercentCompleteChangedEventArgs> PercentCompleteChanged;
-        public event EventHandler<TestStatusChangedEventArgs> StatusChanged;
         public event EventHandler<TraceEventArgs> TraceEventRaised;
 
 
@@ -35,7 +34,7 @@ namespace SocketMeister.Testing.Tests
 
         public object Lock { get { return _lock; } }
 
-        internal ITest Parent
+        internal ITestOnClient Parent
         {
             get { lock (_lock) { return _parent; } }
             set { lock (_lock) { _parent = value; } }
@@ -67,7 +66,6 @@ namespace SocketMeister.Testing.Tests
                     _status = value;
                 }
                 if (Parent == null) throw new NullReferenceException("Base class property '" + nameof(Parent) + "' has not been set");
-                StatusChanged?.Invoke(Parent, new TestStatusChangedEventArgs(_parent, value));
             }
         }
 

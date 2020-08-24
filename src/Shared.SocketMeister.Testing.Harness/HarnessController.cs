@@ -199,7 +199,7 @@ namespace SocketMeister.Testing
         /// </summary>
         public HarnessClient FixedTestClient {  get { return _fixedTestClient; } }
 
-        private void Test_StatusChanged(object sender, TestStatusChangedEventArgs e)
+        private void Test_StatusChanged(object sender, HarnessTestStatusChangedEventArgs<ITestOnHarness> e)
         {
             ITestOnHarness test = (ITestOnHarness)sender;
             if (e.Status == TestStatus.Failed) CurrentTest = null;
