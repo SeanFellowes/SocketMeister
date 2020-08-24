@@ -100,7 +100,7 @@ namespace SocketMeister.Test
             }
         }
 
-        private void Test_TestStatusChanged(object sender, HarnessTestStatusChangedEventArgs<ITestOnHarness> e)
+        private void Test_TestStatusChanged(object sender, HarnessTestStatusChangedEventArgs e)
         {
             if (InvokeRequired) Invoke(new MethodInvoker(delegate { Test_TestStatusChanged(sender, e); }));
             else

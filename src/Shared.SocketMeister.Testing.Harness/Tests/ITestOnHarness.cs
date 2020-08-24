@@ -23,7 +23,7 @@ namespace SocketMeister.Testing
         int PercentComplete { get; }
         TestStatus Status { get; }
 
-        event EventHandler<HarnessTestStatusChangedEventArgs<ITestOnHarness>> StatusChanged;
+        event EventHandler<HarnessTestStatusChangedEventArgs> StatusChanged;
 
 
     }

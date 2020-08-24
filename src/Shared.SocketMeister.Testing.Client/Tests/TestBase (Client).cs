@@ -7,12 +7,8 @@ using System.Threading;
 
 namespace SocketMeister.Testing.Tests
 {
-    internal partial class TestOnClientBase
+    internal partial class TestOnClientBase : TestBase<ITestOnClient>
     {
-        private readonly int _id;
-        private readonly string _description;
-        private readonly object _lock = new object();
-        private ITestOnClient _parent = null;
         private int _percentComplete = 0;
         private TestStatus _status = TestStatus.NotStarted;
 
@@ -21,31 +17,18 @@ namespace SocketMeister.Testing.Tests
         public event EventHandler<TraceEventArgs> TraceEventRaised;
 
 
-        public TestOnClientBase(int Id, string Description)
+        public TestOnClientBase(int Id, string Description) : base(Id, Description)
         {
-            _id = Id;
-            _description = Description;
         }
 
 
-        public string Description { get { return _description; } }
-
-        public int Id { get { return _id; } }
-
-        public object Lock { get { return _lock; } }
-
-        internal ITestOnClient Parent
-        {
-            get { lock (_lock) { return _parent; } }
-            set { lock (_lock) { _parent = value; } }
-        }
 
         public int PercentComplete
         {
             get { return _percentComplete; }
             internal set
             {
-                lock (_lock)
+                lock (Lock)
                 {
                     if (_percentComplete == value) return;
                     _percentComplete = value;
@@ -57,10 +40,10 @@ namespace SocketMeister.Testing.Tests
 
         public TestStatus Status
         {
-            get { lock (_lock) { return _status; } }
+            get { lock (Lock) { return _status; } }
             internal set
             {
-                lock (_lock)
+                lock (Lock)
                 {
                     if (_status == value) return;
                     _status = value;

@@ -14,7 +14,7 @@ namespace SocketMeister.Testing.Tests
 
         public event EventHandler<EventArgs> ExecuteTest;
         public event EventHandler<TestPercentCompleteChangedEventArgs> PercentCompleteChanged;
-        public event EventHandler<HarnessTestStatusChangedEventArgs<ITestOnHarness>> StatusChanged;
+        public event EventHandler<HarnessTestStatusChangedEventArgs> StatusChanged;
         public event EventHandler<TraceEventArgs> TraceEventRaised;
 
         private static int _maxClientId = 0;
@@ -109,7 +109,7 @@ namespace SocketMeister.Testing.Tests
                     _status = value;
                 }
                 if (Parent == null) throw new NullReferenceException("Base class property '" + nameof(Parent) + "' has not been set");
-                StatusChanged?.Invoke(Parent, new HarnessTestStatusChangedEventArgs<ITestOnHarness>(_parent, value));
+                StatusChanged?.Invoke(Parent, new HarnessTestStatusChangedEventArgs(_parent, value));
             }
         }
 
