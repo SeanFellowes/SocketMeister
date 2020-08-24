@@ -30,7 +30,7 @@ namespace SocketMeister.Testing
         private static readonly object _lock = new object();
         private readonly HarnessClient _fixedTestClient;
         private readonly PolicyServer policyServer;
-        private readonly TestCollection _tests;
+        private readonly TestCollection<ITestOnHarness> _tests;
 
         /// <summary>
         /// Raised when an trace log event has been raised.
@@ -47,7 +47,7 @@ namespace SocketMeister.Testing
 
         public HarnessClient()
         {
-            _tests = new TestCollection();
+            _tests = new TestCollection<ITestOnHarness>();
 
             //  SETUP POLICY SERVER
             policyServer = new PolicyServer();
@@ -178,7 +178,7 @@ namespace SocketMeister.Testing
         /// <summary>
         /// Suite of tests which are available;
         /// </summary>
-        public TestCollection Tests { get { return _tests; } }
+        public TestCollection<ITestOnHarness> Tests { get { return _tests; } }
 
 
         public ITestOnHarness CurrentTest
