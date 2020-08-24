@@ -202,6 +202,7 @@ namespace SocketMeister.Testing
         private void Test_StatusChanged(object sender, HarnessTestStatusChangedEventArgs e)
         {
             ITestOnHarness test = (ITestOnHarness)sender;
+
             if (e.Status == TestStatus.Failed) CurrentTest = null;
             else if (e.Status == TestStatus.InProgress) CurrentTest = test;
             else if (e.Status == TestStatus.NotStarted) CurrentTest = null;

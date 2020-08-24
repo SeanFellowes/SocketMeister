@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace SocketMeister.Testing.Tests
 {
-    internal partial class TestOnClientBase : TestBase<ITestOnClient>
+    internal partial class TestOnClientBase : TestBase<ITestOnClient>, ITestOnClient
     {
         private int _percentComplete = 0;
         private TestStatus _status = TestStatus.NotStarted;

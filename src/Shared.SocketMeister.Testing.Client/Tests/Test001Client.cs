@@ -10,7 +10,7 @@ namespace SocketMeister.Testing.Tests
 {
     internal class Test001Client : TestOnClientBase, ITestOnClient
     {
-        public Test001Client(int Id, string Description) : base (Test001Base.Id, Test001Base.Description)
+        public Test001Client() : base (Test001Base.Id, Test001Base.Description)
         {
             base.Parent = this;   
         }

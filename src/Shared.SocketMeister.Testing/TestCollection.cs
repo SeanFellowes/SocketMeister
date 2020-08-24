@@ -16,7 +16,7 @@ namespace SocketMeister.Testing
             //  IGNORE TEMPLATE TEST 000
             for (int ctr = 1; ctr <= 999; ctr++)
             {
-                string className = typeof(Test000).Namespace + ".Test" + ctr.ToString("000", CultureInfo.InvariantCulture);
+                string className = typeof(Test000).Namespace + ".Test" + ctr.ToString("000", CultureInfo.InvariantCulture) + "Harness";
                 Type t = Type.GetType(className);
                 if (t != null) AddTest(t, ctr);
                 if (t != null) AddTest(t, ctr);
