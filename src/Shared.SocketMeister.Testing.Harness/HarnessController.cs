@@ -30,7 +30,7 @@ namespace SocketMeister.Testing
         private static readonly object _lock = new object();
         private readonly HarnessClient _fixedTestClient;
         private readonly PolicyServer policyServer;
-        private readonly TestCollection<ITestOnHarness> _tests;
+        private readonly List<ITestOnHarness> _tests = new List<ITestOnHarness>();
 
         /// <summary>
         /// Raised when an trace log event has been raised.
@@ -47,7 +47,21 @@ namespace SocketMeister.Testing
 
         public HarnessClient()
         {
-            _tests = new TestCollection<ITestOnHarness>();
+            //  DYNAMICALLY ADD TESTS. TESTS ARE ANY CLASS NAMED BETWEEN SocketMeister.Test001 and SocketMeister.Test999
+            //  THIS ELIMINATES HAVING TO ADD CODE HERE WHEN A NEW TEST IS CREATED.
+            //  IGNORE TEMPLATE TEST 000
+            for (int ctr = 1; ctr <= 999; ctr++)
+            {
+                string className = typeof(Test000).Namespace + ".Test" + ctr.ToString("000", CultureInfo.InvariantCulture) + "Harness";
+                Type t = Type.GetType(className);
+                if (t != null) AddTest(t);
+                if (t != null) AddTest(t);
+                if (t != null) AddTest(t);
+                if (t != null) AddTest(t);
+                if (t != null) AddTest(t);
+                if (t != null) AddTest(t);
+                if (t != null) AddTest(t);
+            }
 
             //  SETUP POLICY SERVER
             policyServer = new PolicyServer();
@@ -75,6 +89,19 @@ namespace SocketMeister.Testing
                 }
             }).Start();
         }
+
+
+        private void AddTest(Type t)
+        {
+            if (t == null) throw new ArgumentNullException(nameof(t));
+            //object[] parms = new object[1];
+            //parms[0] = ctr;
+            //T test = (T)Activator.CreateInstance(t, parms);
+
+            ITestOnHarness test = (ITestOnHarness)Activator.CreateInstance(t);
+            _tests.Add(test);
+        }
+
 
         private void PolicyServer_TraceEventRaised(object sender, TraceEventArgs e)
         {
@@ -178,7 +205,7 @@ namespace SocketMeister.Testing
         /// <summary>
         /// Suite of tests which are available;
         /// </summary>
-        public TestCollection<ITestOnHarness> Tests { get { return _tests; } }
+        public List<ITestOnHarness> Tests { get { return _tests; } }
 
 
         public ITestOnHarness CurrentTest
