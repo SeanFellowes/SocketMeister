@@ -18,7 +18,7 @@ namespace SocketMeister.Test
         private const int executeButtonWidth = 90;
         private const int spacer = 0;
 
-        private readonly HarnessClient testHarness = new HarnessClient();
+        private readonly HarnessController testHarness = new HarnessController();
         private int currentTestPtr = 0;
         private int errors = 0;
         private readonly BindingList<LogEntry> gridItems;
@@ -243,7 +243,7 @@ namespace SocketMeister.Test
                 if (ClientId == int.MaxValue)
                 {
                     //  FIXED CLIENT HAS PHONED HOME
-                    testHarness.FixedTestClient.SocketClient = e.Client;
+                    testHarness.FixedHarnessClient.SocketClient = e.Client;
                 }
                 else
                 {

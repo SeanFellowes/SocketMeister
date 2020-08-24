@@ -26,6 +26,8 @@
 
   <Import Project="..\Shared.SocketMeister.Testing.Client\Shared.SocketMeister.Testing.Client.projitems" Label="Shared" />
 
+  <Import Project="..\Shared.SocketMeister.Testing.Server\Shared.SocketMeister.Testing.Server.projitems" Label="Shared" />
+
   <ItemGroup>
     <Compile Update="CPolicyServer.Designer.cs">
       <DependentUpon>PolicyServerOverview.cs</DependentUpon>

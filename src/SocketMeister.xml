@@ -956,7 +956,7 @@
         </member>
         <member name="E:SocketMeister.SocketServer.ListenerStateChanged">
             <summary>
-            Reaised when the status of the socket listener changes.
+            Raised when the status of the socket listener changes.
             </summary>
         </member>
         <member name="E:SocketMeister.SocketServer.MessageReceived">

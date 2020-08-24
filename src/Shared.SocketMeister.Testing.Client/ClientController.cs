@@ -7,7 +7,7 @@ using System.Threading;
 namespace SocketMeister.Testing
 {
     /// <summary>
-    /// Test Harness Client (SHARED)
+    /// Test Harness Client
     /// </summary>
     internal class ClientController
     {
@@ -46,7 +46,7 @@ namespace SocketMeister.Testing
             bgFailIfDisconnected.IsBackground = true;
             bgFailIfDisconnected.Start();
 
-            //  CONNECT TO THE TEST SERVER ON THE CONTROL CHANNEL AT PORT 4505. THIS WILL RECEIVE INSTRUCTIONS FROM THE TEST SERVER
+            //  CONNECT TO THE TEST HARNESS ON THE CONTROL CHANNEL AT PORT 4505. THE CONTROL CHANEL ALLOWS COMMUNICATION BACK AND FORTH FROM TEST HARNESS TO CLIENT
             List<SocketEndPoint> endPoints = new List<SocketEndPoint>() { new SocketEndPoint(HarnessControllerIPAddress, HarnessControllerPort) };
             controlSocket = new SocketClient(endPoints, true);
             controlSocket.ConnectionStatusChanged += ControlSocket_ConnectionStatusChanged;

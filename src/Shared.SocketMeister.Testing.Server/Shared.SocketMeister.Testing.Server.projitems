@@ -6,9 +6,12 @@
     <SharedGUID>20d137cd-b17e-42f9-b281-5bd7d6248241</SharedGUID>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
-    <Import_RootNamespace>Shared.SocketMeister.Testing.Server</Import_RootNamespace>
+    <Import_RootNamespace>SocketMeister.Testing</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Tests\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)ServerController.cs" />
   </ItemGroup>
 </Project>

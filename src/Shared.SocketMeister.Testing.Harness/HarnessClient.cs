@@ -11,7 +11,7 @@ namespace SocketMeister.Testing
     /// <summary>
     /// Test Harness Client (TEST HOST)
     /// </summary>
-    internal partial class HarnessClient
+    internal class HarnessClient
     {
         private int _clientId;
         private SocketServer.Client _socketClient = null;

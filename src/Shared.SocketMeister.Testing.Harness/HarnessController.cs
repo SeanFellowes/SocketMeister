@@ -18,7 +18,7 @@ namespace SocketMeister.Testing
         StoppingAllTests = 20
     }
 
-    internal partial class HarnessClient : IDisposable
+    internal class HarnessController : IDisposable
     {
         //  Silverlight ports are between 4502-4534
         public const int SilverlightPolicyPort = 943;
@@ -28,7 +28,8 @@ namespace SocketMeister.Testing
         private ITestOnHarness _currentTest = null;
         private Executing _executeMode = Executing.Stopped;
         private static readonly object _lock = new object();
-        private readonly HarnessClient _fixedTestClient;
+        private readonly ClientController _fixedClientController;
+        private readonly HarnessClient _fixedClientControllerHarnessClient;
         private readonly PolicyServer policyServer;
         private readonly List<ITestOnHarness> _tests = new List<ITestOnHarness>();
 
@@ -45,7 +46,7 @@ namespace SocketMeister.Testing
 
 
 
-        public HarnessClient()
+        public HarnessController()
         {
             //  DYNAMICALLY ADD TESTS. TESTS ARE ANY CLASS NAMED BETWEEN SocketMeister.Test001 and SocketMeister.Test999
             //  THIS ELIMINATES HAVING TO ADD CODE HERE WHEN A NEW TEST IS CREATED.
@@ -68,12 +69,15 @@ namespace SocketMeister.Testing
             policyServer.SocketServerStatusChanged += PolicyServer_SocketServiceStatusChanged;
             policyServer.TraceEventRaised += PolicyServer_TraceEventRaised;
 
+            //  SETUP FIXED SERVER
 
             //  SETUP FIXED CLIENT
-            _fixedTestClient = new HarnessClient(int.MaxValue);
-#if !DEBUG
-            _fixedTestClient.LaunchClientApplication();
-#endif
+            _fixedClientControllerHarnessClient = new HarnessClient(int.MaxValue);
+            _fixedClientController = new ClientController(int.MaxValue, "127.0.0.1", 4505);
+//#if !DEBUG
+//            _fixedClientControllerHarnessClient.LaunchClientApplication();
+//#endif
+
 
             new Thread(delegate ()
             {
@@ -82,7 +86,7 @@ namespace SocketMeister.Testing
                 {
                     if (DateTime.Now > maxWait)
                         throw new TimeoutException("Visual Studio debug mode timed out waiting for the fixed client to connect. Make sure both the harness and client applications are set as Startup Projects.");
-                    else if (_fixedTestClient.SocketClient != null)
+                    else if (_fixedClientControllerHarnessClient.SocketClient != null)
                         break;
                     else
                         Thread.Sleep(1000);
@@ -222,9 +226,9 @@ namespace SocketMeister.Testing
         }
 
         /// <summary>
-        /// A test client which stays open for all testing. This is also where debugging takes place.
+        /// In DEBUG, this is attached to this test harness for easy debugging. In RELEASE, a seperate client application is launched.
         /// </summary>
-        public HarnessClient FixedTestClient {  get { return _fixedTestClient; } }
+        public HarnessClient FixedHarnessClient {  get { return _fixedClientControllerHarnessClient; } }
 
         private void Test_StatusChanged(object sender, HarnessTestStatusChangedEventArgs e)
         {

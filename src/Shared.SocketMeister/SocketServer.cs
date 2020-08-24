@@ -62,7 +62,7 @@ namespace SocketMeister
         public event EventHandler<ExceptionEventArgs> ExceptionRaised;
 
         /// <summary>
-        /// Reaised when the status of the socket listener changes.
+        /// Raised when the status of the socket listener changes.
         /// </summary>
         public event EventHandler<SocketServerStatusChangedEventArgs> ListenerStateChanged;
 
