@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace SocketMeister.Testing
 {
-    internal class TestCollection : List<ITestOnHarness>
+    internal class TestCollection : List<ITest>
     {
         private readonly object classLock = new object();
 
@@ -38,8 +38,6 @@ namespace SocketMeister.Testing
                 if (t != null) AddTest(t, ctr);
                 if (t != null) AddTest(t, ctr);
             }
-
-
         }
 
 
@@ -50,7 +48,7 @@ namespace SocketMeister.Testing
             object[] parms = new object[1];
             parms[0] = ctr;
 
-            ITestOnHarness test = (ITestOnHarness)Activator.CreateInstance(t, parms);
+            ITest test = (ITest)Activator.CreateInstance(t, parms);
             test.StatusChanged += Test_StatusChanged;
             Add(test);
         }

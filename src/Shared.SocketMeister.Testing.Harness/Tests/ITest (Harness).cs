@@ -8,7 +8,7 @@ namespace SocketMeister.Testing
     /// <summary>
     /// ITest Interface 
     /// </summary>
-    internal interface ITestOnHarness : ITest
+    internal partial interface ITestOnHarness : ITest
     {
         void Reset();
 

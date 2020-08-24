@@ -8,7 +8,7 @@ using System.Net.Http.Headers;
 
 namespace SocketMeister.Testing.Tests
 {
-    internal partial class Test001Harness : Test001Base
+    internal partial class Test001Harness : Test001Base, ITestOnHarness
     {
         public Test001Harness()
         {

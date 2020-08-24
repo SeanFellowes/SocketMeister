@@ -13,6 +13,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)HarnessClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HarnessClientCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HarnessController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tests\ITest %28Harness%29.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\Test000Harness.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\Test001Harness.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\TestBase.cs" />

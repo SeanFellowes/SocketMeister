@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>f31e9834-6fea-4178-89bd-f1e3da8447a0</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Shared.SocketMeister.Testing.Client</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Tests\ITest %28Client%29.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tests\Test000Client.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tests\Test001Client.cs" />
+  </ItemGroup>
+</Project>

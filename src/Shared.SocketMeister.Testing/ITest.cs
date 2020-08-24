@@ -8,7 +8,7 @@ namespace SocketMeister.Testing
     /// <summary>
     /// ITest Interface 
     /// </summary>
-    internal interface ITest 
+    internal partial interface ITest 
     {
         string Description { get; }
         int Id { get; }

@@ -8,7 +8,7 @@ using System.Net.Http.Headers;
 
 namespace SocketMeister.Testing.Tests
 {
-    internal class Test001Client : Test001Base
+    internal class Test001Client : Test001Base, ITestOnClient
     {
         public Test001Client() 
         {
