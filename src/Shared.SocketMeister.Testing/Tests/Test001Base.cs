@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Permissions;
 using System.Text;
 using System.Threading;
 #if TESTHARNESS
@@ -8,18 +9,10 @@ using System.Net.Http.Headers;
 
 namespace SocketMeister.Testing.Tests
 {
-    internal partial class Test001Base : TestBase, ITest
+    internal static class Test001Base 
     {
-        private const string _testDescription = "1 Client, Connect, Valid Operations, Disconnect";
-        private const int _testId = 1;
+        public static string Description { get { return "1 Client, Connect, Valid Operations, Disconnect";} }
 
-        public Test001Base() : base(_testId, _testDescription) 
-        {
-        }
-
-
-
-
-
+        public static int Id { get { return 1; } }
     }
 }

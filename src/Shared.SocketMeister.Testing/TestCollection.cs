@@ -9,10 +9,6 @@ namespace SocketMeister.Testing
 {
     internal class TestCollection<T> : List<T>
     {
-        private readonly object classLock = new object();
-
-        public event EventHandler<TestStatusChangedEventArgs> TestStatusChanged;
-
         public TestCollection()
         {
             //  DYNAMICALLY ADD TESTS. TESTS ARE ANY CLASS NAMED BETWEEN SocketMeister.Test001 and SocketMeister.Test999
@@ -41,7 +37,7 @@ namespace SocketMeister.Testing
         }
 
 
-        private void AddTest(Type t, int ctr)
+        private T AddTest(Type t, int ctr)
         {
             if (t == null) throw new ArgumentNullException(nameof(t));
 
@@ -50,14 +46,8 @@ namespace SocketMeister.Testing
 
             T test = (T)Activator.CreateInstance(t, parms);
             Add(test);
-            ((ITest)test).StatusChanged += Test_StatusChanged;
+            return test;
         }
-
-        private void Test_StatusChanged(object sender, TestStatusChangedEventArgs e)
-        {
-            TestStatusChanged?.Invoke(this, e);
-        }
-
 
     }
 }

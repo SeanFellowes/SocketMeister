@@ -13,10 +13,6 @@ namespace SocketMeister.Testing
         string Description { get; }
         int Id { get; }
         object Lock { get; }
-        int PercentComplete { get; }
-        TestStatus Status { get; }
-
-        event EventHandler<TestStatusChangedEventArgs> StatusChanged;
 
 
     }

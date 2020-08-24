@@ -20,6 +20,11 @@ namespace SocketMeister.Testing
         event EventHandler<TestPercentCompleteChangedEventArgs> PercentCompleteChanged;
         event EventHandler<TraceEventArgs> TraceEventRaised;
 
+        int PercentComplete { get; }
+        TestStatus Status { get; }
+
+        event EventHandler<TestStatusChangedEventArgs> StatusChanged;
+
 
     }
 }
