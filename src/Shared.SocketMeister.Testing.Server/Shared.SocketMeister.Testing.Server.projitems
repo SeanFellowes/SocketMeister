@@ -9,5 +9,6 @@
     <Import_RootNamespace>Shared.SocketMeister.Testing.Server</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Tests\" />
   </ItemGroup>
 </Project>
