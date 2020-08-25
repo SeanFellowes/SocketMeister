@@ -9,27 +9,27 @@ using System.Xml;
 namespace SocketMeister.Testing
 {
 
-    internal class HarnessClientCollection : IEnumerable<HarnessClient>
+    internal class HarnessClientCollection : IEnumerable<HarnessControlBusClientSocketClient>
     {
-        private readonly Dictionary<int, HarnessClient> _dictClientId = new Dictionary<int, HarnessClient>();
-        private readonly List<HarnessClient> _listClient = new List<HarnessClient>();
+        private readonly Dictionary<int, HarnessControlBusClientSocketClient> _dictClientId = new Dictionary<int, HarnessControlBusClientSocketClient>();
+        private readonly List<HarnessControlBusClientSocketClient> _listClient = new List<HarnessControlBusClientSocketClient>();
         private static readonly object _lock = new object();
 
         public HarnessClientCollection()
         {
         }
 
-        public HarnessClient this[int ClientId]
+        public HarnessControlBusClientSocketClient this[int ClientId]
         {
             get
             {
-                HarnessClient client;
+                HarnessControlBusClientSocketClient client;
                 if (_dictClientId.TryGetValue(ClientId, out client) == true) return client;
                 else return null;
             }
         }
 
-        IEnumerator<HarnessClient> IEnumerable<HarnessClient>.GetEnumerator()
+        IEnumerator<HarnessControlBusClientSocketClient> IEnumerable<HarnessControlBusClientSocketClient>.GetEnumerator()
         {
             return _listClient.GetEnumerator();
         }
@@ -86,13 +86,13 @@ namespace SocketMeister.Testing
         /// </summary>
         public void DisconnectClients()
         {
-            List<HarnessClient> items;
+            List<HarnessControlBusClientSocketClient> items;
             lock (_lock) 
             { 
                 items = _listClient.ToList(); 
             }
 
-            foreach(HarnessClient item in items)
+            foreach(HarnessControlBusClientSocketClient item in items)
             {
                 item.Disconnect();
             }

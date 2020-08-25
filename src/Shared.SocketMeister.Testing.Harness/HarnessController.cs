@@ -30,8 +30,8 @@ namespace SocketMeister.Testing
         private static readonly object _lock = new object();
         private readonly ClientController _fixedClientController;
         private readonly ServerController _fixedServerController;
-        private readonly HarnessClient _fixedClientControllerHarnessClient;
-        private readonly HarnessClient _fixedServerControllerHarnessClient;
+        private readonly HarnessControlBusClientSocketClient _fixedClientControllerHarnessClient;
+        private readonly HarnessControlBusClientSocketClient _fixedServerControllerHarnessClient;
         private readonly PolicyServer policyServer;
         private readonly List<ITestOnHarness> _tests = new List<ITestOnHarness>();
 
@@ -72,8 +72,8 @@ namespace SocketMeister.Testing
             policyServer.TraceEventRaised += PolicyServer_TraceEventRaised;
 
             //  SETUP FIXED SERVER
-            _fixedServerControllerHarnessClient = new HarnessClient(int.MaxValue);
-            _fixedServerController = new ServerController(Constants.HarnessFixedServerPort, int.MaxValue, "127.0.0.1");
+            _fixedServerControllerHarnessClient = new HarnessControlBusClientSocketClient( HarnessControlBusClientType.ServerController, int.MaxValue - 1);
+            _fixedServerController = new ServerController(Constants.HarnessFixedServerPort, int.MaxValue - 1, "127.0.0.1");
 
             //  SEAN SEAN SEAN 
             //  CREATE ServerController PROPERTY AND ALLOW USER CONTROL TO ATTACH TO COLLECT USERS CONNECTED (SEPERATE FROM Controller USERS)
@@ -82,7 +82,7 @@ namespace SocketMeister.Testing
 
 
             //  SETUP FIXED CLIENT
-            _fixedClientControllerHarnessClient = new HarnessClient(int.MaxValue);
+            _fixedClientControllerHarnessClient = new HarnessControlBusClientSocketClient( HarnessControlBusClientType.ClientController, int.MaxValue);
             _fixedClientController = new ClientController(int.MaxValue, "127.0.0.1");
 //#if !DEBUG
 //            _fixedClientControllerHarnessClient.LaunchClientApplication();
@@ -238,7 +238,7 @@ namespace SocketMeister.Testing
         /// <summary>
         /// In DEBUG, this is attached to this test harness for easy debugging. In RELEASE, a seperate client application is launched.
         /// </summary>
-        public HarnessClient FixedHarnessClient {  get { return _fixedClientControllerHarnessClient; } }
+        public HarnessControlBusClientSocketClient FixedHarnessClient {  get { return _fixedClientControllerHarnessClient; } }
 
         private void Test_StatusChanged(object sender, HarnessTestStatusChangedEventArgs e)
         {

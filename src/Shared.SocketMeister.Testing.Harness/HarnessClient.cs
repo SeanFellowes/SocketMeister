@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Security.Permissions;
 using System.Text;
 using System.Threading;
 using SocketMeister.Testing;
@@ -11,14 +12,16 @@ namespace SocketMeister.Testing
     /// <summary>
     /// Test Harness Client (TEST HOST)
     /// </summary>
-    internal class HarnessClient
+    internal class HarnessControlBusClientSocketClient
     {
         private int _clientId;
+        private HarnessControlBusClientType _clientType;
         private SocketServer.Client _socketClient = null;
         private readonly object _lockClass = new object();
 
-        public HarnessClient(int ClientId)
+        public HarnessControlBusClientSocketClient(HarnessControlBusClientType ClientType, int ClientId)
         {
+            _clientType = ClientType;
             _clientId = ClientId;
         }
 
@@ -37,6 +40,8 @@ namespace SocketMeister.Testing
         {
             get { lock (_lockClass) { return _clientId; } }
         }
+
+        public HarnessControlBusClientType ClientType {  get { return _clientType; } }
 
         /// <summary>
         /// Lock to provide threadsafe operations
