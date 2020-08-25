@@ -10,7 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Events.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)HarnessClient.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)HarnessControlBusClientSocketClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HarnessClientCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HarnessController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\ITestOnHarness.cs" />

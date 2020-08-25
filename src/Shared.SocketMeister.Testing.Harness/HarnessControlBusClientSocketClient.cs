@@ -17,7 +17,7 @@ namespace SocketMeister.Testing
         private int _clientId;
         private HarnessControlBusClientType _clientType;
         private SocketServer.Client _socketClient = null;
-        private readonly object _lockClass = new object();
+        private readonly object _lock = new object();
 
         public HarnessControlBusClientSocketClient(HarnessControlBusClientType ClientType, int ClientId)
         {
@@ -25,20 +25,18 @@ namespace SocketMeister.Testing
             _clientId = ClientId;
         }
 
-
         /// <summary>
         /// Socketmeister client (from the server perspective)
         /// </summary>
         public SocketServer.Client SocketClient
         {
-            get { lock (LockClass) { return _socketClient; } }
-            set { lock (LockClass) { _socketClient = value; } }
+            get { lock (Lock) { return _socketClient; } }
+            set { lock (Lock) { _socketClient = value; } }
         }
-
 
         public int ClientId
         {
-            get { lock (_lockClass) { return _clientId; } }
+            get { lock (_lock) { return _clientId; } }
         }
 
         public HarnessControlBusClientType ClientType {  get { return _clientType; } }
@@ -46,9 +44,7 @@ namespace SocketMeister.Testing
         /// <summary>
         /// Lock to provide threadsafe operations
         /// </summary>
-        public object LockClass { get { return _lockClass; } }
-
-
+        public object Lock { get { return _lock; } }
 
         /// <summary>
         /// Launches and instance of the test application and waits for it to connect a socket back so the harness can control it

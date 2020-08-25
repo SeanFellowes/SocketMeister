@@ -36,7 +36,6 @@ namespace SocketMeister.Testing.Tests
         }
 
 
-
         /// <summary>
         /// Adds a client to the list and connects it to the test harness control TCP port (Port Constants.HarnessControlBusPort). Opens an instance of the WinForms client app for each client.
         /// </summary>
