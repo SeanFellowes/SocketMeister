@@ -47,10 +47,10 @@ namespace SocketMeister.Testing
         internal event EventHandler<SocketServer.ClientsChangedEventArgs> ClientsChanged;
 
 
-        public ServerController(int Port, int HarnessControlBusClientId, string HarnessControlBusIPAddress, int HarnessControlBusPort)
+        public ServerController(int Port, int HarnessControlBusClientId, string HarnessControlBusIPAddress)
         {
             //  CONNECT TO THE HarnessController
-            _harnessControlBusClient = new HarnessControlBusClient(HarnessControlBusClientType.ClientController, HarnessControlBusClientId, HarnessControlBusIPAddress, HarnessControlBusPort);
+            _harnessControlBusClient = new HarnessControlBusClient(HarnessControlBusClientType.ClientController, HarnessControlBusClientId, HarnessControlBusIPAddress, Constants.HarnessControlBusPort);
             _harnessControlBusClient.ConnectionFailed += harnessControlBusClient_ConnectionFailed;
             _harnessControlBusClient.HarnessControlBusSocketClient.MessageReceived += HarnessControlBusSocketClient_MessageReceived;
 

@@ -29,7 +29,9 @@ namespace SocketMeister.Testing
         private Executing _executeMode = Executing.Stopped;
         private static readonly object _lock = new object();
         private readonly ClientController _fixedClientController;
+        private readonly ServerController _fixedServerController;
         private readonly HarnessClient _fixedClientControllerHarnessClient;
+        private readonly HarnessClient _fixedServerControllerHarnessClient;
         private readonly PolicyServer policyServer;
         private readonly List<ITestOnHarness> _tests = new List<ITestOnHarness>();
 
@@ -70,6 +72,14 @@ namespace SocketMeister.Testing
             policyServer.TraceEventRaised += PolicyServer_TraceEventRaised;
 
             //  SETUP FIXED SERVER
+            _fixedServerControllerHarnessClient = new HarnessClient(int.MaxValue);
+            _fixedServerController = new ServerController(Constants.HarnessFixedServerPort, int.MaxValue, "127.0.0.1");
+
+            //  SEAN SEAN SEAN 
+            //  CREATE ServerController PROPERTY AND ALLOW USER CONTROL TO ATTACH TO COLLECT USERS CONNECTED (SEPERATE FROM Controller USERS)
+            //  START THE ServerController (WITH A CONTROL MESSAGE)
+            //  ADD STOP (WITH CONTROL MESSAGE) WHEN THIS HarnessCOntroller STOPS
+
 
             //  SETUP FIXED CLIENT
             _fixedClientControllerHarnessClient = new HarnessClient(int.MaxValue);
