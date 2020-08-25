@@ -15,9 +15,9 @@ namespace SocketMeister
     }
 
     /// <summary>
-    /// A SocketClient's connection status to a SocketServer.
+    /// THe status of the socket connection for orchestrating tests between HarnessController/ServerController and HarnessController/ClientController instances.
     /// </summary>
-    internal enum TestHarnessClientConnectionStatus
+    internal enum SocketClientConnectionStatus
     {
         /// <summary>
         /// Socket is disconnected.
@@ -35,6 +35,22 @@ namespace SocketMeister
         /// Socket is disconnecting;
         /// </summary>
         Disconnecting = 3
+    }
+
+
+    /// <summary>
+    /// Type of HarnessControlBusClient
+    /// </summary>
+    internal enum HarnessControlBusClientType
+    {
+        /// <summary>
+        /// HarnessControlBusClient is for a ClientController
+        /// </summary>
+        ClientController = 0,
+        /// <summary>
+        /// HarnessControlBusClient is for a ServerController
+        /// </summary>
+        ServerController = 1
     }
 
 }

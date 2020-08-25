@@ -7,9 +7,9 @@ namespace SocketMeister.Testing
     static class ControlMessage
     {
         /// <summary>
-        /// A socket which allows control messages to flow between a test client and test server has connected.
+        /// A harness control bus socket client (ServerController or ClientController) is connecting to the HarnessController.
         /// </summary>
-        public const int ClientControllerConnected = 1;
+        public const int HarnessControlBusConnecting = 1;
 
         /// <summary>
         /// Test harness sends this to a test client when it wants the client to disconnect and the client app to exit.

@@ -27,8 +27,8 @@ namespace Test.Client.WinForms
             {
                 this.Text = "SocketMeister Test Client (" + Program.ClientId.ToString() + ")";
                 Guid guid = Guid.NewGuid();
-                client = new ClientController(Program.ClientId, Program.HarnessControllerIPAddress, Program.HarnessControllerPort);
-                client.ControlConnectionFailed += Harness_ControlConnectionFailed;
+                client = new ClientController(Program.ClientId, Program.HarnessControllerIPAddress);
+                client.HarnessConnectionFailed += Harness_ControlConnectionFailed;
             }
             catch
             {

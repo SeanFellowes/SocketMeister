@@ -64,7 +64,7 @@ namespace SocketMeister.Testing
                 {
                     if (process.ExitCode == 1) throw new ApplicationException("Client failed to start. Missing ClientId from process arguments.");
                     else if (process.ExitCode == 3) throw new ApplicationException("Client failed to start. ClientId must be numeric. This is the first parameter");
-                    else if (process.ExitCode == 2) throw new ApplicationException("Client failed to start. Couldn't connect to control port 4505 (Used to sent test instructions and results between test clients and the test server).");
+                    else if (process.ExitCode == 2) throw new ApplicationException("Client failed to start. Couldn't connect to control port " + Constants.HarnessControlBusPort + " (Used to sent test instructions and results between test clients and the test server).");
                     else throw new ApplicationException("Client failed to start. Unknown reason.");
                 }
 

@@ -73,7 +73,7 @@ namespace SocketMeister.Testing
 
             //  SETUP FIXED CLIENT
             _fixedClientControllerHarnessClient = new HarnessClient(int.MaxValue);
-            _fixedClientController = new ClientController(int.MaxValue, "127.0.0.1", 4505);
+            _fixedClientController = new ClientController(int.MaxValue, "127.0.0.1");
 //#if !DEBUG
 //            _fixedClientControllerHarnessClient.LaunchClientApplication();
 //#endif
