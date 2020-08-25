@@ -9,7 +9,7 @@ namespace SocketMeister.Testing
         /// <summary>
         /// A harness control bus socket client (ServerController or ClientController) is connecting to the HarnessController.
         /// </summary>
-        public const int HarnessControlBusConnecting = 1;
+        public const int HarnessControlBusClientIsConnecting = 1;
 
         /// <summary>
         /// Test harness sends this to a test client when it wants the client to disconnect and the client app to exit.

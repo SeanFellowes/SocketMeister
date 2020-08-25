@@ -237,7 +237,7 @@ namespace SocketMeister.Test
         private void ControlServer_RequestReceived(object sender, SocketServer.RequestReceivedEventArgs e)
         {
             int r = Convert.ToInt32(e.Parameters[0]);
-            if (r == ControlMessage.HarnessControlBusConnecting)
+            if (r == ControlMessage.HarnessControlBusClientIsConnecting)
             {
                 int ClientId = Convert.ToInt32(e.Parameters[1]);
                 if (ClientId == int.MaxValue)

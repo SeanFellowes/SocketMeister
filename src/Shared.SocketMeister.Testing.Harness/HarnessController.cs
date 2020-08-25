@@ -24,6 +24,7 @@ namespace SocketMeister.Testing
         public const int SilverlightPolicyPort = 943;
 
         private readonly object classLock = new object();
+        private SocketServer _controlBusSocketServer = null;
         private HarnessClientCollection _testClientCollection = new HarnessClientCollection();
         private ITestOnHarness _currentTest = null;
         private Executing _executeMode = Executing.Stopped;
@@ -104,6 +105,11 @@ namespace SocketMeister.Testing
             }).Start();
         }
 
+
+        //SocketServer ControlBusSocketServer
+        //{
+        //    get { }
+        //}
 
         private void AddTest(Type t)
         {

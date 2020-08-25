@@ -112,10 +112,10 @@ namespace SocketMeister.Testing
         private void TestHarnessControlBus_ConnectionStatusChanged(object sender, SocketClient.ConnectionStatusChangedEventArgs e)
         {
             //  SEND A CONTROL MESSAGE TO THE SERVER
-            if (e.Status == SocketMeister.SocketClient.ConnectionStatuses.Connected)
+            if (e.Status == SocketClient.ConnectionStatuses.Connected)
             {
                 object[] parms = new object[2];
-                parms[0] = ControlMessage.HarnessControlBusConnecting;
+                parms[0] = ControlMessage.HarnessControlBusClientIsConnecting;
                 parms[1] = HarnessControlBusClientId;
                 _harnessControlBusSocketClient.SendRequest(parms);
             }
