@@ -53,4 +53,20 @@ namespace SocketMeister
         ServerController = 1
     }
 
+
+    /// <summary>
+    /// Type of socket server
+    /// </summary>
+    public enum SocketServerTypes
+    {
+        /// <summary>
+        /// Standard socket server
+        /// </summary>
+        SocketServer = 0,
+        /// <summary>
+        /// Policy server
+        /// </summary>
+        PolicyServer = 1
+    }
+
 }

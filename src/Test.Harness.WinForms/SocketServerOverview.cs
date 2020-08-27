@@ -15,6 +15,7 @@ namespace SocketMeister.Test
     {
         private readonly object _lock = new object();
         private int _port = 4502;
+        private SocketServerTypes _socketServerType = SocketServerTypes.SocketServer;
         private SocketServer _socketServer = null;
 
         /// <summary>
@@ -40,7 +41,7 @@ namespace SocketMeister.Test
         public SocketServerOverview()
         {
             InitializeComponent();
-            SetLabel();
+            RefreshUserInterface();
         }
 
 
@@ -75,9 +76,23 @@ namespace SocketMeister.Test
             set
             {
                 _port = value;
-                SetLabel();
+                RefreshUserInterface();
             }
         }
+
+        public SocketServerTypes SocketServerType
+        {
+            get
+            {
+                return _socketServerType;
+            }
+            set
+            {
+                _socketServerType = value;
+                RefreshUserInterface();
+            }
+        }
+
 
         private void BtnStart_Click(object sender, EventArgs e)
         {
@@ -158,9 +173,20 @@ namespace SocketMeister.Test
         }
 
 
-        private void SetLabel()
+        private void RefreshUserInterface()
         {
-            LabelPort.Text = "Socket server on port " + _port.ToString();
+            if (_socketServerType == SocketServerTypes.PolicyServer)
+            {
+                LabelPort.Text = "Policy server on port " + _port.ToString();
+                SessionCountIcon.Visible = false;
+                SessionCountLabel.Visible = false;
+            }
+            else
+            {
+                LabelPort.Text = "Socket server on port " + _port.ToString();
+                SessionCountIcon.Visible = true;
+                SessionCountLabel.Visible = true;
+            }
         }
 
         public void Start()
