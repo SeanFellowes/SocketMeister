@@ -11,7 +11,7 @@ namespace SocketMeister.Testing
     /// </summary>
     internal class ClientController
     {
-        private readonly HarnessControlBusClient _harnessControlBusClient;
+        private readonly ControlBusClient _harnessControlBusClient;
         private readonly object _lock = new object();
 
         /// <summary>
@@ -21,9 +21,9 @@ namespace SocketMeister.Testing
 
         public ClientController(int HarnessControlBusClientId, string HarnessControlBusIPAddress)
         {
-            _harnessControlBusClient = new HarnessControlBusClient( HarnessControlBusClientType.ClientController, HarnessControlBusClientId, HarnessControlBusIPAddress, Constants.HarnessControlBusPort);
+            _harnessControlBusClient = new ControlBusClient( ControlBusClientType.ClientController, HarnessControlBusClientId, HarnessControlBusIPAddress, Constants.HarnessControlBusPort);
             _harnessControlBusClient.ConnectionFailed += harnessControlBusClient_ConnectionFailed;
-            _harnessControlBusClient.HarnessControlBusSocketClient.MessageReceived += HarnessControlBusSocketClient_MessageReceived;
+            _harnessControlBusClient.ControlBusSocketClient.MessageReceived += HarnessControlBusSocketClient_MessageReceived;
         }
 
         private void HarnessControlBusSocketClient_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)

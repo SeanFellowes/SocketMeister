@@ -39,9 +39,9 @@ namespace SocketMeister
 
 
     /// <summary>
-    /// Type of HarnessControlBusClient
+    /// Type of ControlBusClient
     /// </summary>
-    internal enum HarnessControlBusClientType
+    internal enum ControlBusClientType
     {
         /// <summary>
         /// HarnessControlBusClient is for a ClientController

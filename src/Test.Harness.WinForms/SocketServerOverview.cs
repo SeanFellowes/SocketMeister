@@ -13,9 +13,9 @@ namespace SocketMeister.Test
 {
     public partial class SocketServerOverview : UserControl
     {
-        private readonly object lockControl = new object();
-        private int port = 4502;
-        private SocketServer _controlBusSocketServer = null;
+        private readonly object _lock = new object();
+        private int _port = 4502;
+        private SocketServer _socketServer = null;
 
         /// <summary>
         /// Raised when an trace log event has been raised.
@@ -49,20 +49,20 @@ namespace SocketMeister.Test
         /// </summary>
         public void UnregisterEvents()
         {
-            if (_controlBusSocketServer != null)
+            if (_socketServer != null)
             {
-                _controlBusSocketServer.ClientsChanged -= SocketServer_ClientsChanged;
-                _controlBusSocketServer.ListenerStateChanged -= SocketServer_ListenerStateChanged;
-                _controlBusSocketServer.TraceEventRaised -= SocketServer_TraceEventRaised;
-                _controlBusSocketServer.MessageReceived -= SocketServer_MessageReceived;
-                _controlBusSocketServer.RequestReceived -= SocketServer_RequestReceived;
+                _socketServer.ClientsChanged -= SocketServer_ClientsChanged;
+                _socketServer.ListenerStateChanged -= SocketServer_ListenerStateChanged;
+                _socketServer.TraceEventRaised -= SocketServer_TraceEventRaised;
+                _socketServer.MessageReceived -= SocketServer_MessageReceived;
+                _socketServer.RequestReceived -= SocketServer_RequestReceived;
             }
         }
 
         public SocketServer SocketServer
         {
-            get { return _controlBusSocketServer; }
-            set { _controlBusSocketServer = value; }
+            get { return _socketServer; }
+            set { _socketServer = value; }
         }
 
         public int Port
@@ -70,11 +70,11 @@ namespace SocketMeister.Test
             get
             {
                 //if (serverType == ServerType.PolicyServer) return policyPort;
-                return port;
+                return _port;
             }
             set
             {
-                port = value;
+                _port = value;
                 SetLabel();
             }
         }
@@ -141,11 +141,11 @@ namespace SocketMeister.Test
         {
             try
             {
-                if (_controlBusSocketServer == null) return false;
-                if (_controlBusSocketServer.Status ==  SocketServerStatus.Started)
+                if (_socketServer == null) return false;
+                if (_socketServer.Status ==  SocketServerStatus.Started)
                 {
                     this.Cursor = Cursors.WaitCursor;
-                    _controlBusSocketServer.Stop();
+                    _socketServer.Stop();
                     return true;
                 }
                 return false;
@@ -160,7 +160,7 @@ namespace SocketMeister.Test
 
         private void SetLabel()
         {
-            LabelPort.Text = "Socket server on port " + port.ToString();
+            LabelPort.Text = "Socket server on port " + _port.ToString();
         }
 
         public void Start()
@@ -189,13 +189,13 @@ namespace SocketMeister.Test
 
         private void BgStartService_DoWork(object sender, DoWorkEventArgs e)
         {
-            _controlBusSocketServer = new SocketServer(port, true);
-            _controlBusSocketServer.ClientsChanged += SocketServer_ClientsChanged;
-            _controlBusSocketServer.ListenerStateChanged += SocketServer_ListenerStateChanged;
-            _controlBusSocketServer.TraceEventRaised += SocketServer_TraceEventRaised;
-            _controlBusSocketServer.MessageReceived += SocketServer_MessageReceived;
-            _controlBusSocketServer.RequestReceived += SocketServer_RequestReceived;
-            _controlBusSocketServer.Start();
+            _socketServer = new SocketServer(_port, true);
+            _socketServer.ClientsChanged += SocketServer_ClientsChanged;
+            _socketServer.ListenerStateChanged += SocketServer_ListenerStateChanged;
+            _socketServer.TraceEventRaised += SocketServer_TraceEventRaised;
+            _socketServer.MessageReceived += SocketServer_MessageReceived;
+            _socketServer.RequestReceived += SocketServer_RequestReceived;
+            _socketServer.Start();
         }
 
         private void SocketServer_MessageReceived(object sender, SocketServer.MessageReceivedEventArgs e)

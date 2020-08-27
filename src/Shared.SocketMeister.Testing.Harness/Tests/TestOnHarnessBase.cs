@@ -48,7 +48,7 @@ namespace SocketMeister.Testing.Tests
                 _maxClientId++;
                 nextClientId = _maxClientId;
             }
-            HarnessControlBusClientSocketClient newClient = new HarnessControlBusClientSocketClient( HarnessControlBusClientType.ClientController, nextClientId);
+            HarnessControlBusClientSocketClient newClient = new HarnessControlBusClientSocketClient( ControlBusClientType.ClientController, nextClientId);
             ClientCreated?.Invoke(this, new HarnessClientEventArgs(newClient));
             try
             {

@@ -11,7 +11,7 @@ namespace SocketMeister.Testing
     /// </summary>
     public class ServerController
     {
-        private readonly HarnessControlBusClient _harnessControlBusClient;
+        private readonly ControlBusClient _harnessControlBusClient;
         private readonly object _lock = new object();
         private readonly int _port;
         private SocketServer _socketServer = null;
@@ -50,9 +50,9 @@ namespace SocketMeister.Testing
         public ServerController(int Port, int HarnessControlBusClientId, string HarnessControlBusIPAddress)
         {
             //  CONNECT TO THE HarnessController
-            _harnessControlBusClient = new HarnessControlBusClient(HarnessControlBusClientType.ClientController, HarnessControlBusClientId, HarnessControlBusIPAddress, Constants.HarnessControlBusPort);
+            _harnessControlBusClient = new ControlBusClient(ControlBusClientType.ClientController, HarnessControlBusClientId, HarnessControlBusIPAddress, Constants.HarnessControlBusPort);
             _harnessControlBusClient.ConnectionFailed += harnessControlBusClient_ConnectionFailed;
-            _harnessControlBusClient.HarnessControlBusSocketClient.MessageReceived += HarnessControlBusSocketClient_MessageReceived;
+            _harnessControlBusClient.ControlBusSocketClient.MessageReceived += HarnessControlBusSocketClient_MessageReceived;
 
             _port = Port;
         }

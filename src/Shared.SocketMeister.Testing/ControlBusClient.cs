@@ -9,13 +9,13 @@ namespace SocketMeister.Testing
     /// <summary>
     /// Socket client for sending and receiving control messages between a ClientController and HarnessController or ServerController and HarnessController
     /// </summary>
-    internal class HarnessControlBusClient
+    internal class ControlBusClient
     {
-        private readonly int _harnessControlBusClientId;
-        private readonly HarnessControlBusClientType _harnessControlBusClientType;
-        private readonly string _harnessControlBusIPAddress;
-        private readonly int _harnessControlBusPort;
-        private readonly SocketClient _harnessControlBusSocketClient = null;
+        private readonly int _controlBusClientId;
+        private readonly ControlBusClientType _controlBusClientType;
+        private readonly int _controlBusPort;
+        private readonly string _controlBusServerIPAddress;
+        private readonly SocketClient _controlBusSocketClient = null;
 
         private readonly object _lock = new object();
 
@@ -29,18 +29,18 @@ namespace SocketMeister.Testing
         /// </summary> 
         public event EventHandler<EventArgs> ConnectionFailed;
 
-        public HarnessControlBusClient(HarnessControlBusClientType HarnessControlBusClientType, int HarnessControlBusClientId, string HarnessControlBusIPAddress, int HarnessControlBusPort)
+        public ControlBusClient(ControlBusClientType ControlBusClientType, int ControlBusClientId, string ControlBusServerIPAddress, int ControlBusPort)
         {
-            _harnessControlBusClientType = HarnessControlBusClientType;
-            _harnessControlBusClientId = HarnessControlBusClientId;
-            _harnessControlBusIPAddress = HarnessControlBusIPAddress;
-            _harnessControlBusPort = HarnessControlBusPort;
+            _controlBusClientType = ControlBusClientType;
+            _controlBusClientId = ControlBusClientId;
+            _controlBusServerIPAddress = ControlBusServerIPAddress;
+            _controlBusPort = ControlBusPort;
 
             //  CONNECT TO THE TEST HARNESS ON THE CONTROL CHANNEL AT PORT Constants.HarnessControlBusPort. THE CONTROL CHANEL ALLOWS COMMUNICATION BACK AND FORTH FROM TEST HARNESS TO CLIENT
-            List<SocketEndPoint> endPoints = new List<SocketEndPoint>() { new SocketEndPoint(HarnessControlBusIPAddress, HarnessControlBusPort) };
-            _harnessControlBusSocketClient = new SocketClient(endPoints, true);
-            _harnessControlBusSocketClient.ConnectionStatusChanged += TestHarnessControlBus_ConnectionStatusChanged;
-            _harnessControlBusSocketClient.MessageReceived += TestHarnessControlBus_MessageReceived;
+            List<SocketEndPoint> endPoints = new List<SocketEndPoint>() { new SocketEndPoint(ControlBusServerIPAddress, ControlBusPort) };
+            _controlBusSocketClient = new SocketClient(endPoints, true);
+            _controlBusSocketClient.ConnectionStatusChanged += ControlBus_ConnectionStatusChanged;
+            _controlBusSocketClient.MessageReceived += ControlBus_MessageReceived;
 
             Thread bgFailIfDisconnected = new Thread(new ThreadStart(delegate
             {
@@ -48,13 +48,13 @@ namespace SocketMeister.Testing
                 DateTime maxWait = DateTime.Now.AddMilliseconds(5000);
                 while (true == true)
                 {
-                    if (_harnessControlBusSocketClient.ConnectionStatus == SocketClient.ConnectionStatuses.Connected)
+                    if (_controlBusSocketClient.ConnectionStatus == SocketClient.ConnectionStatuses.Connected)
                     {
                         break;
                     }
                     else if (DateTime.Now > maxWait)
                     {
-                        if (_harnessControlBusSocketClient != null) _harnessControlBusSocketClient.Stop();
+                        if (_controlBusSocketClient != null) _controlBusSocketClient.Stop();
                         ConnectionFailed?.Invoke(this, new EventArgs());
                         break;
                     }
@@ -68,33 +68,33 @@ namespace SocketMeister.Testing
             bgFailIfDisconnected.Start();
         }
 
-        public SocketClient HarnessControlBusSocketClient
+        public SocketClient ControlBusSocketClient
         {
-            get { return _harnessControlBusSocketClient; }
+            get { return _controlBusSocketClient; }
         }
 
-        public int HarnessControlBusClientId
+        public int ControlBusClientId
         {
-            get { return _harnessControlBusClientId; } 
+            get { return _controlBusClientId; } 
         }
 
-        public HarnessControlBusClientType HarnessControlBusClientType
+        public ControlBusClientType ControlBusClientType
         {
-            get { return _harnessControlBusClientType; }
+            get { return _controlBusClientType; }
         }
 
-        public int HarnessControlBusPort
+        public int ControlBusPort
         {
-            get { return _harnessControlBusPort; } 
+            get { return _controlBusPort; } 
         }
 
-        public string HarnessControlBusIPAddress
+        public string ControlBusServerIPAddress
         {
-            get { return _harnessControlBusIPAddress; }
+            get { return _controlBusServerIPAddress; }
         }
 
 
-        private void TestHarnessControlBus_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
+        private void ControlBus_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
         {
             throw new NotImplementedException();
         }
@@ -103,21 +103,21 @@ namespace SocketMeister.Testing
         /// <summary>
         /// The connection status of the socket client
         /// </summary>
-        public SocketClientConnectionStatus HarnessControlBusConnectionStatus
+        public SocketClientConnectionStatus SocketClientConnectionStatus
         {
-            get { return (SocketClientConnectionStatus)_harnessControlBusSocketClient.ConnectionStatus; }
+            get { return (SocketClientConnectionStatus)_controlBusSocketClient.ConnectionStatus; }
         }
 
 
-        private void TestHarnessControlBus_ConnectionStatusChanged(object sender, SocketClient.ConnectionStatusChangedEventArgs e)
+        private void ControlBus_ConnectionStatusChanged(object sender, SocketClient.ConnectionStatusChangedEventArgs e)
         {
             //  SEND A CONTROL MESSAGE TO THE SERVER
             if (e.Status == SocketClient.ConnectionStatuses.Connected)
             {
                 object[] parms = new object[2];
                 parms[0] = ControlMessage.HarnessControlBusClientIsConnecting;
-                parms[1] = HarnessControlBusClientId;
-                _harnessControlBusSocketClient.SendRequest(parms);
+                parms[1] = ControlBusClientId;
+                _controlBusSocketClient.SendRequest(parms);
             }
             ConnectionStatusChanged?.Invoke(this, e);
         }
@@ -125,7 +125,7 @@ namespace SocketMeister.Testing
 
         public void Stop()
         {
-            _harnessControlBusSocketClient.Stop();
+            _controlBusSocketClient.Stop();
         }
     }
 }

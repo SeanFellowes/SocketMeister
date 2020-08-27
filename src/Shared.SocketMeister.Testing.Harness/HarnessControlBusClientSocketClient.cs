@@ -15,11 +15,11 @@ namespace SocketMeister.Testing
     internal class HarnessControlBusClientSocketClient
     {
         private int _clientId;
-        private HarnessControlBusClientType _clientType;
+        private ControlBusClientType _clientType;
         private SocketServer.Client _socketClient = null;
         private readonly object _lock = new object();
 
-        public HarnessControlBusClientSocketClient(HarnessControlBusClientType ClientType, int ClientId)
+        public HarnessControlBusClientSocketClient(ControlBusClientType ClientType, int ClientId)
         {
             _clientType = ClientType;
             _clientId = ClientId;
@@ -39,7 +39,7 @@ namespace SocketMeister.Testing
             get { lock (_lock) { return _clientId; } }
         }
 
-        public HarnessControlBusClientType ClientType {  get { return _clientType; } }
+        public ControlBusClientType ClientType {  get { return _clientType; } }
 
         /// <summary>
         /// Lock to provide threadsafe operations

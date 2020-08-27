@@ -73,7 +73,7 @@ namespace SocketMeister.Testing
             policyServer.TraceEventRaised += PolicyServer_TraceEventRaised;
 
             //  SETUP FIXED SERVER
-            _fixedServerControllerHarnessClient = new HarnessControlBusClientSocketClient( HarnessControlBusClientType.ServerController, int.MaxValue - 1);
+            _fixedServerControllerHarnessClient = new HarnessControlBusClientSocketClient( ControlBusClientType.ServerController, int.MaxValue - 1);
             _fixedServerController = new ServerController(Constants.HarnessFixedServerPort, int.MaxValue - 1, "127.0.0.1");
 
             //  SEAN SEAN SEAN 
@@ -83,7 +83,7 @@ namespace SocketMeister.Testing
 
 
             //  SETUP FIXED CLIENT
-            _fixedClientControllerHarnessClient = new HarnessControlBusClientSocketClient( HarnessControlBusClientType.ClientController, int.MaxValue);
+            _fixedClientControllerHarnessClient = new HarnessControlBusClientSocketClient( ControlBusClientType.ClientController, int.MaxValue);
             _fixedClientController = new ClientController(int.MaxValue, "127.0.0.1");
 //#if !DEBUG
 //            _fixedClientControllerHarnessClient.LaunchClientApplication();
