@@ -11,7 +11,7 @@ namespace SocketMeister.Testing
     /// </summary>
     public class ServerController
     {
-        private readonly ControlBusClient _harnessControlBusClient;
+        private readonly ControlBusClient _controlBusClient;
         private readonly object _lock = new object();
         private readonly int _port;
         private SocketServer _socketServer = null;
@@ -47,23 +47,23 @@ namespace SocketMeister.Testing
         internal event EventHandler<SocketServer.ClientsChangedEventArgs> ClientsChanged;
 
 
-        public ServerController(int Port, int HarnessControlBusClientId, string HarnessControlBusIPAddress)
+        public ServerController(int Port, int ControlBusClientId, string ControlBusServerIPAddress)
         {
             //  CONNECT TO THE HarnessController
-            _harnessControlBusClient = new ControlBusClient(ControlBusClientType.ClientController, HarnessControlBusClientId, HarnessControlBusIPAddress, Constants.HarnessControlBusPort);
-            _harnessControlBusClient.ConnectionFailed += harnessControlBusClient_ConnectionFailed;
-            _harnessControlBusClient.ControlBusSocketClient.MessageReceived += HarnessControlBusSocketClient_MessageReceived;
+            _controlBusClient = new ControlBusClient(ControlBusClientType.ClientController, ControlBusClientId, ControlBusServerIPAddress, Constants.HarnessControlBusPort);
+            _controlBusClient.ConnectionFailed += ControlBus_ConnectionFailed;
+            _controlBusClient.ControlBusSocketClient.MessageReceived += ControlBus_MessageReceived;
 
             _port = Port;
         }
 
 
-        private void HarnessControlBusSocketClient_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
+        private void ControlBus_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
         {
             throw new NotImplementedException();
         }
 
-        private void harnessControlBusClient_ConnectionFailed(object sender, EventArgs e)
+        private void ControlBus_ConnectionFailed(object sender, EventArgs e)
         {
             //  CONNECTION TO THE HarnessController COULD NOT BE ESTABLISHED. PARENT FORM (IF THERE IS ONE) SHOULD CLOSE
             HarnessConnectionFailed?.Invoke(this, e);
@@ -74,7 +74,7 @@ namespace SocketMeister.Testing
         /// </summary>
         public void StopAll()
         {
-            _harnessControlBusClient.Stop();
+            _controlBusClient.Stop();
             StopSocketServer();
         }
 

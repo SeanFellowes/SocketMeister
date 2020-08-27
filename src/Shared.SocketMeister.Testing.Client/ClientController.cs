@@ -11,36 +11,36 @@ namespace SocketMeister.Testing
     /// </summary>
     internal class ClientController
     {
-        private readonly ControlBusClient _harnessControlBusClient;
+        private readonly ControlBusClient _controlBusClient;
         private readonly object _lock = new object();
 
         /// <summary>
         /// Triggered when connection could not be established with the HarnessController. This ClientController should now abort (close)
         /// </summary> 
-        public event EventHandler<EventArgs> HarnessConnectionFailed;
+        public event EventHandler<EventArgs> ControlBusConnectionFailed;
 
-        public ClientController(int HarnessControlBusClientId, string HarnessControlBusIPAddress)
+        public ClientController(int ControlBusClientId, string ControlBusServerIPAddress)
         {
-            _harnessControlBusClient = new ControlBusClient( ControlBusClientType.ClientController, HarnessControlBusClientId, HarnessControlBusIPAddress, Constants.HarnessControlBusPort);
-            _harnessControlBusClient.ConnectionFailed += harnessControlBusClient_ConnectionFailed;
-            _harnessControlBusClient.ControlBusSocketClient.MessageReceived += HarnessControlBusSocketClient_MessageReceived;
+            _controlBusClient = new ControlBusClient( ControlBusClientType.ClientController, ControlBusClientId, ControlBusServerIPAddress, Constants.HarnessControlBusPort);
+            _controlBusClient.ConnectionFailed += ControlBus_ConnectionFailed;
+            _controlBusClient.ControlBusSocketClient.MessageReceived += ControlBus_MessageReceived;
         }
 
-        private void HarnessControlBusSocketClient_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
+        private void ControlBus_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
         {
             throw new NotImplementedException();
         }
 
-        private void harnessControlBusClient_ConnectionFailed(object sender, EventArgs e)
+        private void ControlBus_ConnectionFailed(object sender, EventArgs e)
         {
             //  CONNECTION TO THE HarnessController COULD NOT BE ESTABLISHED.
-            HarnessConnectionFailed?.Invoke(this, e);
+            ControlBusConnectionFailed?.Invoke(this, e);
         }
 
 
         public void Stop()
         {
-            _harnessControlBusClient.Stop();
+            _controlBusClient.Stop();
         }
 
     }
