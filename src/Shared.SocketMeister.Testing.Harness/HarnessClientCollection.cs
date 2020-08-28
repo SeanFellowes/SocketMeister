@@ -9,27 +9,27 @@ using System.Xml;
 namespace SocketMeister.Testing
 {
 
-    internal class HarnessClientCollection : IEnumerable<ControlBusListenerClient>
+    internal class HarnessClientCollection : IEnumerable<ClientController>
     {
-        private readonly Dictionary<int, ControlBusListenerClient> _dictClientId = new Dictionary<int, ControlBusListenerClient>();
-        private readonly List<ControlBusListenerClient> _listClient = new List<ControlBusListenerClient>();
+        private readonly Dictionary<int, ClientController> _dictClientId = new Dictionary<int, ClientController>();
+        private readonly List<ClientController> _listClient = new List<ClientController>();
         private static readonly object _lock = new object();
 
         public HarnessClientCollection()
         {
         }
 
-        public ControlBusListenerClient this[int ClientId]
+        public ClientController this[int ClientId]
         {
             get
             {
-                ControlBusListenerClient client;
+                ClientController client;
                 if (_dictClientId.TryGetValue(ClientId, out client) == true) return client;
                 else return null;
             }
         }
 
-        IEnumerator<ControlBusListenerClient> IEnumerable<ControlBusListenerClient>.GetEnumerator()
+        IEnumerator<ClientController> IEnumerable<ClientController>.GetEnumerator()
         {
             return _listClient.GetEnumerator();
         }
@@ -86,13 +86,13 @@ namespace SocketMeister.Testing
         /// </summary>
         public void DisconnectClients()
         {
-            List<ControlBusListenerClient> items;
+            List<ClientController> items;
             lock (_lock) 
             { 
                 items = _listClient.ToList(); 
             }
 
-            foreach(ControlBusListenerClient item in items)
+            foreach(ClientController item in items)
             {
                 item.Disconnect();
             }

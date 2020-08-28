@@ -20,7 +20,7 @@ namespace SocketMeister.Testing.Tests
         {
             try
             {
-                ControlBusListenerClient ClientId01 = base.AddClient();
+                ClientController ClientId01 = base.AddClient();
 
                 //for (int r = 0; r < 20; r++)
                 //{

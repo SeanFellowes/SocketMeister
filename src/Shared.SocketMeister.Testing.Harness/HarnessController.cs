@@ -30,8 +30,6 @@ namespace SocketMeister.Testing
         private static readonly object _lock = new object();
         private readonly ClientController _fixedClient1;
         private readonly ServerController _fixedServer1;
-        private readonly ControlBusListenerClient _fixedClient1ListenerClient;
-        private readonly ControlBusListenerClient _fixedServer1ListenerClient;
         private readonly PolicyServer _policyServer;
         private readonly List<ITestOnHarness> _tests = new List<ITestOnHarness>();
 
@@ -76,7 +74,6 @@ namespace SocketMeister.Testing
             _policyServer.TraceEventRaised += PolicyServer_TraceEventRaised;
 
             //  SETUP FIXED SERVER
-            _fixedServer1ListenerClient = new ControlBusListenerClient( ControlBusClientType.ServerController, int.MaxValue - 1);
             _fixedServer1 = new ServerController(Constants.HarnessFixedServerPort, int.MaxValue - 1, "127.0.0.1");
 
             //  SEAN SEAN SEAN 
@@ -86,7 +83,6 @@ namespace SocketMeister.Testing
 
 
             //  SETUP FIXED CLIENT
-            _fixedClient1ListenerClient = new ControlBusListenerClient( ControlBusClientType.ClientController, int.MaxValue);
             _fixedClient1 = new ClientController(int.MaxValue, "127.0.0.1");
 //#if !DEBUG
 //            _fixedClientControllerHarnessClient.LaunchClientApplication();
@@ -100,7 +96,7 @@ namespace SocketMeister.Testing
                 {
                     if (DateTime.Now > maxWait)
                         throw new TimeoutException("Visual Studio debug mode timed out waiting for the fixed client to connect. Make sure both the harness and client applications are set as Startup Projects.");
-                    else if (_fixedClient1ListenerClient.ListenerClient != null)
+                    else if (_fixedClient1.ListenerClient != null)
                         break;
                     else
                         Thread.Sleep(1000);
@@ -118,12 +114,12 @@ namespace SocketMeister.Testing
                 if (ClientId == int.MaxValue)
                 {
                     //  FIXED CLIENT HAS PHONED HOME
-                    _fixedClient1ListenerClient.ListenerClient = e.Client;
+                    _fixedClient1.ListenerClient = e.Client;
                 }
                 else
                 {
                     //  ANOTHER CLIENT HAS PHONED HOME. FIND THE CLIENT
-                    ControlBusListenerClient client = _testClientCollection[ClientId];
+                    ClientController client = _testClientCollection[ClientId];
                     if (client != null)
                     {
                         //  ASSIGN THE SocketMeister Server Client to the class. When connecting a test harness client, this value is checked for NOT null (Connected).
@@ -313,7 +309,7 @@ namespace SocketMeister.Testing
         /// <summary>
         /// In DEBUG, this is attached to this test harness for easy debugging. In RELEASE, a seperate client application is launched.
         /// </summary>
-        public ControlBusListenerClient FixedHarnessClient {  get { return _fixedClient1ListenerClient; } }
+        public ClientController FixedHarnessClient {  get { return _fixedClient1; } }
 
         private void Test_StatusChanged(object sender, HarnessTestStatusChangedEventArgs e)
         {

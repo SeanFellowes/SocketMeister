@@ -9,7 +9,7 @@ namespace SocketMeister.Testing
     /// <summary>
     /// Controls a socket server
     /// </summary>
-    public class ServerController : IDisposable
+    public partial class ServerController : IDisposable
     {
         private readonly ControlBusClient _controlBusClient;
         private readonly object _lock = new object();
@@ -96,6 +96,9 @@ namespace SocketMeister.Testing
             _controlBusClient.Stop();
             StopSocketServer();
         }
+
+
+        public int ClientId { get { return _controlBusClient.ControlBusClientId; } }
 
         public SocketServer SocketServer
         {

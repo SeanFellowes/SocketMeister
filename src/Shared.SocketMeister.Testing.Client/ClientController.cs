@@ -9,7 +9,7 @@ namespace SocketMeister.Testing
     /// <summary>
     /// Test Harness Client
     /// </summary>
-    internal class ClientController : IDisposable
+    internal partial class ClientController : IDisposable
     {
         private readonly ControlBusClient _controlBusClient;
         private readonly object _lock = new object();
