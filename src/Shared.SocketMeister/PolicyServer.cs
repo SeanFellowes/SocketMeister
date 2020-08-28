@@ -46,7 +46,7 @@ namespace SocketMeister
         /// <summary>
         /// The status of the socket server changed. Statuses include stating, started, stopping and stopped.
         /// </summary>
-        public event EventHandler<ServerStatusEventArgs> SocketServerStatusChanged;
+        public event EventHandler<SocketServer.SocketServerStatusChangedEventArgs> ListenerStateChanged;
 
         /// <summary>
         /// An unknown request was received. Port 943 is expecting ONLY policy requests.
@@ -93,9 +93,9 @@ namespace SocketMeister
         public int Port {  get { return ServicePort; } }
 
         /// <summary>
-        /// The current status of the sockted server. Statuses include Stopped, Starting, Started and Stopping
+        /// The current status of the listener socket. Statuses include Stopped, Starting, Started and Stopping
         /// </summary>
-        public SocketServerStatus Status
+        public SocketServerStatus ListenerState
         {
             get { lock (classLock) { return status; } }
             private set
@@ -107,7 +107,7 @@ namespace SocketMeister
                 }
                 try 
                 {
-                    SocketServerStatusChanged?.Invoke(this, new ServerStatusEventArgs(value));
+                    ListenerStateChanged?.Invoke(this, new SocketServer.SocketServerStatusChangedEventArgs(value));
                 }
                 catch { }
             }
@@ -155,8 +155,8 @@ namespace SocketMeister
         /// </summary>
         public void Start()
         {
-            if (this.Status != SocketServerStatus.Stopped) throw new Exception("Cannot start Socket Policy Server as is is not stopped.");
-            this.Status = SocketServerStatus.Starting;
+            if (this.ListenerState != SocketServerStatus.Stopped) throw new Exception("Cannot start Socket Policy Server as is is not stopped.");
+            this.ListenerState = SocketServerStatus.Starting;
 
             new Thread(
                 new ThreadStart(delegate
@@ -180,13 +180,13 @@ namespace SocketMeister
                         listener.Start(IPAddress, ServicePort, PolicyClient_Connected, 1000);
 
                         //  REGISTER AS STARTED AND START THE MESSAGE SENDER (NOTE: WILL NOT RUN UNLESS SocketServer.SocketServerStatus = STARTED
-                        this.Status = SocketServerStatus.Started;
+                        this.ListenerState = SocketServerStatus.Started;
 
                         TraceEventRaised?.Invoke(this, new TraceEventArgs("Policy server started on port " + ServicePort.ToString(CultureInfo.InvariantCulture),  SeverityType.Information, 10023));
                     }
                     catch (Exception ex)
                     {
-                        this.Status = SocketServerStatus.Stopped;
+                        this.ListenerState = SocketServerStatus.Stopped;
                         TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 52800));
                     }
                 })).Start();
@@ -198,12 +198,12 @@ namespace SocketMeister
         /// </summary>
         public void Stop()
         {
-            if (Status == SocketServerStatus.Stopped) return;
+            if (ListenerState == SocketServerStatus.Stopped) return;
 
             try
             {
                 //  STOP THE SERVICE. CHILD THREADS WILL STOP AS SOON AS THE SocketServer.SocketServerStatus IS NOT "Started"
-                Status = SocketServerStatus.Stopping;
+                ListenerState = SocketServerStatus.Stopping;
                 Run = false;
 
                 //  LISTENERS TO REJECT NEW CLIENT CONNECTIONS
@@ -215,7 +215,7 @@ namespace SocketMeister
                 //  STOP THE LISTENERS
                 listener.Stop();
                 DateTime timeout = DateTime.Now.AddSeconds(30);
-                while (this.Status != SocketServerStatus.Stopped && DateTime.Now < timeout)
+                while (this.ListenerState != SocketServerStatus.Stopped && DateTime.Now < timeout)
                 {
                     Thread.Sleep(100);
                 }
@@ -225,11 +225,11 @@ namespace SocketMeister
                 listener.IsRunningChanged -= SocketListener_ListenerStatusChanged;
 
                 //  IT SHOULD ALREADY BE STOPPED, BUT IF THE STOP TIMED OUT IT WONT HAVE
-                this.Status = SocketServerStatus.Stopped;
+                this.ListenerState = SocketServerStatus.Stopped;
             }
             catch (Exception ex)
             {
-                Status = SocketServerStatus.Stopped;
+                ListenerState = SocketServerStatus.Stopped;
                 TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 52801));
             }
         }
@@ -251,7 +251,7 @@ namespace SocketMeister
         {
             //  IF BOTH THE POLICY AND CLIENT LISTENERS ARE RUNNING THEN RETURN A STATUS OF RUNNING
             if (listener == null) return;
-            if (listener.IsRunning != true) Status = SocketServerStatus.Stopped;
+            if (listener.IsRunning != true) ListenerState = SocketServerStatus.Stopped;
         }
 
         //  POLICY FILE LISTENER (PORT 943) - WHEN A CLIENT CONNECTS, SEND BACK THE POLICY FILE

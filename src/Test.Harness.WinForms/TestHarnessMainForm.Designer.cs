@@ -33,7 +33,7 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TestHarnessMainForm));
             this.pnlControl = new System.Windows.Forms.Panel();
-            this.ControlPolicyServer = new SocketMeister.Test.PolicyServerOverview();
+            this.ControlPolicyServer = new SocketMeister.Test.SocketServerOverview();
             this.ControlServer = new SocketMeister.Test.SocketServerOverview();
             this.panelControlHeader = new System.Windows.Forms.Panel();
             this.label2 = new System.Windows.Forms.Label();
@@ -99,22 +99,25 @@
             // 
             // ControlPolicyServer
             // 
-            this.ControlPolicyServer.BackColor = System.Drawing.Color.Linen;
-            this.ControlPolicyServer.Location = new System.Drawing.Point(371, 48);
-            this.ControlPolicyServer.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
+            this.ControlPolicyServer.BackColor = System.Drawing.Color.FloralWhite;
+            this.ControlPolicyServer.ClientCount = 0;
+            this.ControlPolicyServer.Location = new System.Drawing.Point(406, 47);
+            this.ControlPolicyServer.Margin = new System.Windows.Forms.Padding(2);
             this.ControlPolicyServer.Name = "ControlPolicyServer";
-            this.ControlPolicyServer.PolicyServer = null;
-            this.ControlPolicyServer.Size = new System.Drawing.Size(337, 36);
-            this.ControlPolicyServer.TabIndex = 6;
+            this.ControlPolicyServer.Port = 4502;
+            this.ControlPolicyServer.Size = new System.Drawing.Size(341, 33);
+            this.ControlPolicyServer.SocketServerType = SocketMeister.SocketServerTypes.PolicyServer;
+            this.ControlPolicyServer.TabIndex = 5;
             // 
             // ControlServer
             // 
+            this.ControlServer.ClientCount = 0;
             this.ControlServer.Location = new System.Drawing.Point(4, 47);
             this.ControlServer.Margin = new System.Windows.Forms.Padding(2);
             this.ControlServer.Name = "ControlServer";
             this.ControlServer.Port = 4505;
             this.ControlServer.Size = new System.Drawing.Size(350, 31);
-            this.ControlServer.SocketServer = null;
+            this.ControlServer.SocketServerType = SocketMeister.SocketServerTypes.SocketServer;
             this.ControlServer.TabIndex = 4;
             // 
             // panelControlHeader
@@ -175,44 +178,48 @@
             // TestServer4
             // 
             this.TestServer4.BackColor = System.Drawing.Color.Transparent;
+            this.TestServer4.ClientCount = 0;
             this.TestServer4.Location = new System.Drawing.Point(358, 82);
             this.TestServer4.Margin = new System.Windows.Forms.Padding(2);
             this.TestServer4.Name = "TestServer4";
             this.TestServer4.Port = 4513;
             this.TestServer4.Size = new System.Drawing.Size(350, 36);
-            this.TestServer4.SocketServer = null;
+            this.TestServer4.SocketServerType = SocketMeister.SocketServerTypes.SocketServer;
             this.TestServer4.TabIndex = 8;
             // 
             // TestServer3
             // 
             this.TestServer3.BackColor = System.Drawing.Color.Honeydew;
+            this.TestServer3.ClientCount = 0;
             this.TestServer3.Location = new System.Drawing.Point(358, 47);
             this.TestServer3.Margin = new System.Windows.Forms.Padding(2);
             this.TestServer3.Name = "TestServer3";
             this.TestServer3.Port = 4511;
             this.TestServer3.Size = new System.Drawing.Size(350, 36);
-            this.TestServer3.SocketServer = null;
+            this.TestServer3.SocketServerType = SocketMeister.SocketServerTypes.SocketServer;
             this.TestServer3.TabIndex = 7;
             // 
             // TestServer2
             // 
             this.TestServer2.BackColor = System.Drawing.Color.Honeydew;
+            this.TestServer2.ClientCount = 0;
             this.TestServer2.Location = new System.Drawing.Point(4, 82);
             this.TestServer2.Margin = new System.Windows.Forms.Padding(2);
             this.TestServer2.Name = "TestServer2";
             this.TestServer2.Port = 4512;
             this.TestServer2.Size = new System.Drawing.Size(350, 36);
-            this.TestServer2.SocketServer = null;
+            this.TestServer2.SocketServerType = SocketMeister.SocketServerTypes.SocketServer;
             this.TestServer2.TabIndex = 6;
             // 
             // TestServer1
             // 
+            this.TestServer1.ClientCount = 0;
             this.TestServer1.Location = new System.Drawing.Point(4, 47);
             this.TestServer1.Margin = new System.Windows.Forms.Padding(2);
             this.TestServer1.Name = "TestServer1";
             this.TestServer1.Port = 4510;
             this.TestServer1.Size = new System.Drawing.Size(350, 36);
-            this.TestServer1.SocketServer = null;
+            this.TestServer1.SocketServerType = SocketMeister.SocketServerTypes.SocketServer;
             this.TestServer1.TabIndex = 4;
             // 
             // panel2
@@ -616,7 +623,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn5;
         private System.Windows.Forms.DataGridViewButtonColumn ColumnStack;
         private System.Windows.Forms.DataGridViewTextBoxColumn StackTrace;
-        private PolicyServerOverview ControlPolicyServer;
+        private SocketServerOverview ControlPolicyServer;
     }
 }
 

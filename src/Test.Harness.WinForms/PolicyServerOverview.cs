@@ -38,11 +38,11 @@ namespace SocketMeister.Test
 
                 policyServer = value;
                 policyServer.TraceEventRaised += PolicyServer_TraceEventRaised;
-                policyServer.SocketServerStatusChanged += PolicyServer_SocketServerStatusChanged;
+                policyServer.ListenerStateChanged += PolicyServer_SocketServerStatusChanged;
             }
         }
 
-        private void PolicyServer_SocketServerStatusChanged(object sender, PolicyServer.ServerStatusEventArgs e)
+        private void PolicyServer_SocketServerStatusChanged(object sender, SocketServer.SocketServerStatusChangedEventArgs e)
         {
             ChangeStatus(e.Status);
         }

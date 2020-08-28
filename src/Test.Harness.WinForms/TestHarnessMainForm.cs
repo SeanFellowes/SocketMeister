@@ -18,7 +18,7 @@ namespace SocketMeister.Test
         private const int executeButtonWidth = 90;
         private const int spacer = 0;
 
-        private readonly HarnessController testHarness = new HarnessController();
+        private readonly HarnessController _harnessController = new HarnessController();
         private int currentTestPtr = 0;
         private int errors = 0;
         private readonly BindingList<LogEntry> gridItems;
@@ -33,19 +33,22 @@ namespace SocketMeister.Test
             InitializeComponent();
 
             //  SETUP POLICY SERVER
-            ControlPolicyServer.TraceEventRaised += TraceEventRaised;
-            ControlPolicyServer.PolicyServer = testHarness.PolicyServer;
+            //ControlPolicyServer.TraceEventRaised += TraceEventRaised;
+            //ControlPolicyServer.PolicyServer = _harnessController.PolicyServer;
 
-            ControlServer.TraceEventRaised += TraceEventRaised;
-            ControlServer.MessageReceived += ControlServer_MessageReceived;
-            ControlServer.RequestReceived += ControlServer_RequestReceived;
-            TestServer1.TraceEventRaised += TraceEventRaised;
-            TestServer2.TraceEventRaised += TraceEventRaised;
-            TestServer3.TraceEventRaised += TraceEventRaised;
-            TestServer4.TraceEventRaised += TraceEventRaised;
+            _harnessController.PolicyServer.ListenerStateChanged += PolicyServer_ListenerStateChanged;
+            _harnessController.FixedServer1.ListenerStateChanged += FixedServer1_ListenerStateChanged;
+
+            //ControlServer.TraceEventRaised += TraceEventRaised;
+            //ControlServer.MessageReceived += ControlServer_MessageReceived;
+            //ControlServer.RequestReceived += ControlServer_RequestReceived;
+            //TestServer1.TraceEventRaised += TraceEventRaised;
+            //TestServer2.TraceEventRaised += TraceEventRaised;
+            //TestServer3.TraceEventRaised += TraceEventRaised;
+            //TestServer4.TraceEventRaised += TraceEventRaised;
 
             //  REGISTER FOR EVENTS FROM TESTS
-            foreach (ITestOnHarness test in testHarness.Tests)
+            foreach (ITestOnHarness test in _harnessController.Tests)
             {
                 test.PercentCompleteChanged += Test_PercentCompleteChanged;
                 test.StatusChanged += Test_TestStatusChanged;
@@ -62,13 +65,30 @@ namespace SocketMeister.Test
             };
             dGrid.DataSource = gridItems;
 
-            lblTests.Text = "Tests: " + testHarness.Tests.Count;
+            lblTests.Text = "Tests: " + _harnessController.Tests.Count;
 
-            //  START CONTROL ITEMS
-            ControlServer.Start();
-            ControlPolicyServer.Start();
+            ////  START CONTROL ITEMS
+            //ControlServer.Start();
+            //ControlPolicyServer.Start();
 
             Setup();
+        }
+
+        private void FixedServer1_ListenerStateChanged(object sender, SocketServer.SocketServerStatusChangedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void PolicyServer_ListenerStateChanged(object sender, SocketServer.SocketServerStatusChangedEventArgs e)
+        {
+            if (InvokeRequired) Invoke(new MethodInvoker(delegate { PolicyServer_ListenerStateChanged(sender, e); }));
+            else
+            {
+                ControlPolicyServer.ClientCount = 123456;
+                ControlPolicyServer.SetListenerState(e.Status);
+                //ControlServer.
+                //throw new NotImplementedException();
+            }
         }
 
         private void FormMain_Load(object sender, EventArgs e)
@@ -94,7 +114,7 @@ namespace SocketMeister.Test
             else
             {
                 ITestOnHarness test = (ITestOnHarness)sender;
-                int testIndex = testHarness.Tests.IndexOf(test);
+                int testIndex = _harnessController.Tests.IndexOf(test);
                 if (testIndex < 0) return;
                 lCol4[testIndex].Text = e.PercentComplete.ToString() + " %";
             }
@@ -106,7 +126,7 @@ namespace SocketMeister.Test
             else
             {
                 ITestOnHarness test = (ITestOnHarness)sender;
-                int testIndex = testHarness.Tests.IndexOf(test);
+                int testIndex = _harnessController.Tests.IndexOf(test);
                 if (testIndex < 0) return;
 
                 bool allTestsComplete = false;
@@ -120,16 +140,16 @@ namespace SocketMeister.Test
                     statusColor = Color.DarkRed;
                     statusText = "Failed";
                     executeThisTestEnabled = true;
-                    if (testHarness.ExecuteMode == Executing.AllTests) executeNextTest = true;
-                    else if (testHarness.ExecuteMode == Executing.StoppingAllTests) allTestsComplete = true;
+                    if (_harnessController.ExecuteMode == Executing.AllTests) executeNextTest = true;
+                    else if (_harnessController.ExecuteMode == Executing.StoppingAllTests) allTestsComplete = true;
                 }
                 else if (e.Status == TestStatus.Stopped)
                 {
                     statusColor = Color.DarkRed;
                     statusText = "Stopped";
                     executeThisTestEnabled = true;
-                    if (testHarness.ExecuteMode == Executing.AllTests) executeNextTest = true;
-                    else if (testHarness.ExecuteMode == Executing.StoppingAllTests) allTestsComplete = true;
+                    if (_harnessController.ExecuteMode == Executing.AllTests) executeNextTest = true;
+                    else if (_harnessController.ExecuteMode == Executing.StoppingAllTests) allTestsComplete = true;
                 }
                 else if (e.Status == TestStatus.InProgress)
                 {
@@ -148,16 +168,16 @@ namespace SocketMeister.Test
                     statusColor = Color.White;
                     statusText = "Not Started";
                     executeThisTestEnabled = true;
-                    if (testHarness.ExecuteMode == Executing.AllTests) executeNextTest = true;
-                    else if (testHarness.ExecuteMode == Executing.StoppingAllTests) allTestsComplete = true;
+                    if (_harnessController.ExecuteMode == Executing.AllTests) executeNextTest = true;
+                    else if (_harnessController.ExecuteMode == Executing.StoppingAllTests) allTestsComplete = true;
                 }
                 else if (e.Status == TestStatus.Successful)
                 {
                     statusColor = Color.DarkSlateBlue;
                     statusText = "Successful";
                     executeThisTestEnabled = true;
-                    if (testHarness.ExecuteMode == Executing.AllTests) executeNextTest = true;
-                    else if (testHarness.ExecuteMode == Executing.StoppingAllTests) allTestsComplete = true;
+                    if (_harnessController.ExecuteMode == Executing.AllTests) executeNextTest = true;
+                    else if (_harnessController.ExecuteMode == Executing.StoppingAllTests) allTestsComplete = true;
                 }
                 else
                 {
@@ -165,7 +185,7 @@ namespace SocketMeister.Test
                 }
 
 
-                for (int index = 0; index < testHarness.Tests.Count; index++)
+                for (int index = 0; index < _harnessController.Tests.Count; index++)
                 {
 
                     if (index == testIndex)
@@ -210,7 +230,7 @@ namespace SocketMeister.Test
                 if (executeNextTest == true)
                 {
                     currentTestPtr++;
-                    if (currentTestPtr < testHarness.Tests.Count)
+                    if (currentTestPtr < _harnessController.Tests.Count)
                     {
                         ITestOnHarness nextTest = (ITestOnHarness)lCol5[currentTestPtr].Tag;
                         nextTest.Start();
@@ -223,8 +243,8 @@ namespace SocketMeister.Test
                 
                 if (allTestsComplete == true)
                 {
-                    testHarness.ExecuteMode = Executing.Stopped;
-                    for (int index = 0; index < testHarness.Tests.Count; index++)
+                    _harnessController.ExecuteMode = Executing.Stopped;
+                    for (int index = 0; index < _harnessController.Tests.Count; index++)
                     {
                         lCol5[index].Visible = true;
                     }
@@ -243,12 +263,12 @@ namespace SocketMeister.Test
                 if (ClientId == int.MaxValue)
                 {
                     //  FIXED CLIENT HAS PHONED HOME
-                    testHarness.FixedHarnessClient.SocketClient = e.Client;
+                    _harnessController.FixedHarnessClient.SocketClient = e.Client;
                 }
                 else
                 {
                     //  ANOTHER CLIENT HAS PHONED HOME. FIND THE CLIENT
-                    HarnessControlBusClientSocketClient client = testHarness.TestClientCollection[ClientId];
+                    HarnessControlBusClientSocketClient client = _harnessController.TestClientCollection[ClientId];
                     if (client != null)
                     {
                         //  ASSIGN THE SocketMeister Server Client to the class. When connecting a test harness client, this value is checked for NOT null (Connected).
@@ -322,9 +342,9 @@ namespace SocketMeister.Test
 
         private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
         {
-            ControlPolicyServer.PolicyServer.Dispose();
-            ControlServer.UnregisterEvents();
-            ControlServer.Stop();
+            //ControlPolicyServer.PolicyServer.Dispose();
+            //ControlServer.UnregisterEvents();
+            //ControlServer.Stop();
         }
 
         private void FormMain_FormClosed(object sender, FormClosedEventArgs e)
@@ -364,7 +384,7 @@ namespace SocketMeister.Test
             CH3.Top = 0;
             CH4.Top = 0;
 
-            foreach (ITestOnHarness test in testHarness.Tests)
+            foreach (ITestOnHarness test in _harnessController.Tests)
             {
                 //  COL 1 (ID)
                 Label lb = new Label
@@ -439,15 +459,15 @@ namespace SocketMeister.Test
                 {
                     ITestOnHarness test = (ITestOnHarness)((Button)sender).Tag;
 
-                    if (testHarness.ExecuteMode == Executing.AllTests)
+                    if (_harnessController.ExecuteMode == Executing.AllTests)
                     {
                         test.Start();
                     }
-                    else if (testHarness.ExecuteMode == Executing.Stopped)
+                    else if (_harnessController.ExecuteMode == Executing.Stopped)
                     {
                         test.Start();
                     }
-                    else if (testHarness.ExecuteMode == Executing.SingleTest)
+                    else if (_harnessController.ExecuteMode == Executing.SingleTest)
                     {
                         test.Stop();
                     }
@@ -459,7 +479,7 @@ namespace SocketMeister.Test
             if (InvokeRequired) Invoke(new MethodInvoker(delegate { SetTestNotification(Test, Value); }));
             else
             {
-                int index = testHarness.Tests.IndexOf(Test);
+                int index = _harnessController.Tests.IndexOf(Test);
                 if (index < 0) return;
                 if (Value == TestStatus.Failed)
                 {
@@ -585,26 +605,26 @@ namespace SocketMeister.Test
 
         private void BtnExecuteAllTests_Click(object sender, EventArgs e)
         {
-            if (testHarness.ExecuteMode == Executing.Stopped)
+            if (_harnessController.ExecuteMode == Executing.Stopped)
             {
-                foreach (ITestOnHarness test in testHarness.Tests)
+                foreach (ITestOnHarness test in _harnessController.Tests)
                 {
                     test.Reset();
                 }
-                for (int index = 0; index < testHarness.Tests.Count; index++)
+                for (int index = 0; index < _harnessController.Tests.Count; index++)
                 {
                     lCol5[index].Visible = false;
                 }
 
-                testHarness.ExecuteMode = Executing.AllTests;
+                _harnessController.ExecuteMode = Executing.AllTests;
                 currentTestPtr = 0;
                 btnExecuteAllTests.Text = "Stop";
                 ExecuteButton_Click(lCol5[currentTestPtr], new EventArgs());
             }
-            else if (testHarness.ExecuteMode == Executing.AllTests)
+            else if (_harnessController.ExecuteMode == Executing.AllTests)
             {
-                testHarness.ExecuteMode = Executing.StoppingAllTests;
-                if (testHarness.CurrentTest != null) testHarness.CurrentTest.Stop();
+                _harnessController.ExecuteMode = Executing.StoppingAllTests;
+                if (_harnessController.CurrentTest != null) _harnessController.CurrentTest.Stop();
             }
         }
 

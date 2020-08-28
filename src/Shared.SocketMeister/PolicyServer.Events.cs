@@ -23,25 +23,25 @@ namespace SocketMeister
 
 
 
-        /// <summary>
-        /// Status of a socket service.
-        /// </summary>
-        public class ServerStatusEventArgs : EventArgs
-        {
-            /// <summary>
-            /// Constructor
-            /// </summary>
-            /// <param name="status">Current status of the service</param>
-            public ServerStatusEventArgs(SocketServerStatus status)
-            {
-                Status = status;
-            }
+        ///// <summary>
+        ///// Status of a socket service.
+        ///// </summary>
+        //public class ServerStatusEventArgs : EventArgs
+        //{
+        //    /// <summary>
+        //    /// Constructor
+        //    /// </summary>
+        //    /// <param name="status">Current status of the service</param>
+        //    public ServerStatusEventArgs(SocketServerStatus status)
+        //    {
+        //        Status = status;
+        //    }
 
-            /// <summary>
-            /// Execution status of the service.
-            /// </summary>
-            public SocketServerStatus Status { get; set; } = SocketServerStatus.Stopped;
-        }
+        //    /// <summary>
+        //    /// Execution status of the service.
+        //    /// </summary>
+        //    public SocketServerStatus Status { get; set; } = SocketServerStatus.Stopped;
+        //}
 
 
         internal class PolicyServerIsRunningChangedArgs : EventArgs

@@ -21,7 +21,7 @@ namespace SocketMeister.Testing
 
         public ClientController(int ControlBusClientId, string ControlBusServerIPAddress)
         {
-            _controlBusClient = new ControlBusClient( ControlBusClientType.ClientController, ControlBusClientId, ControlBusServerIPAddress, Constants.HarnessControlBusPort);
+            _controlBusClient = new ControlBusClient( ControlBusClientType.ClientController, ControlBusClientId, ControlBusServerIPAddress, Constants.ControlBusPort);
             _controlBusClient.ConnectionFailed += ControlBus_ConnectionFailed;
             _controlBusClient.ControlBusSocketClient.MessageReceived += ControlBus_MessageReceived;
         }

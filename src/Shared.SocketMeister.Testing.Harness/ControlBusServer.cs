@@ -1,25 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Text;
 using System.Threading;
 
 namespace SocketMeister.Testing
 {
     /// <summary>
-    /// Controls a socket server
+    /// Socket server for the control bus. This runs on the test harness.
     /// </summary>
-    public class ServerController
+    internal class ControlBusServer
     {
-        private readonly ControlBusClient _controlBusClient;
-        private readonly object _lock = new object();
-        private readonly int _port;
-        private SocketServer _socketServer = null;
-
-        /// <summary>
-        /// Triggered when connection could not be established, or failed, with the HarnessController. This ServerController should now abort (close)
-        /// </summary> 
-        public event EventHandler<EventArgs> ControlBusConnectionFailed;
+        private readonly SocketServer _socketServer = null;
 
         /// <summary>
         /// Raised when the status of the socket listener changes.
@@ -47,36 +38,17 @@ namespace SocketMeister.Testing
         internal event EventHandler<SocketServer.ClientsChangedEventArgs> ClientsChanged;
 
 
-        public ServerController(int Port, int ControlBusClientId, string ControlBusServerIPAddress)
+        public ControlBusServer()
         {
-            //  CONNECT TO THE HarnessController
-            _controlBusClient = new ControlBusClient(ControlBusClientType.ClientController, ControlBusClientId, ControlBusServerIPAddress, Constants.ControlBusPort);
-            _controlBusClient.ConnectionFailed += ControlBus_ConnectionFailed;
-            _controlBusClient.ControlBusSocketClient.MessageReceived += ControlBus_MessageReceived;
-
-            _port = Port;
+            _socketServer = new SocketServer(Constants.ControlBusPort, true);
+            _socketServer.ClientsChanged += SocketServer_ClientsChanged;
+            _socketServer.ListenerStateChanged += SocketServer_ListenerStateChanged;
+            _socketServer.TraceEventRaised += SocketServer_TraceEventRaised;
+            _socketServer.MessageReceived += SocketServer_MessageReceived;
+            _socketServer.RequestReceived += SocketServer_RequestReceived;
+            _socketServer.Start();
         }
 
-
-        private void ControlBus_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void ControlBus_ConnectionFailed(object sender, EventArgs e)
-        {
-            //  CONNECTION TO THE HarnessController COULD NOT BE ESTABLISHED. PARENT FORM (IF THERE IS ONE) SHOULD CLOSE
-            ControlBusConnectionFailed?.Invoke(this, e);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public void StopAll()
-        {
-            _controlBusClient.Stop();
-            StopSocketServer();
-        }
 
         public SocketServer SocketServer
         {
@@ -85,7 +57,7 @@ namespace SocketMeister.Testing
 
         public int Port
         {
-            get { return _port; }
+            get { return Constants.ControlBusPort; }
         }
 
 
@@ -95,24 +67,7 @@ namespace SocketMeister.Testing
         }
 
 
-        internal void StartSocketServer()
-        {
-            //  START SOCKET SERVER IN BACHGROUND
-            Thread bgStartSocketServer = new Thread(new ThreadStart(delegate
-            {
-                _socketServer = new SocketServer(_port, true);
-                _socketServer.ClientsChanged += SocketServer_ClientsChanged;
-                _socketServer.ListenerStateChanged += SocketServer_ListenerStateChanged;
-                _socketServer.TraceEventRaised += SocketServer_TraceEventRaised;
-                _socketServer.MessageReceived += SocketServer_MessageReceived;
-                _socketServer.RequestReceived += SocketServer_RequestReceived;
-                _socketServer.Start();
-            }));
-            bgStartSocketServer.IsBackground = true;
-            bgStartSocketServer.Start();
-        }
-
-        internal void StopSocketServer()
+        internal void Stop()
         {
             if (_socketServer == null) return;
 
@@ -149,8 +104,5 @@ namespace SocketMeister.Testing
         {
             TraceEventRaised?.Invoke(sender, e);
         }
-
-
-
     }
 }

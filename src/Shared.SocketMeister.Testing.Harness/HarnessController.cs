@@ -24,16 +24,16 @@ namespace SocketMeister.Testing
         public const int SilverlightPolicyPort = 943;
 
         private readonly object classLock = new object();
-        private SocketServer _controlBusSocketServer = null;
+        private readonly ControlBusServer _controlBusServer;
         private HarnessClientCollection _testClientCollection = new HarnessClientCollection();
         private ITestOnHarness _currentTest = null;
         private Executing _executeMode = Executing.Stopped;
         private static readonly object _lock = new object();
         private readonly ClientController _fixedClientController;
-        private readonly ServerController _fixedServerController;
+        private readonly ServerController _fixedServer1;
         private readonly HarnessControlBusClientSocketClient _fixedClientControllerHarnessClient;
-        private readonly HarnessControlBusClientSocketClient _fixedServerControllerHarnessClient;
-        private readonly PolicyServer policyServer;
+        private readonly HarnessControlBusClientSocketClient _fixedServer1HarnessClient;
+        private readonly PolicyServer _policyServer;
         private readonly List<ITestOnHarness> _tests = new List<ITestOnHarness>();
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace SocketMeister.Testing
         /// <summary>
         /// The status of the socket server changed. Statuses include stating, started, stopping and stopped.
         /// </summary>
-        public event EventHandler<PolicyServer.ServerStatusEventArgs> PolicyServerStatusChanged;
+        public event EventHandler<SocketServer.SocketServerStatusChangedEventArgs> PolicyServerStatusChanged;
 
 
 
@@ -67,14 +67,17 @@ namespace SocketMeister.Testing
                 if (t != null) AddTest(t);
             }
 
+            //  START CONTROL BUS LISTENER
+            _controlBusServer = new ControlBusServer();
+
             //  SETUP POLICY SERVER
-            policyServer = new PolicyServer();
-            policyServer.SocketServerStatusChanged += PolicyServer_SocketServiceStatusChanged;
-            policyServer.TraceEventRaised += PolicyServer_TraceEventRaised;
+            _policyServer = new PolicyServer();
+            _policyServer.ListenerStateChanged += PolicyServer_SocketServiceStatusChanged;
+            _policyServer.TraceEventRaised += PolicyServer_TraceEventRaised;
 
             //  SETUP FIXED SERVER
-            _fixedServerControllerHarnessClient = new HarnessControlBusClientSocketClient( ControlBusClientType.ServerController, int.MaxValue - 1);
-            _fixedServerController = new ServerController(Constants.HarnessFixedServerPort, int.MaxValue - 1, "127.0.0.1");
+            _fixedServer1HarnessClient = new HarnessControlBusClientSocketClient( ControlBusClientType.ServerController, int.MaxValue - 1);
+            _fixedServer1 = new ServerController(Constants.HarnessFixedServerPort, int.MaxValue - 1, "127.0.0.1");
 
             //  SEAN SEAN SEAN 
             //  CREATE ServerController PROPERTY AND ALLOW USER CONTROL TO ATTACH TO COLLECT USERS CONNECTED (SEPERATE FROM Controller USERS)
@@ -105,6 +108,10 @@ namespace SocketMeister.Testing
             }).Start();
         }
 
+        public ControlBusServer ControlBusServer {  get { return _controlBusServer; } }
+
+        public ServerController FixedServer1 {  get { return _fixedServer1; } }
+
 
         //SocketServer ControlBusSocketServer
         //{
@@ -128,7 +135,7 @@ namespace SocketMeister.Testing
             TraceEventRaised?.Invoke(this, e);
         }
 
-        private void PolicyServer_SocketServiceStatusChanged(object sender, PolicyServer.ServerStatusEventArgs e)
+        private void PolicyServer_SocketServiceStatusChanged(object sender, SocketServer.SocketServerStatusChangedEventArgs e)
         {
             PolicyServerStatusChanged?.Invoke(sender, e);
         }
@@ -136,7 +143,7 @@ namespace SocketMeister.Testing
 
         public void Start()
         {
-                policyServer.Start();
+                _policyServer.Start();
 
                 ////  START IN THE BACKGROUND
                 //BackgroundWorker bgStartService = new BackgroundWorker();
@@ -193,15 +200,15 @@ namespace SocketMeister.Testing
         {
             if (disposing)
             {
-                if (policyServer != null)
+                if (_policyServer != null)
                 {
-                    if (policyServer.Status == SocketServerStatus.Started)
+                    if (_policyServer.ListenerState == SocketServerStatus.Started)
                     {
-                        policyServer.Stop();
+                        _policyServer.Stop();
                     }
-                    policyServer.SocketServerStatusChanged -= PolicyServer_SocketServiceStatusChanged;
-                    policyServer.TraceEventRaised -= PolicyServer_TraceEventRaised;
-                    policyServer.Dispose();
+                    _policyServer.ListenerStateChanged -= PolicyServer_SocketServiceStatusChanged;
+                    _policyServer.TraceEventRaised -= PolicyServer_TraceEventRaised;
+                    _policyServer.Dispose();
                 }
             }
         }
@@ -220,7 +227,7 @@ namespace SocketMeister.Testing
         /// <summary>
         /// Policy Server for Silverlight Clients
         /// </summary>
-        public PolicyServer PolicyServer {  get { return policyServer; } }
+        public PolicyServer PolicyServer {  get { return _policyServer; } }
 
         /// <summary>
         /// Suite of tests which are available;
