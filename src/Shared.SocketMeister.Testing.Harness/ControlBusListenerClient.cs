@@ -10,33 +10,33 @@ using SocketMeister.Testing;
 namespace SocketMeister.Testing
 {
     /// <summary>
-    /// Test Harness Client (TEST HOST)
+    /// Client for testing purposes. Includes ClientController and SocketServer.Client (Server side)
     /// </summary>
-    internal class HarnessControlBusClientSocketClient
+    internal class ControlBusListenerClient
     {
-        private int _clientId;
+        private int _controlBusClientId;
         private ControlBusClientType _clientType;
-        private SocketServer.Client _socketClient = null;
+        private SocketServer.Client _listenerClient = null;
         private readonly object _lock = new object();
 
-        public HarnessControlBusClientSocketClient(ControlBusClientType ClientType, int ClientId)
+        public ControlBusListenerClient(ControlBusClientType ClientType, int ControlBusClientId)
         {
             _clientType = ClientType;
-            _clientId = ClientId;
+            _controlBusClientId = ControlBusClientId;
         }
 
         /// <summary>
         /// Socketmeister client (from the server perspective)
         /// </summary>
-        public SocketServer.Client SocketClient
+        public SocketServer.Client ListenerClient
         {
-            get { lock (Lock) { return _socketClient; } }
-            set { lock (Lock) { _socketClient = value; } }
+            get { lock (Lock) { return _listenerClient; } }
+            set { lock (Lock) { _listenerClient = value; } }
         }
 
         public int ClientId
         {
-            get { lock (_lock) { return _clientId; } }
+            get { lock (_lock) { return _controlBusClientId; } }
         }
 
         public ControlBusClientType ClientType {  get { return _clientType; } }
@@ -70,7 +70,7 @@ namespace SocketMeister.Testing
                 }
 
                 //  CHECK TO SEE IF THE CLIENT HAS CONNECTED
-                if (_socketClient != null)
+                if (_listenerClient != null)
                 {
                     //  CONNECTED
                     return;
@@ -89,7 +89,7 @@ namespace SocketMeister.Testing
         {
             object[] parms = new object[2];
             parms[0] = ControlMessage.ExitClient;
-            SocketClient.SendMessage(parms);
+            ListenerClient.SendMessage(parms);
 
             //  Wait zzzz miniseconds for the client to send a ClientDisconnecting message.
         }

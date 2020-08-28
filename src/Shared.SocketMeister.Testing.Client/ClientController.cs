@@ -9,7 +9,7 @@ namespace SocketMeister.Testing
     /// <summary>
     /// Test Harness Client
     /// </summary>
-    internal class ClientController
+    internal class ClientController : IDisposable
     {
         private readonly ControlBusClient _controlBusClient;
         private readonly object _lock = new object();
@@ -25,6 +25,25 @@ namespace SocketMeister.Testing
             _controlBusClient.ConnectionFailed += ControlBus_ConnectionFailed;
             _controlBusClient.ControlBusSocketClient.MessageReceived += ControlBus_MessageReceived;
         }
+
+
+        public int ClientId {  get { return _controlBusClient.ControlBusClientId; } }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                Stop();
+            }
+        }
+
 
         private void ControlBus_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
         {

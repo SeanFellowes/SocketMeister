@@ -13,6 +13,7 @@ namespace SocketMeister
 #endif
     {
         internal delegate void GetSocketCallBack(Socket sock);
+
         internal class Listener : IDisposable
         {
             private bool isRunning = false;

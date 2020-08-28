@@ -9,27 +9,27 @@ using System.Xml;
 namespace SocketMeister.Testing
 {
 
-    internal class HarnessClientCollection : IEnumerable<HarnessControlBusClientSocketClient>
+    internal class HarnessClientCollection : IEnumerable<ControlBusListenerClient>
     {
-        private readonly Dictionary<int, HarnessControlBusClientSocketClient> _dictClientId = new Dictionary<int, HarnessControlBusClientSocketClient>();
-        private readonly List<HarnessControlBusClientSocketClient> _listClient = new List<HarnessControlBusClientSocketClient>();
+        private readonly Dictionary<int, ControlBusListenerClient> _dictClientId = new Dictionary<int, ControlBusListenerClient>();
+        private readonly List<ControlBusListenerClient> _listClient = new List<ControlBusListenerClient>();
         private static readonly object _lock = new object();
 
         public HarnessClientCollection()
         {
         }
 
-        public HarnessControlBusClientSocketClient this[int ClientId]
+        public ControlBusListenerClient this[int ClientId]
         {
             get
             {
-                HarnessControlBusClientSocketClient client;
+                ControlBusListenerClient client;
                 if (_dictClientId.TryGetValue(ClientId, out client) == true) return client;
                 else return null;
             }
         }
 
-        IEnumerator<HarnessControlBusClientSocketClient> IEnumerable<HarnessControlBusClientSocketClient>.GetEnumerator()
+        IEnumerator<ControlBusListenerClient> IEnumerable<ControlBusListenerClient>.GetEnumerator()
         {
             return _listClient.GetEnumerator();
         }
@@ -86,13 +86,13 @@ namespace SocketMeister.Testing
         /// </summary>
         public void DisconnectClients()
         {
-            List<HarnessControlBusClientSocketClient> items;
+            List<ControlBusListenerClient> items;
             lock (_lock) 
             { 
                 items = _listClient.ToList(); 
             }
 
-            foreach(HarnessControlBusClientSocketClient item in items)
+            foreach(ControlBusListenerClient item in items)
             {
                 item.Disconnect();
             }

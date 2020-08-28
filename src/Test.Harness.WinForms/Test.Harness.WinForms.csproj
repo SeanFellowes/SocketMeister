@@ -29,12 +29,6 @@
   <Import Project="..\Shared.SocketMeister.Testing.Server\Shared.SocketMeister.Testing.Server.projitems" Label="Shared" />
 
   <ItemGroup>
-    <Compile Update="CPolicyServer.Designer.cs">
-      <DependentUpon>PolicyServerOverview.cs</DependentUpon>
-    </Compile>
-    <Compile Update="PolicyServerOverview.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Update="SocketServerOverview.cs">
       <SubType>UserControl</SubType>
     </Compile>

@@ -20,19 +20,18 @@ namespace SocketMeister.Testing
 
     internal class HarnessController : IDisposable
     {
-        //  Silverlight ports are between 4502-4534
-        public const int SilverlightPolicyPort = 943;
-
         private readonly object classLock = new object();
-        private readonly ControlBusServer _controlBusServer;
+        private readonly ControlBusServer _controlBusServer = null;
+        private bool _disposed = false;
+        private bool _disposeCalled = false;
         private HarnessClientCollection _testClientCollection = new HarnessClientCollection();
         private ITestOnHarness _currentTest = null;
         private Executing _executeMode = Executing.Stopped;
         private static readonly object _lock = new object();
-        private readonly ClientController _fixedClientController;
+        private readonly ClientController _fixedClient1;
         private readonly ServerController _fixedServer1;
-        private readonly HarnessControlBusClientSocketClient _fixedClientControllerHarnessClient;
-        private readonly HarnessControlBusClientSocketClient _fixedServer1HarnessClient;
+        private readonly ControlBusListenerClient _fixedClient1ListenerClient;
+        private readonly ControlBusListenerClient _fixedServer1ListenerClient;
         private readonly PolicyServer _policyServer;
         private readonly List<ITestOnHarness> _tests = new List<ITestOnHarness>();
 
@@ -69,6 +68,7 @@ namespace SocketMeister.Testing
 
             //  START CONTROL BUS LISTENER
             _controlBusServer = new ControlBusServer();
+            _controlBusServer.RequestReceived += _controlBusServer_RequestReceived;
 
             //  SETUP POLICY SERVER
             _policyServer = new PolicyServer();
@@ -76,7 +76,7 @@ namespace SocketMeister.Testing
             _policyServer.TraceEventRaised += PolicyServer_TraceEventRaised;
 
             //  SETUP FIXED SERVER
-            _fixedServer1HarnessClient = new HarnessControlBusClientSocketClient( ControlBusClientType.ServerController, int.MaxValue - 1);
+            _fixedServer1ListenerClient = new ControlBusListenerClient( ControlBusClientType.ServerController, int.MaxValue - 1);
             _fixedServer1 = new ServerController(Constants.HarnessFixedServerPort, int.MaxValue - 1, "127.0.0.1");
 
             //  SEAN SEAN SEAN 
@@ -86,8 +86,8 @@ namespace SocketMeister.Testing
 
 
             //  SETUP FIXED CLIENT
-            _fixedClientControllerHarnessClient = new HarnessControlBusClientSocketClient( ControlBusClientType.ClientController, int.MaxValue);
-            _fixedClientController = new ClientController(int.MaxValue, "127.0.0.1");
+            _fixedClient1ListenerClient = new ControlBusListenerClient( ControlBusClientType.ClientController, int.MaxValue);
+            _fixedClient1 = new ClientController(int.MaxValue, "127.0.0.1");
 //#if !DEBUG
 //            _fixedClientControllerHarnessClient.LaunchClientApplication();
 //#endif
@@ -96,16 +96,103 @@ namespace SocketMeister.Testing
             new Thread(delegate ()
             {
                 DateTime maxWait = DateTime.Now.AddSeconds(30);
-                while (true == true)
+                while (_disposeCalled == false)
                 {
                     if (DateTime.Now > maxWait)
                         throw new TimeoutException("Visual Studio debug mode timed out waiting for the fixed client to connect. Make sure both the harness and client applications are set as Startup Projects.");
-                    else if (_fixedClientControllerHarnessClient.SocketClient != null)
+                    else if (_fixedClient1ListenerClient.ListenerClient != null)
                         break;
                     else
                         Thread.Sleep(1000);
                 }
             }).Start();
+        }
+
+
+        private void _controlBusServer_RequestReceived(object sender, SocketServer.RequestReceivedEventArgs e)
+        {
+            int r = Convert.ToInt32(e.Parameters[0]);
+            if (r == ControlMessage.HarnessControlBusClientIsConnecting)
+            {
+                int ClientId = Convert.ToInt32(e.Parameters[1]);
+                if (ClientId == int.MaxValue)
+                {
+                    //  FIXED CLIENT HAS PHONED HOME
+                    _fixedClient1ListenerClient.ListenerClient = e.Client;
+                }
+                else
+                {
+                    //  ANOTHER CLIENT HAS PHONED HOME. FIND THE CLIENT
+                    ControlBusListenerClient client = _testClientCollection[ClientId];
+                    if (client != null)
+                    {
+                        //  ASSIGN THE SocketMeister Server Client to the class. When connecting a test harness client, this value is checked for NOT null (Connected).
+                        client.ListenerClient = e.Client;
+                    }
+                }
+            }
+
+
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed == true) return;
+            if (disposing)
+            {
+                _disposeCalled = true;
+                if (_fixedClient1 != null)
+                {
+                    try
+                    {
+                        _fixedClient1.Stop();
+                    }
+                    catch { }
+                }
+
+                if (_controlBusServer != null)
+                {
+                    try
+                    {
+                        _controlBusServer.Stop();
+                        _controlBusServer.Dispose();
+                    }
+                    catch { }
+                }
+
+                if (_policyServer != null)
+                {
+                    try
+                    {
+                        if (_policyServer.ListenerState == SocketServerStatus.Started)
+                        {
+                            _policyServer.Stop();
+                        }
+                        _policyServer.ListenerStateChanged -= PolicyServer_SocketServiceStatusChanged;
+                        _policyServer.TraceEventRaised -= PolicyServer_TraceEventRaised;
+                        _policyServer.Dispose();
+                    }
+                    catch { }
+                }
+
+                if (_fixedServer1 != null)
+                {
+                    try
+                    {
+                        _fixedServer1.Dispose();
+                    }
+                    catch { }
+                }
+
+
+            }
         }
 
         public ControlBusServer ControlBusServer {  get { return _controlBusServer; } }
@@ -189,31 +276,6 @@ namespace SocketMeister.Testing
 
 
 
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                if (_policyServer != null)
-                {
-                    if (_policyServer.ListenerState == SocketServerStatus.Started)
-                    {
-                        _policyServer.Stop();
-                    }
-                    _policyServer.ListenerStateChanged -= PolicyServer_SocketServiceStatusChanged;
-                    _policyServer.TraceEventRaised -= PolicyServer_TraceEventRaised;
-                    _policyServer.Dispose();
-                }
-            }
-        }
-
-
         //public void Initialize()
         //{
 
@@ -251,7 +313,7 @@ namespace SocketMeister.Testing
         /// <summary>
         /// In DEBUG, this is attached to this test harness for easy debugging. In RELEASE, a seperate client application is launched.
         /// </summary>
-        public HarnessControlBusClientSocketClient FixedHarnessClient {  get { return _fixedClientControllerHarnessClient; } }
+        public ControlBusListenerClient FixedHarnessClient {  get { return _fixedClient1ListenerClient; } }
 
         private void Test_StatusChanged(object sender, HarnessTestStatusChangedEventArgs e)
         {

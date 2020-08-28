@@ -9,7 +9,7 @@ namespace SocketMeister.Testing
     /// <summary>
     /// Controls a socket server
     /// </summary>
-    public class ServerController
+    public class ServerController : IDisposable
     {
         private readonly ControlBusClient _controlBusClient;
         private readonly object _lock = new object();
@@ -56,6 +56,25 @@ namespace SocketMeister.Testing
 
             _port = Port;
         }
+
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                StopSocketServer();
+                _socketServer = null;
+            }
+        }
+
+
 
 
         private void ControlBus_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)

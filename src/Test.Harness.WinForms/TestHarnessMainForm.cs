@@ -32,20 +32,11 @@ namespace SocketMeister.Test
         {
             InitializeComponent();
 
-            //  SETUP POLICY SERVER
-            //ControlPolicyServer.TraceEventRaised += TraceEventRaised;
-            //ControlPolicyServer.PolicyServer = _harnessController.PolicyServer;
-
             _harnessController.PolicyServer.ListenerStateChanged += PolicyServer_ListenerStateChanged;
             _harnessController.FixedServer1.ListenerStateChanged += FixedServer1_ListenerStateChanged;
 
-            //ControlServer.TraceEventRaised += TraceEventRaised;
-            //ControlServer.MessageReceived += ControlServer_MessageReceived;
-            //ControlServer.RequestReceived += ControlServer_RequestReceived;
-            //TestServer1.TraceEventRaised += TraceEventRaised;
-            //TestServer2.TraceEventRaised += TraceEventRaised;
-            //TestServer3.TraceEventRaised += TraceEventRaised;
-            //TestServer4.TraceEventRaised += TraceEventRaised;
+            _harnessController.ControlBusServer.ListenerStateChanged += ControlBusServer_ListenerStateChanged;
+            _harnessController.ControlBusServer.ClientsChanged += ControlBusServer_ClientsChanged;
 
             //  REGISTER FOR EVENTS FROM TESTS
             foreach (ITestOnHarness test in _harnessController.Tests)
@@ -67,11 +58,25 @@ namespace SocketMeister.Test
 
             lblTests.Text = "Tests: " + _harnessController.Tests.Count;
 
-            ////  START CONTROL ITEMS
-            //ControlServer.Start();
-            //ControlPolicyServer.Start();
-
             Setup();
+        }
+
+        private void ControlBusServer_ClientsChanged(object sender, SocketServer.ClientsChangedEventArgs e)
+        {
+            if (InvokeRequired) Invoke(new MethodInvoker(delegate { ControlBusServer_ClientsChanged(this, e); }));
+            else
+            {
+                ControlPolicyServer.ClientCount = e.Count;
+            }
+        }
+
+        private void ControlBusServer_ListenerStateChanged(object sender, SocketServer.SocketServerStatusChangedEventArgs e)
+        {
+            if (InvokeRequired) Invoke(new MethodInvoker(delegate { ControlBusServer_ListenerStateChanged(this, e); }));
+            else
+            {
+                ControlPolicyServer.SetListenerState(e.Status);
+            }
         }
 
         private void FixedServer1_ListenerStateChanged(object sender, SocketServer.SocketServerStatusChangedEventArgs e)
@@ -84,10 +89,7 @@ namespace SocketMeister.Test
             if (InvokeRequired) Invoke(new MethodInvoker(delegate { PolicyServer_ListenerStateChanged(sender, e); }));
             else
             {
-                ControlPolicyServer.ClientCount = 123456;
                 ControlPolicyServer.SetListenerState(e.Status);
-                //ControlServer.
-                //throw new NotImplementedException();
             }
         }
 
@@ -263,16 +265,16 @@ namespace SocketMeister.Test
                 if (ClientId == int.MaxValue)
                 {
                     //  FIXED CLIENT HAS PHONED HOME
-                    _harnessController.FixedHarnessClient.SocketClient = e.Client;
+                    _harnessController.FixedHarnessClient.ListenerClient = e.Client;
                 }
                 else
                 {
                     //  ANOTHER CLIENT HAS PHONED HOME. FIND THE CLIENT
-                    HarnessControlBusClientSocketClient client = _harnessController.TestClientCollection[ClientId];
+                    ControlBusListenerClient client = _harnessController.TestClientCollection[ClientId];
                     if (client != null)
                     {
                         //  ASSIGN THE SocketMeister Server Client to the class. When connecting a test harness client, this value is checked for NOT null (Connected).
-                        client.SocketClient = e.Client;
+                        client.ListenerClient = e.Client;
                     }
                 }
             }
@@ -342,9 +344,14 @@ namespace SocketMeister.Test
 
         private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
         {
-            //ControlPolicyServer.PolicyServer.Dispose();
-            //ControlServer.UnregisterEvents();
-            //ControlServer.Stop();
+            //  UNREGISTER 
+            _harnessController.PolicyServer.ListenerStateChanged -= PolicyServer_ListenerStateChanged;
+            _harnessController.FixedServer1.ListenerStateChanged -= FixedServer1_ListenerStateChanged;
+
+            _harnessController.ControlBusServer.ListenerStateChanged -= ControlBusServer_ListenerStateChanged;
+            _harnessController.ControlBusServer.ClientsChanged -= ControlBusServer_ClientsChanged;
+
+            _harnessController.Dispose();
         }
 
         private void FormMain_FormClosed(object sender, FormClosedEventArgs e)

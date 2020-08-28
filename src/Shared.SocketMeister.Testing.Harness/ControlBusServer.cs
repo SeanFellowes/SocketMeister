@@ -8,9 +8,9 @@ namespace SocketMeister.Testing
     /// <summary>
     /// Socket server for the control bus. This runs on the test harness.
     /// </summary>
-    internal class ControlBusServer
+    internal class ControlBusServer : IDisposable
     {
-        private readonly SocketServer _socketServer = null;
+        private readonly SocketServer _listener = null;
 
         /// <summary>
         /// Raised when the status of the socket listener changes.
@@ -40,19 +40,35 @@ namespace SocketMeister.Testing
 
         public ControlBusServer()
         {
-            _socketServer = new SocketServer(Constants.ControlBusPort, true);
-            _socketServer.ClientsChanged += SocketServer_ClientsChanged;
-            _socketServer.ListenerStateChanged += SocketServer_ListenerStateChanged;
-            _socketServer.TraceEventRaised += SocketServer_TraceEventRaised;
-            _socketServer.MessageReceived += SocketServer_MessageReceived;
-            _socketServer.RequestReceived += SocketServer_RequestReceived;
-            _socketServer.Start();
+            _listener = new SocketServer(Constants.ControlBusPort, true);
+            _listener.ClientsChanged += Listener_ClientsChanged;
+            _listener.ListenerStateChanged += Listener_ListenerStateChanged;
+            _listener.TraceEventRaised += Listener_TraceEventRaised;
+            _listener.MessageReceived += Listener_MessageReceived;
+            _listener.RequestReceived += Listener_RequestReceived;
+            _listener.Start();
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
 
-        public SocketServer SocketServer
+        protected virtual void Dispose(bool disposing)
         {
-            get { return _socketServer; }
+            if (disposing)
+            {
+                Stop();
+            }
+        }
+
+
+
+        public SocketServer Listener
+        {
+            get { return _listener; }
         }
 
         public int Port
@@ -60,47 +76,47 @@ namespace SocketMeister.Testing
             get { return Constants.ControlBusPort; }
         }
 
+        internal void Stop()
+        {
+            if (_listener == null) return;
 
-        private void SocketServer_ListenerStateChanged(object sender, SocketServer.SocketServerStatusChangedEventArgs e)
+            //  UNREGISTER EVENTS
+            _listener.ClientsChanged -= Listener_ClientsChanged;
+            _listener.ListenerStateChanged -= Listener_ListenerStateChanged;
+            _listener.TraceEventRaised -= Listener_TraceEventRaised;
+            _listener.MessageReceived -= Listener_MessageReceived;
+            _listener.RequestReceived -= Listener_RequestReceived;
+
+            //  STOP SOCKET SERVER
+            if (_listener.Status == SocketServerStatus.Started)
+            {
+                _listener.Stop();
+            }
+        }
+
+
+        private void Listener_ListenerStateChanged(object sender, SocketServer.SocketServerStatusChangedEventArgs e)
         {
             ListenerStateChanged?.Invoke(this, e);
         }
 
 
-        internal void Stop()
-        {
-            if (_socketServer == null) return;
-
-            //  UNREGISTER EVENTS
-            _socketServer.ClientsChanged -= SocketServer_ClientsChanged;
-            _socketServer.ListenerStateChanged -= SocketServer_ListenerStateChanged;
-            _socketServer.TraceEventRaised -= SocketServer_TraceEventRaised;
-            _socketServer.MessageReceived -= SocketServer_MessageReceived;
-            _socketServer.RequestReceived -= SocketServer_RequestReceived;
-
-            //  STOP SOCKET SERVER
-            if (_socketServer.Status == SocketServerStatus.Started)
-            {
-                _socketServer.Stop();
-            }
-        }
-
-        private void SocketServer_MessageReceived(object sender, SocketServer.MessageReceivedEventArgs e)
+        private void Listener_MessageReceived(object sender, SocketServer.MessageReceivedEventArgs e)
         {
             MessageReceived?.Invoke(sender, e);
         }
 
-        private void SocketServer_RequestReceived(object sender, SocketServer.RequestReceivedEventArgs e)
+        private void Listener_RequestReceived(object sender, SocketServer.RequestReceivedEventArgs e)
         {
             RequestReceived?.Invoke(sender, e);
         }
 
-        private void SocketServer_ClientsChanged(object sender, SocketServer.ClientsChangedEventArgs e)
+        private void Listener_ClientsChanged(object sender, SocketServer.ClientsChangedEventArgs e)
         {
             ClientsChanged?.Invoke(sender, e);
         }
 
-        private void SocketServer_TraceEventRaised(object sender, TraceEventArgs e)
+        private void Listener_TraceEventRaised(object sender, TraceEventArgs e)
         {
             TraceEventRaised?.Invoke(sender, e);
         }

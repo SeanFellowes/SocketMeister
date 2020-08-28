@@ -40,7 +40,7 @@ namespace SocketMeister.Testing.Tests
         /// Adds a client to the list and connects it to the test harness control TCP port (Port Constants.HarnessControlBusPort). Opens an instance of the WinForms client app for each client.
         /// </summary>
         /// <returns>The connected (to the test harness control port) client.</returns>
-        public HarnessControlBusClientSocketClient AddClient()
+        public ControlBusListenerClient AddClient()
         {
             int nextClientId = 0;
             lock (_lockMaxClientId)
@@ -48,7 +48,7 @@ namespace SocketMeister.Testing.Tests
                 _maxClientId++;
                 nextClientId = _maxClientId;
             }
-            HarnessControlBusClientSocketClient newClient = new HarnessControlBusClientSocketClient( ControlBusClientType.ClientController, nextClientId);
+            ControlBusListenerClient newClient = new ControlBusListenerClient( ControlBusClientType.ClientController, nextClientId);
             ClientCreated?.Invoke(this, new HarnessClientEventArgs(newClient));
             try
             {
@@ -68,9 +68,9 @@ namespace SocketMeister.Testing.Tests
         /// </summary>
         /// <param name="NumberOfClients">Number of test harness clients to run</param>
         /// <returns>List of TestHarnessClient objects</returns>
-        public List<HarnessControlBusClientSocketClient> AddClients(int NumberOfClients)
+        public List<ControlBusListenerClient> AddClients(int NumberOfClients)
         {
-            List<HarnessControlBusClientSocketClient> rVal = new List<HarnessControlBusClientSocketClient>();
+            List<ControlBusListenerClient> rVal = new List<ControlBusListenerClient>();
             for (int ctr = 1; ctr <= NumberOfClients; ctr++)
             {
                 rVal.Add(AddClient());
