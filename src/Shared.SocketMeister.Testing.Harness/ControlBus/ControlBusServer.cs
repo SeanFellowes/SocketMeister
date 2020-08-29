@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 
-namespace SocketMeister.Testing
+namespace SocketMeister.Testing.ControlBus
 {
     /// <summary>
     /// Socket server for the control bus. This runs on the test harness.

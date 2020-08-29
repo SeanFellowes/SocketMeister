@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 
-namespace SocketMeister.Testing
+namespace SocketMeister.Testing.ControlBus
 {
 
     internal class HarnessClientControllerCollection : IEnumerable<HarnessClientController>

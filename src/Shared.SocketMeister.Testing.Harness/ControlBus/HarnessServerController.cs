@@ -7,7 +7,7 @@ using System.Threading;
 using SocketMeister.Testing;
 
 
-namespace SocketMeister.Testing
+namespace SocketMeister.Testing.ControlBus
 {
     public class HarnessServerController : ServerController
     {

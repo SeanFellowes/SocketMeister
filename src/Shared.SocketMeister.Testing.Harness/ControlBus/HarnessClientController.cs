@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading;
 using SocketMeister.Testing;
 
-namespace SocketMeister.Testing
+namespace SocketMeister.Testing.ControlBus
 {
     /// <summary>
     /// Enhanced ClientCOntroller, with additional properties required for use on the Test Harness

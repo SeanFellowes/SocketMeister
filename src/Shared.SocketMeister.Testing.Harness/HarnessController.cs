@@ -21,14 +21,13 @@ namespace SocketMeister.Testing
     internal class HarnessController : IDisposable
     {
         private readonly object classLock = new object();
-        private readonly ControlBusServer _controlBusServer;
+        private readonly ControlBus.ControlBusServer _controlBusServer;
         private bool _disposed = false;
         private bool _disposeCalled = false;
-        private HarnessClientControllerCollection _testClientCollection = new HarnessClientControllerCollection();
         private ITestOnHarness _currentTest = null;
         private Executing _executeMode = Executing.Stopped;
         private static readonly object _lock = new object();
-        private readonly HarnessClientController _fixedClient1;
+        private readonly ControlBus.HarnessClientController _fixedClient1;
         private readonly ServerController _fixedServer1;
         private readonly PolicyServer _policyServer;
         private readonly List<ITestOnHarness> _tests = new List<ITestOnHarness>();
@@ -65,7 +64,7 @@ namespace SocketMeister.Testing
             }
 
             //  START CONTROL BUS LISTENER
-            _controlBusServer = new ControlBusServer();
+            _controlBusServer = new ControlBus.ControlBusServer();
             _controlBusServer.RequestReceived += _controlBusServer_RequestReceived;
 
             //  SETUP POLICY SERVER
@@ -83,7 +82,7 @@ namespace SocketMeister.Testing
 
 
             //  SETUP FIXED CLIENT
-            _fixedClient1 = new HarnessClientController(int.MaxValue);
+            _fixedClient1 = new ControlBus.HarnessClientController(int.MaxValue);
 
 
             new Thread(delegate ()
@@ -115,13 +114,13 @@ namespace SocketMeister.Testing
                 }
                 else
                 {
-                    //  ANOTHER CLIENT HAS PHONED HOME. FIND THE CLIENT
-                    HarnessClientController client = _testClientCollection[ClientId];
-                    if (client != null)
-                    {
-                        //  ASSIGN THE SocketMeister Server Client to the class. When connecting a test harness client, this value is checked for NOT null (Connected).
-                        client.ListenerClient = e.Client;
-                    }
+                    ////  ANOTHER CLIENT HAS PHONED HOME. FIND THE CLIENT
+                    //ControlBus.HarnessClientController client = _testClientCollection[ClientId];
+                    //if (client != null)
+                    //{
+                    //    //  ASSIGN THE SocketMeister Server Client to the class. When connecting a test harness client, this value is checked for NOT null (Connected).
+                    //    client.ListenerClient = e.Client;
+                    //}
                 }
             }
         }
@@ -186,7 +185,7 @@ namespace SocketMeister.Testing
             }
         }
 
-        public ControlBusServer ControlBusServer {  get { return _controlBusServer; } }
+        public ControlBus.ControlBusServer ControlBusServer {  get { return _controlBusServer; } }
 
         public ServerController FixedServer1 {  get { return _fixedServer1; } }
 
@@ -268,16 +267,6 @@ namespace SocketMeister.Testing
 
 
 
-        //public void Initialize()
-        //{
-
-        //}
-
-        /// <summary>
-        /// Test Harness Client Collection used during testing.
-        /// </summary>
-        public HarnessClientControllerCollection TestClientCollection { get { return _testClientCollection; } }
-
         /// <summary>
         /// Policy Server for Silverlight Clients
         /// </summary>
@@ -305,7 +294,7 @@ namespace SocketMeister.Testing
         /// <summary>
         /// In DEBUG, this is attached to this test harness for easy debugging. In RELEASE, a seperate client application is launched.
         /// </summary>
-        public HarnessClientController FixedHarnessClient {  get { return _fixedClient1; } }
+        public ControlBus.HarnessClientController FixedHarnessClient {  get { return _fixedClient1; } }
 
         private void Test_StatusChanged(object sender, HarnessTestStatusChangedEventArgs e)
         {
