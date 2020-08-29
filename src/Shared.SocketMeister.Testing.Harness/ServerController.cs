@@ -9,9 +9,14 @@ using SocketMeister.Testing;
 
 namespace SocketMeister.Testing
 {
-    public partial class ServerController
+    public class HarnessServerController : ServerController
     {
         private SocketServer.Client _listenerClient = null;
+
+
+        public HarnessServerController(int Port, int ControlBusClientId, string ControlBusServerIPAddress) : base(Port, ControlBusClientId, ControlBusServerIPAddress)
+        {
+        }
 
         /// Socketmeister client (from the server perspective)
         /// </summary>
@@ -22,12 +27,6 @@ namespace SocketMeister.Testing
         }
 
         public ControlBusClientType ClientType { get { return  ControlBusClientType.ServerController; } }
-
-        /// <summary>
-        /// Lock to provide threadsafe operations
-        /// </summary>
-        public object Lock { get { return _lock; } }
-
 
         /// <summary>
         /// Sends a message 

@@ -9,7 +9,7 @@ namespace SocketMeister.Testing
     /// <summary>
     /// Controls a socket server
     /// </summary>
-    public partial class ServerController : IDisposable
+    public class ServerController : IDisposable
     {
         private readonly ControlBusClient _controlBusClient;
         private readonly object _lock = new object();
@@ -56,6 +56,14 @@ namespace SocketMeister.Testing
 
             _port = Port;
         }
+
+        /// <summary>
+        /// Lock to provide threadsafe operations
+        /// </summary>
+        public object Lock { get { return _lock; } }
+
+
+
 
 
         public void Dispose()
