@@ -8,7 +8,7 @@ using SocketMeister.Testing;
 
 namespace SocketMeister.Testing
 {
-    internal partial class ClientController
+    internal class ClientController : Client.ClientController
     {
         private SocketServer.Client _listenerClient = null;
         private static readonly object _lockMaxClientId = new object();
@@ -26,28 +26,33 @@ namespace SocketMeister.Testing
         public ControlBusClientType ClientType { get { return  ControlBusClientType.ClientController; } }
 
 
+        public ClientController(int ControlBusClientId) : base(ControlBusClientId)
+        {
+        }
+
+
         /// <summary>
         /// Creates a new GUI Client Controller running in it's own application
         /// </summary>
-        public ClientController()
+        public ClientController() : base(NextClientId())
         {
-            int nextClientId = 0;
-            lock (_lockMaxClientId)
-            {
-                _maxClientId++;
-                nextClientId = _maxClientId;
-            }
-            ClientController newClient = new ClientController(nextClientId);
+            //int nextClientId = 0;
+            //lock (_lockMaxClientId)
+            //{
+            //    _maxClientId++;
+            //    nextClientId = _maxClientId;
+            //}
+            //ClientController newClient = new ClientController(nextClientId);
             //ClientCreated?.Invoke(this, new HarnessClientEventArgs(newClient));
-            try
-            {
-                newClient.LaunchClientApplication();
-            }
-            catch
-            {
-                //if (ClientConnectFailed != null) ClientConnectFailed(this, new HarnessClientEventArgs(newClient));
-                throw;
-            }
+            //try
+            //{
+            //    newClient.LaunchClientApplication();
+            //}
+            //catch
+            //{
+            //    //if (ClientConnectFailed != null) ClientConnectFailed(this, new HarnessClientEventArgs(newClient));
+            //    throw;
+            //}
         }
 
 
@@ -67,7 +72,14 @@ namespace SocketMeister.Testing
             return rVal;
         }
 
-
+        public static int NextClientId()
+        {
+            lock (_lockMaxClientId)
+            {
+                _maxClientId++;
+                return _maxClientId;
+            }
+        }
 
 
 

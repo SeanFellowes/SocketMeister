@@ -4,12 +4,12 @@ using System.Diagnostics;
 using System.Text;
 using System.Threading;
 
-namespace SocketMeister.Testing
+namespace SocketMeister.Testing.Client
 {
     /// <summary>
     /// Test Harness Client
     /// </summary>
-    internal partial class ClientController : IDisposable
+    internal class ClientController : IDisposable
     {
         private readonly ControlBusClient _controlBusClient;
         private readonly object _lock = new object();
