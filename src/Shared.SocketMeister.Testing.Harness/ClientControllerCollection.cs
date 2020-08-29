@@ -29,6 +29,13 @@ namespace SocketMeister.Testing
             }
         }
 
+        public void Add(ClientController Item)
+        {
+            if (_dictClientId.ContainsKey(Item.ClientId)) throw new ArgumentException("ClientId " + Item.ClientId + " already exists in collection.", nameof(Item));
+            _dictClientId.Add(Item.ClientId, Item);
+            _listClient.Add(Item);
+        }
+
         IEnumerator<ClientController> IEnumerable<ClientController>.GetEnumerator()
         {
             return _listClient.GetEnumerator();
@@ -38,9 +45,6 @@ namespace SocketMeister.Testing
         {
             return _listClient.GetEnumerator();
         }
-
-
-
 
 
 

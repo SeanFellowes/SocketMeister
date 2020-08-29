@@ -66,9 +66,9 @@ namespace SocketMeister.Testing
         /// </summary>
         /// <param name="NumberOfClients">Number of test harness clients to run</param>
         /// <returns>List of TestHarnessClient objects</returns>
-        public List<ClientController> AddClients(int NumberOfClients)
+        public ClientControllerCollection AddClients(int NumberOfClients)
         {
-            List<ClientController> rVal = new List<ClientController>();
+            ClientControllerCollection rVal = new ClientControllerCollection();
             for (int ctr = 1; ctr <= NumberOfClients; ctr++)
             {
                 rVal.Add(AddClient());
