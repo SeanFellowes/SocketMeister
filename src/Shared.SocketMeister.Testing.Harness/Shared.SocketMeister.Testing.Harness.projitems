@@ -14,7 +14,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Events.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HarnessClientControllerCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HarnessController.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ServerController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)HarnessServerController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\ITestOnHarness.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\Test000Harness.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\Test001Harness.cs" />
