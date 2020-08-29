@@ -12,7 +12,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ClientController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ControlBusServer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)HarnessClientCollection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ClientControllerCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HarnessController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServerController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\ITestOnHarness.cs" />
