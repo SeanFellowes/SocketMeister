@@ -17,8 +17,6 @@ namespace SocketMeister.Testing.Tests
         public event EventHandler<HarnessTestStatusChangedEventArgs> StatusChanged;
         public event EventHandler<TraceEventArgs> TraceEventRaised;
 
-        private static int _maxClientId = 0;
-        private static readonly object _lockMaxClientId = new object();
 
         /// <summary>
         /// Raised when a test creates a client
@@ -33,49 +31,6 @@ namespace SocketMeister.Testing.Tests
 
         public TestOnHarnessBase(int Id, string Description) : base(Id, Description)
         {
-        }
-
-
-        /// <summary>
-        /// Adds a client to the list and connects it to the test harness control TCP port (Port Constants.HarnessControlBusPort). Opens an instance of the WinForms client app for each client.
-        /// </summary>
-        /// <returns>The connected (to the test harness control port) client.</returns>
-        public ClientController AddClient()
-        {
-            int nextClientId = 0;
-            lock (_lockMaxClientId)
-            {
-                _maxClientId++;
-                nextClientId = _maxClientId;
-            }
-            ClientController newClient = new ClientController(nextClientId, "127.0.0.1");
-            ClientCreated?.Invoke(this, new HarnessClientEventArgs(newClient));
-            try
-            {
-                newClient.LaunchClientApplication();
-            }
-            catch
-            {
-                if (ClientConnectFailed != null) ClientConnectFailed(this, new HarnessClientEventArgs(newClient));
-                throw;
-            }
-
-            return newClient;
-        }
-
-        /// <summary>
-        /// Adds multiple test harness clients (opens an instance of the WinForms client app for each client)
-        /// </summary>
-        /// <param name="NumberOfClients">Number of test harness clients to run</param>
-        /// <returns>List of TestHarnessClient objects</returns>
-        public List<ClientController> AddClients(int NumberOfClients)
-        {
-            List<ClientController> rVal = new List<ClientController>();
-            for (int ctr = 1; ctr <= NumberOfClients; ctr++)
-            {
-                rVal.Add(AddClient());
-            }
-            return rVal;
         }
 
 
