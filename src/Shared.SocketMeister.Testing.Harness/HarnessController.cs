@@ -21,7 +21,7 @@ namespace SocketMeister.Testing
     internal class HarnessController : IDisposable
     {
         private readonly object classLock = new object();
-        private readonly ControlBusServer _controlBusServer = null;
+        private readonly ControlBusServer _controlBusServer;
         private bool _disposed = false;
         private bool _disposeCalled = false;
         private ClientControllerCollection _testClientCollection = new ClientControllerCollection();
@@ -221,7 +221,8 @@ namespace SocketMeister.Testing
 
         public void Start()
         {
-                _policyServer.Start();
+            _controlBusServer.Start();
+            _policyServer.Start();
 
                 ////  START IN THE BACKGROUND
                 //BackgroundWorker bgStartService = new BackgroundWorker();

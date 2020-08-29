@@ -18,7 +18,7 @@ namespace SocketMeister.Test
         private const int executeButtonWidth = 90;
         private const int spacer = 0;
 
-        private readonly HarnessController _harnessController = new HarnessController();
+        private readonly HarnessController _harnessController;
         private int currentTestPtr = 0;
         private int errors = 0;
         private readonly BindingList<LogEntry> gridItems;
@@ -32,6 +32,7 @@ namespace SocketMeister.Test
         {
             InitializeComponent();
 
+            _harnessController = new HarnessController();
             _harnessController.PolicyServer.ListenerStateChanged += PolicyServer_ListenerStateChanged;
             _harnessController.FixedServer1.ListenerStateChanged += FixedServer1_ListenerStateChanged;
 
@@ -59,6 +60,9 @@ namespace SocketMeister.Test
             lblTests.Text = "Tests: " + _harnessController.Tests.Count;
 
             Setup();
+
+            //  START
+            _harnessController.Start();
         }
 
         private void ControlBusServer_ClientsChanged(object sender, SocketServer.ClientsChangedEventArgs e)
@@ -66,7 +70,7 @@ namespace SocketMeister.Test
             if (InvokeRequired) Invoke(new MethodInvoker(delegate { ControlBusServer_ClientsChanged(this, e); }));
             else
             {
-                ControlPolicyServer.ClientCount = e.Count;
+                ControlServer.ClientCount = e.Count;
             }
         }
 
@@ -75,7 +79,7 @@ namespace SocketMeister.Test
             if (InvokeRequired) Invoke(new MethodInvoker(delegate { ControlBusServer_ListenerStateChanged(this, e); }));
             else
             {
-                ControlPolicyServer.SetListenerState(e.Status);
+                ControlServer.SetListenerState(e.Status);
             }
         }
 

@@ -45,6 +45,13 @@ namespace SocketMeister.Testing
         }
 
 
+        /// <summary>
+        /// Lock to provide threadsafe operations
+        /// </summary>
+        public object Lock { get { return _lock; } }
+
+
+
         private void ControlBus_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
         {
             throw new NotImplementedException();

@@ -11,10 +11,8 @@ namespace SocketMeister.Testing
     internal partial class ClientController
     {
         private SocketServer.Client _listenerClient = null;
-
-        private static int _maxClientId = 0;
         private static readonly object _lockMaxClientId = new object();
-
+        private static int _maxClientId = 0;
 
         /// <summary>
         /// Socketmeister client (from the server perspective)
@@ -27,10 +25,6 @@ namespace SocketMeister.Testing
 
         public ControlBusClientType ClientType { get { return  ControlBusClientType.ClientController; } }
 
-        /// <summary>
-        /// Lock to provide threadsafe operations
-        /// </summary>
-        public object Lock { get { return _lock; } }
 
         /// <summary>
         /// Creates a new GUI Client Controller running in it's own application

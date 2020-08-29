@@ -46,7 +46,6 @@ namespace SocketMeister.Testing
             _listener.TraceEventRaised += Listener_TraceEventRaised;
             _listener.MessageReceived += Listener_MessageReceived;
             _listener.RequestReceived += Listener_RequestReceived;
-            _listener.Start();
         }
 
         public void Dispose()
@@ -65,7 +64,6 @@ namespace SocketMeister.Testing
         }
 
 
-
         public SocketServer Listener
         {
             get { return _listener; }
@@ -76,10 +74,13 @@ namespace SocketMeister.Testing
             get { return Constants.ControlBusPort; }
         }
 
+        internal void Start()
+        {
+           _listener.Start();
+        }
+
         internal void Stop()
         {
-            if (_listener == null) return;
-
             //  UNREGISTER EVENTS
             _listener.ClientsChanged -= Listener_ClientsChanged;
             _listener.ListenerStateChanged -= Listener_ListenerStateChanged;
