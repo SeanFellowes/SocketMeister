@@ -8,7 +8,7 @@ using SocketMeister.Testing;
 
 namespace SocketMeister.Testing
 {
-    internal class ClientController : Client.ClientController
+    internal class HarnessClientController : Client.ClientController
     {
         private SocketServer.Client _listenerClient = null;
         private static readonly object _lockMaxClientId = new object();
@@ -26,7 +26,7 @@ namespace SocketMeister.Testing
         public ControlBusClientType ClientType { get { return  ControlBusClientType.ClientController; } }
 
 
-        public ClientController(int ControlBusClientId) : base(ControlBusClientId)
+        public HarnessClientController(int ControlBusClientId) : base(ControlBusClientId)
         {
         }
 
@@ -34,7 +34,7 @@ namespace SocketMeister.Testing
         /// <summary>
         /// Creates a new GUI Client Controller running in it's own application
         /// </summary>
-        public ClientController() : base(NextClientId())
+        public HarnessClientController() : base(NextClientId())
         {
             //int nextClientId = 0;
             //lock (_lockMaxClientId)
@@ -67,7 +67,7 @@ namespace SocketMeister.Testing
             ClientControllerCollection rVal = new ClientControllerCollection();
             for (int ctr = 1; ctr <= NumberOfClients; ctr++)
             {
-                rVal.Add(new ClientController());
+                rVal.Add(new HarnessClientController());
             }
             return rVal;
         }

@@ -9,34 +9,34 @@ using System.Xml;
 namespace SocketMeister.Testing
 {
 
-    internal class ClientControllerCollection : IEnumerable<ClientController>
+    internal class ClientControllerCollection : IEnumerable<HarnessClientController>
     {
-        private readonly Dictionary<int, ClientController> _dictClientId = new Dictionary<int, ClientController>();
-        private readonly List<ClientController> _listClient = new List<ClientController>();
+        private readonly Dictionary<int, HarnessClientController> _dictClientId = new Dictionary<int, HarnessClientController>();
+        private readonly List<HarnessClientController> _listClient = new List<HarnessClientController>();
         private static readonly object _lock = new object();
 
         public ClientControllerCollection()
         {
         }
 
-        public ClientController this[int ClientId]
+        public HarnessClientController this[int ClientId]
         {
             get
             {
-                ClientController client;
+                HarnessClientController client;
                 if (_dictClientId.TryGetValue(ClientId, out client) == true) return client;
                 else return null;
             }
         }
 
-        public void Add(ClientController Item)
+        public void Add(HarnessClientController Item)
         {
             if (_dictClientId.ContainsKey(Item.ClientId)) throw new ArgumentException("ClientId " + Item.ClientId + " already exists in collection.", nameof(Item));
             _dictClientId.Add(Item.ClientId, Item);
             _listClient.Add(Item);
         }
 
-        IEnumerator<ClientController> IEnumerable<ClientController>.GetEnumerator()
+        IEnumerator<HarnessClientController> IEnumerable<HarnessClientController>.GetEnumerator()
         {
             return _listClient.GetEnumerator();
         }
@@ -53,13 +53,13 @@ namespace SocketMeister.Testing
         /// </summary>
         public void DisconnectClients()
         {
-            List<ClientController> items;
+            List<HarnessClientController> items;
             lock (_lock) 
             { 
                 items = _listClient.ToList(); 
             }
 
-            foreach(ClientController item in items)
+            foreach(HarnessClientController item in items)
             {
                 item.Disconnect();
             }

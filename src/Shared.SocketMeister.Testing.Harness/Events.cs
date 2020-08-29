@@ -7,14 +7,14 @@ namespace SocketMeister.Testing
 
     internal class HarnessClientEventArgs : EventArgs
     {
-        private readonly ClientController _client;
+        private readonly HarnessClientController _client;
 
-        internal HarnessClientEventArgs(ClientController Client)
+        internal HarnessClientEventArgs(HarnessClientController Client)
         {
             _client = Client;
         }
 
-        public ClientController Client
+        public HarnessClientController Client
         {
             get { return _client; }
         }
