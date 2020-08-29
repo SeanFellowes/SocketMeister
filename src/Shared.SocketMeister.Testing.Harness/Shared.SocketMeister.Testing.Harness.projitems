@@ -9,10 +9,10 @@
     <Import_RootNamespace>SocketMeister.Testing</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)ClientController %28Harness%29.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)HarnessClientController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ControlBusServer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ClientControllerCollection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)HarnessClientControllerCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HarnessController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServerController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\ITestOnHarness.cs" />

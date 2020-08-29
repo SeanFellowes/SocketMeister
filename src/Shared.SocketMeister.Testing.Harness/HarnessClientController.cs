@@ -8,7 +8,10 @@ using SocketMeister.Testing;
 
 namespace SocketMeister.Testing
 {
-    internal class HarnessClientController : Client.ClientController
+    /// <summary>
+    /// Enhanced ClientCOntroller, with additional properties required for use on the Test Harness
+    /// </summary>
+    internal class HarnessClientController : ClientController
     {
         private SocketServer.Client _listenerClient = null;
         private static readonly object _lockMaxClientId = new object();
@@ -62,9 +65,9 @@ namespace SocketMeister.Testing
         /// </summary>
         /// <param name="NumberOfClients">Number of test harness clients to run</param>
         /// <returns>List of TestHarnessClient objects</returns>
-        public ClientControllerCollection AddClients(int NumberOfClients)
+        public HarnessClientControllerCollection AddClients(int NumberOfClients)
         {
-            ClientControllerCollection rVal = new ClientControllerCollection();
+            HarnessClientControllerCollection rVal = new HarnessClientControllerCollection();
             for (int ctr = 1; ctr <= NumberOfClients; ctr++)
             {
                 rVal.Add(new HarnessClientController());

@@ -24,7 +24,7 @@ namespace SocketMeister.Testing
         private readonly ControlBusServer _controlBusServer;
         private bool _disposed = false;
         private bool _disposeCalled = false;
-        private ClientControllerCollection _testClientCollection = new ClientControllerCollection();
+        private HarnessClientControllerCollection _testClientCollection = new HarnessClientControllerCollection();
         private ITestOnHarness _currentTest = null;
         private Executing _executeMode = Executing.Stopped;
         private static readonly object _lock = new object();
@@ -276,7 +276,7 @@ namespace SocketMeister.Testing
         /// <summary>
         /// Test Harness Client Collection used during testing.
         /// </summary>
-        public ClientControllerCollection TestClientCollection { get { return _testClientCollection; } }
+        public HarnessClientControllerCollection TestClientCollection { get { return _testClientCollection; } }
 
         /// <summary>
         /// Policy Server for Silverlight Clients

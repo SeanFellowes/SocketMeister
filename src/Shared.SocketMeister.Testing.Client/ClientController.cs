@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Threading;
 
-namespace SocketMeister.Testing.Client
+namespace SocketMeister.Testing
 {
     /// <summary>
     /// Test Harness Client
