@@ -128,7 +128,7 @@ namespace SocketMeister.Testing
         public void Disconnect()
         {
             object[] parms = new object[2];
-            parms[0] = ControlMessage.ExitClient;
+            parms[0] = ControlBus.ControlMessage.ExitClient;
             ListenerClient.SendMessage(parms);
 
             //  Wait zzzz miniseconds for the client to send a ClientDisconnecting message.

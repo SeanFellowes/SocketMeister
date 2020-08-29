@@ -11,7 +11,7 @@ namespace SocketMeister.Testing
     /// </summary>
     internal class ClientController : IDisposable
     {
-        private readonly ControlBusClient _controlBusClient;
+        private readonly ControlBus.ControlBusClient _controlBusClient;
         private readonly object _lock = new object();
 
         /// <summary>
@@ -21,7 +21,7 @@ namespace SocketMeister.Testing
 
         public ClientController(int ControlBusClientId)
         {
-            _controlBusClient = new ControlBusClient( ControlBusClientType.ClientController, ControlBusClientId, Constants.ControlBusServerIPAddress, Constants.ControlBusPort);
+            _controlBusClient = new ControlBus.ControlBusClient( ControlBusClientType.ClientController, ControlBusClientId, Constants.ControlBusServerIPAddress, Constants.ControlBusPort);
             _controlBusClient.ConnectionFailed += ControlBus_ConnectionFailed;
             _controlBusClient.ControlBusSocketClient.MessageReceived += ControlBus_MessageReceived;
         }

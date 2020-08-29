@@ -260,29 +260,29 @@ namespace SocketMeister.Test
             }
         }
 
-        private void ControlServer_RequestReceived(object sender, SocketServer.RequestReceivedEventArgs e)
-        {
-            int r = Convert.ToInt32(e.Parameters[0]);
-            if (r == ControlMessage.HarnessControlBusClientIsConnecting)
-            {
-                int ClientId = Convert.ToInt32(e.Parameters[1]);
-                if (ClientId == int.MaxValue)
-                {
-                    //  FIXED CLIENT HAS PHONED HOME
-                    _harnessController.FixedHarnessClient.ListenerClient = e.Client;
-                }
-                else
-                {
-                    //  ANOTHER CLIENT HAS PHONED HOME. FIND THE CLIENT
-                    HarnessClientController client = _harnessController.TestClientCollection[ClientId];
-                    if (client != null)
-                    {
-                        //  ASSIGN THE SocketMeister Server Client to the class. When connecting a test harness client, this value is checked for NOT null (Connected).
-                        client.ListenerClient = e.Client;
-                    }
-                }
-            }
-        }
+        //private void ControlServer_RequestReceived(object sender, SocketServer.RequestReceivedEventArgs e)
+        //{
+        //    int r = Convert.ToInt32(e.Parameters[0]);
+        //    if (r == ControlBus.ControlMessage.HarnessControlBusClientIsConnecting)
+        //    {
+        //        int ClientId = Convert.ToInt32(e.Parameters[1]);
+        //        if (ClientId == int.MaxValue)
+        //        {
+        //            //  FIXED CLIENT HAS PHONED HOME
+        //            _harnessController.FixedHarnessClient.ListenerClient = e.Client;
+        //        }
+        //        else
+        //        {
+        //            //  ANOTHER CLIENT HAS PHONED HOME. FIND THE CLIENT
+        //            HarnessClientController client = _harnessController.TestClientCollection[ClientId];
+        //            if (client != null)
+        //            {
+        //                //  ASSIGN THE SocketMeister Server Client to the class. When connecting a test harness client, this value is checked for NOT null (Connected).
+        //                client.ListenerClient = e.Client;
+        //            }
+        //        }
+        //    }
+        //}
 
         private void ControlServer_MessageReceived(object sender, SocketServer.MessageReceivedEventArgs e)
         {

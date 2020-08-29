@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Threading;
 
-namespace SocketMeister.Testing
+namespace SocketMeister.Testing.ControlBus
 {
     /// <summary>
     /// Socket client for sending and receiving control messages between a ClientController and HarnessController or ServerController and HarnessController

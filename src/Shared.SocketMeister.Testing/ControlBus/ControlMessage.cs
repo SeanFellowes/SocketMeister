@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SocketMeister.Testing
+namespace SocketMeister.Testing.ControlBus
 {
     static class ControlMessage
     {

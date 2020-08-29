@@ -10,12 +10,15 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Constants.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ControlMessage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ControlBus\ControlMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ControlBusClient.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ControlBus\ControlBusClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\ITestBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\Test001Base.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\TestBase.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)ControlBus\" />
   </ItemGroup>
 </Project>
