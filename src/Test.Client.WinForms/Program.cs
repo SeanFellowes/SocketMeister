@@ -9,7 +9,6 @@ namespace Test.Client.WinForms
     static class Program
     {
         static public int ClientId;
-        static public string HarnessControllerIPAddress = "127.0.0.1";
 
         /// <summary>
         ///  The main entry point for the application.

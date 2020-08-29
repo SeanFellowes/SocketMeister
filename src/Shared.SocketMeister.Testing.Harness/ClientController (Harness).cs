@@ -33,10 +33,9 @@ namespace SocketMeister.Testing
         public object Lock { get { return _lock; } }
 
         /// <summary>
-        /// Adds a client to the list and connects it to the test harness control TCP port (Port Constants.HarnessControlBusPort). Opens an instance of the WinForms client app for each client.
+        /// Creates a new GUI Client Controller running in it's own application
         /// </summary>
-        /// <returns>The connected (to the test harness control port) client.</returns>
-        public ClientController AddClient()
+        public ClientController()
         {
             int nextClientId = 0;
             lock (_lockMaxClientId)
@@ -44,7 +43,7 @@ namespace SocketMeister.Testing
                 _maxClientId++;
                 nextClientId = _maxClientId;
             }
-            ClientController newClient = new ClientController(nextClientId, "127.0.0.1");
+            ClientController newClient = new ClientController(nextClientId);
             //ClientCreated?.Invoke(this, new HarnessClientEventArgs(newClient));
             try
             {
@@ -55,8 +54,6 @@ namespace SocketMeister.Testing
                 //if (ClientConnectFailed != null) ClientConnectFailed(this, new HarnessClientEventArgs(newClient));
                 throw;
             }
-
-            return newClient;
         }
 
 
@@ -71,7 +68,7 @@ namespace SocketMeister.Testing
             ClientControllerCollection rVal = new ClientControllerCollection();
             for (int ctr = 1; ctr <= NumberOfClients; ctr++)
             {
-                rVal.Add(AddClient());
+                rVal.Add(new ClientController());
             }
             return rVal;
         }

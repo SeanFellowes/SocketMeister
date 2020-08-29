@@ -11,5 +11,7 @@ namespace SocketMeister.Testing
 
         //  Silverlight ports are between 4502-4534
         public static int SilverlightPolicyPort = 943;
+
+        public static string ControlBusServerIPAddress = "127.0.0.1";
     }
 }

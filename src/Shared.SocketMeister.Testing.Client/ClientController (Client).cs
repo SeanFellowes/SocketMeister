@@ -19,9 +19,9 @@ namespace SocketMeister.Testing
         /// </summary> 
         public event EventHandler<EventArgs> ControlBusConnectionFailed;
 
-        public ClientController(int ControlBusClientId, string ControlBusServerIPAddress)
+        public ClientController(int ControlBusClientId)
         {
-            _controlBusClient = new ControlBusClient( ControlBusClientType.ClientController, ControlBusClientId, ControlBusServerIPAddress, Constants.ControlBusPort);
+            _controlBusClient = new ControlBusClient( ControlBusClientType.ClientController, ControlBusClientId, Constants.ControlBusServerIPAddress, Constants.ControlBusPort);
             _controlBusClient.ConnectionFailed += ControlBus_ConnectionFailed;
             _controlBusClient.ControlBusSocketClient.MessageReceived += ControlBus_MessageReceived;
         }

@@ -9,7 +9,7 @@
     <Import_RootNamespace>Shared.SocketMeister.Testing.Client</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)ClientController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ClientController %28Client%29.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\ITestOnClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\Test000Client.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\Test001Client.cs" />

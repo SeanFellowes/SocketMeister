@@ -74,7 +74,7 @@ namespace SocketMeister.Testing
             _policyServer.TraceEventRaised += PolicyServer_TraceEventRaised;
 
             //  SETUP FIXED SERVER
-            _fixedServer1 = new ServerController(Constants.HarnessFixedServerPort, int.MaxValue - 1, "127.0.0.1");
+            _fixedServer1 = new ServerController(Constants.HarnessFixedServerPort, int.MaxValue - 1, Constants.ControlBusServerIPAddress);
 
             //  SEAN SEAN SEAN 
             //  CREATE ServerController PROPERTY AND ALLOW USER CONTROL TO ATTACH TO COLLECT USERS CONNECTED (SEPERATE FROM Controller USERS)
@@ -83,10 +83,7 @@ namespace SocketMeister.Testing
 
 
             //  SETUP FIXED CLIENT
-            _fixedClient1 = new ClientController(int.MaxValue, "127.0.0.1");
-//#if !DEBUG
-//            _fixedClientControllerHarnessClient.LaunchClientApplication();
-//#endif
+            _fixedClient1 = new ClientController(int.MaxValue);
 
 
             new Thread(delegate ()
@@ -127,8 +124,6 @@ namespace SocketMeister.Testing
                     }
                 }
             }
-
-
         }
 
         public void Dispose()
