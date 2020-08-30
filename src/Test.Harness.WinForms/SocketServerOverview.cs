@@ -13,6 +13,25 @@ namespace SocketMeister.Test
 {
     public partial class SocketServerOverview : UserControl
     {
+        /// <summary>
+        /// Type of socket server
+        /// </summary>
+        public enum SocketServerTypes
+        {
+            /// <summary>
+            /// Standard socket server
+            /// </summary>
+            SocketServer = 0,
+            /// <summary>
+            /// Policy server
+            /// </summary>
+            PolicyServer = 1,
+            /// <summary>
+            /// Socketserver for the control bus
+            /// </summary>
+            ControlServer = 2
+        }
+
         private int _port = 4502;
         private int _clientCount = 0;
         private SocketServerTypes _socketServerType = SocketServerTypes.SocketServer;
@@ -121,4 +140,6 @@ namespace SocketMeister.Test
 
 
     }
+
+
 }

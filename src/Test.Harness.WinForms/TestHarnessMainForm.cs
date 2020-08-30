@@ -70,7 +70,7 @@ namespace SocketMeister.Test
             if (InvokeRequired) Invoke(new MethodInvoker(delegate { ControlBusServer_ClientsChanged(this, e); }));
             else
             {
-                ControlServer.ClientCount = e.Count;
+                ControlServer.ClientCount = _harnessController.ControlBusServer.Listener.ClientCount;
             }
         }
 
@@ -110,6 +110,31 @@ namespace SocketMeister.Test
                 this.Width = Convert.ToInt32(Screen.PrimaryScreen.WorkingArea.Width * .5);
 
             //testHarness.Initialize();
+        }
+
+        private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            try
+            {
+                //  UNREGISTER 
+                _harnessController.PolicyServer.ListenerStateChanged -= PolicyServer_ListenerStateChanged;
+                _harnessController.FixedServer1.ListenerStateChanged -= FixedServer1_ListenerStateChanged;
+
+                _harnessController.ControlBusServer.ListenerStateChanged -= ControlBusServer_ListenerStateChanged;
+                _harnessController.ControlBusServer.ClientsChanged -= ControlBusServer_ClientsChanged;
+
+                _harnessController.Dispose();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            
+        }
+
+        private void FormMain_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Application.Exit();
         }
 
 
@@ -260,54 +285,6 @@ namespace SocketMeister.Test
             }
         }
 
-        //private void ControlServer_RequestReceived(object sender, SocketServer.RequestReceivedEventArgs e)
-        //{
-        //    int r = Convert.ToInt32(e.Parameters[0]);
-        //    if (r == ControlBus.ControlMessage.HarnessControlBusClientIsConnecting)
-        //    {
-        //        int ClientId = Convert.ToInt32(e.Parameters[1]);
-        //        if (ClientId == int.MaxValue)
-        //        {
-        //            //  FIXED CLIENT HAS PHONED HOME
-        //            _harnessController.FixedHarnessClient.ListenerClient = e.Client;
-        //        }
-        //        else
-        //        {
-        //            //  ANOTHER CLIENT HAS PHONED HOME. FIND THE CLIENT
-        //            HarnessClientController client = _harnessController.TestClientCollection[ClientId];
-        //            if (client != null)
-        //            {
-        //                //  ASSIGN THE SocketMeister Server Client to the class. When connecting a test harness client, this value is checked for NOT null (Connected).
-        //                client.ListenerClient = e.Client;
-        //            }
-        //        }
-        //    }
-        //}
-
-        private void ControlServer_MessageReceived(object sender, SocketServer.MessageReceivedEventArgs e)
-        {
-            string ggg = "ertretre";
-        }
-
-        private void TraceEventRaised(object sender, TraceEventArgs e)
-        {
-            Type senderType = sender.GetType();
-            if (senderType == typeof(SocketMeister.Test.SocketServerOverview))
-            {
-                SocketMeister.Test.SocketServerOverview server = (SocketServerOverview)sender;
-                InsertListboxItem(server.Port.ToString(), e);
-            }
-            else if(senderType == typeof(PolicyServer))
-            {
-                SocketMeister.PolicyServer ps = (PolicyServer)sender;
-                InsertListboxItem(ps.Port.ToString(), e);
-            }
-            else
-            {
-                throw new ApplicationException("Unknown type of sender");
-            }
-        }
-
         private void Test_TraceEventRaised(object sender, TraceEventArgs e)
         {
             ITestOnHarness test = (ITestOnHarness)sender;
@@ -344,23 +321,6 @@ namespace SocketMeister.Test
                 }
 
             }
-        }
-
-        private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            //  UNREGISTER 
-            _harnessController.PolicyServer.ListenerStateChanged -= PolicyServer_ListenerStateChanged;
-            _harnessController.FixedServer1.ListenerStateChanged -= FixedServer1_ListenerStateChanged;
-
-            _harnessController.ControlBusServer.ListenerStateChanged -= ControlBusServer_ListenerStateChanged;
-            _harnessController.ControlBusServer.ClientsChanged -= ControlBusServer_ClientsChanged;
-
-            _harnessController.Dispose();
-        }
-
-        private void FormMain_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            Application.Exit();
         }
 
         private void PanelMain_Resize(object sender, EventArgs e)

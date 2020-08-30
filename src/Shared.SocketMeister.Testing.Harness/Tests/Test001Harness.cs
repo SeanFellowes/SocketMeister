@@ -13,10 +13,10 @@ namespace SocketMeister.Testing.Tests
         public Test001Harness() : base (Test001Base.Id, Test001Base.Description)  
         {
             base.Parent = this;
+            base.ExecuteTest += Test001Harness_ExecuteTest;
         }
 
-
-        private void Execute(object sender, EventArgs e)
+        private void Test001Harness_ExecuteTest(object sender, EventArgs e)
         {
             try
             {

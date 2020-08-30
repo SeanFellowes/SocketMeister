@@ -63,7 +63,6 @@ namespace SocketMeister.Testing.ControlBus
             }
         }
 
-
         public SocketServer Listener
         {
             get { return _listener; }

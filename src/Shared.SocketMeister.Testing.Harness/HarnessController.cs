@@ -21,7 +21,6 @@ namespace SocketMeister.Testing
     internal class HarnessController : IDisposable
     {
         private readonly object classLock = new object();
-        private readonly ControlBus.ControlBusServer _controlBusServer;
         private bool _disposed = false;
         private bool _disposeCalled = false;
         private ITestOnHarness _currentTest = null;
@@ -43,8 +42,6 @@ namespace SocketMeister.Testing
         public event EventHandler<SocketServer.SocketServerStatusChangedEventArgs> PolicyServerStatusChanged;
 
 
-
-
         public HarnessController()
         {
             //  DYNAMICALLY ADD TESTS. TESTS ARE ANY CLASS NAMED BETWEEN SocketMeister.Test001 and SocketMeister.Test999
@@ -64,8 +61,8 @@ namespace SocketMeister.Testing
             }
 
             //  START CONTROL BUS LISTENER
-            _controlBusServer = new ControlBus.ControlBusServer();
-            _controlBusServer.RequestReceived += _controlBusServer_RequestReceived;
+            ControlBusServer = new ControlBus.ControlBusServer();
+            ControlBusServer.RequestReceived += _controlBusServer_RequestReceived;
 
             //  SETUP POLICY SERVER
             _policyServer = new PolicyServer();
@@ -131,7 +128,6 @@ namespace SocketMeister.Testing
             GC.SuppressFinalize(this);
         }
 
-
         protected virtual void Dispose(bool disposing)
         {
             if (_disposed == true) return;
@@ -147,12 +143,12 @@ namespace SocketMeister.Testing
                     catch { }
                 }
 
-                if (_controlBusServer != null)
+                if (ControlBusServer != null)
                 {
                     try
                     {
-                        _controlBusServer.Stop();
-                        _controlBusServer.Dispose();
+                        ControlBusServer.Stop();
+                        ControlBusServer.Dispose();
                     }
                     catch { }
                 }
@@ -185,7 +181,7 @@ namespace SocketMeister.Testing
             }
         }
 
-        public ControlBus.ControlBusServer ControlBusServer {  get { return _controlBusServer; } }
+        public ControlBus.ControlBusServer ControlBusServer { get; }
 
         public ServerController FixedServer1 {  get { return _fixedServer1; } }
 
@@ -204,6 +200,7 @@ namespace SocketMeister.Testing
 
             ITestOnHarness test = (ITestOnHarness)Activator.CreateInstance(t);
             _tests.Add(test);
+          
         }
 
 
@@ -220,7 +217,7 @@ namespace SocketMeister.Testing
 
         public void Start()
         {
-            _controlBusServer.Start();
+            ControlBusServer.Start();
             _policyServer.Start();
 
                 ////  START IN THE BACKGROUND

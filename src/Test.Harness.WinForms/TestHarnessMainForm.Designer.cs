@@ -106,7 +106,7 @@
             this.ControlPolicyServer.Name = "ControlPolicyServer";
             this.ControlPolicyServer.Port = 4502;
             this.ControlPolicyServer.Size = new System.Drawing.Size(341, 33);
-            this.ControlPolicyServer.SocketServerType = SocketMeister.SocketServerTypes.PolicyServer;
+            this.ControlPolicyServer.SocketServerType = SocketMeister.Test.SocketServerOverview.SocketServerTypes.PolicyServer;
             this.ControlPolicyServer.TabIndex = 5;
             // 
             // ControlServer
@@ -117,7 +117,7 @@
             this.ControlServer.Name = "ControlServer";
             this.ControlServer.Port = 4505;
             this.ControlServer.Size = new System.Drawing.Size(350, 31);
-            this.ControlServer.SocketServerType = SocketMeister.SocketServerTypes.SocketServer;
+            this.ControlServer.SocketServerType = SocketMeister.Test.SocketServerOverview.SocketServerTypes.SocketServer;
             this.ControlServer.TabIndex = 4;
             // 
             // panelControlHeader
@@ -184,7 +184,7 @@
             this.TestServer4.Name = "TestServer4";
             this.TestServer4.Port = 4513;
             this.TestServer4.Size = new System.Drawing.Size(350, 36);
-            this.TestServer4.SocketServerType = SocketMeister.SocketServerTypes.SocketServer;
+            this.TestServer4.SocketServerType = SocketMeister.Test.SocketServerOverview.SocketServerTypes.SocketServer;
             this.TestServer4.TabIndex = 8;
             // 
             // TestServer3
@@ -196,7 +196,7 @@
             this.TestServer3.Name = "TestServer3";
             this.TestServer3.Port = 4511;
             this.TestServer3.Size = new System.Drawing.Size(350, 36);
-            this.TestServer3.SocketServerType = SocketMeister.SocketServerTypes.SocketServer;
+            this.TestServer3.SocketServerType = SocketMeister.Test.SocketServerOverview.SocketServerTypes.SocketServer;
             this.TestServer3.TabIndex = 7;
             // 
             // TestServer2
@@ -208,7 +208,7 @@
             this.TestServer2.Name = "TestServer2";
             this.TestServer2.Port = 4512;
             this.TestServer2.Size = new System.Drawing.Size(350, 36);
-            this.TestServer2.SocketServerType = SocketMeister.SocketServerTypes.SocketServer;
+            this.TestServer2.SocketServerType = SocketMeister.Test.SocketServerOverview.SocketServerTypes.SocketServer;
             this.TestServer2.TabIndex = 6;
             // 
             // TestServer1
@@ -219,7 +219,7 @@
             this.TestServer1.Name = "TestServer1";
             this.TestServer1.Port = 4510;
             this.TestServer1.Size = new System.Drawing.Size(350, 36);
-            this.TestServer1.SocketServerType = SocketMeister.SocketServerTypes.SocketServer;
+            this.TestServer1.SocketServerType = SocketMeister.Test.SocketServerOverview.SocketServerTypes.SocketServer;
             this.TestServer1.TabIndex = 4;
             // 
             // panel2

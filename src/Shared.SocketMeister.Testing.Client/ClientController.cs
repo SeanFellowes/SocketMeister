@@ -63,7 +63,9 @@ namespace SocketMeister.Testing
             ControlBusConnectionFailed?.Invoke(this, e);
         }
 
-
+        /// <summary>
+        /// Attempts to cleanly disconnect the control bus client
+        /// </summary>
         public void Stop()
         {
             _controlBusClient.Stop();

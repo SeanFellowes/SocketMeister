@@ -97,6 +97,12 @@ namespace SocketMeister.Testing.Tests
                     ExecuteTest(Parent, new EventArgs());
                 })).Start();
             }
+            else
+            {
+                Status = TestStatus.Stopped;
+                RaiseTraceEventRaised("Error: Test is not subscribing to 'ExecuteTest' events.", SeverityType.Error, 2);
+
+            }
         }
 
         public void Stop()
