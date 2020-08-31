@@ -97,7 +97,9 @@ namespace SocketMeister.Testing.ControlBus
             {
                 int Port = Convert.ToInt32(e.Parameters[1]);
 
-                //  THIS WORKS. SEND SOMETHING BACK
+                //  THIS WORKS. 
+                
+                //  START THE SOCKET SERVER ON THE PORT REQUESTED SEND AND ACKNOWLEDGEMENT SOMETHING BACK
             }
         }
 
