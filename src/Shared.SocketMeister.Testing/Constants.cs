@@ -13,5 +13,7 @@ namespace SocketMeister.Testing
         public static int SilverlightPolicyPort = 943;
 
         public static string ControlBusServerIPAddress = "127.0.0.1";
+
+        public static int MaxWaitMsForControlBusClientToHarnessControllerConnect = 10000;
     }
 }

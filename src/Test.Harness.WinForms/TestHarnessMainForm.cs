@@ -3,10 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using SocketMeister.Testing;
 
@@ -19,7 +16,7 @@ namespace SocketMeister.Test
         private const int spacer = 0;
 
         private readonly HarnessController _harnessController;
-        private int errors = 0;
+        private int _errorCount = 0;
         private readonly BindingList<LogEntry> gridItems;
         private readonly List<Label> lCol1 = new List<Label>();
         private readonly List<Label> lCol2 = new List<Label>();
@@ -34,7 +31,6 @@ namespace SocketMeister.Test
             _harnessController = new HarnessController();
             _harnessController.ExecuteModeChanged += _harnessController_ExecuteModeChanged;
             _harnessController.PolicyServer.ListenerStateChanged += PolicyServer_ListenerStateChanged;
-            _harnessController.FixedServer1.ListenerStateChanged += FixedServer1_ListenerStateChanged;
 
             _harnessController.ControlBusServer.ListenerStateChanged += ControlBusServer_ListenerStateChanged;
             _harnessController.ControlBusServer.ClientsChanged += ControlBusServer_ClientsChanged;
@@ -119,11 +115,6 @@ namespace SocketMeister.Test
             }
         }
 
-        private void FixedServer1_ListenerStateChanged(object sender, SocketServer.SocketServerStatusChangedEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
         private void PolicyServer_ListenerStateChanged(object sender, SocketServer.SocketServerStatusChangedEventArgs e)
         {
             if (InvokeRequired) Invoke(new MethodInvoker(delegate { PolicyServer_ListenerStateChanged(sender, e); }));
@@ -155,8 +146,6 @@ namespace SocketMeister.Test
                 //  UNREGISTER 
                 _harnessController.ExecuteModeChanged -= _harnessController_ExecuteModeChanged;
                 _harnessController.PolicyServer.ListenerStateChanged -= PolicyServer_ListenerStateChanged;
-                _harnessController.FixedServer1.ListenerStateChanged -= FixedServer1_ListenerStateChanged;
-
                 _harnessController.ControlBusServer.ListenerStateChanged -= ControlBusServer_ListenerStateChanged;
                 _harnessController.ControlBusServer.ClientsChanged -= ControlBusServer_ClientsChanged;
 
@@ -164,7 +153,7 @@ namespace SocketMeister.Test
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ShowErrorMessage(ex);
             }
             
         }
@@ -190,10 +179,26 @@ namespace SocketMeister.Test
                     lCol5[testIndex].Text = "Execute";
 
                 if (_harnessController.ExecuteMode == ExecuteModes.SingleTest)
+                {
                     btnExecuteAllTests.Enabled = false;
+                    for (int index = 0; index < _harnessController.Tests.Count; index++)
+                    {
+                        if (index == testIndex)
+                            lCol5[index].Enabled = true;
+                        else
+                            lCol5[index].Enabled = false;
+                    }
+                }
                 else
+                {
                     btnExecuteAllTests.Enabled = true;
-             }
+                    for (int index = 0; index < _harnessController.Tests.Count; index++)
+                    {
+                        lCol5[index].Enabled = true;
+                    }
+
+                }
+            }
         }
 
 
@@ -318,12 +323,11 @@ namespace SocketMeister.Test
 
                 if (args.Severity == SeverityType.Error)
                 {
-                    errors++;
-                    lblErrors.Text = "Errors: " + errors.ToString(); ;
+                    _errorCount++;
+                    lblErrors.Text = "Errors: " + _errorCount.ToString(); ;
                     lblErrors.ForeColor = Color.White;
                     lblErrors.BackColor = Color.DarkRed;
                 }
-
             }
         }
 
@@ -558,7 +562,7 @@ namespace SocketMeister.Test
         private void BtnClearLog_Click(object sender, EventArgs e)
         {
             gridItems.Clear();
-            errors = 0;
+            _errorCount = 0;
             lblTraceLog.Text = "Trace Log: 0";
             lblErrors.Text = "Errors: 0";
             lblErrors.ForeColor = Color.Black;

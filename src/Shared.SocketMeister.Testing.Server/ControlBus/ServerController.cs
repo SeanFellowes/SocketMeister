@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Text;
 using System.Threading;
 
-namespace SocketMeister.Testing
+namespace SocketMeister.Testing.ControlBus
 {
     /// <summary>
     /// Controls a socket server
@@ -12,6 +12,8 @@ namespace SocketMeister.Testing
     public class ServerController : IDisposable
     {
         private readonly ControlBus.ControlBusClient _controlBusClient;
+        private bool _disposed = false;
+        private bool _disposeCalled = false;
         private readonly object _lock = new object();
         private readonly int _port;
         private SocketServer _socketServer = null;
@@ -50,7 +52,7 @@ namespace SocketMeister.Testing
         public ServerController(int Port, int ControlBusClientId, string ControlBusServerIPAddress)
         {
             //  CONNECT TO THE HarnessController
-            _controlBusClient = new ControlBus.ControlBusClient(ControlBusClientType.ClientController, ControlBusClientId, ControlBusServerIPAddress, Constants.ControlBusPort);
+            _controlBusClient = new ControlBusClient(ControlBusClientType.ClientController, ControlBusClientId, ControlBusServerIPAddress, Constants.ControlBusPort);
             _controlBusClient.ConnectionFailed += ControlBus_ConnectionFailed;
             _controlBusClient.ControlBusSocketClient.MessageReceived += ControlBus_MessageReceived;
 
@@ -75,10 +77,13 @@ namespace SocketMeister.Testing
 
         protected virtual void Dispose(bool disposing)
         {
+            if (_disposed == true) return;
             if (disposing)
             {
+                _disposeCalled = true;
                 StopSocketServer();
                 _socketServer = null;
+                _disposed = true;
             }
         }
 

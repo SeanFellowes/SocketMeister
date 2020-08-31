@@ -26,7 +26,7 @@ namespace SocketMeister.Testing
         private ExecuteModes _executeMode = ExecuteModes.Stopped;
         private static readonly object _lock = new object();
         private readonly ControlBus.HarnessClientController _fixedClient1;
-        private readonly ServerController _fixedServer1;
+        private readonly ControlBus.HarnessServerController _fixedServer1;
         private readonly PolicyServer _policyServer;
         private readonly List<ITestOnHarness> _tests = new List<ITestOnHarness>();
 
@@ -39,12 +39,6 @@ namespace SocketMeister.Testing
         /// Raised when an trace log event has been raised.
         /// </summary>
         internal event EventHandler<TraceEventArgs> TraceEventRaised;
-
-        /// <summary>
-        /// The status of the socket server changed. Statuses include stating, started, stopping and stopped.
-        /// </summary>
-        public event EventHandler<SocketServer.SocketServerStatusChangedEventArgs> PolicyServerStatusChanged;
-
 
         public HarnessController()
         {
@@ -70,35 +64,28 @@ namespace SocketMeister.Testing
 
             //  SETUP POLICY SERVER
             _policyServer = new PolicyServer();
-            _policyServer.ListenerStateChanged += PolicyServer_SocketServiceStatusChanged;
             _policyServer.TraceEventRaised += PolicyServer_TraceEventRaised;
 
             //  SETUP FIXED SERVER
-            _fixedServer1 = new ServerController(Constants.HarnessFixedServerPort, int.MaxValue - 1, Constants.ControlBusServerIPAddress);
-
-            //  SEAN SEAN SEAN 
-            //  CREATE ServerController PROPERTY AND ALLOW USER CONTROL TO ATTACH TO COLLECT USERS CONNECTED (SEPERATE FROM Controller USERS)
-            //  START THE ServerController (WITH A CONTROL MESSAGE)
-            //  ADD STOP (WITH CONTROL MESSAGE) WHEN THIS HarnessCOntroller STOPS
-
+            _fixedServer1 = new ControlBus.HarnessServerController(Constants.HarnessFixedServerPort, int.MaxValue - 1, Constants.ControlBusServerIPAddress);
 
             //  SETUP FIXED CLIENT
             _fixedClient1 = new ControlBus.HarnessClientController(int.MaxValue);
 
 
-            new Thread(delegate ()
-            {
-                DateTime maxWait = DateTime.Now.AddSeconds(30);
-                while (_disposeCalled == false)
-                {
-                    if (DateTime.Now > maxWait)
-                        throw new TimeoutException("Visual Studio debug mode timed out waiting for the fixed client to connect. Make sure both the harness and client applications are set as Startup Projects.");
-                    else if (_fixedClient1.ListenerClient != null)
-                        break;
-                    else
-                        Thread.Sleep(1000);
-                }
-            }).Start();
+            //new Thread(delegate ()
+            //{
+            //    DateTime maxWait = DateTime.Now.AddSeconds(30);
+            //    while (_disposeCalled == false)
+            //    {
+            //        if (DateTime.Now > maxWait)
+            //            throw new TimeoutException("Visual Studio debug mode timed out waiting for the fixed client to connect. Make sure both the harness and client applications are set as Startup Projects.");
+            //        else if (_fixedClient1.ListenerClient != null)
+            //            break;
+            //        else
+            //            Thread.Sleep(1000);
+            //    }
+            //}).Start();
         }
 
 
@@ -108,10 +95,15 @@ namespace SocketMeister.Testing
             if (r == ControlBus.ControlMessage.HarnessControlBusClientIsConnecting)
             {
                 int ClientId = Convert.ToInt32(e.Parameters[1]);
-                if (ClientId == int.MaxValue)
+                if (ClientId == _fixedClient1.ClientId)
                 {
                     //  FIXED CLIENT HAS PHONED HOME
                     _fixedClient1.ListenerClient = e.Client;
+                }
+                else if (ClientId == _fixedServer1.ClientId)
+                {
+                    //  FIXED SERVER1 HAS PHONED HOME
+                    _fixedServer1.ListenerClient = e.Client;
                 }
                 else
                 {
@@ -165,7 +157,6 @@ namespace SocketMeister.Testing
                         {
                             _policyServer.Stop();
                         }
-                        _policyServer.ListenerStateChanged -= PolicyServer_SocketServiceStatusChanged;
                         _policyServer.TraceEventRaised -= PolicyServer_TraceEventRaised;
                         _policyServer.Dispose();
                     }
@@ -181,7 +172,7 @@ namespace SocketMeister.Testing
                     catch { }
                 }
 
-
+                _disposed = true;
             }
         }
 
@@ -189,16 +180,17 @@ namespace SocketMeister.Testing
 
         private int CurrentTestPtr {  get {  lock (_lock) { return _currentTestPtr; } } }
 
-        public ServerController FixedServer1 {  get { return _fixedServer1; } }
+        /// <summary>
+        /// In DEBUG, this is attached to this test harness for easy debugging. In RELEASE, a seperate client application is launched.
+        /// </summary>
+        public ControlBus.HarnessClientController FixedHarnessClient {  get { return _fixedClient1; } }
+
+        public ControlBus.ServerController FixedServer1 {  get { return _fixedServer1; } }
 
 
         private void AddTest(Type t)
         {
             if (t == null) throw new ArgumentNullException(nameof(t));
-            //object[] parms = new object[1];
-            //parms[0] = ctr;
-            //T test = (T)Activator.CreateInstance(t, parms);
-
             ITestOnHarness Test = (ITestOnHarness)Activator.CreateInstance(t);
             _tests.Add(Test);
             Test.IsExecutingChanged += Test_IsExecutingChanged;
@@ -239,11 +231,6 @@ namespace SocketMeister.Testing
         private void PolicyServer_TraceEventRaised(object sender, TraceEventArgs e)
         {
             TraceEventRaised?.Invoke(this, e);
-        }
-
-        private void PolicyServer_SocketServiceStatusChanged(object sender, SocketServer.SocketServerStatusChangedEventArgs e)
-        {
-            PolicyServerStatusChanged?.Invoke(sender, e);
         }
 
         public void ExecuteAllTests()
@@ -301,11 +288,6 @@ namespace SocketMeister.Testing
                 } 
             }
         }
-
-        /// <summary>
-        /// In DEBUG, this is attached to this test harness for easy debugging. In RELEASE, a seperate client application is launched.
-        /// </summary>
-        public ControlBus.HarnessClientController FixedHarnessClient {  get { return _fixedClient1; } }
 
         internal ExecuteModes ExecuteMode
         {
