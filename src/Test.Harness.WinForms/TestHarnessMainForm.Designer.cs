@@ -58,6 +58,10 @@
             this.PanelMain = new System.Windows.Forms.Panel();
             this.PanelMainTrace = new System.Windows.Forms.Panel();
             this.dGrid = new System.Windows.Forms.DataGridView();
+            this.PnlTestsHeader = new System.Windows.Forms.Panel();
+            this.lblErrors = new System.Windows.Forms.Label();
+            this.btnClearLog = new System.Windows.Forms.Button();
+            this.lblTraceLog = new System.Windows.Forms.Label();
             this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -65,10 +69,6 @@
             this.dataGridViewTextBoxColumn5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ColumnStack = new System.Windows.Forms.DataGridViewButtonColumn();
             this.StackTrace = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PnlTestsHeader = new System.Windows.Forms.Panel();
-            this.lblErrors = new System.Windows.Forms.Label();
-            this.btnClearLog = new System.Windows.Forms.Button();
-            this.lblTraceLog = new System.Windows.Forms.Label();
             this.pnlControl.SuspendLayout();
             this.panelControlHeader.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -77,8 +77,8 @@
             this.pnlTests.SuspendLayout();
             this.panel3.SuspendLayout();
             this.PanelMain.SuspendLayout();
-            this.PanelMainTrace.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dGrid)).BeginInit();
+            this.PanelMainTrace.SuspendLayout();
             this.PnlTestsHeader.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -382,14 +382,6 @@
             // 
             // PanelMainTrace
             // 
-            this.PanelMainTrace.Controls.Add(this.dGrid);
-            this.PanelMainTrace.Controls.Add(this.PnlTestsHeader);
-            this.PanelMainTrace.Location = new System.Drawing.Point(68, 7);
-            this.PanelMainTrace.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.PanelMainTrace.Name = "PanelMainTrace";
-            this.PanelMainTrace.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.PanelMainTrace.Size = new System.Drawing.Size(684, 248);
-            this.PanelMainTrace.TabIndex = 31;
             // 
             // dGrid
             // 
@@ -425,7 +417,7 @@
             this.dGrid.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dGrid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this.dGrid.Location = new System.Drawing.Point(4, 34);
-            this.dGrid.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.dGrid.Margin = new System.Windows.Forms.Padding(4, 1, 4, 1);
             this.dGrid.MultiSelect = false;
             this.dGrid.Name = "dGrid";
             this.dGrid.ReadOnly = true;
@@ -446,62 +438,14 @@
             this.dGrid.Size = new System.Drawing.Size(676, 211);
             this.dGrid.TabIndex = 31;
             this.dGrid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DGrid_CellContentClick);
-            // 
-            // dataGridViewTextBoxColumn1
-            // 
-            this.dataGridViewTextBoxColumn1.DataPropertyName = "TimeStamp";
-            this.dataGridViewTextBoxColumn1.HeaderText = "TimeStamp";
-            this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
-            this.dataGridViewTextBoxColumn1.ReadOnly = true;
-            this.dataGridViewTextBoxColumn1.Width = 85;
-            // 
-            // dataGridViewTextBoxColumn2
-            // 
-            this.dataGridViewTextBoxColumn2.DataPropertyName = "Source";
-            this.dataGridViewTextBoxColumn2.HeaderText = "Source";
-            this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
-            this.dataGridViewTextBoxColumn2.ReadOnly = true;
-            this.dataGridViewTextBoxColumn2.Width = 66;
-            // 
-            // dataGridViewTextBoxColumn3
-            // 
-            this.dataGridViewTextBoxColumn3.DataPropertyName = "Severity";
-            this.dataGridViewTextBoxColumn3.HeaderText = "Severity";
-            this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
-            this.dataGridViewTextBoxColumn3.ReadOnly = true;
-            this.dataGridViewTextBoxColumn3.Width = 70;
-            // 
-            // dataGridViewTextBoxColumn4
-            // 
-            this.dataGridViewTextBoxColumn4.DataPropertyName = "EventId";
-            this.dataGridViewTextBoxColumn4.HeaderText = "EventId";
-            this.dataGridViewTextBoxColumn4.Name = "dataGridViewTextBoxColumn4";
-            this.dataGridViewTextBoxColumn4.ReadOnly = true;
-            this.dataGridViewTextBoxColumn4.Width = 69;
-            // 
-            // dataGridViewTextBoxColumn5
-            // 
-            this.dataGridViewTextBoxColumn5.DataPropertyName = "Message";
-            this.dataGridViewTextBoxColumn5.HeaderText = "Message";
-            this.dataGridViewTextBoxColumn5.Name = "dataGridViewTextBoxColumn5";
-            this.dataGridViewTextBoxColumn5.ReadOnly = true;
-            this.dataGridViewTextBoxColumn5.Width = 75;
-            // 
-            // ColumnStack
-            // 
-            this.ColumnStack.HeaderText = "Stack";
-            this.ColumnStack.Name = "ColumnStack";
-            this.ColumnStack.ReadOnly = true;
-            this.ColumnStack.Text = "Stack";
-            this.ColumnStack.Width = 41;
-            // 
-            // StackTrace
-            // 
-            this.StackTrace.DataPropertyName = "StackTrace";
-            this.StackTrace.HeaderText = "StackTrace";
-            this.StackTrace.Name = "StackTrace";
-            this.StackTrace.ReadOnly = true;
-            this.StackTrace.Width = 88;
+            this.PanelMainTrace.Controls.Add(this.dGrid);
+            this.PanelMainTrace.Controls.Add(this.PnlTestsHeader);
+            this.PanelMainTrace.Location = new System.Drawing.Point(68, 7);
+            this.PanelMainTrace.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.PanelMainTrace.Name = "PanelMainTrace";
+            this.PanelMainTrace.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.PanelMainTrace.Size = new System.Drawing.Size(684, 248);
+            this.PanelMainTrace.TabIndex = 31;
             // 
             // PnlTestsHeader
             // 
@@ -552,6 +496,69 @@
             this.lblTraceLog.Text = "Trace Log: 0";
             this.lblTraceLog.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // dataGridViewTextBoxColumn1
+            // 
+            this.dataGridViewTextBoxColumn1.DataPropertyName = "TimeStamp";
+            this.dataGridViewTextBoxColumn1.HeaderText = "TimeStamp";
+            this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
+            this.dataGridViewTextBoxColumn1.ReadOnly = true;
+            this.dataGridViewTextBoxColumn1.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridViewTextBoxColumn1.Width = 85;
+            // 
+            // dataGridViewTextBoxColumn2
+            // 
+            this.dataGridViewTextBoxColumn2.DataPropertyName = "Source";
+            this.dataGridViewTextBoxColumn2.HeaderText = "Source";
+            this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
+            this.dataGridViewTextBoxColumn2.ReadOnly = true;
+            this.dataGridViewTextBoxColumn2.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridViewTextBoxColumn2.Width = 66;
+            // 
+            // dataGridViewTextBoxColumn3
+            // 
+            this.dataGridViewTextBoxColumn3.DataPropertyName = "Severity";
+            this.dataGridViewTextBoxColumn3.HeaderText = "Severity";
+            this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
+            this.dataGridViewTextBoxColumn3.ReadOnly = true;
+            this.dataGridViewTextBoxColumn3.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridViewTextBoxColumn3.Width = 70;
+            // 
+            // dataGridViewTextBoxColumn4
+            // 
+            this.dataGridViewTextBoxColumn4.DataPropertyName = "EventId";
+            this.dataGridViewTextBoxColumn4.HeaderText = "EventId";
+            this.dataGridViewTextBoxColumn4.Name = "dataGridViewTextBoxColumn4";
+            this.dataGridViewTextBoxColumn4.ReadOnly = true;
+            this.dataGridViewTextBoxColumn4.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridViewTextBoxColumn4.Width = 69;
+            // 
+            // dataGridViewTextBoxColumn5
+            // 
+            this.dataGridViewTextBoxColumn5.DataPropertyName = "Message";
+            this.dataGridViewTextBoxColumn5.HeaderText = "Message";
+            this.dataGridViewTextBoxColumn5.Name = "dataGridViewTextBoxColumn5";
+            this.dataGridViewTextBoxColumn5.ReadOnly = true;
+            this.dataGridViewTextBoxColumn5.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridViewTextBoxColumn5.Width = 75;
+            // 
+            // ColumnStack
+            // 
+            this.ColumnStack.HeaderText = "Stack";
+            this.ColumnStack.Name = "ColumnStack";
+            this.ColumnStack.ReadOnly = true;
+            this.ColumnStack.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.ColumnStack.Text = "Stack";
+            this.ColumnStack.Width = 41;
+            // 
+            // StackTrace
+            // 
+            this.StackTrace.DataPropertyName = "StackTrace";
+            this.StackTrace.HeaderText = "StackTrace";
+            this.StackTrace.Name = "StackTrace";
+            this.StackTrace.ReadOnly = true;
+            this.StackTrace.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.StackTrace.Width = 88;
+            // 
             // TestHarnessMainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -578,8 +585,8 @@
             this.pnlTests.PerformLayout();
             this.panel3.ResumeLayout(false);
             this.PanelMain.ResumeLayout(false);
-            this.PanelMainTrace.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dGrid)).EndInit();
+            this.PanelMainTrace.ResumeLayout(false);
             this.PnlTestsHeader.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -616,6 +623,7 @@
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.Label lblErrors;
         private System.Windows.Forms.DataGridView dGrid;
+        private SocketServerOverview ControlPolicyServer;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
@@ -623,7 +631,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn5;
         private System.Windows.Forms.DataGridViewButtonColumn ColumnStack;
         private System.Windows.Forms.DataGridViewTextBoxColumn StackTrace;
-        private SocketServerOverview ControlPolicyServer;
     }
 }
 

@@ -125,8 +125,11 @@ namespace SocketMeister.Testing.Tests
 
         public void Stop()
         {
-            if (Status != TestStatus.InProgress) return;
-            Status = TestStatus.Stopping;
+            new Thread(new ThreadStart(delegate
+            {
+                if (Status != TestStatus.InProgress) return;
+                Status = TestStatus.Stopping;
+            })).Start();
         }
 
 

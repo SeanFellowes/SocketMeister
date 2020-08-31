@@ -77,7 +77,7 @@ namespace SocketMeister.Test
                     btnExecuteAllTests.Enabled = true;
                     for (int index = 0; index < _harnessController.Tests.Count; index++)
                     {
-                        lCol5[index].Enabled = false;
+                        lCol5[index].Visible = false;
                     }
                 }
                 else if (_harnessController.ExecuteMode == ExecuteModes.SingleTest)
@@ -86,7 +86,7 @@ namespace SocketMeister.Test
                     btnExecuteAllTests.Enabled = false;
                     for (int index = 0; index < _harnessController.Tests.Count; index++)
                     {
-                        lCol5[index].Enabled = true;
+                        lCol5[index].Visible = true;
                     }
                 }
                 else
@@ -95,7 +95,7 @@ namespace SocketMeister.Test
                     btnExecuteAllTests.Enabled = true;
                     for (int index = 0; index < _harnessController.Tests.Count; index++)
                     {
-                        lCol5[index].Enabled = true;
+                        lCol5[index].Visible = true;
                     }
                 }
             }
@@ -188,6 +188,11 @@ namespace SocketMeister.Test
                     lCol5[testIndex].Text = "Stop";
                 else
                     lCol5[testIndex].Text = "Execute";
+
+                if (_harnessController.ExecuteMode == ExecuteModes.SingleTest)
+                    btnExecuteAllTests.Enabled = false;
+                else
+                    btnExecuteAllTests.Enabled = true;
              }
         }
 
@@ -419,64 +424,22 @@ namespace SocketMeister.Test
 
             }
 
-            Repos();
+            Reposition();
         }
 
         private void ExecuteButton_Click(object sender, EventArgs e)
         {
-            new Thread(
-                new ThreadStart(delegate
-                {
-                    ITestOnHarness test = (ITestOnHarness)((Button)sender).Tag;
-
-                    if (_harnessController.ExecuteMode == ExecuteModes.AllTests)
-                    {
-                        test.Execute();
-                    }
-                    else if (_harnessController.ExecuteMode == ExecuteModes.Stopped)
-                    {
-                        test.Execute();
-                    }
-                    else if (_harnessController.ExecuteMode == ExecuteModes.SingleTest)
-                    {
-                        test.Stop();
-                    }
-                })).Start();
-        }
-
-        private void SetTestNotification(ITestOnHarness Test, TestStatus Value)
-        {
-            if (InvokeRequired) Invoke(new MethodInvoker(delegate { SetTestNotification(Test, Value); }));
+            ITestOnHarness test = (ITestOnHarness)((Button)sender).Tag;
+            if (test.IsExecuting == false)
+                test.Execute();
             else
-            {
-                int index = _harnessController.Tests.IndexOf(Test);
-                if (index < 0) return;
-                if (Value == TestStatus.Failed)
-                {
-                    (lCol3[index]).BackColor = Color.DarkRed;
-                    (lCol3[index]).Text = "Failed";
-                }
-                else if (Value == TestStatus.InProgress)
-                {
-                    (lCol3[index]).BackColor = Color.DarkGreen;
-                    (lCol3[index]).Text = "In Progress";
-                }
-                else if (Value == TestStatus.NotStarted)
-                {
-                    (lCol3[index]).BackColor = Color.White;
-                    (lCol3[index]).Text = "Not Started";
-                }
-                else
-                {
-                    (lCol3[index]).BackColor = Color.DarkSlateBlue;
-                    (lCol3[index]).Text = "Successful";
-                }
-            }
+                test.Stop();
         }
 
 
 
-        private void Repos()
+
+        private void Reposition()
         {
             try
             {
@@ -568,14 +531,28 @@ namespace SocketMeister.Test
                 CH3.Left = CH2.Left + CH2.Width + spacer;
                 CH4.Left = CH3.Left + CH3.Width + spacer;
 
-                Repos();
+                Reposition();
             }
             catch { }
         }
 
         private void BtnExecuteAllTests_Click(object sender, EventArgs e)
         {
-            _harnessController.ExecuteAllTests();
+            try
+            {
+                if (_harnessController.ExecuteMode == ExecuteModes.AllTests)
+                {
+                    _harnessController.StopAllTests();
+                }
+                else if (_harnessController.ExecuteMode == ExecuteModes.Stopped)
+                {
+                    _harnessController.ExecuteAllTests();
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowErrorMessage(ex);
+            }
         }
 
         private void BtnClearLog_Click(object sender, EventArgs e)
@@ -598,6 +575,18 @@ namespace SocketMeister.Test
                 LogEntry li = gridItems[e.RowIndex];
                 if (li.StackTrace == null) MessageBox.Show("No stack trace", "No stack trace", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 else MessageBox.Show(li.StackTrace, "Stack trace", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+
+        private void ShowErrorMessage(Exception ex)
+        {
+            if (InvokeRequired) Invoke(new MethodInvoker(delegate { ShowErrorMessage(ex); }));
+            else
+            {
+                string message = ex.Message;
+                //if (ex.StackTrace != null) message += Environment.NewLine + Environment.NewLine + ex.StackTrace;
+                MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

@@ -14,8 +14,7 @@ namespace SocketMeister.Testing
     {
         Stopped = 0,
         SingleTest = 1,
-        AllTests = 2,
-        ZStoppingAllTests = 20
+        AllTests = 2
     }
 
     internal class HarnessController : IDisposable
@@ -193,11 +192,6 @@ namespace SocketMeister.Testing
         public ServerController FixedServer1 {  get { return _fixedServer1; } }
 
 
-        //SocketServer ControlBusSocketServer
-        //{
-        //    get { }
-        //}
-
         private void AddTest(Type t)
         {
             if (t == null) throw new ArgumentNullException(nameof(t));
@@ -213,7 +207,13 @@ namespace SocketMeister.Testing
 
         private void Test_IsExecutingChanged(object sender, EventArgs e)
         {
-            if (ExecuteMode == ExecuteModes.AllTests && CurrentTest.IsExecuting == false)
+            CurrentTest = (ITestOnHarness)sender;
+
+            if (ExecuteMode == ExecuteModes.Stopped && CurrentTest.IsExecuting == true)
+                ExecuteMode = ExecuteModes.SingleTest;
+            else if (ExecuteMode == ExecuteModes.SingleTest && CurrentTest.IsExecuting == false)
+                ExecuteMode = ExecuteModes.Stopped;
+            else if (ExecuteMode == ExecuteModes.AllTests && CurrentTest.IsExecuting == false)
             {
                 lock(_lock)
                 {
@@ -235,19 +235,6 @@ namespace SocketMeister.Testing
             }
         }
 
-        private void Test_StatusChanged(object sender, HarnessTestStatusChangedEventArgs e)
-        {
-            ITestOnHarness test = (ITestOnHarness)sender;
-
-            if (e.Status == TestStatus.Failed) CurrentTest = null;
-            else if (e.Status == TestStatus.InProgress) CurrentTest = test;
-            else if (e.Status == TestStatus.NotStarted) CurrentTest = null;
-            else if (e.Status == TestStatus.Stopped) CurrentTest = null;
-            else if (e.Status == TestStatus.Stopping) CurrentTest = test;
-            else CurrentTest = null;
-        }
-
-
 
         private void PolicyServer_TraceEventRaised(object sender, TraceEventArgs e)
         {
@@ -262,7 +249,6 @@ namespace SocketMeister.Testing
         public void ExecuteAllTests()
         {
             if (ExecuteMode != ExecuteModes.Stopped) throw new ApplicationException("A test is already being executed.");
-            ExecuteMode = ExecuteModes.AllTests;
             foreach (ITestOnHarness test in _tests)
             {
                 test.Reset();
@@ -272,7 +258,16 @@ namespace SocketMeister.Testing
                 _currentTestPtr = 0;
                 _currentTest = _tests[_currentTestPtr];
             }
+            ExecuteMode = ExecuteModes.AllTests;
             CurrentTest.Execute();
+        }
+
+
+        public void StopAllTests()
+        {
+            if (ExecuteMode != ExecuteModes.AllTests) throw new ApplicationException("Execute All Tests is not running.");
+            CurrentTest.Stop();
+            ExecuteMode = ExecuteModes.Stopped;
         }
 
 
@@ -280,49 +275,7 @@ namespace SocketMeister.Testing
         {
             ControlBusServer.Start();
             _policyServer.Start();
-
-                ////  START IN THE BACKGROUND
-                //BackgroundWorker bgStartService = new BackgroundWorker();
-                //bgStartService.DoWork += BgStartService_DoWork;
-                //bgStartService.RunWorkerCompleted += BgStartService_RunWorkerCompleted;
-                //bgStartService.RunWorkerAsync();
         }
-
-        //private void BgStartService_DoWork(object sender, DoWorkEventArgs e)
-        //{
-        //    if (serverType == ServerType.SocketServer)
-        //    {
-        //        socketServer = new SocketServer(port, true);
-        //        socketServer.ClientsChanged += SocketServer_ClientsChanged;
-        //        socketServer.ListenerStateChanged += SocketServer_ListenerStateChanged;
-        //        socketServer.TraceEventRaised += SocketServer_TraceEventRaised;
-        //        socketServer.MessageReceived += SocketServer_MessageReceived;
-        //        socketServer.RequestReceived += SocketServer_RequestReceived;
-        //        socketServer.Start();
-        //    }
-        //    else
-        //    {
-        //    }
-        //}
-
-        //private void BgStartService_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        //{
-        //    if (InvokeRequired) Invoke(new MethodInvoker(delegate { BgStartService_RunWorkerCompleted(sender, e); }));
-        //    else
-        //    {
-        //        this.Cursor = Cursors.Default;
-        //        if (e.Error != null)
-        //        {
-        //            string msg = e.Error.Message;
-        //            if (e.Error.StackTrace != null) msg += "\n\n" + e.Error.StackTrace;
-        //            MessageBox.Show(msg, "Error Starting", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //        }
-        //        else if (e.Cancelled == true)
-        //        {
-        //        }
-        //    }
-        //}
-
 
 
         /// <summary>
@@ -357,7 +310,7 @@ namespace SocketMeister.Testing
         internal ExecuteModes ExecuteMode
         {
             get { lock (_lock) { return _executeMode; } }
-            set 
+            private set 
             { 
                 lock (_lock) 
                 {
@@ -367,9 +320,6 @@ namespace SocketMeister.Testing
                 ExecuteModeChanged?.Invoke(this, new EventArgs());
             }
         }
-
-
-
     }
 
 
