@@ -10,8 +10,10 @@ namespace SocketMeister.Testing.Tests
 {
     internal partial class Test001Harness : TestOnHarnessBase, ITestOnHarness
     {
-        public Test001Harness() : base (Test001Base.Id, Test001Base.Description)  
+        private readonly HarnessController _harnessController;
+        public Test001Harness(HarnessController HarnessController) : base (HarnessController, Test001Base.Id, Test001Base.Description)  
         {
+            _harnessController = HarnessController;
             base.Parent = this;
             base.ExecuteTest += Test001Harness_ExecuteTest;
         }
@@ -20,6 +22,9 @@ namespace SocketMeister.Testing.Tests
         {
             try
             {
+                //  START THE SOCKET SERVER ON FixedServer1 
+                _harnessController.FixedServer1.Commands.StartSocketServer(2345);
+
                 //ClientController ClientId01 = base.AddClient();
 
                 //for (int r = 0; r < 20; r++)

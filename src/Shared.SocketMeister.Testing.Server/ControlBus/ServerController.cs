@@ -92,7 +92,13 @@ namespace SocketMeister.Testing.ControlBus
 
         private void ControlBus_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
         {
-            throw new NotImplementedException();
+            int r = Convert.ToInt32(e.Parameters[0]);
+            if (r == ControlBus.ControlMessage.SocketServerStart)
+            {
+                int Port = Convert.ToInt32(e.Parameters[1]);
+
+                //  THIS WORKS. SEND SOMETHING BACK
+            }
         }
 
         private void ControlBus_ConnectionFailed(object sender, EventArgs e)

@@ -96,7 +96,7 @@ namespace SocketMeister.Testing.ControlBus
 
         private void ControlBus_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
         {
-            throw new NotImplementedException();
+            //  MESSAGES ARE RECEIVED ELSEWHERE.
         }
 
 

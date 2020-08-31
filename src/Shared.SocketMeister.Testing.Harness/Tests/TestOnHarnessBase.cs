@@ -9,6 +9,7 @@ namespace SocketMeister.Testing.Tests
 {
     internal class TestOnHarnessBase : TestBase<ITestOnHarness>, ITestOnHarness
     {
+        private readonly HarnessController _harnessController;
         private bool _isExecuting = false;
         private int _percentComplete = 0;
         private TestStatus _status = TestStatus.NotStarted;
@@ -30,10 +31,11 @@ namespace SocketMeister.Testing.Tests
         /// </summary>
         public event EventHandler<HarnessClientEventArgs> ClientConnectFailed;
 
-
-        public TestOnHarnessBase(int Id, string Description) : base(Id, Description)
+        public TestOnHarnessBase(HarnessController HarnessController, int Id, string Description) : base(Id, Description)
         {
+            _harnessController = HarnessController;
         }
+
 
         /// <summary>
         /// Whether the test is currently executing

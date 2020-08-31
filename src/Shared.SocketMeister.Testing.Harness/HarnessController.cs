@@ -188,13 +188,13 @@ namespace SocketMeister.Testing
         /// </summary>
         public ControlBus.HarnessClientController FixedHarnessClient {  get { return _fixedClient1; } }
 
-        public ControlBus.ServerController FixedServer1 {  get { return _fixedServer1; } }
+        public ControlBus.HarnessServerController FixedServer1 {  get { return _fixedServer1; } }
 
 
         private void AddTest(Type t)
         {
             if (t == null) throw new ArgumentNullException(nameof(t));
-            ITestOnHarness Test = (ITestOnHarness)Activator.CreateInstance(t);
+            ITestOnHarness Test = (ITestOnHarness)Activator.CreateInstance(t, this);
             _tests.Add(Test);
             Test.IsExecutingChanged += Test_IsExecutingChanged;
            
