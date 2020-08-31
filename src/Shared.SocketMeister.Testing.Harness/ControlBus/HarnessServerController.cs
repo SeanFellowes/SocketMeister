@@ -13,15 +13,10 @@ namespace SocketMeister.Testing.ControlBus
     {
         private bool _disposed = false;
         private bool _disposeCalled = false;
-        private SocketServer.Client _listenerClient = null;
+        private SocketServer.Client _controlBuslistenerClient = null;
 
         public HarnessServerController(int Port, int ControlBusClientId, string ControlBusServerIPAddress) : base(Port, ControlBusClientId, ControlBusServerIPAddress)
         {
-            //DateTime maxWait = DateTime.Now.AddMilliseconds(Constants.MaxWaitMsForControlBusClientToHarnessControllerConnect);
-            //while (_disposeCalled == false && ListenerClient == null)
-            //{
-            //    if (DateTime.Now > maxWait) throw new TimeoutException("Timout waiting for ControlBus connection to be established");
-            //}
         }
 
         public new void Dispose()
@@ -35,25 +30,27 @@ namespace SocketMeister.Testing.ControlBus
 
         protected new virtual void Dispose(bool disposing)
         {
-            if (_disposed == true) return;
+            if (_disposed == true || _disposeCalled == true) return;
             if (disposing)
             {
                 _disposeCalled = true;
+                _controlBuslistenerClient = null;
                 base.Dispose(disposing);
                 _disposed = true;
             }
         }
 
 
+        public ControlBusClientType ClientType { get { return  ControlBusClientType.ServerController; } }
+
+        /// <summary>
         /// Socketmeister client (from the server perspective)
         /// </summary>
-        public SocketServer.Client ListenerClient
+        public SocketServer.Client ControlBusListenerClient
         {
-            get { lock (Lock) { return _listenerClient; } }
-            set { lock (Lock) { _listenerClient = value; } }
+            get { lock (Lock) { return _controlBuslistenerClient; } }
+            set { lock (Lock) { _controlBuslistenerClient = value; } }
         }
-
-        public ControlBusClientType ClientType { get { return  ControlBusClientType.ServerController; } }
 
         /// <summary>
         /// Sends a message 
@@ -62,7 +59,7 @@ namespace SocketMeister.Testing.ControlBus
         {
             object[] parms = new object[2];
             parms[0] = ControlBus.ControlMessage.ExitClient;
-            ListenerClient.SendMessage(parms);
+            ControlBusListenerClient.SendMessage(parms);
 
             //  Wait zzzz miniseconds for the client to send a ClientDisconnecting message.
         }

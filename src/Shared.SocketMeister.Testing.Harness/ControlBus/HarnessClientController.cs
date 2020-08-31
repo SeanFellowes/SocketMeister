@@ -11,51 +11,59 @@ namespace SocketMeister.Testing.ControlBus
     /// <summary>
     /// Enhanced ClientCOntroller, with additional properties required for use on the Test Harness
     /// </summary>
-    internal class HarnessClientController : ClientController
+    internal class HarnessClientController : ClientController, IDisposable
     {
-        private SocketServer.Client _listenerClient = null;
+        private bool _disposed = false;
+        private bool _disposeCalled = false;
+        private SocketServer.Client _controlBuslistenerClient = null;
         private static readonly object _lockMaxClientId = new object();
         private static int _maxClientId = 0;
-
-        /// <summary>
-        /// Socketmeister client (from the server perspective)
-        /// </summary>
-        public SocketServer.Client ListenerClient
-        {
-            get { lock (Lock) { return _listenerClient; } }
-            set { lock (Lock) { _listenerClient = value; } }
-        }
-
-        public ControlBusClientType ClientType { get { return  ControlBusClientType.ClientController; } }
-
 
         public HarnessClientController(int ControlBusClientId) : base(ControlBusClientId)
         {
         }
+
+        public new void Dispose()
+        {
+            _disposeCalled = true;
+            base.Dispose(true);
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+
+        protected new virtual void Dispose(bool disposing)
+        {
+            if (_disposed == true || _disposeCalled == true) return;
+            if (disposing)
+            {
+                _disposeCalled = true;
+                _controlBuslistenerClient = null;
+                base.Dispose(disposing);
+                _disposed = true;
+            }
+        }
+
+
+        public ControlBusClientType ClientType { get { return  ControlBusClientType.ClientController; } }
+
+        /// <summary>
+        /// Socketmeister client (from the server perspective)
+        /// </summary>
+        public SocketServer.Client ControlBusListenerClient
+        {
+            get { lock (Lock) { return _controlBuslistenerClient; } }
+            set { lock (Lock) { _controlBuslistenerClient = value; } }
+        }
+
+
 
 
         /// <summary>
         /// Creates a new GUI Client Controller running in it's own application
         /// </summary>
         public HarnessClientController() : base(NextClientId())
-        {
-            //int nextClientId = 0;
-            //lock (_lockMaxClientId)
-            //{
-            //    _maxClientId++;
-            //    nextClientId = _maxClientId;
-            //}
-            //ClientController newClient = new ClientController(nextClientId);
-            //ClientCreated?.Invoke(this, new HarnessClientEventArgs(newClient));
-            //try
-            //{
-            //    newClient.LaunchClientApplication();
-            //}
-            //catch
-            //{
-            //    //if (ClientConnectFailed != null) ClientConnectFailed(this, new HarnessClientEventArgs(newClient));
-            //    throw;
-            //}
+        { 
         }
 
 
@@ -110,7 +118,7 @@ namespace SocketMeister.Testing.ControlBus
                 }
 
                 //  CHECK TO SEE IF THE CLIENT HAS CONNECTED
-                if (_listenerClient != null)
+                if (_controlBuslistenerClient != null)
                 {
                     //  CONNECTED
                     return;
@@ -129,7 +137,7 @@ namespace SocketMeister.Testing.ControlBus
         {
             object[] parms = new object[2];
             parms[0] = ControlBus.ControlMessage.ExitClient;
-            ListenerClient.SendMessage(parms);
+            ControlBusListenerClient.SendMessage(parms);
 
             //  Wait zzzz miniseconds for the client to send a ClientDisconnecting message.
         }

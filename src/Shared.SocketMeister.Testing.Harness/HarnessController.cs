@@ -88,36 +88,6 @@ namespace SocketMeister.Testing
             //}).Start();
         }
 
-
-        private void _controlBusServer_RequestReceived(object sender, SocketServer.RequestReceivedEventArgs e)
-        {
-            int r = Convert.ToInt32(e.Parameters[0]);
-            if (r == ControlBus.ControlMessage.HarnessControlBusClientIsConnecting)
-            {
-                int ClientId = Convert.ToInt32(e.Parameters[1]);
-                if (ClientId == _fixedClient1.ClientId)
-                {
-                    //  FIXED CLIENT HAS PHONED HOME
-                    _fixedClient1.ListenerClient = e.Client;
-                }
-                else if (ClientId == _fixedServer1.ClientId)
-                {
-                    //  FIXED SERVER1 HAS PHONED HOME
-                    _fixedServer1.ListenerClient = e.Client;
-                }
-                else
-                {
-                    ////  ANOTHER CLIENT HAS PHONED HOME. FIND THE CLIENT
-                    //ControlBus.HarnessClientController client = _testClientCollection[ClientId];
-                    //if (client != null)
-                    //{
-                    //    //  ASSIGN THE SocketMeister Server Client to the class. When connecting a test harness client, this value is checked for NOT null (Connected).
-                    //    client.ListenerClient = e.Client;
-                    //}
-                }
-            }
-        }
-
         public void Dispose()
         {
             Dispose(true);
@@ -143,6 +113,7 @@ namespace SocketMeister.Testing
                 {
                     try
                     {
+                        ControlBusServer.RequestReceived -= _controlBusServer_RequestReceived;
                         ControlBusServer.Stop();
                         ControlBusServer.Dispose();
                     }
@@ -173,6 +144,38 @@ namespace SocketMeister.Testing
                 }
 
                 _disposed = true;
+            }
+        }
+
+
+
+
+        private void _controlBusServer_RequestReceived(object sender, SocketServer.RequestReceivedEventArgs e)
+        {
+            int r = Convert.ToInt32(e.Parameters[0]);
+            if (r == ControlBus.ControlMessage.HarnessControlBusClientIsConnecting)
+            {
+                int ClientId = Convert.ToInt32(e.Parameters[1]);
+                if (ClientId == _fixedClient1.ClientId)
+                {
+                    //  FIXED CLIENT HAS PHONED HOME
+                    _fixedClient1.ControlBusListenerClient = e.Client;
+                }
+                else if (ClientId == _fixedServer1.ClientId)
+                {
+                    //  FIXED SERVER1 HAS PHONED HOME
+                    _fixedServer1.ControlBusListenerClient = e.Client;
+                }
+                else
+                {
+                    ////  ANOTHER CLIENT HAS PHONED HOME. FIND THE CLIENT
+                    //ControlBus.HarnessClientController client = _testClientCollection[ClientId];
+                    //if (client != null)
+                    //{
+                    //    //  ASSIGN THE SocketMeister Server Client to the class. When connecting a test harness client, this value is checked for NOT null (Connected).
+                    //    client.ListenerClient = e.Client;
+                    //}
+                }
             }
         }
 
