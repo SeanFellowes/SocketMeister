@@ -7,12 +7,14 @@ using System.Threading;
 
 namespace SocketMeister.Testing.Tests
 {
-    internal partial class TestOnHarnessBase : TestBase<ITestOnHarness>, ITestOnHarness
+    internal class TestOnHarnessBase : TestBase<ITestOnHarness>, ITestOnHarness
     {
+        private bool _isExecuting = false;
         private int _percentComplete = 0;
         private TestStatus _status = TestStatus.NotStarted;
 
         public event EventHandler<EventArgs> ExecuteTest;
+        public event EventHandler<EventArgs> IsExecutingChanged;
         public event EventHandler<TestPercentCompleteChangedEventArgs> PercentCompleteChanged;
         public event EventHandler<HarnessTestStatusChangedEventArgs> StatusChanged;
         public event EventHandler<TraceEventArgs> TraceEventRaised;
@@ -33,9 +35,22 @@ namespace SocketMeister.Testing.Tests
         {
         }
 
-
-
-
+        /// <summary>
+        /// Whether the test is currently executing
+        /// </summary>
+        public bool IsExecuting
+        {
+            get {  lock (Lock) { return _isExecuting; } }
+            private set
+            {
+                lock (Lock)
+                {
+                    if (_isExecuting == value) return;
+                    _isExecuting = value;
+                }
+                IsExecutingChanged?.Invoke(this, new EventArgs());
+            }
+        }
 
         public int PercentComplete
         {
@@ -64,6 +79,10 @@ namespace SocketMeister.Testing.Tests
                 }
                 if (Parent == null) throw new NullReferenceException("Base class property '" + nameof(Parent) + "' has not been set");
                 StatusChanged?.Invoke(Parent, new HarnessTestStatusChangedEventArgs(_parent, value));
+                if (value == TestStatus.InProgress || value == TestStatus.Stopping)
+                    IsExecuting = true;
+                else
+                    IsExecuting = false;
             }
         }
 
@@ -86,7 +105,7 @@ namespace SocketMeister.Testing.Tests
             PercentComplete = 0;
         }
 
-        public void Start()
+        public void Execute()
         {
             Status = TestStatus.InProgress;
             RaiseTraceEventRaised("Starting Test", SeverityType.Information, 1);
@@ -101,7 +120,6 @@ namespace SocketMeister.Testing.Tests
             {
                 Status = TestStatus.Stopped;
                 RaiseTraceEventRaised("Error: Test is not subscribing to 'ExecuteTest' events.", SeverityType.Error, 2);
-
             }
         }
 

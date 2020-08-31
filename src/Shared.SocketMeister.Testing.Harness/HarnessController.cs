@@ -10,26 +10,31 @@ using System.ComponentModel;
 
 namespace SocketMeister.Testing
 {
-    internal enum Executing
+    internal enum ExecuteModes
     {
         Stopped = 0,
         SingleTest = 1,
         AllTests = 2,
-        StoppingAllTests = 20
+        ZStoppingAllTests = 20
     }
 
     internal class HarnessController : IDisposable
     {
-        private readonly object classLock = new object();
         private bool _disposed = false;
         private bool _disposeCalled = false;
+        private int _currentTestPtr = 0;
         private ITestOnHarness _currentTest = null;
-        private Executing _executeMode = Executing.Stopped;
+        private ExecuteModes _executeMode = ExecuteModes.Stopped;
         private static readonly object _lock = new object();
         private readonly ControlBus.HarnessClientController _fixedClient1;
         private readonly ServerController _fixedServer1;
         private readonly PolicyServer _policyServer;
         private readonly List<ITestOnHarness> _tests = new List<ITestOnHarness>();
+
+        /// <summary>
+        /// The execute mode for the test harness changed. SingleTest / AllTests / Stopped
+        /// </summary>
+        public event EventHandler<EventArgs> ExecuteModeChanged;
 
         /// <summary>
         /// Raised when an trace log event has been raised.
@@ -183,6 +188,8 @@ namespace SocketMeister.Testing
 
         public ControlBus.ControlBusServer ControlBusServer { get; }
 
+        private int CurrentTestPtr {  get {  lock (_lock) { return _currentTestPtr; } } }
+
         public ServerController FixedServer1 {  get { return _fixedServer1; } }
 
 
@@ -198,10 +205,48 @@ namespace SocketMeister.Testing
             //parms[0] = ctr;
             //T test = (T)Activator.CreateInstance(t, parms);
 
-            ITestOnHarness test = (ITestOnHarness)Activator.CreateInstance(t);
-            _tests.Add(test);
-          
+            ITestOnHarness Test = (ITestOnHarness)Activator.CreateInstance(t);
+            _tests.Add(Test);
+            Test.IsExecutingChanged += Test_IsExecutingChanged;
+           
         }
+
+        private void Test_IsExecutingChanged(object sender, EventArgs e)
+        {
+            if (ExecuteMode == ExecuteModes.AllTests && CurrentTest.IsExecuting == false)
+            {
+                lock(_lock)
+                {
+                    _currentTestPtr++;
+                }
+
+                if (CurrentTestPtr < Tests.Count)
+                {
+                    //  NEXT TEST
+                    CurrentTest = Tests[CurrentTestPtr];
+                    CurrentTest.Execute();
+                }
+                else
+                {
+                    //  FINISHED
+                    CurrentTest = null;
+                    ExecuteMode = ExecuteModes.Stopped;
+                }
+            }
+        }
+
+        private void Test_StatusChanged(object sender, HarnessTestStatusChangedEventArgs e)
+        {
+            ITestOnHarness test = (ITestOnHarness)sender;
+
+            if (e.Status == TestStatus.Failed) CurrentTest = null;
+            else if (e.Status == TestStatus.InProgress) CurrentTest = test;
+            else if (e.Status == TestStatus.NotStarted) CurrentTest = null;
+            else if (e.Status == TestStatus.Stopped) CurrentTest = null;
+            else if (e.Status == TestStatus.Stopping) CurrentTest = test;
+            else CurrentTest = null;
+        }
+
 
 
         private void PolicyServer_TraceEventRaised(object sender, TraceEventArgs e)
@@ -212,6 +257,22 @@ namespace SocketMeister.Testing
         private void PolicyServer_SocketServiceStatusChanged(object sender, SocketServer.SocketServerStatusChangedEventArgs e)
         {
             PolicyServerStatusChanged?.Invoke(sender, e);
+        }
+
+        public void ExecuteAllTests()
+        {
+            if (ExecuteMode != ExecuteModes.Stopped) throw new ApplicationException("A test is already being executed.");
+            ExecuteMode = ExecuteModes.AllTests;
+            foreach (ITestOnHarness test in _tests)
+            {
+                test.Reset();
+            }
+            lock (_lock)
+            {
+                _currentTestPtr = 0;
+                _currentTest = _tests[_currentTestPtr];
+            }
+            CurrentTest.Execute();
         }
 
 
@@ -277,10 +338,10 @@ namespace SocketMeister.Testing
 
         public ITestOnHarness CurrentTest
         {
-            get { lock (classLock) { return _currentTest; } }
+            get { lock (_lock) { return _currentTest; } }
             private set 
             { 
-                lock (classLock) 
+                lock (_lock) 
                 {
                     if (_currentTest == value) return;
                     _currentTest = value; 
@@ -293,22 +354,18 @@ namespace SocketMeister.Testing
         /// </summary>
         public ControlBus.HarnessClientController FixedHarnessClient {  get { return _fixedClient1; } }
 
-        private void Test_StatusChanged(object sender, HarnessTestStatusChangedEventArgs e)
+        internal ExecuteModes ExecuteMode
         {
-            ITestOnHarness test = (ITestOnHarness)sender;
-
-            if (e.Status == TestStatus.Failed) CurrentTest = null;
-            else if (e.Status == TestStatus.InProgress) CurrentTest = test;
-            else if (e.Status == TestStatus.NotStarted) CurrentTest = null;
-            else if (e.Status == TestStatus.Stopped) CurrentTest = null;
-            else if (e.Status == TestStatus.Stopping) CurrentTest = test;
-            else CurrentTest = null;
-        }
-
-        internal Executing ExecuteMode
-        {
-            get { lock (classLock) { return _executeMode; } }
-            set { lock (classLock) { _executeMode = value; } }
+            get { lock (_lock) { return _executeMode; } }
+            set 
+            { 
+                lock (_lock) 
+                {
+                    if (_executeMode == value) return;
+                    _executeMode = value; 
+                }
+                ExecuteModeChanged?.Invoke(this, new EventArgs());
+            }
         }
 
 

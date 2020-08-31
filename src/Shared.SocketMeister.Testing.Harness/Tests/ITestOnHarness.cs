@@ -10,16 +10,18 @@ namespace SocketMeister.Testing
     /// </summary>
     internal partial interface ITestOnHarness : ITest<ITestOnHarness>
     {
-        void Reset();
+        void Execute();
 
-        void Start();
+        void Reset();
 
         void Stop();
 
         event EventHandler<EventArgs> ExecuteTest;
+        event EventHandler<EventArgs> IsExecutingChanged;
         event EventHandler<TestPercentCompleteChangedEventArgs> PercentCompleteChanged;
         event EventHandler<TraceEventArgs> TraceEventRaised;
 
+        bool IsExecuting { get; }
         int PercentComplete { get; }
         TestStatus Status { get; }
 
