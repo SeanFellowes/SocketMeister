@@ -36,10 +36,6 @@ namespace SocketMeister
         /// </summary>
         private const int POLLING_FREQUENCY = 10;
 
-        /// <summary>
-        /// The buffer size to use for sending and receiving data. Note: This value is also used by the 'SocketServer' class.
-        /// </summary>
-        internal const int SEND_RECEIVE_BUFFER_SIZE = 65536;
 
         private SocketAsyncEventArgs _asyncEventArgsConnect = null;
         private SocketAsyncEventArgs _asyncEventArgsPolling = null;
@@ -416,7 +412,7 @@ namespace SocketMeister
                 try
                 {
                     _asyncEventArgsReceive = new SocketAsyncEventArgs();
-                    _asyncEventArgsReceive.SetBuffer(new byte[SEND_RECEIVE_BUFFER_SIZE], 0, SEND_RECEIVE_BUFFER_SIZE);
+                    _asyncEventArgsReceive.SetBuffer(new byte[Constants.SEND_RECEIVE_BUFFER_SIZE], 0, Constants.SEND_RECEIVE_BUFFER_SIZE);
                     _asyncEventArgsReceive.Completed += new EventHandler<SocketAsyncEventArgs>(ProcessReceive);
                     if (!CurrentEndPoint.Socket.ReceiveAsync(_asyncEventArgsReceive)) ProcessReceive(null, _asyncEventArgsReceive);
                     //  CONNECTED

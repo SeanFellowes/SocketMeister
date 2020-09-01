@@ -311,7 +311,7 @@ namespace SocketMeister
                     // Create the state object.  
                     Client remoteClient = new Client(this, handler, _enableCompression);
                     _connectedClients.Add(remoteClient);
-                    handler.BeginReceive(remoteClient.ReceiveBuffer, 0, SocketClient.SEND_RECEIVE_BUFFER_SIZE, 0, new AsyncCallback(ReadCallback), remoteClient);
+                    handler.BeginReceive(remoteClient.ReceiveBuffer, 0, Constants.SEND_RECEIVE_BUFFER_SIZE, 0, new AsyncCallback(ReadCallback), remoteClient);
                 }))
                 {
                     IsBackground = true
@@ -393,7 +393,7 @@ namespace SocketMeister
                 }
                 if (remoteClient != null && remoteClient.ClientSocket != null && remoteClient.ClientSocket.Connected == true)
                 {
-                    remoteClient.ClientSocket.BeginReceive(remoteClient.ReceiveBuffer, 0, SocketClient.SEND_RECEIVE_BUFFER_SIZE, 0, new AsyncCallback(ReadCallback), remoteClient);
+                    remoteClient.ClientSocket.BeginReceive(remoteClient.ReceiveBuffer, 0, Constants.SEND_RECEIVE_BUFFER_SIZE, 0, new AsyncCallback(ReadCallback), remoteClient);
                 }
             }
             catch (SocketException ex)
