@@ -22,16 +22,37 @@ namespace SocketMeister
             /// <summary>
             /// Pool of SocketAsyncEventArgs.
             /// </summary>
-            private readonly Stack<SocketAsyncEventArgs> pool;
+            private readonly Stack<SocketAsyncEventArgs> _pool;
+
+            /// <summary>
+            /// The event used to complete an asynchronous operation.
+            /// </summary>
+            public event EventHandler<SocketAsyncEventArgs> Completed;
 
             /// <summary>
             /// Initializes the object pool to the specified size.
             /// </summary>
             /// <param name="Capacity">Maximum number of SocketAsyncEventArgs objects the pool can hold.</param>
-            internal SocketAsyncEventArgsPool(int Capacity)
+            internal SocketAsyncEventArgsPool()
             {
-                this.pool = new Stack<SocketAsyncEventArgs>(Capacity);
+                this._pool = new Stack<SocketAsyncEventArgs>(Constants.SocketAsyncEventArgsPoolSize);
+                for (int i = 0; i < Constants.SocketAsyncEventArgsPoolSize; i++)
+                {
+#pragma warning disable CA2000 // Dispose objects before losing scope
+                    SocketAsyncEventArgs EventArgs = new SocketAsyncEventArgs();
+#pragma warning restore CA2000 // Dispose objects before losing scope
+                    EventArgs.SetBuffer(new byte[SEND_RECEIVE_BUFFER_SIZE], 0, SEND_RECEIVE_BUFFER_SIZE);
+                    EventArgs.Completed += EventArgs_Completed; ;
+                    this._pool.Push(EventArgs);
+                }
             }
+
+            private void EventArgs_Completed(object sender, SocketAsyncEventArgs e)
+            {
+                Completed?.Invoke(sender, e);
+            }
+
+
 
             /// <summary>
             /// Removes a SocketAsyncEventArgs instance from the pool.
@@ -39,10 +60,10 @@ namespace SocketMeister
             /// <returns>SocketAsyncEventArgs removed from the pool.</returns>
             internal SocketAsyncEventArgs Pop()
             {
-                lock (this.pool)
+                lock (this._pool)
                 {
                     //  ENSURE THERE IS ALWAYS AT LEAST ONE ITEM
-                    if (this.pool.Count > 0) return this.pool.Pop();
+                    if (this._pool.Count > 0) return this._pool.Pop();
                     return null;
                 }
             }
@@ -54,10 +75,10 @@ namespace SocketMeister
             internal void Push(SocketAsyncEventArgs item)
             {
                 if (item == null) return;
-                lock (this.pool)
+                lock (this._pool)
                 {
-                    if (pool.Contains(item) == true) return;
-                    this.pool.Push(item);
+                    if (_pool.Contains(item) == true) return;
+                    this._pool.Push(item);
                 }
             }
 

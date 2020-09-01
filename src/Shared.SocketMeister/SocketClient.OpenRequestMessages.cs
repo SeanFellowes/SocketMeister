@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using SocketMeister.Messages;
 
@@ -7,37 +8,16 @@ using SocketMeister.Messages;
 namespace SocketMeister
 {
     /// <summary>
-    /// Asynchronous, persistent TCP/IP socket client supporting multiple destinations
+    /// Threadsafe list of open request messages, which we are waiting for a response.
     /// </summary>
-#if SMISPUBLIC
-    public partial class SocketClient : IDisposable
-#else
-    internal partial class SocketClient : IDisposable
-#endif
+    internal class OpenRequestMessages
     {
-        /// <summary>
-        /// Threadsafe list of open request messages, which we are waiting for a response from the socket server.
-        /// </summary>
-        internal class OpenRequestMessages
+        private readonly List<RequestMessage> _list = new List<RequestMessage>();
+        private readonly object _lock = new object();
+
+        public RequestMessage this[long RequestID]
         {
-            private readonly List<RequestMessage> _list = new List<RequestMessage>();
-            private readonly object _lock = new object();
-
-            internal void Add(RequestMessage AddItem)
-            {
-                lock (_lock) { _list.Add(AddItem); }
-            }
-
-            /// <summary>
-            /// Number of open items.
-            /// </summary>
-            public int Count
-            {
-                get { lock (_lock) { return _list.Count; } }
-            }
-
-
-            internal RequestMessage Find(long RequestID)
+            get
             {
                 lock (_lock)
                 {
@@ -48,24 +28,42 @@ namespace SocketMeister
                 }
                 return null;
             }
+        }
 
-            internal void Remove(RequestMessage RemoveItem)
+
+        internal void Add(RequestMessage AddItem)
+        {
+            lock (_lock) { _list.Add(AddItem); }
+        }
+
+
+        /// <summary>
+        /// Number of open items.
+        /// </summary>
+        public int Count
+        {
+            get { lock (_lock) { return _list.Count; } }
+        }
+
+
+        internal void Remove(RequestMessage RemoveItem)
+        {
+            lock (_lock) { _list.Remove(RemoveItem); }
+        }
+
+        /// <summary>
+        /// Resets all messages which do not have a response, to 'Unsent'. The locks on all items are released so unsent items can be resent when a connection is reestablished.
+        /// </summary>
+        internal void ResetToUnsent()
+        {
+            List<RequestMessage> messages;
+            lock (_lock)
             {
-                lock (_lock) { _list.Remove(RemoveItem); }
+                messages = _list.ToList();
             }
-
-            /// <summary>
-            /// Resets all messages which do not have a response, to 'Unsent'. The locks on all items are released so unsent items can be resent when a connection is reestablished.
-            /// </summary>
-            internal void ResetToUnsent()
+            foreach (RequestMessage message in messages)
             {
-                lock (_lock)
-                {
-                    foreach (RequestMessage message in _list)
-                    {
-                        if (message.SendReceiveStatus != SendReceiveStatus.ResponseReceived) message.SendReceiveStatus = SendReceiveStatus.Unsent;
-                    }
-                }
+                if (message.SendReceiveStatus != SendReceiveStatus.ResponseReceived) message.SendReceiveStatus = SendReceiveStatus.Unsent;
             }
         }
     }

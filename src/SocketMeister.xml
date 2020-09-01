@@ -4,6 +4,11 @@
         <name>SocketMeister</name>
     </assembly>
     <members>
+        <member name="F:SocketMeister.Constants.SocketAsyncEventArgsPoolSize">
+            <summary>
+            The number of simultaneous send operations which can take place. Value should be between 2 and 20
+            </summary>
+        </member>
         <member name="T:SocketMeister.TraceEventArgs">
             <summary>
             Events and Exceptions raised for analysis and logging purposes
@@ -454,6 +459,21 @@
             The maximum number of milliseconds the client should wait for open requests to be completed. The server will not send back responses for open requests after this time.
             </summary>
         </member>
+        <member name="T:SocketMeister.OpenRequestMessages">
+            <summary>
+            Threadsafe list of open request messages, which we are waiting for a response.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.OpenRequestMessages.Count">
+            <summary>
+            Number of open items.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.OpenRequestMessages.ResetToUnsent">
+            <summary>
+            Resets all messages which do not have a response, to 'Unsent'. The locks on all items are released so unsent items can be resent when a connection is reestablished.
+            </summary>
+        </member>
         <member name="T:SocketMeister.SocketClient">
             <summary>
             Asynchronous, persistent TCP/IP socket client supporting multiple destinations
@@ -467,24 +487,6 @@
             <summary>
             Asynchronous, persistent TCP/IP socket client supporting multiple destinations
             </summary>
-            <summary>
-            Asynchronous, persistent TCP/IP socket client supporting multiple destinations
-            </summary>
-        </member>
-        <member name="T:SocketMeister.SocketClient.OpenRequestMessages">
-            <summary>
-            Threadsafe list of open request messages, which we are waiting for a response from the socket server.
-            </summary>
-        </member>
-        <member name="P:SocketMeister.SocketClient.OpenRequestMessages.Count">
-            <summary>
-            Number of open items.
-            </summary>
-        </member>
-        <member name="M:SocketMeister.SocketClient.OpenRequestMessages.ResetToUnsent">
-            <summary>
-            Resets all messages which do not have a response, to 'Unsent'. The locks on all items are released so unsent items can be resent when a connection is reestablished.
-            </summary>
         </member>
         <member name="T:SocketMeister.SocketClient.SocketAsyncEventArgsPool">
             <summary>
@@ -492,12 +494,17 @@
             Represents a collection of reusable SocketAsyncEventArgs objects.  
             </summary>
         </member>
-        <member name="F:SocketMeister.SocketClient.SocketAsyncEventArgsPool.pool">
+        <member name="F:SocketMeister.SocketClient.SocketAsyncEventArgsPool._pool">
             <summary>
             Pool of SocketAsyncEventArgs.
             </summary>
         </member>
-        <member name="M:SocketMeister.SocketClient.SocketAsyncEventArgsPool.#ctor(System.Int32)">
+        <member name="E:SocketMeister.SocketClient.SocketAsyncEventArgsPool.Completed">
+            <summary>
+            The event used to complete an asynchronous operation.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketClient.SocketAsyncEventArgsPool.#ctor">
             <summary>
             Initializes the object pool to the specified size.
             </summary>
@@ -589,9 +596,14 @@
             The parameters provided with the message.
             </summary>
         </member>
-        <member name="F:SocketMeister.SocketClient.CLIENT_SEND_EVENT_ARGS_POOL_SIZE">
+        <member name="T:SocketMeister.SocketClient.RequestReceivedEventArgs">
             <summary>
-            The number of simultaneous send operations which can take place. Value should be between 2 and 15
+            Values provided when a request is received from a server. 
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketClient.RequestReceivedEventArgs.Response">
+            <summary>
+            The byte array which is to be returned to the client. Null is returned if a 'Response' value is not provided when processing the 'RequestReceived' event.
             </summary>
         </member>
         <member name="F:SocketMeister.SocketClient.DISCONNECT_AFTER_NO_POLL_RESPONSE_SECONDS">
@@ -627,6 +639,11 @@
         <member name="E:SocketMeister.SocketClient.MessageReceived">
             <summary>
             Event raised whenever a message is received from the server.
+            </summary>
+        </member>
+        <member name="E:SocketMeister.SocketClient.RequestReceived">
+            <summary>
+            Raised when a request message is received from the server. A response can be provided which will be returned to the server.
             </summary>
         </member>
         <member name="M:SocketMeister.SocketClient.#ctor(System.Collections.Generic.List{SocketMeister.SocketEndPoint},System.Boolean)">
@@ -881,6 +898,15 @@
             </summary>
             <param name="Parameters">Parameters to send to the client.</param>
             <param name="TimeoutMilliseconds">Number of milliseconds to attempt to send the message before throwing a TimeoutException.</param>
+        </member>
+        <member name="M:SocketMeister.SocketServer.Client.SendRequest(System.Object[],System.Int32,System.Boolean)">
+            <summary>
+            Send a request to the server and wait for a response. 
+            </summary>
+            <param name="Parameters">Array of parameters to send with the request</param>
+            <param name="TimeoutMilliseconds">Maximum number of milliseconds to wait for a response from the server</param>
+            <param name="IsLongPolling">If the request is long polling on the server mark this as true and the request will be cancelled instantly when a disconnect occurs</param>
+            <returns>Nullable array of bytes which was returned from the socket server</returns>
         </member>
         <member name="E:SocketMeister.SocketServer.Clients.ClientConnected">
             <summary>
