@@ -4,6 +4,11 @@
         <name>SocketMeister</name>
     </assembly>
     <members>
+        <member name="F:SocketMeister.Constants.SEND_RECEIVE_BUFFER_SIZE">
+            <summary>
+            The buffer size to use for sending and receiving data. Note: This value is also used by the 'SocketServer' class.
+            </summary>
+        </member>
         <member name="F:SocketMeister.Constants.SocketAsyncEventArgsPoolSize">
             <summary>
             The number of simultaneous send operations which can take place. Value should be between 2 and 20
@@ -474,6 +479,40 @@
             Resets all messages which do not have a response, to 'Unsent'. The locks on all items are released so unsent items can be resent when a connection is reestablished.
             </summary>
         </member>
+        <member name="T:SocketMeister.SocketAsyncEventArgsPool">
+            <summary>
+            Based on example from http://msdn2.microsoft.com/en-us/library/system.net.sockets.socketasynceventargs.socketasynceventargs.aspx
+            Represents a collection of reusable SocketAsyncEventArgs objects.  
+            </summary>
+        </member>
+        <member name="F:SocketMeister.SocketAsyncEventArgsPool._pool">
+            <summary>
+            Pool of SocketAsyncEventArgs.
+            </summary>
+        </member>
+        <member name="E:SocketMeister.SocketAsyncEventArgsPool.Completed">
+            <summary>
+            The event used to complete an asynchronous operation.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketAsyncEventArgsPool.#ctor">
+            <summary>
+            Initializes the object pool to the specified size.
+            </summary>
+            <param name="Capacity">Maximum number of SocketAsyncEventArgs objects the pool can hold.</param>
+        </member>
+        <member name="M:SocketMeister.SocketAsyncEventArgsPool.Pop">
+            <summary>
+            Removes a SocketAsyncEventArgs instance from the pool.
+            </summary>
+            <returns>SocketAsyncEventArgs removed from the pool.</returns>
+        </member>
+        <member name="M:SocketMeister.SocketAsyncEventArgsPool.Push(System.Net.Sockets.SocketAsyncEventArgs)">
+            <summary>
+            Add a SocketAsyncEventArg instance to the pool. 
+            </summary>
+            <param name="item">SocketAsyncEventArgs instance to add to the pool.</param>
+        </member>
         <member name="T:SocketMeister.SocketClient">
             <summary>
             Asynchronous, persistent TCP/IP socket client supporting multiple destinations
@@ -484,43 +523,6 @@
             <summary>
             Asynchronous, persistent TCP/IP socket client supporting multiple destinations
             </summary>
-            <summary>
-            Asynchronous, persistent TCP/IP socket client supporting multiple destinations
-            </summary>
-        </member>
-        <member name="T:SocketMeister.SocketClient.SocketAsyncEventArgsPool">
-            <summary>
-            Based on example from http://msdn2.microsoft.com/en-us/library/system.net.sockets.socketasynceventargs.socketasynceventargs.aspx
-            Represents a collection of reusable SocketAsyncEventArgs objects.  
-            </summary>
-        </member>
-        <member name="F:SocketMeister.SocketClient.SocketAsyncEventArgsPool._pool">
-            <summary>
-            Pool of SocketAsyncEventArgs.
-            </summary>
-        </member>
-        <member name="E:SocketMeister.SocketClient.SocketAsyncEventArgsPool.Completed">
-            <summary>
-            The event used to complete an asynchronous operation.
-            </summary>
-        </member>
-        <member name="M:SocketMeister.SocketClient.SocketAsyncEventArgsPool.#ctor">
-            <summary>
-            Initializes the object pool to the specified size.
-            </summary>
-            <param name="Capacity">Maximum number of SocketAsyncEventArgs objects the pool can hold.</param>
-        </member>
-        <member name="M:SocketMeister.SocketClient.SocketAsyncEventArgsPool.Pop">
-            <summary>
-            Removes a SocketAsyncEventArgs instance from the pool.
-            </summary>
-            <returns>SocketAsyncEventArgs removed from the pool.</returns>
-        </member>
-        <member name="M:SocketMeister.SocketClient.SocketAsyncEventArgsPool.Push(System.Net.Sockets.SocketAsyncEventArgs)">
-            <summary>
-            Add a SocketAsyncEventArg instance to the pool. 
-            </summary>
-            <param name="item">SocketAsyncEventArgs instance to add to the pool.</param>
         </member>
         <member name="T:SocketMeister.SocketClient.ConnectionStatuses">
             <summary>
@@ -619,11 +621,6 @@
         <member name="F:SocketMeister.SocketClient.POLLING_FREQUENCY">
             <summary>
             The frequency, in seconds, that this client will poll the server, to ensure the socket is alive.
-            </summary>
-        </member>
-        <member name="F:SocketMeister.SocketClient.SEND_RECEIVE_BUFFER_SIZE">
-            <summary>
-            The buffer size to use for sending and receiving data. Note: This value is also used by the 'SocketServer' class.
             </summary>
         </member>
         <member name="E:SocketMeister.SocketClient.ConnectionStatusChanged">

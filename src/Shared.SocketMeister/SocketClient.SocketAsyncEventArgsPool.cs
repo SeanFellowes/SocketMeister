@@ -24,9 +24,9 @@ namespace SocketMeister
         /// Initializes the object pool to the specified size.
         /// </summary>
         /// <param name="Capacity">Maximum number of SocketAsyncEventArgs objects the pool can hold.</param>
-        internal SocketAsyncEventArgsPool()
+        internal SocketAsyncEventArgsPool(int Capacity)
         {
-            this._pool = new Stack<SocketAsyncEventArgs>(Constants.SocketAsyncEventArgsPoolSize);
+            this._pool = new Stack<SocketAsyncEventArgs>(Capacity);
             for (int i = 0; i < Constants.SocketAsyncEventArgsPoolSize; i++)
             {
 #pragma warning disable CA2000 // Dispose objects before losing scope

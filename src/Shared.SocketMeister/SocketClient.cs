@@ -121,14 +121,14 @@ namespace SocketMeister
             }
 
             //  PREALLOCATE A POOL OF SocketAsyncEventArgs FOR SENDING
-            _sendEventArgsPool = new SocketAsyncEventArgsPool();
+            _sendEventArgsPool = new SocketAsyncEventArgsPool(Constants.SocketAsyncEventArgsPoolSize);
             _sendEventArgsPool.Completed += ProcessSend;
 
             _asyncEventArgsConnect = new SocketAsyncEventArgs();
             _asyncEventArgsConnect.Completed += new EventHandler<SocketAsyncEventArgs>(ProcessConnect);
 
             _asyncEventArgsPolling = new SocketAsyncEventArgs();
-            _asyncEventArgsPolling.SetBuffer(new byte[SEND_RECEIVE_BUFFER_SIZE], 0, SEND_RECEIVE_BUFFER_SIZE);
+            _asyncEventArgsPolling.SetBuffer(new byte[Constants.SEND_RECEIVE_BUFFER_SIZE], 0, Constants.SEND_RECEIVE_BUFFER_SIZE);
             _asyncEventArgsPolling.Completed += ProcessSendPollRequest;
 
             BgConnectToServer();

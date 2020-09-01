@@ -57,7 +57,7 @@ namespace SocketMeister
             /// <summary>
             /// Byte array to directly receive data from the socket. 
             /// </summary>
-            internal byte[] ReceiveBuffer = new byte[SocketClient.SEND_RECEIVE_BUFFER_SIZE];
+            internal byte[] ReceiveBuffer = new byte[Constants.SEND_RECEIVE_BUFFER_SIZE];
 
             /// <summary>
             /// Class which processes raw data directly from the socket and converts into usable messages.
