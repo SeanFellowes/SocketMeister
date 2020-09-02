@@ -71,23 +71,29 @@
     <Reference Include="System.Windows.Browser" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Shared.SocketMeister.Testing.Client\ITest %28Client%29.cs">
-      <Link>Shared.SocketMeister.Testing.Client\ITest %28Client%29.cs</Link>
+    <Compile Include="..\Shared.SocketMeister.Testing.Client\ClientController.cs">
+      <Link>Shared.SocketMeister.Testing.Client\ClientController.cs</Link>
     </Compile>
-    <Compile Include="..\Shared.SocketMeister.Testing.Client\TestClient %28Client%29.cs">
-      <Link>Shared.SocketMeister.Testing.Client\TestClient %28Client%29.cs</Link>
+    <Compile Include="..\Shared.SocketMeister.Testing.Client\Tests\ITestOnClient.cs">
+      <Link>Shared.SocketMeister.Testing.Client\Tests\ITestOnClient.cs</Link>
     </Compile>
-    <Compile Include="..\Shared.SocketMeister.Testing.Client\Tests\Test000_Template %28Client%29.cs">
-      <Link>Shared.SocketMeister.Testing.Client\Tests\Test000_Template %28Client%29.cs</Link>
+    <Compile Include="..\Shared.SocketMeister.Testing.Client\Tests\Test000Client.cs">
+      <Link>Shared.SocketMeister.Testing.Client\Tests\Test000Client.cs</Link>
     </Compile>
-    <Compile Include="..\Shared.SocketMeister.Testing.Client\Tests\Test001_Connect %28Client%29.cs">
-      <Link>Shared.SocketMeister.Testing.Client\Tests\Test001_Connect %28Client%29.cs</Link>
+    <Compile Include="..\Shared.SocketMeister.Testing.Client\Tests\Test001Client.cs">
+      <Link>Shared.SocketMeister.Testing.Client\Tests\Test001Client.cs</Link>
     </Compile>
-    <Compile Include="..\Shared.SocketMeister.Testing.Client\Tests\TestBase.cs">
-      <Link>Shared.SocketMeister.Testing.Client\Tests\TestBase.cs</Link>
+    <Compile Include="..\Shared.SocketMeister.Testing.Client\Tests\TestOnClientBase.cs">
+      <Link>Shared.SocketMeister.Testing.Client\Tests\TestOnClientBase.cs</Link>
     </Compile>
-    <Compile Include="..\Shared.SocketMeister.Testing\ControlMessage.cs">
-      <Link>Shared.SocketMeister.Testing\ControlMessage.cs</Link>
+    <Compile Include="..\Shared.SocketMeister.Testing\Constants.cs">
+      <Link>Shared.SocketMeister.Testing\Constants.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister.Testing\ControlBus\ControlBusClient.cs">
+      <Link>Shared.SocketMeister.Testing\ControlBus\ControlBusClient.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister.Testing\ControlBus\ControlMessage.cs">
+      <Link>Shared.SocketMeister.Testing\ControlBus\ControlMessage.cs</Link>
     </Compile>
     <Compile Include="..\Shared.SocketMeister.Testing\Enums.cs">
       <Link>Shared.SocketMeister.Testing\Enums.cs</Link>
@@ -95,17 +101,17 @@
     <Compile Include="..\Shared.SocketMeister.Testing\Events.cs">
       <Link>Shared.SocketMeister.Testing\Events.cs</Link>
     </Compile>
-    <Compile Include="..\Shared.SocketMeister.Testing\ITest.cs">
-      <Link>Shared.SocketMeister.Testing\ITest.cs</Link>
+    <Compile Include="..\Shared.SocketMeister.Testing\Tests\ITestBase.cs">
+      <Link>Shared.SocketMeister.Testing\Tests\ITestBase.cs</Link>
     </Compile>
-    <Compile Include="..\Shared.SocketMeister.Testing\TestClient.cs">
-      <Link>Shared.SocketMeister.Testing\TestClient.cs</Link>
-    </Compile>
-    <Compile Include="..\Shared.SocketMeister.Testing\TestCollection.cs">
-      <Link>Shared.SocketMeister.Testing\TestCollection.cs</Link>
+    <Compile Include="..\Shared.SocketMeister.Testing\Tests\Test001Base.cs">
+      <Link>Shared.SocketMeister.Testing\Tests\Test001Base.cs</Link>
     </Compile>
     <Compile Include="..\Shared.SocketMeister.Testing\Tests\TestBase.cs">
       <Link>Shared.SocketMeister.Testing\Tests\TestBase.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\Constants.cs">
+      <Link>Shared.SocketMeister\Constants.cs</Link>
     </Compile>
     <Compile Include="..\Shared.SocketMeister\Enums.cs">
       <Link>Shared.SocketMeister\Enums.cs</Link>
@@ -149,6 +155,9 @@
     <Compile Include="..\Shared.SocketMeister\Messages\ServerStoppingMessage.cs">
       <Link>Shared.SocketMeister\Messages\ServerStoppingMessage.cs</Link>
     </Compile>
+    <Compile Include="..\Shared.SocketMeister\OpenRequestMessageCollection.cs">
+      <Link>Shared.SocketMeister\OpenRequestMessageCollection.cs</Link>
+    </Compile>
     <Compile Include="..\Shared.SocketMeister\PolicyServer.cs">
       <Link>Shared.SocketMeister\PolicyServer.cs</Link>
     </Compile>
@@ -166,9 +175,6 @@
     </Compile>
     <Compile Include="..\Shared.SocketMeister\SocketClient.Events.cs">
       <Link>Shared.SocketMeister\SocketClient.Events.cs</Link>
-    </Compile>
-    <Compile Include="..\Shared.SocketMeister\SocketClient.OpenRequestMessages.cs">
-      <Link>Shared.SocketMeister\SocketClient.OpenRequestMessages.cs</Link>
     </Compile>
     <Compile Include="..\Shared.SocketMeister\SocketClient.SocketAsyncEventArgsPool.cs">
       <Link>Shared.SocketMeister\SocketClient.SocketAsyncEventArgsPool.cs</Link>
@@ -215,7 +221,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Silverlight\$(SilverlightVersion)\Microsoft.Silverlight.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -11,7 +11,7 @@ namespace SocketMeister.Testing.Tests
     {
         private readonly int _id;
         private readonly string _description;
-        public T _parent = default;
+        public T _parent = default(T);
         private readonly object _lock = new object();
 
         public TestBase(int Id, string Description)

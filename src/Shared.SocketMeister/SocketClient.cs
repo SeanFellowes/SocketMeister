@@ -500,7 +500,7 @@ namespace SocketMeister
                     }
                     else
                     {
-                        throw new ApplicationException("Timeout after waiting " + Constants.SEND_RESPONSE_TIMEOUT_SECONDS + " seconds for a response to send.");
+                        throw new TimeoutException("Timeout after waiting " + Constants.SEND_RESPONSE_TIMEOUT_SECONDS + " seconds for a response to send.");
                     }
                 }
 

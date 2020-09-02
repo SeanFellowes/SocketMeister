@@ -11,13 +11,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocketMeister (Silverlight)
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared.SocketMeister.Testing", "..\Shared.SocketMeister.Testing\Shared.SocketMeister.Testing.shproj", "{C1465F45-1A63-427C-8EAB-FF3D7518224A}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared.SocketMeister.Testing.Client", "..\Shared.SocketMeister.Testing.Client\Shared.SocketMeister.Testing.Client.shproj", "{72C2CE76-A954-4194-9FDD-D7ED4332FA48}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared.SocketMeister.Testing.Client", "..\Shared.SocketMeister.Testing.Client\Shared.SocketMeister.Testing.Client.shproj", "{F31E9834-6FEA-4178-89BD-F1E3DA8447A0}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		..\Shared.SocketMeister.Testing.Client\Shared.SocketMeister.Testing.Client.projitems*{72c2ce76-a954-4194-9fdd-d7ed4332fa48}*SharedItemsImports = 13
 		..\Shared.SocketMeister\Shared.SocketMeister.projitems*{7fe383ec-5fd4-4d60-beeb-149e51549260}*SharedItemsImports = 13
 		..\Shared.SocketMeister.Testing\Shared.SocketMeister.Testing.projitems*{c1465f45-1a63-427c-8eab-ff3d7518224a}*SharedItemsImports = 13
+		..\Shared.SocketMeister.Testing.Client\Shared.SocketMeister.Testing.Client.projitems*{f31e9834-6fea-4178-89bd-f1e3da8447a0}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

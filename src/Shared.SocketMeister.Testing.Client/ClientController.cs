@@ -19,13 +19,19 @@ namespace SocketMeister.Testing
         /// </summary> 
         public event EventHandler<EventArgs> ControlBusConnectionFailed;
 
+        /// <summary>
+        /// Event raised when a status of a socket connection has changed
+        /// </summary>
+        public event EventHandler<SocketClient.ConnectionStatusChangedEventArgs> ControlBusConnectionStatusChanged;
+
+
         public ClientController(int ControlBusClientId)
         {
             _controlBusClient = new ControlBus.ControlBusClient( ControlBusClientType.ClientController, ControlBusClientId, Constants.ControlBusServerIPAddress, Constants.ControlBusPort);
-            _controlBusClient.ConnectionFailed += ControlBus_ConnectionFailed;
-            _controlBusClient.ControlBusSocketClient.MessageReceived += ControlBus_MessageReceived;
+            _controlBusClient.ConnectionFailed += ControlBusClient_ConnectionFailed;
+            _controlBusClient.ConnectionStatusChanged += ControlBusClient_ConnectionStatusChanged;
+            _controlBusClient.ControlBusSocketClient.MessageReceived += ControlBusClient_MessageReceived;
         }
-
 
         public int ClientId {  get { return _controlBusClient.ControlBusClientId; } }
 
@@ -52,15 +58,20 @@ namespace SocketMeister.Testing
 
 
 
-        private void ControlBus_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
+        private void ControlBusClient_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
         {
             throw new NotImplementedException();
         }
 
-        private void ControlBus_ConnectionFailed(object sender, EventArgs e)
+        private void ControlBusClient_ConnectionFailed(object sender, EventArgs e)
         {
             //  CONNECTION TO THE HarnessController COULD NOT BE ESTABLISHED.
             ControlBusConnectionFailed?.Invoke(this, e);
+        }
+
+        private void ControlBusClient_ConnectionStatusChanged(object sender, SocketClient.ConnectionStatusChangedEventArgs e)
+        {
+            ControlBusConnectionStatusChanged?.Invoke(sender, e);
         }
 
         /// <summary>
