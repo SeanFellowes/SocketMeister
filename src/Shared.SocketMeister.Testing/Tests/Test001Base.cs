@@ -4,7 +4,6 @@ using System.Security.Permissions;
 using System.Text;
 using System.Threading;
 #if TESTHARNESS
-using System.Net.Http.Headers;
 #endif
 
 namespace SocketMeister.Testing.Tests

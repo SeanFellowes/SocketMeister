@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
-#if TESTHARNESS
-using System.Net.Http.Headers;
+﻿#if TESTHARNESS
 #endif
 
 namespace SocketMeister.Testing.Tests
