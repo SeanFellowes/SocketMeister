@@ -22,7 +22,7 @@ namespace SocketMeister
             private readonly Guid _clientId = Guid.NewGuid();
             private readonly Socket _clientSocket;
             private readonly DateTime _connectTimestamp = DateTime.Now;
-            private readonly OpenRequestMessages _openRequests = new OpenRequestMessages();
+            private readonly OpenRequestMessageCollection _openRequests = new OpenRequestMessageCollection();
             private readonly MessageEngine _receivedEnvelope;
             private readonly SocketServer _socketServer;
 

@@ -10,7 +10,7 @@ namespace SocketMeister
     /// <summary>
     /// Threadsafe list of open request messages, which we are waiting for a response.
     /// </summary>
-    internal class OpenRequestMessages
+    internal class OpenRequestMessageCollection
     {
         private readonly List<RequestMessage> _list = new List<RequestMessage>();
         private readonly object _lock = new object();

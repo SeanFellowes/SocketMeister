@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SocketMeister
 {
-    public static class Constants
+    internal static class Constants
     {
 
         /// <summary>

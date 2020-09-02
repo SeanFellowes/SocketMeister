@@ -60,7 +60,7 @@ namespace SocketMeister
         private readonly object _lock = new object();
         private DateTime _nextPollRequest;
         private int _requestsInProgress = 0;
-        private readonly OpenRequestMessages _openRequests = new OpenRequestMessages();
+        private readonly OpenRequestMessageCollection _openRequests = new OpenRequestMessageCollection();
         private readonly Random _randomizer = new Random();
         private MessageEngine _receiveEngine;
         private readonly SocketAsyncEventArgsPool _sendEventArgsPool;
