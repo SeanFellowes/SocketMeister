@@ -26,8 +26,6 @@ namespace SocketMeister.Messages
             if (Exception.StackTrace != null) _error += Environment.NewLine + Environment.NewLine + Exception.StackTrace;
         }
 
-
-
         /// <summary>
         /// Fastest was to build this is to create it directly from the SocketEnvelope buffer.
         /// </summary>

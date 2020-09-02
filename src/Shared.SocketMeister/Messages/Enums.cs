@@ -63,6 +63,28 @@ namespace SocketMeister.Messages
         Null = 99
     }
 
+
+    /// <summary>
+    /// Status of .
+    /// </summary>
+    internal enum ResponseCode
+    {
+        Success = 0,
+        GeneralException = 1,
+        NoFreeSocketAsyncEventArgs = 2,
+        Int16Param = 3,
+        Int32Param = 4,
+        Int64Param = 5,
+        UInt16Param = 6,
+        UInt32Param = 7,
+        UInt64Param = 8,
+        StringParam = 9,
+        ByteParam = 10,
+        ByteArrayParam = 11,
+        Null = 99
+    }
+
+
     /// <summary>
     /// Status of a SendReceive operation
     /// </summary>

@@ -481,53 +481,54 @@ namespace SocketMeister
         }
 
 
-        //private void SendResponse(ResponseMessage Message)
-        //{
-        //    byte[] sendBytes = MessageEngine.GenerateSendBytes(Message, false);
+        private void SendResponse(ResponseMessage Message)
+        {
+            bool wasEventArgsPopSuccessfulAtLeastOnce = false;
+            DateTime maxWait = DateTime.Now.AddSeconds(Constants.SEND_RESPONSE_TIMEOUT_SECONDS);
+            byte[] sendBytes = MessageEngine.GenerateSendBytes(Message, false);
 
-        //    SocketAsyncEventArgs sendEventArgs;
-        //    while (true == true)
-        //    {
-        //        try
-        //        {
-        //            ////  SEAN - SHOULDN'T NEED THIS. WHAT IF IT IS AN INTERNAL MESSAGE?
-        //            //if (IsStopAllRequested == true) return;
+            SocketAsyncEventArgs sendEventArgs;
+            while (true == true)
+            {
+                //  IF CLIENT IS SHUTTING DOWN, EXIT.
+                if (IsStopAllRequested == true) return;
+                if (DateTime.Now > maxWait)
+                {
+                    if (wasEventArgsPopSuccessfulAtLeastOnce == false)
+                    {
+                        throw new TimeoutException("Timeout after waiting " + Constants.SEND_RESPONSE_TIMEOUT_SECONDS + " seconds for a SocketAsyncEventArgs class from the SocketAsyncEventArgsPool.");
+                    }
+                    else
+                    {
+                        throw new ApplicationException("Timeout after waiting " + Constants.SEND_RESPONSE_TIMEOUT_SECONDS + " seconds for a response to send.");
+                    }
+                }
 
-        //            if (Message.SendReceiveStatus == SendReceiveStatus.Unsent && CanSendReceive() == true)
-        //            {
-        //                sendEventArgs = _sendEventArgsPool.Pop();
-        //                if (sendEventArgs != null)
-        //                {
-        //                    sendEventArgs.UserToken = Message;
-        //                    sendEventArgs.SetBuffer(sendBytes, 0, sendBytes.Length);
-        //                    Message.SendReceiveStatus = SendReceiveStatus.InProgress;
-        //                    int maxWait = Convert.ToInt32(Message.TimeoutMilliseconds - (DateTime.Now - nowTs).TotalMilliseconds);
+                if (Message.SendReceiveStatus == SendReceiveStatus.Unsent && CanSendReceive() == true)
+                {
+                    sendEventArgs = _sendEventArgsPool.Pop();
+                    if (sendEventArgs != null)
+                    {
+                        wasEventArgsPopSuccessfulAtLeastOnce = true;
+                        sendEventArgs.UserToken = Message;
+                        sendEventArgs.SetBuffer(sendBytes, 0, sendBytes.Length);
+                        Message.SendReceiveStatus = SendReceiveStatus.InProgress;
+                        sendEventArgs.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
+                        try
+                        {
+                            if (!CurrentEndPoint.Socket.SendAsync(sendEventArgs)) ProcessSend(null, sendEventArgs);
+                            return;
+                        }
+                        catch (Exception ex)
+                        {
+                            NotifyExceptionRaised(ex);
+                        }
+                    }
+                }
+                Thread.Sleep(200);
+            }
 
-        //                    if (maxWait > 0)
-        //                    {
-        //                        sendEventArgs.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
-
-        //                        if (!CurrentEndPoint.Socket.SendAsync(sendEventArgs)) ProcessSend(null, sendEventArgs);
-
-        //                        //  WAIT FOR RESPONSE
-        //                        while (Message.SendReceiveStatus == SendReceiveStatus.InProgress)
-        //                        {
-        //                            Thread.Sleep(5);
-        //                        }
-        //                    }
-        //                }
-        //            }
-
-        //            if (Message.SendReceiveStatus == SendReceiveStatus.ResponseReceived || Message.SendReceiveStatus == SendReceiveStatus.Timeout) break;
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            NotifyExceptionRaised(ex);
-        //        }
-        //        Thread.Sleep(200);
-        //    }
-
-        //}
+        }
 
 
 
@@ -561,7 +562,7 @@ namespace SocketMeister
         {
             if (IsStopAllRequested == true) return null;
 
-            DateTime nowTs = DateTime.Now;
+            DateTime startTime = DateTime.Now;
             _openRequests.Add(Request);
 
             byte[] sendBytes = MessageEngine.GenerateSendBytes(Request, false);
@@ -582,9 +583,9 @@ namespace SocketMeister
                             sendEventArgs.UserToken = Request;
                             sendEventArgs.SetBuffer(sendBytes, 0, sendBytes.Length);
                             Request.SendReceiveStatus = SendReceiveStatus.InProgress;
-                            int maxWait = Convert.ToInt32(Request.TimeoutMilliseconds - (DateTime.Now - nowTs).TotalMilliseconds);
+                            int remainingMilliseconds = Request.TimeoutMilliseconds - Convert.ToInt32((DateTime.Now - startTime).TotalMilliseconds);
 
-                            if (maxWait > 0)
+                            if (remainingMilliseconds > 0)
                             {
                                 sendEventArgs.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
 
@@ -725,21 +726,20 @@ namespace SocketMeister
                         {
                             NotifyMessageReceived(_receiveEngine.GetMessage());
                         }
-                        //else if (_receiveEngine.MessageType == MessageTypes.RequestMessage)
-                        //{
-                        //    RequestMessage request = _receiveEngine.GetRequestMessage();
-                        //    request.RemoteClient = remoteClient;
-                        //    if (IsStopAllRequested)
-                        //    {
-                        //        ResponseMessage response = new ResponseMessage(request.RequestId, new Exception("Server is stopping"));
-                        //         SendMessage(request.RemoteClient, response, false);
-                        //    }
-                        //    else
-                        //    {
-                        //        lock (_lock) { _requestsInProgress += 1; }
-                        //        ThreadPool.QueueUserWorkItem(BgProcessRequestMessage, request);
-                        //    }
-                        //}
+                        else if (_receiveEngine.MessageType == MessageTypes.RequestMessage)
+                        {
+                            RequestMessage request = _receiveEngine.GetRequestMessage();
+                            if (IsStopAllRequested)
+                            {
+                                ResponseMessage response = new ResponseMessage(request.RequestId, new Exception("Client is stopping"));
+                                SendResponse(response);
+                            }
+                            else
+                            {
+                                lock (_lock) { _requestsInProgress += 1; }
+                                ThreadPool.QueueUserWorkItem(BgProcessRequestMessage, request);
+                            }
+                        }
                         else if (_receiveEngine.MessageType == MessageTypes.ServerStoppingMessage)
                         {
                             NotifyExceptionRaised(new Exception("Disconnecting: Server is stopping."));
@@ -774,31 +774,31 @@ namespace SocketMeister
         }
 
 
-        //private void BgProcessRequestMessage(object state)
-        //{
-        //    RequestMessage request = (RequestMessage)state;
-        //    try
-        //    {
-        //        //  DESERIALIZE THE REQUEST FROM THE CLIENT
-        //        //  WE HAVE A MESSAGE IN FULL. UNPACK, (RESETS COUNTERS) AND RAISE AN EVENT
-        //        RequestReceivedEventArgs args = new RequestReceivedEventArgs(request.Parameters);
-        //        RequestReceived(this, args);
+        private void BgProcessRequestMessage(object state)
+        {
+            RequestMessage request = (RequestMessage)state;
+            try
+            {
+                //  DESERIALIZE THE REQUEST FROM THE CLIENT
+                //  WE HAVE A MESSAGE IN FULL. UNPACK, (RESETS COUNTERS) AND RAISE AN EVENT
+                RequestReceivedEventArgs args = new RequestReceivedEventArgs(request.Parameters);
+                RequestReceived(this, args);
 
-        //        //  SEND RESPONSE
-        //        ResponseMessage response = new ResponseMessage(request.RequestId, args.Response);
-        //        SendResponse(request.RemoteClient, response, false);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        NotifyTraceEventRaised(ex, 5008);
-        //        ResponseMessage response = new ResponseMessage(request.RequestId, ex);
-        //        SendMessage(request.RemoteClient, response, false);
-        //    }
-        //    finally
-        //    {
-        //        lock (_lock) { _requestsInProgress -= 1; }
-        //    }
-        //}
+                //  SEND RESPONSE
+                ResponseMessage response = new ResponseMessage(request.RequestId, args.Response);
+                SendResponse(response);
+            }
+            catch (Exception ex)
+            {
+                NotifyExceptionRaised(ex);
+                ResponseMessage response = new ResponseMessage(request.RequestId, ex);
+                SendResponse(response);
+            }
+            finally
+            {
+                lock (_lock) { _requestsInProgress -= 1; }
+            }
+        }
 
 
 

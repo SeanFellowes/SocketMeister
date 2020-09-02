@@ -9,6 +9,11 @@
             The buffer size to use for sending and receiving data. Note: This value is also used by the 'SocketServer' class.
             </summary>
         </member>
+        <member name="F:SocketMeister.Constants.SEND_RESPONSE_TIMEOUT_SECONDS">
+            <summary>
+            Number of seconds to wait before generating a timeout error when sending a response to a request.
+            </summary>
+        </member>
         <member name="F:SocketMeister.Constants.SocketAsyncEventArgsPoolSize">
             <summary>
             The number of simultaneous send operations which can take place. Value should be between 2 and 20
@@ -169,6 +174,11 @@
         <member name="T:SocketMeister.Messages.ParameterTypes">
             <summary>
             Data types which are supported for parameters sent with messages.
+            </summary>
+        </member>
+        <member name="T:SocketMeister.Messages.ResponseCode">
+            <summary>
+            Status of .
             </summary>
         </member>
         <member name="T:SocketMeister.Messages.SendReceiveStatus">
@@ -495,7 +505,7 @@
             The event used to complete an asynchronous operation.
             </summary>
         </member>
-        <member name="M:SocketMeister.SocketAsyncEventArgsPool.#ctor">
+        <member name="M:SocketMeister.SocketAsyncEventArgsPool.#ctor(System.Int32)">
             <summary>
             Initializes the object pool to the specified size.
             </summary>

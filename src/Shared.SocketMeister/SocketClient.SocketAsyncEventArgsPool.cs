@@ -26,15 +26,15 @@ namespace SocketMeister
         /// <param name="Capacity">Maximum number of SocketAsyncEventArgs objects the pool can hold.</param>
         internal SocketAsyncEventArgsPool(int Capacity)
         {
-            this._pool = new Stack<SocketAsyncEventArgs>(Capacity);
-            for (int i = 0; i < Constants.SocketAsyncEventArgsPoolSize; i++)
+            _pool = new Stack<SocketAsyncEventArgs>(Capacity);
+            for (int i = 0; i < Capacity; i++)
             {
 #pragma warning disable CA2000 // Dispose objects before losing scope
                 SocketAsyncEventArgs EventArgs = new SocketAsyncEventArgs();
 #pragma warning restore CA2000 // Dispose objects before losing scope
                 EventArgs.SetBuffer(new byte[Constants.SEND_RECEIVE_BUFFER_SIZE], 0, Constants.SEND_RECEIVE_BUFFER_SIZE);
                 EventArgs.Completed += EventArgs_Completed; ;
-                this._pool.Push(EventArgs);
+                _pool.Push(EventArgs);
             }
         }
 
@@ -51,10 +51,10 @@ namespace SocketMeister
         /// <returns>SocketAsyncEventArgs removed from the pool.</returns>
         internal SocketAsyncEventArgs Pop()
         {
-            lock (this._pool)
+            lock (_pool)
             {
                 //  ENSURE THERE IS ALWAYS AT LEAST ONE ITEM
-                if (this._pool.Count > 0) return this._pool.Pop();
+                if (_pool.Count > 0) return _pool.Pop();
                 return null;
             }
         }
@@ -66,10 +66,9 @@ namespace SocketMeister
         internal void Push(SocketAsyncEventArgs item)
         {
             if (item == null) return;
-            lock (this._pool)
+            lock (_pool)
             {
-                if (_pool.Contains(item) == true) return;
-                this._pool.Push(item);
+                if (_pool.Contains(item) == false) _pool.Push(item);
             }
         }
 
