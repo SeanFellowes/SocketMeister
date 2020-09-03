@@ -31,12 +31,6 @@ namespace SocketMeister
                 _socketServer = Server;
                 _clientSocket = ClientSocket;
                 _receivedEnvelope = new MessageEngine(EnableCompression);
-                _socketServer.MessageReceived += _socketServer_MessageReceived;
-            }
-
-            private void _socketServer_MessageReceived(object sender, MessageReceivedEventArgs e)
-            {
-                throw new NotImplementedException();
             }
 
             /// <summary>
@@ -75,9 +69,14 @@ namespace SocketMeister
                 _socketServer.SendMessage(this, message, true);
             }
 
-            internal void ProcessResponse(ResponseMessage Response)
+            internal void ProcessResponseMessage(ResponseMessage Message)
             {
-
+                ThreadPool.QueueUserWorkItem(unused =>
+                {
+                    Console.WriteLine("Hello for thread");
+                    Thread.Sleep(500);
+                    Console.WriteLine("Bye from thread");
+                });
             }
 
             /// <summary>
@@ -113,31 +112,28 @@ namespace SocketMeister
 
                 byte[] sendBytes = MessageEngine.GenerateSendBytes(Request, false);
 
-                while (true == true)
+                while (Request.TrySendReceive == true)
                 {
-                        if (_socketServer.ListenerState != SocketServerStatus.Started) return null;
+                    if (_socketServer.ListenerState != SocketServerStatus.Started) return null;
 
-                        if (Request.SendStatus == SendStatus.Unsent)
+                    if (Request.Status == MessageStatus.Unsent)
+                    {
+                        _socketServer.SendMessage(this, Request, true);
+                        Request.Status = MessageStatus.InProgress;
+
+                        //  WAIT FOR RESPONSE
+                        while (Request.WaitForResponse)
                         {
-                            _socketServer.SendMessage(this, Request, true);
-                            Request.SendStatus = SendStatus.InProgress;
-                            int maxWait = Convert.ToInt32(Request.TimeoutMilliseconds - (DateTime.Now - nowTs).TotalMilliseconds);
-
-                            //  WAIT FOR RESPONSE
-                            while (Request.SendStatus == SendStatus.InProgress && maxWait > 0)
-                            {
-                                Thread.Sleep(5);
-                                maxWait = Convert.ToInt32(Request.TimeoutMilliseconds - (DateTime.Now - nowTs).TotalMilliseconds);
-                            }
+                            Thread.Sleep(5);
                         }
+                    }
 
-                        if (Request.SendStatus == SendStatus.ResponseReceived || Request.IsTimeout) break;
-                        Thread.Sleep(200);
+                    if (Request.TrySendReceive == true) Thread.Sleep(200);
                 }
 
                 _openRequests.Remove(Request);
 
-                if (Request.SendStatus == SendStatus.ResponseReceived)
+                if (Request.Response != null)
                 {
                     if (Request.Response.Error != null) throw new Exception(Request.Response.Error);
                     else return Request.Response.ResponseData;

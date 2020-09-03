@@ -167,6 +167,9 @@
     <Compile Include="..\Shared.SocketMeister\PolicyServer.Listener.cs">
       <Link>Shared.SocketMeister\PolicyServer.Listener.cs</Link>
     </Compile>
+    <Compile Include="..\Shared.SocketMeister\SocketAsyncEventArgsPool.cs">
+      <Link>Shared.SocketMeister\SocketAsyncEventArgsPool.cs</Link>
+    </Compile>
     <Compile Include="..\Shared.SocketMeister\SocketClient.cs">
       <Link>Shared.SocketMeister\SocketClient.cs</Link>
     </Compile>
@@ -175,9 +178,6 @@
     </Compile>
     <Compile Include="..\Shared.SocketMeister\SocketClient.Events.cs">
       <Link>Shared.SocketMeister\SocketClient.Events.cs</Link>
-    </Compile>
-    <Compile Include="..\Shared.SocketMeister\SocketClient.SocketAsyncEventArgsPool.cs">
-      <Link>Shared.SocketMeister\SocketClient.SocketAsyncEventArgsPool.cs</Link>
     </Compile>
     <Compile Include="..\Shared.SocketMeister\SocketEndPoint.cs">
       <Link>Shared.SocketMeister\SocketEndPoint.cs</Link>

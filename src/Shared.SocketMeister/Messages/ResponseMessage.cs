@@ -5,7 +5,24 @@ using System.Text;
 
 namespace SocketMeister.Messages
 {
-    internal class ResponseMessage : MessageBase, IMessage
+#if !SILVERLIGHT && !SMNOSERVER
+    internal partial class ResponseMessage : MessageBase
+    {
+        private SocketServer.Client _remoteClient = null;
+
+        /// <summary>
+        /// The remote client which sent this RequestMessage (value null on SocketClient)
+        /// </summary>
+        internal SocketServer.Client RemoteClient
+        {
+            get { lock (Lock) { return _remoteClient; } }
+            set { lock (Lock) { _remoteClient = value; } }
+        }
+    }
+#endif
+
+
+    internal partial class ResponseMessage : MessageBase, IMessage
     {
         //  RESPONSE VARIABLES
         private readonly string _error = null;

@@ -356,6 +356,14 @@ namespace SocketMeister
                                 ThreadPool.QueueUserWorkItem(BgProcessRequestMessage, request);
                             }
                         }
+                        else if (receiveEnvelope.MessageType == MessageTypes.ResponseMessage)
+                        {
+                            if (ListenerState == SocketServerStatus.Started)
+                            {
+                                //  PROCESS ResponseMessage. NOTE: METHOD IS EXECUTED IN A ThreadPool THREAD
+                                remoteClient.ProcessResponseMessage(receiveEnvelope.GetResponseMessage());
+                            }
+                        }
                         else if (receiveEnvelope.MessageType == MessageTypes.Message)
                         {
                             if (ListenerState == SocketServerStatus.Started)
@@ -493,6 +501,7 @@ namespace SocketMeister
                 lock (_lock) { _requestsInProgress -= 1; }
             }
         }
+
 
         internal static IPAddress GetLocalIPAddress()
         {

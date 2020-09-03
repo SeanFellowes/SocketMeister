@@ -91,7 +91,7 @@ namespace SocketMeister.Messages
     /// <summary>
     /// Status of a send operation
     /// </summary>
-    internal enum SendStatus
+    internal enum MessageStatus
     {
         /// <summary>
         /// Message has not been sent or is flagged to resent (because socket connection failed)
@@ -101,14 +101,20 @@ namespace SocketMeister.Messages
         /// Message is in progress
         /// </summary>
         InProgress = 1,
-        /// <summary>
-        /// Response has been received
-        /// </summary>
-        ResponseReceived = 2
+        ///// <summary>
+        ///// Response has been received
+        ///// </summary>
+        //ResponseReceived = 2
         ///// <summary>
         ///// Timeout occured.
         ///// </summary>
         //Timeout = 9
+
+        /// <summary>
+        /// Send operation finished (Could be unsuccessful or successful)
+        /// </summary>
+        Finished = short.MaxValue
+
     }
 
 }

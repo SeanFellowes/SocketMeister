@@ -19,7 +19,7 @@ namespace SocketMeister.Messages
         /// <summary>
         /// Status of a 'SendRequest()' operation, used only on the SocketClient, to track: If messages have been sent, a response has been received, or an error/timeout.
         /// </summary>
-        SendStatus SendStatus { get; set; }
+        MessageStatus Status { get; set; }
 
         ///// <summary>
         ///// Number of milliseconds to wait before a timeout will occur.

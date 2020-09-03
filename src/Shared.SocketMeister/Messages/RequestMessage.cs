@@ -2,12 +2,12 @@
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
-
+using System.Threading;
 
 namespace SocketMeister.Messages
 {
 #if !SILVERLIGHT && !SMNOSERVER
-    internal partial class RequestMessage
+    internal partial class RequestMessage : MessageBase
     {
         private SocketServer.Client _remoteClient = null;
 
@@ -16,8 +16,8 @@ namespace SocketMeister.Messages
         /// </summary>
         internal SocketServer.Client RemoteClient
         {
-            get { lock (_lock) { return _remoteClient; } }
-            set { lock (_lock) { _remoteClient = value; } }
+            get { lock (Lock) { return _remoteClient; } }
+            set { lock (Lock) { _remoteClient = value; } }
         }
     }
 #endif
@@ -41,9 +41,7 @@ namespace SocketMeister.Messages
         private readonly int _timeoutMilliseconds;
 
         //  INTERNAL (NOT SENT IN MESSAGE DATA)
-        private readonly object _lock = new object();
         private ResponseMessage _response = null;
-
 
         /// <summary>
         /// RequestMessage constructor
@@ -112,8 +110,8 @@ namespace SocketMeister.Messages
 
         public bool IsResponseReceived
         {
-            get { lock (_lock) { return _isResponseReceived; } }
-            set { lock (_lock) { _isResponseReceived = value; } }
+            get { lock (Lock) { return _isResponseReceived; } }
+            set { lock (Lock) { _isResponseReceived = value; } }
         }
 
 
@@ -140,8 +138,8 @@ namespace SocketMeister.Messages
 
         public ResponseMessage Response
         {
-            get { lock (_lock) { return _response; } }
-            set { lock (_lock) { _response = value; } }
+            get { lock (Lock) { return _response; } }
+            set { lock (Lock) { _response = value; } }
         }
 
 
@@ -149,6 +147,33 @@ namespace SocketMeister.Messages
         /// Number of milliseconds to wait before a timeout will occur.
         /// </summary>
         public int TimeoutMilliseconds { get { return _timeoutMilliseconds; } }
+
+        /// <summary>
+        /// Whether the method SendReceive(RequestMessage Request) should continute trying
+        /// </summary>
+        public bool TrySendReceive
+        {
+            get
+            {
+                if (Status == MessageStatus.Unsent) return true;
+                else return WaitForResponse;
+            }
+        }
+
+        /// <summary>
+        /// Whether a SendReceive process should continue waiting for a response
+        /// </summary>
+        public bool WaitForResponse
+        {
+            get
+            {
+                if (IsAborted) return false;
+                if (IsTimeout) return false;
+                else if (Response != null) return false;
+                else if (Status == MessageStatus.InProgress) return true;
+                else return false;
+            }
+        }
 
 
         public void AppendBytes(BinaryWriter Writer)

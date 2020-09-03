@@ -500,12 +500,12 @@ namespace SocketMeister
                     return;
                 }
 
-                if (Message.SendStatus == SendStatus.Unsent && CanSendReceive() == true)
+                if (Message.Status == MessageStatus.Unsent && CanSendReceive() == true)
                 {
                     sendEventArgs = _sendEventArgsPool.Pop();
                     if (sendEventArgs != null)
                     {
-                        Message.SendStatus = SendStatus.InProgress;
+                        Message.Status = MessageStatus.InProgress;
                         sendEventArgs.UserToken = Message;
                         sendEventArgs.SetBuffer(sendBytes, 0, sendBytes.Length);
                         sendEventArgs.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
@@ -537,7 +537,7 @@ namespace SocketMeister
 
             sendEventArgs.UserToken = Message;
             sendEventArgs.SetBuffer(sendBytes, 0, sendBytes.Length);
-            Message.SendStatus = SendStatus.InProgress;
+            Message.Status = MessageStatus.InProgress;
             sendEventArgs.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
             try
             {
@@ -589,20 +589,18 @@ namespace SocketMeister
 
             SocketAsyncEventArgs sendEventArgs;
 
-            while (true == true)
+            while (Request.TrySendReceive == true && IsStopAllRequested == false)
             {
                 try
                 {
-                    if (IsStopAllRequested == true) return null;
-
-                    if (Request.SendStatus == SendStatus.Unsent && CanSendReceive() == true)
+                    if (Request.Status == MessageStatus.Unsent && CanSendReceive() == true)
                     {
                         sendEventArgs = _sendEventArgsPool.Pop();
                         if (sendEventArgs != null)
                         {
+                            Request.Status = MessageStatus.InProgress;
                             sendEventArgs.UserToken = Request;
                             sendEventArgs.SetBuffer(sendBytes, 0, sendBytes.Length);
-                            Request.SendStatus = SendStatus.InProgress;
                             int remainingMilliseconds = Request.TimeoutMilliseconds - Convert.ToInt32((DateTime.Now - startTime).TotalMilliseconds);
 
                             if (remainingMilliseconds > 0)
@@ -612,26 +610,24 @@ namespace SocketMeister
                                 if (!CurrentEndPoint.Socket.SendAsync(sendEventArgs)) ProcessSend(null, sendEventArgs);
 
                                 //  WAIT FOR RESPONSE
-                                while (Request.SendStatus == SendStatus.InProgress)
+                                while (Request.WaitForResponse)
                                 {
                                     Thread.Sleep(5);
                                 }
                             }
                         }
                     }
-
-                    if (Request.SendStatus == SendStatus.ResponseReceived || Request.IsTimeout) break;
                 }
                 catch (Exception ex)
                 {
                     NotifyExceptionRaised(ex);
                 }
-                Thread.Sleep(200);
+                if (Request.TrySendReceive == true) Thread.Sleep(200);
             }
 
             _openRequests.Remove(Request);
 
-            if (Request.SendStatus == SendStatus.ResponseReceived)
+            if (Request.Response != null)
             {
                 if (Request.Response.Error != null) throw new Exception(Request.Response.Error);
                 else return Request.Response.ResponseData;
@@ -657,24 +653,20 @@ namespace SocketMeister
             {
                 if (result == SocketError.ConnectionReset)
                 {
-                    message.SendStatus = SendStatus.Unsent;
+                    message.Status = MessageStatus.Unsent;
                     NotifyExceptionRaised(new Exception("Disconnecting: Connection was reset."));
                     DisconnectSocket();
                 }
                 else if (result != SocketError.Success)
                 {
-                    message.SendStatus = SendStatus.Unsent;
+                    message.Status = MessageStatus.Unsent;
                     NotifyExceptionRaised(new Exception("Disconnecting: Send did not generate a success. Socket operation returned error code " + (int)e.SocketError));
                     DisconnectSocket();
-                }
-                else
-                {
-                    message.SendStatus = SendStatus.InProgress;
                 }
             }
             catch (Exception ex)
             {
-                message.SendStatus = SendStatus.Unsent;
+                message.Status = MessageStatus.Unsent;
                 NotifyExceptionRaised(ex);
             }
         }
@@ -737,12 +729,12 @@ namespace SocketMeister
                                 if (response.RequestResultCode == RequestResult.Stopping)
                                 {
                                     //  SOCKET SERVER IS SHUTTING DOWN. WE WILL RETRY
-                                    foundOpenRequest.SendStatus = SendStatus.Unsent;
+                                    foundOpenRequest.Status = MessageStatus.Unsent;
                                 }
                                 else
                                 {
                                     foundOpenRequest.Response = response;
-                                    foundOpenRequest.SendStatus = SendStatus.ResponseReceived;
+                                    foundOpenRequest.Status = MessageStatus.Finished;
                                 }
                             }
                         }

@@ -6,29 +6,19 @@ using System.Threading;
 
 namespace SocketMeister.Messages
 {
-    internal class MessageBase
+    internal partial class MessageBase
     {
-        private AutoResetEvent _sendReceiveCompleteEvent = null;
+        private bool _isAborted = false;
         private readonly object _lock = new object();
         private readonly MessageTypes _messageType;
-        private SendStatus _sendStatus = SendStatus.Unsent;
+        private MessageStatus _messageStatus = MessageStatus.Unsent;
 
         internal MessageBase(MessageTypes MessageType)
         {
             _messageType = MessageType;
         }
 
-
-
-        /// <summary>s
-        /// Cross threading locking mechanism while waiting for an asynchronous socket send/receive to complete
-        /// </summary>
-        public AutoResetEvent SendReceiveCompleteEvent
-        {
-            get { lock (_lock) { return _sendReceiveCompleteEvent; } }
-            set { lock (_lock) { _sendReceiveCompleteEvent = value; } }
-        }
-
+        public object Lock {  get { return _lock; } }
 
         internal static object[] DeserializeParameters(BinaryReader bR)
         {
@@ -60,29 +50,22 @@ namespace SocketMeister.Messages
             return parameters;
         }
 
-        public MessageTypes MessageType { get { return _messageType; } }
 
-        public SendStatus SendStatus
+        public bool IsAborted
         {
-            get
-            {
-                lock (_lock)
-                {
-                    if (_sendStatus == SendStatus.ResponseReceived) return SendStatus.ResponseReceived;
-                    //else if (DateTime.Now >= _timeout) return SendReceiveStatus.Timeout;
-                    else return _sendStatus;
-                }
-            }
-            set
-            {
-                lock (_lock)
-                {
-                    if (_sendStatus != SendStatus.ResponseReceived) _sendStatus = value;
-                }
-            }
+            get { lock (_lock) { return _isAborted; } }
+            set { lock (_lock) { _isAborted = value; } }
         }
 
 
+        public MessageTypes MessageType { get { return _messageType; } }
+
+
+        public MessageStatus Status
+        {
+            get { lock (_lock) { return _messageStatus; } }
+            set { lock (_lock) { _messageStatus = value; } }
+        }
 
 
         internal static void SerializeParameters(BinaryWriter bWriter, object[] Parameters)
