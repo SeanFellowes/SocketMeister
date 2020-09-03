@@ -11,22 +11,13 @@ namespace SocketMeister.Messages
         private AutoResetEvent _sendReceiveCompleteEvent = null;
         private readonly object _lock = new object();
         private readonly MessageTypes _messageType;
-        private SendReceiveStatus _sendReceiveStatus = SendReceiveStatus.Unsent;
-        private readonly DateTime _timeout;
-        private readonly int _timeoutMilliseconds;
+        private SendStatus _sendStatus = SendStatus.Unsent;
 
         internal MessageBase(MessageTypes MessageType)
         {
             _messageType = MessageType;
         }
 
-
-        internal MessageBase(MessageTypes MessageType, int TimeoutMilliseconds)
-        {
-            _messageType = MessageType;
-            _timeoutMilliseconds = TimeoutMilliseconds;
-            _timeout = DateTime.Now.AddMilliseconds(TimeoutMilliseconds);
-        }
 
 
         /// <summary>s
@@ -71,31 +62,27 @@ namespace SocketMeister.Messages
 
         public MessageTypes MessageType { get { return _messageType; } }
 
-        public SendReceiveStatus SendReceiveStatus
+        public SendStatus SendStatus
         {
             get
             {
                 lock (_lock)
                 {
-                    if (_sendReceiveStatus == SendReceiveStatus.ResponseReceived) return SendReceiveStatus.ResponseReceived;
-                    else if (DateTime.Now >= _timeout) return SendReceiveStatus.Timeout;
-                    else return _sendReceiveStatus;
+                    if (_sendStatus == SendStatus.ResponseReceived) return SendStatus.ResponseReceived;
+                    //else if (DateTime.Now >= _timeout) return SendReceiveStatus.Timeout;
+                    else return _sendStatus;
                 }
             }
             set
             {
                 lock (_lock)
                 {
-                    if (_sendReceiveStatus != SendReceiveStatus.ResponseReceived) _sendReceiveStatus = value;
+                    if (_sendStatus != SendStatus.ResponseReceived) _sendStatus = value;
                 }
             }
         }
 
 
-        /// <summary>
-        /// Number of milliseconds to wait before a timeout will occur.
-        /// </summary>
-        public int TimeoutMilliseconds { get { return _timeoutMilliseconds; } }
 
 
         internal static void SerializeParameters(BinaryWriter bWriter, object[] Parameters)

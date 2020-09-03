@@ -75,6 +75,11 @@ namespace SocketMeister
                 _socketServer.SendMessage(this, message, true);
             }
 
+            internal void ProcessResponse(ResponseMessage Response)
+            {
+
+            }
+
             /// <summary>
             /// Send a request to the server and wait for a response. 
             /// </summary>
@@ -112,27 +117,27 @@ namespace SocketMeister
                 {
                         if (_socketServer.ListenerState != SocketServerStatus.Started) return null;
 
-                        if (Request.SendReceiveStatus == SendReceiveStatus.Unsent)
+                        if (Request.SendStatus == SendStatus.Unsent)
                         {
                             _socketServer.SendMessage(this, Request, true);
-                            Request.SendReceiveStatus = SendReceiveStatus.InProgress;
+                            Request.SendStatus = SendStatus.InProgress;
                             int maxWait = Convert.ToInt32(Request.TimeoutMilliseconds - (DateTime.Now - nowTs).TotalMilliseconds);
 
                             //  WAIT FOR RESPONSE
-                            while (Request.SendReceiveStatus == SendReceiveStatus.InProgress && maxWait > 0)
+                            while (Request.SendStatus == SendStatus.InProgress && maxWait > 0)
                             {
                                 Thread.Sleep(5);
                                 maxWait = Convert.ToInt32(Request.TimeoutMilliseconds - (DateTime.Now - nowTs).TotalMilliseconds);
                             }
                         }
 
-                        if (Request.SendReceiveStatus == SendReceiveStatus.ResponseReceived || Request.SendReceiveStatus == SendReceiveStatus.Timeout) break;
+                        if (Request.SendStatus == SendStatus.ResponseReceived || Request.IsTimeout) break;
                         Thread.Sleep(200);
                 }
 
                 _openRequests.Remove(Request);
 
-                if (Request.SendReceiveStatus == SendReceiveStatus.ResponseReceived)
+                if (Request.SendStatus == SendStatus.ResponseReceived)
                 {
                     if (Request.Response.Error != null) throw new Exception(Request.Response.Error);
                     else return Request.Response.ResponseData;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Net;
 using System.Net.Sockets;
 
 
@@ -32,9 +33,12 @@ namespace SocketMeister.Messages
 
         //  REQUEST VARIABLES
         private readonly bool _isLongPolling = false;
+        private bool _isResponseReceived = false;
         private readonly byte[] _parameterBytes = null;
         private readonly object[] _parameters = null;
         private readonly long _requestId;
+        private readonly DateTime _timeout;
+        private readonly int _timeoutMilliseconds;
 
         //  INTERNAL (NOT SENT IN MESSAGE DATA)
         private readonly object _lock = new object();
@@ -47,9 +51,11 @@ namespace SocketMeister.Messages
         /// <param name="Parameters">Array of parameters to send with the request. There must be at least 1 parameter.</param>
         /// <param name="TimeoutMilliseconds">The maximum number of milliseconds to wait for a response before timing out.</param>
         /// <param name="IsLongPolling">The maximum number of milliseconds to wait for a response before timing out.</param>
-        public RequestMessage(object[] Parameters, int TimeoutMilliseconds, bool IsLongPolling = false) : base(MessageTypes.RequestMessage, TimeoutMilliseconds)
+        public RequestMessage(object[] Parameters, int TimeoutMilliseconds , bool IsLongPolling = false) : base(MessageTypes.RequestMessage)
         {
             _parameters = Parameters;
+            _timeoutMilliseconds = TimeoutMilliseconds;
+            _timeout = DateTime.Now.AddMilliseconds(TimeoutMilliseconds);
             _isLongPolling = IsLongPolling;
 
             //  CREATE A REQUEST ID
@@ -64,6 +70,7 @@ namespace SocketMeister.Messages
             using (BinaryWriter writer = new BinaryWriter(new MemoryStream()))
             {
                 writer.Write(_requestId);
+                writer.Write(_timeoutMilliseconds);
                 writer.Write(_isLongPolling);
                 SerializeParameters(writer, Parameters);
                 using (BinaryReader reader = new BinaryReader(writer.BaseStream))
@@ -78,8 +85,12 @@ namespace SocketMeister.Messages
         internal RequestMessage(BinaryReader bR) : base(MessageTypes.RequestMessage)
         {
             _requestId = bR.ReadInt64();
+            _timeoutMilliseconds = bR.ReadInt32();
             _isLongPolling = bR.ReadBoolean();
             _parameters = DeserializeParameters(bR);
+
+            //  SETUP TIMEOUT
+            _timeout = DateTime.Now.AddMilliseconds(TimeoutMilliseconds);
         }
 
 
@@ -99,6 +110,25 @@ namespace SocketMeister.Messages
             get { return _isLongPolling; }
         }
 
+        public bool IsResponseReceived
+        {
+            get { lock (_lock) { return _isResponseReceived; } }
+            set { lock (_lock) { _isResponseReceived = value; } }
+        }
+
+
+        /// <summary>
+        /// Whether the RequestMessage has timed out
+        /// </summary>
+        public bool IsTimeout
+        {
+            get 
+            {
+                if (DateTime.Now > _timeout) return true;
+                else return false;
+            }
+        }
+
 
         /// <summary>
         /// Identifier assigned to this request when it was created (usually when created at the client)
@@ -114,9 +144,18 @@ namespace SocketMeister.Messages
             set { lock (_lock) { _response = value; } }
         }
 
+
+        /// <summary>
+        /// Number of milliseconds to wait before a timeout will occur.
+        /// </summary>
+        public int TimeoutMilliseconds { get { return _timeoutMilliseconds; } }
+
+
         public void AppendBytes(BinaryWriter Writer)
         {
             Writer.Write(_parameterBytes);
         }
+
+
     }
 }

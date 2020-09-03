@@ -55,6 +55,7 @@ namespace SocketMeister.Testing.ControlBus
             _controlBusClient = new ControlBusClient(ControlBusClientType.ClientController, ControlBusClientId, ControlBusServerIPAddress, Constants.ControlBusPort);
             _controlBusClient.ConnectionFailed += ControlBus_ConnectionFailed;
             _controlBusClient.ControlBusSocketClient.MessageReceived += ControlBus_MessageReceived;
+            _controlBusClient.ControlBusSocketClient.RequestReceived += ControlBus_RequestReceived;
 
             _port = Port;
         }
@@ -93,15 +94,31 @@ namespace SocketMeister.Testing.ControlBus
         private void ControlBus_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
         {
             int r = Convert.ToInt32(e.Parameters[0]);
-            if (r == ControlBus.ControlMessage.SocketServerStart)
+
+            //if (r == ControlBus.ControlMessage.SocketServerStart)
+            //{
+            //    int Port = Convert.ToInt32(e.Parameters[1]);
+
+            //    //  THIS WORKS. 
+                
+            //    //  START THE SOCKET SERVER ON THE PORT REQUESTED SEND AND ACKNOWLEDGEMENT SOMETHING BACK
+            //}
+        }
+
+        private void ControlBus_RequestReceived(object sender, SocketClient.RequestReceivedEventArgs e)
+        {
+            int messageType = Convert.ToInt32(e.Parameters[0]);
+
+            if (messageType == ControlBus.ControlMessage.SocketServerStart)
             {
                 int Port = Convert.ToInt32(e.Parameters[1]);
 
                 //  THIS WORKS. 
-                
+
                 //  START THE SOCKET SERVER ON THE PORT REQUESTED SEND AND ACKNOWLEDGEMENT SOMETHING BACK
             }
         }
+
 
         private void ControlBus_ConnectionFailed(object sender, EventArgs e)
         {

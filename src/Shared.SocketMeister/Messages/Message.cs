@@ -29,6 +29,8 @@ namespace SocketMeister.Messages
         //  REQUEST VARIABLES
         private readonly byte[] _parameterBytes = null;
         private readonly object[] _parameters = null;
+        private readonly DateTime _timeout;
+        private readonly int _timeoutMilliseconds;
 
         //  INTERNAL (NOT SENT IN MESSAGE DATA)
         private readonly object _lock = new object();
@@ -38,11 +40,14 @@ namespace SocketMeister.Messages
         /// </summary>
         /// <param name="Parameters">Array of parameters to send with the request. There must be at least 1 parameter.</param>
         /// <param name="TimeoutMilliseconds">The maximum number of milliseconds to wait for a response before timing out.</param>
-        public Message(object[] Parameters, int TimeoutMilliseconds) : base(MessageTypes.Message, TimeoutMilliseconds)
+        public Message(object[] Parameters, int TimeoutMilliseconds) : base(MessageTypes.Message)
         {
             _parameters = Parameters;
+            _timeoutMilliseconds = TimeoutMilliseconds;
+            _timeout = DateTime.Now.AddMilliseconds(TimeoutMilliseconds);
             using (BinaryWriter writer = new BinaryWriter(new MemoryStream()))
             {
+                writer.Write(_timeoutMilliseconds);
                 SerializeParameters(writer, Parameters);
                 using (BinaryReader reader = new BinaryReader(writer.BaseStream))
                 {
@@ -55,8 +60,22 @@ namespace SocketMeister.Messages
 
         internal Message(BinaryReader bR) : base(MessageTypes.Message)
         {
+            _timeoutMilliseconds = TimeoutMilliseconds;
             _parameters = DeserializeParameters(bR);
         }
+
+        /// <summary>
+        /// Whether the RequestMessage has timed out
+        /// </summary>
+        public bool IsTimeout
+        {
+            get
+            {
+                if (DateTime.Now > _timeout) return true;
+                else return false;
+            }
+        }
+
 
 
         /// <summary>
@@ -66,6 +85,12 @@ namespace SocketMeister.Messages
         {
             get { return _parameters; }
         }
+
+        /// <summary>
+        /// Number of milliseconds to wait before a timeout will occur.
+        /// </summary>
+        public int TimeoutMilliseconds { get { return _timeoutMilliseconds; } }
+
 
         public void AppendBytes(BinaryWriter Writer)
         {

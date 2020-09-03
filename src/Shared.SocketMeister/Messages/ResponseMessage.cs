@@ -10,18 +10,26 @@ namespace SocketMeister.Messages
         //  RESPONSE VARIABLES
         private readonly string _error = null;
         private readonly long _requestId;
+        private readonly RequestResult _requestResultCode;
         private readonly Byte[] _responseData = null;
-        private readonly bool _serverIsStopping = false;
 
         public ResponseMessage(long RequestId, byte[] ResponseData) : base(MessageTypes.ResponseMessage)
         {
             _requestId = RequestId;
             _responseData = ResponseData;
+            _requestResultCode = RequestResult.Success;
+        }
+
+        public ResponseMessage(long RequestId, RequestResult RequestResultCode) : base(MessageTypes.ResponseMessage)
+        {
+            _requestId = RequestId;
+            _requestResultCode = RequestResultCode;
         }
 
         public ResponseMessage(long RequestId, Exception Exception) : base(MessageTypes.ResponseMessage)
         {
             _requestId = RequestId;
+            _requestResultCode = RequestResult.Exception;
             _error = Exception.Message;
             if (Exception.StackTrace != null) _error += Environment.NewLine + Environment.NewLine + Exception.StackTrace;
         }
@@ -35,7 +43,7 @@ namespace SocketMeister.Messages
             _requestId = Reader.ReadInt64();
             if (Reader.ReadBoolean() == true) _responseData = Reader.ReadBytes(Reader.ReadInt32());
             if (Reader.ReadBoolean() == true) _error = Reader.ReadString();
-            _serverIsStopping = Reader.ReadBoolean();
+            _requestResultCode = (RequestResult)Reader.ReadInt16();
         }
 
         /// <summary>
@@ -53,16 +61,16 @@ namespace SocketMeister.Messages
         }
 
 
+        public RequestResult RequestResultCode 
+        {  
+            get { return _requestResultCode; } 
+        }
+
+
         public string Error
         {
             get { return _error; }
         }
-
-        public bool ServerIsStopping
-        {
-            get { return _serverIsStopping; }
-        }
-
 
 
         public void AppendBytes(BinaryWriter Writer)
@@ -81,7 +89,7 @@ namespace SocketMeister.Messages
                 Writer.Write(true);
                 Writer.Write(_error);
             }
-            Writer.Write(_serverIsStopping);
+            Writer.Write(Convert.ToInt16(_requestResultCode));
         }
     }
 }

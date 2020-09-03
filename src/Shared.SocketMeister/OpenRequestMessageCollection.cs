@@ -63,7 +63,7 @@ namespace SocketMeister
             }
             foreach (RequestMessage message in messages)
             {
-                if (message.SendReceiveStatus != SendReceiveStatus.ResponseReceived) message.SendReceiveStatus = SendReceiveStatus.Unsent;
+                if (message.SendStatus != SendStatus.ResponseReceived) message.SendStatus = SendStatus.Unsent;
             }
         }
     }

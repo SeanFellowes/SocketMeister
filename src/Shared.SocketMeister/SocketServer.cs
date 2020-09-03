@@ -347,7 +347,7 @@ namespace SocketMeister
                             request.RemoteClient = remoteClient;
                             if (ListenerState == SocketServerStatus.Stopping)
                             {
-                                ResponseMessage response = new ResponseMessage(request.RequestId, new Exception("Server is stopping"));
+                                ResponseMessage response = new ResponseMessage(request.RequestId, RequestResult.Stopping);
                                 SendMessage(request.RemoteClient, response, false);
                             }
                             else

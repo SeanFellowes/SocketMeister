@@ -19,12 +19,12 @@ namespace SocketMeister.Messages
         /// <summary>
         /// Status of a 'SendRequest()' operation, used only on the SocketClient, to track: If messages have been sent, a response has been received, or an error/timeout.
         /// </summary>
-        SendReceiveStatus SendReceiveStatus { get; set; }
+        SendStatus SendStatus { get; set; }
 
-        /// <summary>
-        /// Number of milliseconds to wait before a timeout will occur.
-        /// </summary>
-        int TimeoutMilliseconds { get; }
+        ///// <summary>
+        ///// Number of milliseconds to wait before a timeout will occur.
+        ///// </summary>
+        //int TimeoutMilliseconds { get; }
 
         /// <summary>
         /// Mandatory method to append binary data to the IMessage object,

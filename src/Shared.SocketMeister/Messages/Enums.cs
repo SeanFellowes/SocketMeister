@@ -65,30 +65,33 @@ namespace SocketMeister.Messages
 
 
     /// <summary>
-    /// Status of .
+    /// Result of an attempt to process a request. This is included in the ResponseMessage.
     /// </summary>
-    internal enum ResponseCode
+    internal enum RequestResult
     {
+        /// <summary>
+        /// The request executed successfully
+        /// </summary>
         Success = 0,
-        GeneralException = 1,
-        NoFreeSocketAsyncEventArgs = 2,
-        Int16Param = 3,
-        Int32Param = 4,
-        Int64Param = 5,
-        UInt16Param = 6,
-        UInt32Param = 7,
-        UInt64Param = 8,
-        StringParam = 9,
-        ByteParam = 10,
-        ByteArrayParam = 11,
-        Null = 99
+        /// <summary>
+        /// The client or server is shutting down. The request could not be fulfilled.
+        /// </summary>
+        Stopping = 2,
+        /// <summary>
+        /// There is no process listening for 'RequestReceived' events.
+        /// </summary>
+        NoRequestProcessor = 3,
+        /// <summary>
+        /// An exception occured while processing the request
+        /// </summary>
+        Exception = short.MaxValue
     }
 
 
     /// <summary>
-    /// Status of a SendReceive operation
+    /// Status of a send operation
     /// </summary>
-    internal enum SendReceiveStatus
+    internal enum SendStatus
     {
         /// <summary>
         /// Message has not been sent or is flagged to resent (because socket connection failed)
@@ -101,11 +104,11 @@ namespace SocketMeister.Messages
         /// <summary>
         /// Response has been received
         /// </summary>
-        ResponseReceived = 2,
-        /// <summary>
-        /// Timeout occured.
-        /// </summary>
-        Timeout = 9
+        ResponseReceived = 2
+        ///// <summary>
+        ///// Timeout occured.
+        ///// </summary>
+        //Timeout = 9
     }
 
 }

@@ -103,8 +103,8 @@ namespace SocketMeister.Testing.ControlBus
                 object[] parms = new object[2];
                 parms[0] = ControlMessage.SocketServerStart;
                 parms[1] = Port;
-                ControlBusListenerClient.SendMessage(parms);
-                
+                ControlBusListenerClient.SendRequest(parms);
+                string ergerg = "";
             }
 
 
