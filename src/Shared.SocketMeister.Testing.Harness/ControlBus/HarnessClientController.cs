@@ -13,6 +13,7 @@ namespace SocketMeister.Testing.ControlBus
     /// </summary>
     internal class HarnessClientController : ClientController, IDisposable
     {
+        private readonly ControlBusCommands _commands = null;
         private bool _disposed = false;
         private bool _disposeCalled = false;
         private SocketServer.Client _controlBuslistenerClient = null;
@@ -21,6 +22,7 @@ namespace SocketMeister.Testing.ControlBus
 
         public HarnessClientController(int ControlBusClientId) : base(ControlBusClientId)
         {
+            _commands = new ControlBusCommands();
         }
 
         public new void Dispose()
@@ -53,8 +55,18 @@ namespace SocketMeister.Testing.ControlBus
         public SocketServer.Client ControlBusListenerClient
         {
             get { lock (Lock) { return _controlBuslistenerClient; } }
-            set { lock (Lock) { _controlBuslistenerClient = value; } }
+            set
+            {
+                lock (Lock)
+                {
+                    _controlBuslistenerClient = value;
+                }
+                _commands.ControlBusListenerClient = value;
+            }
         }
+
+        public ControlBusCommands Commands { get { return _commands; } }
+
 
 
 
@@ -141,6 +153,60 @@ namespace SocketMeister.Testing.ControlBus
 
             //  Wait zzzz miniseconds for the client to send a ClientDisconnecting message.
         }
+
+
+
+
+
+        public class ControlBusCommands
+        {
+            private SocketServer.Client _controlBuslistenerClient = null;
+            private readonly object _lock = new object();
+
+            public ControlBusCommands()
+            {
+            }
+
+            public SocketServer.Client ControlBusListenerClient
+            {
+                get
+                {
+                    lock (_lock)
+                    {
+                        if (_controlBuslistenerClient == null)
+                            throw new NullReferenceException("Function failed. Property " + nameof(ControlBusListenerClient) + " is null.");
+                        return _controlBuslistenerClient;
+                    }
+                }
+                set { lock (_lock) { _controlBuslistenerClient = value; } }
+            }
+
+            public void SocketClientStart(int Port)
+            {
+                object[] parms = new object[2];
+                parms[0] = ControlMessage.SocketClientStart;
+                parms[1] = Port;
+                ControlBusListenerClient.SendRequest(parms);
+            }
+
+
+            public void SocketClientStart()
+            {
+                object[] parms = new object[1];
+                parms[0] = ControlMessage.SocketClientStop;
+                ControlBusListenerClient.SendRequest(parms);
+            }
+
+
+
+
+
+
+
+
+
+        }
+
 
     }
 }

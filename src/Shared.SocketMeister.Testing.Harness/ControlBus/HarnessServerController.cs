@@ -11,14 +11,14 @@ namespace SocketMeister.Testing.ControlBus
 {
     public class HarnessServerController : ServerController, IDisposable
     {
-        private readonly commands _commands = null;
+        private readonly ControlBusCommands _commands = null;
         private bool _disposed = false;
         private bool _disposeCalled = false;
         private SocketServer.Client _controlBuslistenerClient = null;
 
-        public HarnessServerController(int Port, int ControlBusClientId, string ControlBusServerIPAddress) : base(Port, ControlBusClientId, ControlBusServerIPAddress)
+        public HarnessServerController(int ControlBusClientId, string ControlBusServerIPAddress) : base(ControlBusClientId, ControlBusServerIPAddress)
         {
-            _commands = new commands();
+            _commands = new ControlBusCommands();
         }
 
         public new void Dispose()
@@ -45,7 +45,7 @@ namespace SocketMeister.Testing.ControlBus
 
         public ControlBusClientType ClientType { get { return ControlBusClientType.ServerController; } }
 
-        public commands Commands {  get { return _commands; } }
+        public ControlBusCommands Commands {  get { return _commands; } }
 
         /// <summary>
         /// Socketmeister client (from the server perspective)
@@ -75,12 +75,12 @@ namespace SocketMeister.Testing.ControlBus
             //  Wait zzzz miniseconds for the client to send a ClientDisconnecting message.
         }
 
-        public class commands
+        public class ControlBusCommands
         {
             private SocketServer.Client _controlBuslistenerClient = null;
             private readonly object _lock = new object();
 
-            public commands()
+            public ControlBusCommands()
             {
             }
 
@@ -98,16 +98,21 @@ namespace SocketMeister.Testing.ControlBus
                 set { lock (_lock) { _controlBuslistenerClient = value; } }
             }
 
-            public void StartSocketServer(int Port)
+            public void SocketServerStart(int Port)
             {
                 object[] parms = new object[2];
                 parms[0] = ControlMessage.SocketServerStart;
                 parms[1] = Port;
                 ControlBusListenerClient.SendRequest(parms);
-                string ergerg = "";
             }
 
 
+            public void SocketServerStop()
+            {
+                object[] parms = new object[1];
+                parms[0] = ControlMessage.SocketServerStop;
+                ControlBusListenerClient.SendRequest(parms);
+            }
 
 
 

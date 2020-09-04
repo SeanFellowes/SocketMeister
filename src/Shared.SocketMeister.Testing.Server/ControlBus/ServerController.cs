@@ -15,7 +15,7 @@ namespace SocketMeister.Testing.ControlBus
         private bool _disposed = false;
         private bool _disposeCalled = false;
         private readonly object _lock = new object();
-        private readonly int _port;
+        private int _port;
         private SocketServer _socketServer = null;
 
         /// <summary>
@@ -49,15 +49,13 @@ namespace SocketMeister.Testing.ControlBus
         internal event EventHandler<SocketServer.ClientsChangedEventArgs> ClientsChanged;
 
 
-        public ServerController(int Port, int ControlBusClientId, string ControlBusServerIPAddress)
+        public ServerController(int ControlBusClientId, string ControlBusServerIPAddress)
         {
             //  CONNECT TO THE HarnessController
             _controlBusClient = new ControlBusClient(ControlBusClientType.ClientController, ControlBusClientId, ControlBusServerIPAddress, Constants.ControlBusPort);
             _controlBusClient.ConnectionFailed += ControlBus_ConnectionFailed;
             _controlBusClient.ControlBusSocketClient.MessageReceived += ControlBus_MessageReceived;
             _controlBusClient.ControlBusSocketClient.RequestReceived += ControlBus_RequestReceived;
-
-            _port = Port;
         }
 
         /// <summary>
@@ -109,14 +107,20 @@ namespace SocketMeister.Testing.ControlBus
         {
             int messageType = Convert.ToInt32(e.Parameters[0]);
 
-            if (messageType == ControlBus.ControlMessage.SocketServerStart)
+            if (messageType == ControlMessage.SocketServerStart)
             {
                 int Port = Convert.ToInt32(e.Parameters[1]);
 
-                //  THIS WORKS. 
-
-                //  START THE SOCKET SERVER ON THE PORT REQUESTED SEND AND ACKNOWLEDGEMENT SOMETHING BACK
+                StopSocketServer();
+                StartSocketServer(Port);
             }
+            else if (messageType == ControlMessage.SocketServerStop)
+            {
+                StopSocketServer();
+            }
+
+            else
+                throw new ArgumentOutOfRangeException(nameof(e) + "." + nameof(e.Parameters) + "[0]", "No process defined for " + nameof(e) + "." + nameof(e.Parameters) + "[0] = " + messageType + ".");
         }
 
 
@@ -145,8 +149,10 @@ namespace SocketMeister.Testing.ControlBus
 
         public int Port
         {
-            get { return _port; }
+            get { lock (_lock) { return _port; } }
+            set {  lock(_lock) { _port = value; } }
         }
+
 
 
         private void SocketServer_ListenerStateChanged(object sender, SocketServer.SocketServerStatusChangedEventArgs e)
@@ -155,21 +161,22 @@ namespace SocketMeister.Testing.ControlBus
         }
 
 
-        internal void StartSocketServer()
+        internal void StartSocketServer(int Port)
         {
-            //  START SOCKET SERVER IN BACHGROUND
-            Thread bgStartSocketServer = new Thread(new ThreadStart(delegate
-            {
-                _socketServer = new SocketServer(_port, true);
-                _socketServer.ClientsChanged += SocketServer_ClientsChanged;
-                _socketServer.ListenerStateChanged += SocketServer_ListenerStateChanged;
-                _socketServer.TraceEventRaised += SocketServer_TraceEventRaised;
-                _socketServer.MessageReceived += SocketServer_MessageReceived;
-                _socketServer.RequestReceived += SocketServer_RequestReceived;
-                _socketServer.Start();
-            }));
-            bgStartSocketServer.IsBackground = true;
-            bgStartSocketServer.Start();
+            ////  START SOCKET SERVER IN BACHGROUND
+            //Thread bgStartSocketServer = new Thread(new ThreadStart(delegate
+            //{
+            this.Port = Port;
+            _socketServer = new SocketServer(Port, true);
+            _socketServer.ClientsChanged += SocketServer_ClientsChanged;
+            _socketServer.ListenerStateChanged += SocketServer_ListenerStateChanged;
+            _socketServer.TraceEventRaised += SocketServer_TraceEventRaised;
+            _socketServer.MessageReceived += SocketServer_MessageReceived;
+            _socketServer.RequestReceived += SocketServer_RequestReceived;
+            _socketServer.Start();
+            //}));
+            //bgStartSocketServer.IsBackground = true;
+            //bgStartSocketServer.Start();
         }
 
         internal void StopSocketServer()

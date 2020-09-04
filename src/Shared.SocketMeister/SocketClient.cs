@@ -632,7 +632,7 @@ namespace SocketMeister
                 if (Request.Response.Error != null) throw new Exception(Request.Response.Error);
                 else return Request.Response.ResponseData;
             }
-            else throw new TimeoutException();
+            else throw new TimeoutException("SendReceive() timed out after " + Request.TimeoutMilliseconds + " milliseconds");
         }
 
 

@@ -67,7 +67,7 @@ namespace SocketMeister.Testing
             _policyServer.TraceEventRaised += PolicyServer_TraceEventRaised;
 
             //  SETUP FIXED SERVER
-            _fixedServer1 = new ControlBus.HarnessServerController(Constants.HarnessFixedServerPort, int.MaxValue - 1, Constants.ControlBusServerIPAddress);
+            _fixedServer1 = new ControlBus.HarnessServerController(int.MaxValue - 1, Constants.ControlBusServerIPAddress);
 
             //  SETUP FIXED CLIENT
             _fixedClient1 = new ControlBus.HarnessClientController(int.MaxValue);
@@ -186,7 +186,7 @@ namespace SocketMeister.Testing
         /// <summary>
         /// In DEBUG, this is attached to this test harness for easy debugging. In RELEASE, a seperate client application is launched.
         /// </summary>
-        public ControlBus.HarnessClientController FixedHarnessClient {  get { return _fixedClient1; } }
+        public ControlBus.HarnessClientController FixedClient1 {  get { return _fixedClient1; } }
 
         public ControlBus.HarnessServerController FixedServer1 {  get { return _fixedServer1; } }
 

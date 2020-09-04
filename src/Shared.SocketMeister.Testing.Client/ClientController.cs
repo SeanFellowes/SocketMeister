@@ -30,7 +30,8 @@ namespace SocketMeister.Testing
             _controlBusClient = new ControlBus.ControlBusClient( ControlBusClientType.ClientController, ControlBusClientId, Constants.ControlBusServerIPAddress, Constants.ControlBusPort);
             _controlBusClient.ConnectionFailed += ControlBusClient_ConnectionFailed;
             _controlBusClient.ConnectionStatusChanged += ControlBusClient_ConnectionStatusChanged;
-            _controlBusClient.ControlBusSocketClient.MessageReceived += ControlBusClient_MessageReceived;
+            _controlBusClient.ControlBusSocketClient.MessageReceived += ControlBusClient_MessageReceived; ;
+            _controlBusClient.ControlBusSocketClient.RequestReceived += ControlBusClient_RequestReceived; ;
         }
 
         public int ClientId {  get { return _controlBusClient.ControlBusClientId; } }
@@ -58,9 +59,25 @@ namespace SocketMeister.Testing
 
 
 
-        private void ControlBusClient_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
+        private void ControlBusClient_RequestReceived(object sender, SocketClient.RequestReceivedEventArgs e)
         {
             throw new NotImplementedException();
+        }
+
+        private void ControlBusClient_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
+        {
+            int messageType = Convert.ToInt32(e.Parameters[0]);
+
+            if (messageType == ControlBus.ControlMessage.SocketServerStart)
+            {
+                int Port = Convert.ToInt32(e.Parameters[1]);
+
+                StopSocketServer();
+                StartSocketServer(Port);
+            }
+
+            else
+                throw new ArgumentOutOfRangeException(nameof(e) + "." + nameof(e.Parameters) + "[0]", "No process defined for " + nameof(e) + "." + nameof(e.Parameters) + "[0] = " + messageType + ".");
         }
 
         private void ControlBusClient_ConnectionFailed(object sender, EventArgs e)

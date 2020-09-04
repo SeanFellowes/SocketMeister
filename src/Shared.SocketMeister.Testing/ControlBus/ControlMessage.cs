@@ -17,7 +17,13 @@ namespace SocketMeister.Testing.ControlBus
         public const int ExitClient = 2;
 
 
-        public const int SocketServerStart = 3;
+        public const int SocketServerStart = 100;
+        public const int SocketServerStop = 101;
+
+        public const int SocketClientStart = 200;
+        public const int SocketClientStop = 201;
+
+
 
         ///// <summary>
         ///// When a test client receives a DisconnectClient message is sends the server a ClientDisconnecting message before the client app closes.

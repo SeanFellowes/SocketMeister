@@ -22,7 +22,13 @@ namespace SocketMeister.Testing.Tests
             try
             {
                 //  START THE SOCKET SERVER ON FixedServer1 
-                _harnessController.FixedServer1.Commands.StartSocketServer(2345);
+                RaiseTraceEventRaised("Starting SocketServer on port " + Constants.HarnessFixedServer1Port, SeverityType.Information, 1);
+                _harnessController.FixedServer1.Commands.SocketServerStart(Constants.HarnessFixedServer1Port);
+
+                //  CONNECT FixedClient1 TO FixedServer1
+                RaiseTraceEventRaised("Starting SocketClient on port " + Constants.HarnessFixedServer1Port, SeverityType.Information, 1);
+                _harnessController.FixedClient1.Commands.SocketClientStart(Constants.HarnessFixedServer1Port);
+
 
                 //ClientController ClientId01 = base.AddClient();
 
@@ -57,6 +63,12 @@ namespace SocketMeister.Testing.Tests
                     }
                     Thread.Sleep(1000);
                 }
+
+
+                //  STOP THE SOCKET SERVER ON FixedServer1 
+                RaiseTraceEventRaised("Stopping SocketServer", SeverityType.Information, 1);
+                _harnessController.FixedServer1.Commands.SocketServerStop();
+
 
                 Status = TestStatus.Successful;
                 RaiseTraceEventRaised("Test completed successfully", SeverityType.Information, 1);

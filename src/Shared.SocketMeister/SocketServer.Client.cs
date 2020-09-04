@@ -71,12 +71,15 @@ namespace SocketMeister
 
             internal void ProcessResponseMessage(ResponseMessage Message)
             {
-                ThreadPool.QueueUserWorkItem(unused =>
-                {
-                    Console.WriteLine("Hello for thread");
-                    Thread.Sleep(500);
-                    Console.WriteLine("Bye from thread");
-                });
+                RequestMessage request = _openRequests[Message.RequestId];
+                if (request == null) return;
+                request.Response = Message;
+                //ThreadPool.QueueUserWorkItem(unused =>
+                //{
+                //    RequestMessage request = _openRequests[Message.RequestId];
+                //    if (request == null) return;
+                //    request.Response = Message;
+                //});
             }
 
             /// <summary>
@@ -138,7 +141,7 @@ namespace SocketMeister
                     if (Request.Response.Error != null) throw new Exception(Request.Response.Error);
                     else return Request.Response.ResponseData;
                 }
-                else throw new TimeoutException();
+                else throw new TimeoutException("SendReceive() timed out after " + Request.TimeoutMilliseconds + " milliseconds");
             }
 
 
