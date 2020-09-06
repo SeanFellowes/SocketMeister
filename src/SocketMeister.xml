@@ -176,34 +176,49 @@
             Data types which are supported for parameters sent with messages.
             </summary>
         </member>
-        <member name="T:SocketMeister.Messages.ResponseCode">
+        <member name="T:SocketMeister.Messages.RequestResult">
             <summary>
-            Status of .
+            Result of an attempt to process a request. This is included in the ResponseMessage.
             </summary>
         </member>
-        <member name="T:SocketMeister.Messages.SendReceiveStatus">
+        <member name="F:SocketMeister.Messages.RequestResult.Success">
             <summary>
-            Status of a SendReceive operation
+            The request executed successfully
             </summary>
         </member>
-        <member name="F:SocketMeister.Messages.SendReceiveStatus.Unsent">
+        <member name="F:SocketMeister.Messages.RequestResult.Stopping">
+            <summary>
+            The client or server is shutting down. The request could not be fulfilled.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Messages.RequestResult.NoRequestProcessor">
+            <summary>
+            There is no process listening for 'RequestReceived' events.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Messages.RequestResult.Exception">
+            <summary>
+            An exception occured while processing the request
+            </summary>
+        </member>
+        <member name="T:SocketMeister.Messages.MessageStatus">
+            <summary>
+            Status of a send operation
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Messages.MessageStatus.Unsent">
             <summary>
             Message has not been sent or is flagged to resent (because socket connection failed)
             </summary>
         </member>
-        <member name="F:SocketMeister.Messages.SendReceiveStatus.InProgress">
+        <member name="F:SocketMeister.Messages.MessageStatus.InProgress">
             <summary>
             Message is in progress
             </summary>
         </member>
-        <member name="F:SocketMeister.Messages.SendReceiveStatus.ResponseReceived">
+        <member name="F:SocketMeister.Messages.MessageStatus.Finished">
             <summary>
-            Response has been received
-            </summary>
-        </member>
-        <member name="F:SocketMeister.Messages.SendReceiveStatus.Timeout">
-            <summary>
-            Timeout occured.
+            Send operation finished (Could be unsuccessful or successful)
             </summary>
         </member>
         <member name="T:SocketMeister.Messages.MessageEngine">
@@ -361,14 +376,9 @@
             Type of message
             </summary>
         </member>
-        <member name="P:SocketMeister.Messages.IMessage.SendReceiveStatus">
+        <member name="P:SocketMeister.Messages.IMessage.Status">
             <summary>
             Status of a 'SendRequest()' operation, used only on the SocketClient, to track: If messages have been sent, a response has been received, or an error/timeout.
-            </summary>
-        </member>
-        <member name="P:SocketMeister.Messages.IMessage.TimeoutMilliseconds">
-            <summary>
-            Number of milliseconds to wait before a timeout will occur.
             </summary>
         </member>
         <member name="M:SocketMeister.Messages.IMessage.AppendBytes(System.IO.BinaryWriter)">
@@ -394,17 +404,17 @@
             <param name="Parameters">Array of parameters to send with the request. There must be at least 1 parameter.</param>
             <param name="TimeoutMilliseconds">The maximum number of milliseconds to wait for a response before timing out.</param>
         </member>
+        <member name="P:SocketMeister.Messages.Message.IsTimeout">
+            <summary>
+            Whether the RequestMessage has timed out
+            </summary>
+        </member>
         <member name="P:SocketMeister.Messages.Message.Parameters">
             <summary>
             Parameters provided with this request
             </summary>
         </member>
-        <member name="P:SocketMeister.Messages.MessageBase.SendReceiveCompleteEvent">
-            <summary>s
-            Cross threading locking mechanism while waiting for an asynchronous socket send/receive to complete
-            </summary>
-        </member>
-        <member name="P:SocketMeister.Messages.MessageBase.TimeoutMilliseconds">
+        <member name="P:SocketMeister.Messages.Message.TimeoutMilliseconds">
             <summary>
             Number of milliseconds to wait before a timeout will occur.
             </summary>
@@ -447,9 +457,34 @@
             True is this request is long polling on the server side. Long polling requests will be closed immediately in the event of a close from either the client or server side.
             </summary>
         </member>
+        <member name="P:SocketMeister.Messages.RequestMessage.IsTimeout">
+            <summary>
+            Whether the RequestMessage has timed out
+            </summary>
+        </member>
         <member name="P:SocketMeister.Messages.RequestMessage.RequestId">
             <summary>
             Identifier assigned to this request when it was created (usually when created at the client)
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.RequestMessage.TimeoutMilliseconds">
+            <summary>
+            Number of milliseconds to wait before a timeout will occur.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.RequestMessage.TrySendReceive">
+            <summary>
+            Whether the method SendReceive(RequestMessage Request) should continute trying
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.RequestMessage.WaitForResponse">
+            <summary>
+            Whether a SendReceive process should continue waiting for a response
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.ResponseMessage.RemoteClient">
+            <summary>
+            The remote client which sent this RequestMessage (value null on SocketClient)
             </summary>
         </member>
         <member name="M:SocketMeister.Messages.ResponseMessage.#ctor(System.IO.BinaryReader)">
@@ -474,17 +509,17 @@
             The maximum number of milliseconds the client should wait for open requests to be completed. The server will not send back responses for open requests after this time.
             </summary>
         </member>
-        <member name="T:SocketMeister.OpenRequestMessages">
+        <member name="T:SocketMeister.OpenRequestMessageCollection">
             <summary>
             Threadsafe list of open request messages, which we are waiting for a response.
             </summary>
         </member>
-        <member name="P:SocketMeister.OpenRequestMessages.Count">
+        <member name="P:SocketMeister.OpenRequestMessageCollection.Count">
             <summary>
             Number of open items.
             </summary>
         </member>
-        <member name="M:SocketMeister.OpenRequestMessages.ResetToUnsent">
+        <member name="M:SocketMeister.OpenRequestMessageCollection.ResetToUnsent">
             <summary>
             Resets all messages which do not have a response, to 'Unsent'. The locks on all items are released so unsent items can be resent when a connection is reestablished.
             </summary>
@@ -512,6 +547,12 @@
             <param name="Capacity">Maximum number of SocketAsyncEventArgs objects the pool can hold.</param>
         </member>
         <member name="M:SocketMeister.SocketAsyncEventArgsPool.Pop">
+            <summary>
+            Removes a SocketAsyncEventArgs instance from the pool.
+            </summary>
+            <returns>SocketAsyncEventArgs removed from the pool.</returns>
+        </member>
+        <member name="M:SocketMeister.SocketAsyncEventArgsPool.Pop(System.Int32)">
             <summary>
             Removes a SocketAsyncEventArgs instance from the pool.
             </summary>
