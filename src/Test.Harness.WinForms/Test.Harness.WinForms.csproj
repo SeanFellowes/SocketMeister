@@ -18,16 +18,6 @@
     <OutputPath>bin\Debug\</OutputPath>
   </PropertyGroup>
 
-  <Import Project="..\Shared.SocketMeister\Shared.SocketMeister.projitems" Label="Shared" />
-
-  <Import Project="..\Shared.SocketMeister.Testing\Shared.SocketMeister.Testing.projitems" Label="Shared" />
-
-  <Import Project="..\Shared.SocketMeister.Testing.Harness\Shared.SocketMeister.Testing.Harness.projitems" Label="Shared" />
-
-  <Import Project="..\Shared.SocketMeister.Testing.Client\Shared.SocketMeister.Testing.Client.projitems" Label="Shared" />
-
-  <Import Project="..\Shared.SocketMeister.Testing.Server\Shared.SocketMeister.Testing.Server.projitems" Label="Shared" />
-
   <ItemGroup>
     <Compile Update="SocketServerOverview.cs">
       <SubType>UserControl</SubType>
@@ -55,5 +45,15 @@
   <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>
+
+  <Import Project="..\Shared.SocketMeister\Shared.SocketMeister.projitems" Label="Shared" />
+
+  <Import Project="..\Shared.SocketMeister.Testing\Shared.SocketMeister.Testing.projitems" Label="Shared" />
+
+  <Import Project="..\Shared.SocketMeister.Testing.Client\Shared.SocketMeister.Testing.Client.projitems" Label="Shared" />
+
+  <Import Project="..\Shared.SocketMeister.Testing.Harness\Shared.SocketMeister.Testing.Harness.projitems" Label="Shared" />
+
+  <Import Project="..\Shared.SocketMeister.Testing.Server\Shared.SocketMeister.Testing.Server.projitems" Label="Shared" />
 
 </Project>

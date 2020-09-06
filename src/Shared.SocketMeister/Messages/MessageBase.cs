@@ -76,7 +76,7 @@ namespace SocketMeister.Messages
             {
                 if (Parameters[ptr] == null)
                 {
-                    bWriter.Write((Int16)ParameterTypes.Null);
+                    bWriter.Write((short)ParameterTypes.Null);
                     continue;
                 }
 
@@ -84,7 +84,7 @@ namespace SocketMeister.Messages
 
                 if (ParamType == typeof(bool))
                 {
-                    bWriter.Write((Int16)ParameterTypes.BoolParam);
+                    bWriter.Write((short)ParameterTypes.BoolParam);
                     bWriter.Write((bool)Parameters[ptr]);
                 }
                 //else if (ParamType == typeof(Nullable))
@@ -94,60 +94,60 @@ namespace SocketMeister.Messages
                 //}
                 else if (ParamType == typeof(DateTime))
                 {
-                    bWriter.Write((Int16)ParameterTypes.DateTimeParam);
+                    bWriter.Write((short)ParameterTypes.DateTimeParam);
                     bWriter.Write(((DateTime)Parameters[ptr]).Ticks);
                 }
-                else if (ParamType == typeof(Double))
+                else if (ParamType == typeof(double))
                 {
-                    bWriter.Write((Int16)ParameterTypes.DoubleParam);
-                    bWriter.Write((Double)Parameters[ptr]);
+                    bWriter.Write((short)ParameterTypes.DoubleParam);
+                    bWriter.Write((double)Parameters[ptr]);
                 }
-                else if (ParamType == typeof(Int16))
+                else if (ParamType == typeof(short))
                 {
-                    bWriter.Write((Int16)ParameterTypes.Int16Param);
-                    bWriter.Write((Int16)Parameters[ptr]);
+                    bWriter.Write((short)ParameterTypes.Int16Param);
+                    bWriter.Write((short)Parameters[ptr]);
                 }
-                else if (ParamType == typeof(Int32))
+                else if (ParamType == typeof(int))
                 {
-                    bWriter.Write((Int16)ParameterTypes.Int32Param);
-                    bWriter.Write((Int32)Parameters[ptr]);
+                    bWriter.Write((short)ParameterTypes.Int32Param);
+                    bWriter.Write((int)Parameters[ptr]);
                 }
-                else if (ParamType == typeof(Int64))
+                else if (ParamType == typeof(long))
                 {
-                    bWriter.Write((Int16)ParameterTypes.Int64Param);
-                    bWriter.Write((Int64)Parameters[ptr]);
+                    bWriter.Write((short)ParameterTypes.Int64Param);
+                    bWriter.Write((long)Parameters[ptr]);
                 }
-                else if (ParamType == typeof(UInt16))
+                else if (ParamType == typeof(ushort))
                 {
-                    bWriter.Write((Int16)ParameterTypes.UInt16Param);
-                    bWriter.Write((UInt16)Parameters[ptr]);
+                    bWriter.Write((short)ParameterTypes.UInt16Param);
+                    bWriter.Write((ushort)Parameters[ptr]);
                 }
-                else if (ParamType == typeof(UInt32))
+                else if (ParamType == typeof(uint))
                 {
-                    bWriter.Write((Int16)ParameterTypes.UInt32Param);
-                    bWriter.Write((UInt32)Parameters[ptr]);
+                    bWriter.Write((short)ParameterTypes.UInt32Param);
+                    bWriter.Write((uint)Parameters[ptr]);
                 }
-                else if (ParamType == typeof(UInt64))
+                else if (ParamType == typeof(ulong))
                 {
-                    bWriter.Write((Int16)ParameterTypes.UInt64Param);
-                    bWriter.Write((UInt64)Parameters[ptr]);
+                    bWriter.Write((short)ParameterTypes.UInt64Param);
+                    bWriter.Write((ulong)Parameters[ptr]);
                 }
                 else if (ParamType == typeof(string))
                 {
-                    bWriter.Write((Int16)ParameterTypes.StringParam);
+                    bWriter.Write((short)ParameterTypes.StringParam);
                     bWriter.Write((string)Parameters[ptr]);
                 }
-                else if (ParamType == typeof(Byte))
+                else if (ParamType == typeof(byte))
                 {
-                    bWriter.Write((Int16)ParameterTypes.ByteParam);
-                    bWriter.Write((Byte)Parameters[ptr]);
+                    bWriter.Write((short)ParameterTypes.ByteParam);
+                    bWriter.Write((byte)Parameters[ptr]);
                 }
-                else if (ParamType == typeof(Byte[]))
+                else if (ParamType == typeof(byte[]))
                 {
                     //  PREFIX THE DATA WITH AN int OF THE LENGTH, FOLLOWED BY THE DATA (WE NEED THE PREFIX TO DESERIALIZE)
-                    bWriter.Write((Int16)ParameterTypes.ByteArrayParam);
-                    Byte[] ToWrite = (Byte[])Parameters[ptr];
-                    bWriter.Write((Int32)ToWrite.Length);
+                    bWriter.Write((short)ParameterTypes.ByteArrayParam);
+                    byte[] ToWrite = (byte[])Parameters[ptr];
+                    bWriter.Write((int)ToWrite.Length);
                     bWriter.Write(ToWrite);
                 }
                 else

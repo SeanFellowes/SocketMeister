@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Security.Permissions;
 using System.Text;
 using System.Threading;
@@ -181,16 +182,34 @@ namespace SocketMeister.Testing.ControlBus
                 set { lock (_lock) { _controlBuslistenerClient = value; } }
             }
 
-            public void SocketClientStart(int Port)
+            public void SocketClientStart(List<SocketEndPoint> EndPoints, bool EnableCompression)
             {
+                if (EndPoints == null || EndPoints.Count == 0) throw new ArgumentNullException( nameof(EndPoints), "Null or empty list");
                 object[] parms = new object[2];
                 parms[0] = ControlMessage.SocketClientStart;
-                parms[1] = Port;
+
+                //  SERIALIZE EndPoints
+                using (BinaryWriter writer = new BinaryWriter(new MemoryStream()))
+                {
+                    writer.Write(EndPoints.Count);
+                    foreach (SocketEndPoint ep in EndPoints)
+                    {
+                        writer.Write(ep.IPAddress);
+                        writer.Write(ep.Port);
+                    }
+                    writer.Write(EnableCompression);
+                    using (BinaryReader reader = new BinaryReader(writer.BaseStream))
+                    {
+                        reader.BaseStream.Position = 0;
+                        parms[1] = reader.ReadBytes(Convert.ToInt32(reader.BaseStream.Length));
+                    }
+                }
+
                 ControlBusListenerClient.SendRequest(parms);
             }
 
 
-            public void SocketClientStart()
+            public void SocketClientStop()
             {
                 object[] parms = new object[1];
                 parms[0] = ControlMessage.SocketClientStop;

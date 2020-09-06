@@ -29,9 +29,6 @@
   </PropertyGroup>
 
 
-  <Import Project="..\Shared.SocketMeister\Shared.SocketMeister.projitems" Label="Shared" />
-
-
   <ItemGroup>
     <None Remove="Test.settings" />
   </ItemGroup>
@@ -60,5 +57,8 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
+
+
+  <Import Project="..\Shared.SocketMeister\Shared.SocketMeister.projitems" Label="Shared" />
 
 </Project>

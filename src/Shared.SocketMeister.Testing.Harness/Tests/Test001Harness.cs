@@ -27,7 +27,9 @@ namespace SocketMeister.Testing.Tests
 
                 //  CONNECT FixedClient1 TO FixedServer1
                 RaiseTraceEventRaised("Starting SocketClient on port " + Constants.HarnessFixedServer1Port, SeverityType.Information, 1);
-                _harnessController.FixedClient1.Commands.SocketClientStart(Constants.HarnessFixedServer1Port);
+                List<SocketEndPoint> endPoints = new List<SocketEndPoint>();
+                endPoints.Add(new SocketEndPoint("127.0.0.1", Constants.HarnessFixedServer1Port));
+                _harnessController.FixedClient1.Commands.SocketClientStart(endPoints, false);
 
 
                 //ClientController ClientId01 = base.AddClient();
@@ -63,6 +65,11 @@ namespace SocketMeister.Testing.Tests
                     }
                     Thread.Sleep(1000);
                 }
+
+
+                //  STOP THE FIXED CLIENT
+                RaiseTraceEventRaised("Stopping SocketClient", SeverityType.Information, 1);
+                _harnessController.FixedClient1.Commands.SocketClientStop();
 
 
                 //  STOP THE SOCKET SERVER ON FixedServer1 
