@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SocketMeister.Testing.ControlBus;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -66,9 +67,9 @@ namespace SocketMeister.Testing
 
         private void ControlBusClient_RequestReceived(object sender, SocketClient.RequestReceivedEventArgs e)
         {
-            int messageType = Convert.ToInt32(e.Parameters[0]);
+            ControlMessage messageType = (ControlMessage)Convert.ToInt16(e.Parameters[0]);
 
-            if (messageType == ControlBus.ControlMessage.SocketClientStart)
+            if (messageType == ControlMessage.SocketClientStart)
             {
                 List<SocketEndPoint> endPoints = null;
                 bool enableCompression;
@@ -87,10 +88,12 @@ namespace SocketMeister.Testing
                 SocketClientStart(endPoints, enableCompression);
             }
 
-            else if (messageType == ControlBus.ControlMessage.SocketClientStop)
+            else if (messageType == ControlMessage.SocketClientStop)
             {
                 SocketClientStop();
             }
+            else
+                throw new ArgumentOutOfRangeException(nameof(e) + "." + nameof(e.Parameters) + "[0]", "No process defined for " + nameof(e) + "." + nameof(e.Parameters) + "[0] = " + messageType + ".");
         }
 
         private void ControlBusClient_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)

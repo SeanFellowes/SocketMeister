@@ -7,6 +7,7 @@ using SocketMeister.Testing.Tests;
 using System.Threading;
 using SocketMeister;
 using System.ComponentModel;
+using SocketMeister.Testing.ControlBus;
 
 namespace SocketMeister.Testing
 {
@@ -152,8 +153,8 @@ namespace SocketMeister.Testing
 
         private void _controlBusServer_RequestReceived(object sender, SocketServer.RequestReceivedEventArgs e)
         {
-            int r = Convert.ToInt32(e.Parameters[0]);
-            if (r == ControlBus.ControlMessage.HarnessControlBusClientIsConnecting)
+            ControlMessage messageType = (ControlMessage)Convert.ToInt16(e.Parameters[0]);
+            if (messageType == ControlBus.ControlMessage.HarnessControlBusClientIsConnecting)
             {
                 int ClientId = Convert.ToInt32(e.Parameters[1]);
                 if (ClientId == _fixedClient1.ClientId)
@@ -167,15 +168,7 @@ namespace SocketMeister.Testing
                     _fixedServer1.ControlBusListenerClient = e.Client;
                 }
                 else
-                {
-                    ////  ANOTHER CLIENT HAS PHONED HOME. FIND THE CLIENT
-                    //ControlBus.HarnessClientController client = _testClientCollection[ClientId];
-                    //if (client != null)
-                    //{
-                    //    //  ASSIGN THE SocketMeister Server Client to the class. When connecting a test harness client, this value is checked for NOT null (Connected).
-                    //    client.ListenerClient = e.Client;
-                    //}
-                }
+                    throw new ArgumentOutOfRangeException(nameof(e) + "." + nameof(e.Parameters) + "[0]", "No process defined for " + nameof(e) + "." + nameof(e.Parameters) + "[0] = " + messageType + ".");
             }
         }
 

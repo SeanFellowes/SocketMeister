@@ -105,8 +105,7 @@ namespace SocketMeister.Testing.ControlBus
 
         private void ControlBus_RequestReceived(object sender, SocketClient.RequestReceivedEventArgs e)
         {
-            int messageType = Convert.ToInt32(e.Parameters[0]);
-
+            ControlMessage messageType = (ControlMessage)Convert.ToInt16(e.Parameters[0]);
             if (messageType == ControlMessage.SocketServerStart)
             {
                 int Port = Convert.ToInt32(e.Parameters[1]);
