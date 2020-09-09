@@ -171,11 +171,6 @@
             Server sends a poll response when a poll request is received from a client
             </summary>
         </member>
-        <member name="T:SocketMeister.Messages.ParameterTypes">
-            <summary>
-            Data types which are supported for parameters sent with messages.
-            </summary>
-        </member>
         <member name="T:SocketMeister.Messages.RequestResult">
             <summary>
             Result of an attempt to process a request. This is included in the ResponseMessage.
@@ -523,6 +518,30 @@
             <summary>
             Resets all messages which do not have a response, to 'Unsent'. The locks on all items are released so unsent items can be resent when a connection is reestablished.
             </summary>
+        </member>
+        <member name="T:SocketMeister.Serializer">
+            <summary>
+            Serialization routines for SocketMeister
+            </summary>
+        </member>
+        <member name="T:SocketMeister.Serializer.ParameterType">
+            <summary>
+            Data types which are supported for parameters sent with messages.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Serializer.DeserializeParameters(System.Byte[])">
+            <summary>
+            Deserialize a byte array which was serialized using 'byte[] SerializeParameters(object[] Parameters)' from this class.
+            </summary>
+            <param name="Data">Binary array</param>
+            <returns>A list of parameters</returns>
+        </member>
+        <member name="M:SocketMeister.Serializer.DeserializeParameters(System.IO.BinaryReader)">
+            <summary>
+            Deserialize objects embedded with other data. Must have been serialized using 'void SerializeParameters(BinaryWriter BinaryWriter, object[] Parameters)' from this class
+            </summary>
+            <param name="Reader">Open BinaryReader which is queued exactly to the point where the serialized parameters are encoded.</param>
+            <returns>A list of parameters</returns>
         </member>
         <member name="T:SocketMeister.SocketAsyncEventArgsPool">
             <summary>

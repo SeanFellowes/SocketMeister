@@ -48,7 +48,7 @@ namespace SocketMeister.Messages
             using (BinaryWriter writer = new BinaryWriter(new MemoryStream()))
             {
                 writer.Write(_timeoutMilliseconds);
-                SerializeParameters(writer, Parameters);
+                Serializer.SerializeParameters(writer, Parameters);
                 using (BinaryReader reader = new BinaryReader(writer.BaseStream))
                 {
                     reader.BaseStream.Position = 0;
@@ -61,7 +61,7 @@ namespace SocketMeister.Messages
         internal Message(BinaryReader bR) : base(MessageTypes.Message)
         {
             _timeoutMilliseconds = TimeoutMilliseconds;
-            _parameters = DeserializeParameters(bR);
+            _parameters = Serializer.DeserializeParameters(bR);
         }
 
         /// <summary>
@@ -75,7 +75,6 @@ namespace SocketMeister.Messages
                 else return false;
             }
         }
-
 
 
         /// <summary>

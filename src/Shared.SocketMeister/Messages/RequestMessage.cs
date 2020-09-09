@@ -70,7 +70,7 @@ namespace SocketMeister.Messages
                 writer.Write(_requestId);
                 writer.Write(_timeoutMilliseconds);
                 writer.Write(_isLongPolling);
-                SerializeParameters(writer, Parameters);
+                Serializer.SerializeParameters(writer, Parameters);
                 using (BinaryReader reader = new BinaryReader(writer.BaseStream))
                 {
                     reader.BaseStream.Position = 0;
@@ -85,7 +85,7 @@ namespace SocketMeister.Messages
             _requestId = bR.ReadInt64();
             _timeoutMilliseconds = bR.ReadInt32();
             _isLongPolling = bR.ReadBoolean();
-            _parameters = DeserializeParameters(bR);
+            _parameters = Serializer.DeserializeParameters(bR);
 
             //  SETUP TIMEOUT
             _timeout = DateTime.Now.AddMilliseconds(TimeoutMilliseconds);

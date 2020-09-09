@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Security.Permissions;
 using System.Text;
 using System.Threading;
@@ -20,6 +21,8 @@ namespace SocketMeister.Testing.ControlBus
         private SocketServer.Client _controlBuslistenerClient = null;
         private static readonly object _lockMaxClientId = new object();
         private static int _maxClientId = 0;
+
+
 
         public HarnessClientController(int ControlBusClientId) : base(ControlBusClientId)
         {
@@ -180,6 +183,28 @@ namespace SocketMeister.Testing.ControlBus
                     }
                 }
                 set { lock (_lock) { _controlBuslistenerClient = value; } }
+            }
+
+
+            public byte[] ExecuteMethod(string ClassName, string StaticMethodName, object[] Parameters = null)
+            {
+                if (Parameters != null)
+                {
+                    object[] parms = new object[4];
+                    parms[0] = ControlMessage.ExecuteMethod;
+                    parms[1] = ClassName;
+                    parms[2] = StaticMethodName;
+                    parms[3] = Serializer.SerializeParameters(Parameters);
+                    return ControlBusListenerClient.SendRequest(parms);
+                }
+                else
+                {
+                    object[] parms = new object[3];
+                    parms[0] = ControlMessage.ExecuteMethod;
+                    parms[1] = ClassName;
+                    parms[2] = StaticMethodName;
+                    return ControlBusListenerClient.SendRequest(parms);
+                }
             }
 
             public void SocketClientStart(List<SocketEndPoint> EndPoints, bool EnableCompression)

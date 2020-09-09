@@ -116,6 +116,9 @@
     <Compile Include="..\Shared.SocketMeister\PolicyServer.Listener.cs">
       <Link>Shared.SocketMeister\PolicyServer.Listener.cs</Link>
     </Compile>
+    <Compile Include="..\Shared.SocketMeister\Serializer.cs">
+      <Link>Shared.SocketMeister\Serializer.cs</Link>
+    </Compile>
     <Compile Include="..\Shared.SocketMeister\SocketAsyncEventArgsPool.cs">
       <Link>Shared.SocketMeister\SocketAsyncEventArgsPool.cs</Link>
     </Compile>

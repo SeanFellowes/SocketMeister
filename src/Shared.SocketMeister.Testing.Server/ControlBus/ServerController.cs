@@ -11,7 +11,7 @@ namespace SocketMeister.Testing.ControlBus
     /// </summary>
     public class ServerController : IDisposable
     {
-        private readonly ControlBus.ControlBusClient _controlBusClient;
+        private readonly ControlBusClient _controlBusClient;
         private bool _disposed = false;
         private bool _disposeCalled = false;
         private readonly object _lock = new object();
@@ -22,6 +22,10 @@ namespace SocketMeister.Testing.ControlBus
         /// Triggered when connection could not be established, or failed, with the HarnessController. This ServerController should now abort (close)
         /// </summary> 
         public event EventHandler<EventArgs> ControlBusConnectionFailed;
+
+        /// Event raised when an exception occurs
+        /// </summary>
+        public event EventHandler<ExceptionEventArgs> ExceptionRaised;
 
         /// <summary>
         /// Raised when the status of the socket listener changes.
@@ -56,6 +60,7 @@ namespace SocketMeister.Testing.ControlBus
             _controlBusClient.ConnectionFailed += ControlBus_ConnectionFailed;
             _controlBusClient.ControlBusSocketClient.MessageReceived += ControlBus_MessageReceived;
             _controlBusClient.ControlBusSocketClient.RequestReceived += ControlBus_RequestReceived;
+            _controlBusClient.ExceptionRaised += ControlBus_ExceptionRaised;
         }
 
         /// <summary>
@@ -128,6 +133,12 @@ namespace SocketMeister.Testing.ControlBus
             //  CONNECTION TO THE HarnessController COULD NOT BE ESTABLISHED. PARENT FORM (IF THERE IS ONE) SHOULD CLOSE
             ControlBusConnectionFailed?.Invoke(this, e);
         }
+
+        private void ControlBus_ExceptionRaised(object sender, ExceptionEventArgs e)
+        {
+            ExceptionRaised?.Invoke(sender, e);
+        }
+
 
         /// <summary>
         /// 

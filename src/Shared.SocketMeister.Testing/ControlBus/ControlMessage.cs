@@ -17,6 +17,8 @@ namespace SocketMeister.Testing.ControlBus
         SocketClientStart = 200,
         SocketClientStop = 201,
 
+        ExecuteMethod = 1000,
+
         /// <summary>
         /// Test harness sends this to a test client when it wants the client to disconnect and the client app to exit.
         /// </summary>

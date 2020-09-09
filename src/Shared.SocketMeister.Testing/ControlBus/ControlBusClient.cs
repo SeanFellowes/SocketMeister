@@ -29,6 +29,11 @@ namespace SocketMeister.Testing.ControlBus
         /// </summary> 
         public event EventHandler<EventArgs> ConnectionFailed;
 
+        /// Event raised when an exception occurs
+        /// </summary>
+        public event EventHandler<ExceptionEventArgs> ExceptionRaised;
+
+
         public ControlBusClient(ControlBusClientType ControlBusClientType, int ControlBusClientId, string ControlBusServerIPAddress, int ControlBusPort)
         {
             _controlBusClientType = ControlBusClientType;
@@ -111,15 +116,23 @@ namespace SocketMeister.Testing.ControlBus
 
         private void ControlBus_ConnectionStatusChanged(object sender, SocketClient.ConnectionStatusChangedEventArgs e)
         {
-            //  SEND A CONTROL MESSAGE TO THE SERVER
-            if (e.Status == SocketClient.ConnectionStatuses.Connected)
+            try
             {
-                object[] parms = new object[2];
-                parms[0] = ControlMessage.HarnessControlBusClientIsConnecting;
-                parms[1] = ControlBusClientId;
-                _controlBusSocketClient.SendRequest(parms);
+                //  SEND A CONTROL MESSAGE TO THE SERVER
+                if (e.Status == SocketClient.ConnectionStatuses.Connected)
+                {
+                    object[] parms = new object[2];
+                    parms[0] = ControlMessage.HarnessControlBusClientIsConnecting;
+                    parms[1] = ControlBusClientId;
+                    _controlBusSocketClient.SendRequest(parms);
+                }
+                ConnectionStatusChanged?.Invoke(this, e);
             }
-            ConnectionStatusChanged?.Invoke(this, e);
+            catch(Exception ex)
+            {
+                ExceptionRaised?.Invoke(this, new ExceptionEventArgs(ex, 12000));
+                throw;
+            }
         }
 
 

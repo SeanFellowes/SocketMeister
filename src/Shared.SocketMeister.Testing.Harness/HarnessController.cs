@@ -26,9 +26,6 @@ namespace SocketMeister.Testing
         private ITestOnHarness _currentTest = null;
         private ExecuteModes _executeMode = ExecuteModes.Stopped;
         private static readonly object _lock = new object();
-        private readonly ControlBus.HarnessClientController _fixedClient1;
-        private readonly ControlBus.HarnessServerController _fixedServer1;
-        private readonly PolicyServer _policyServer;
         private readonly List<ITestOnHarness> _tests = new List<ITestOnHarness>();
 
         /// <summary>
@@ -60,18 +57,20 @@ namespace SocketMeister.Testing
             }
 
             //  START CONTROL BUS LISTENER
-            ControlBusServer = new ControlBus.ControlBusServer();
+            ControlBusServer = new ControlBusServer();
             ControlBusServer.RequestReceived += _controlBusServer_RequestReceived;
 
             //  SETUP POLICY SERVER
-            _policyServer = new PolicyServer();
-            _policyServer.TraceEventRaised += PolicyServer_TraceEventRaised;
+            PolicyServer = new PolicyServer();
+            PolicyServer.TraceEventRaised += PolicyServer_TraceEventRaised;
 
             //  SETUP FIXED SERVER
-            _fixedServer1 = new ControlBus.HarnessServerController(int.MaxValue - 1, Constants.ControlBusServerIPAddress);
+            FixedServer1 = new HarnessServerController(int.MaxValue - 1, Constants.ControlBusServerIPAddress);
+            FixedServer1.ExceptionRaised += fixedServer1_ExceptionRaised;
 
             //  SETUP FIXED CLIENT
-            _fixedClient1 = new ControlBus.HarnessClientController(int.MaxValue);
+            FixedClient1 = new HarnessClientController(int.MaxValue);
+            FixedClient1.ExceptionRaised += fixedClient1_ExceptionRaised;
 
 
             //new Thread(delegate ()
@@ -89,6 +88,16 @@ namespace SocketMeister.Testing
             //}).Start();
         }
 
+        private void fixedClient1_ExceptionRaised(object sender, ExceptionEventArgs e)
+        {
+            TraceEventRaised?.Invoke(sender, new TraceEventArgs(e.Exception, e.EventId));
+        }
+
+        private void fixedServer1_ExceptionRaised(object sender, ExceptionEventArgs e)
+        {
+            TraceEventRaised?.Invoke(sender, new TraceEventArgs(e.Exception, e.EventId));
+        }
+
         public void Dispose()
         {
             Dispose(true);
@@ -101,11 +110,11 @@ namespace SocketMeister.Testing
             if (disposing)
             {
                 _disposeCalled = true;
-                if (_fixedClient1 != null)
+                if (FixedClient1 != null)
                 {
                     try
                     {
-                        _fixedClient1.Stop();
+                        FixedClient1.Stop();
                     }
                     catch { }
                 }
@@ -121,25 +130,25 @@ namespace SocketMeister.Testing
                     catch { }
                 }
 
-                if (_policyServer != null)
+                if (PolicyServer != null)
                 {
                     try
                     {
-                        if (_policyServer.ListenerState == SocketServerStatus.Started)
+                        if (PolicyServer.ListenerState == SocketServerStatus.Started)
                         {
-                            _policyServer.Stop();
+                            PolicyServer.Stop();
                         }
-                        _policyServer.TraceEventRaised -= PolicyServer_TraceEventRaised;
-                        _policyServer.Dispose();
+                        PolicyServer.TraceEventRaised -= PolicyServer_TraceEventRaised;
+                        PolicyServer.Dispose();
                     }
                     catch { }
                 }
 
-                if (_fixedServer1 != null)
+                if (FixedServer1 != null)
                 {
                     try
                     {
-                        _fixedServer1.Dispose();
+                        FixedServer1.Dispose();
                     }
                     catch { }
                 }
@@ -154,34 +163,34 @@ namespace SocketMeister.Testing
         private void _controlBusServer_RequestReceived(object sender, SocketServer.RequestReceivedEventArgs e)
         {
             ControlMessage messageType = (ControlMessage)Convert.ToInt16(e.Parameters[0]);
-            if (messageType == ControlBus.ControlMessage.HarnessControlBusClientIsConnecting)
+            if (messageType == ControlMessage.HarnessControlBusClientIsConnecting)
             {
                 int ClientId = Convert.ToInt32(e.Parameters[1]);
-                if (ClientId == _fixedClient1.ClientId)
+                if (ClientId == FixedClient1.ClientId)
                 {
                     //  FIXED CLIENT HAS PHONED HOME
-                    _fixedClient1.ControlBusListenerClient = e.Client;
+                    FixedClient1.ControlBusListenerClient = e.Client;
                 }
-                else if (ClientId == _fixedServer1.ClientId)
+                else if (ClientId == FixedServer1.ClientId)
                 {
                     //  FIXED SERVER1 HAS PHONED HOME
-                    _fixedServer1.ControlBusListenerClient = e.Client;
+                    FixedServer1.ControlBusListenerClient = e.Client;
                 }
                 else
                     throw new ArgumentOutOfRangeException(nameof(e) + "." + nameof(e.Parameters) + "[0]", "No process defined for " + nameof(e) + "." + nameof(e.Parameters) + "[0] = " + messageType + ".");
             }
         }
 
-        public ControlBus.ControlBusServer ControlBusServer { get; }
+        public ControlBusServer ControlBusServer { get; }
 
         private int CurrentTestPtr {  get {  lock (_lock) { return _currentTestPtr; } } }
 
         /// <summary>
         /// In DEBUG, this is attached to this test harness for easy debugging. In RELEASE, a seperate client application is launched.
         /// </summary>
-        public ControlBus.HarnessClientController FixedClient1 {  get { return _fixedClient1; } }
+        public HarnessClientController FixedClient1 { get; } 
 
-        public ControlBus.HarnessServerController FixedServer1 {  get { return _fixedServer1; } }
+        public HarnessServerController FixedServer1 { get; } 
 
 
         private void AddTest(Type t)
@@ -257,14 +266,14 @@ namespace SocketMeister.Testing
         public void Start()
         {
             ControlBusServer.Start();
-            _policyServer.Start();
+            PolicyServer.Start();
         }
 
 
         /// <summary>
         /// Policy Server for Silverlight Clients
         /// </summary>
-        public PolicyServer PolicyServer {  get { return _policyServer; } }
+        public PolicyServer PolicyServer { get; }
 
         /// <summary>
         /// Suite of tests which are available;

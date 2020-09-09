@@ -31,6 +31,8 @@ namespace SocketMeister.Testing.Tests
                 endPoints.Add(new SocketEndPoint("127.0.0.1", Constants.HarnessFixedServer1Port));
                 _harnessController.FixedClient1.Commands.SocketClientStart(endPoints, false);
 
+                Test001Step001();
+
 
                 //ClientController ClientId01 = base.AddClient();
 
@@ -92,6 +94,14 @@ namespace SocketMeister.Testing.Tests
                 //  SEAN SEAN SEAN - ADD THIS (OR SOMETHING SIMILAR) BACK IN
                 //base.TestHarness.Clients.DisconnectClients();
             }
+        }
+
+
+        internal void Test001Step001()
+        {
+            //  SEND A 1KB FILE
+            byte[] rVal = _harnessController.FixedClient1.Commands.ExecuteMethod("Test001", "Test001Step001");
+            
         }
 
 
