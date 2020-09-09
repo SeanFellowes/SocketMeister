@@ -34,6 +34,7 @@ namespace SocketMeister.Test
 
             _harnessController.ControlBusServer.ListenerStateChanged += ControlBusServer_ListenerStateChanged;
             _harnessController.ControlBusServer.ClientsChanged += ControlBusServer_ClientsChanged;
+            _harnessController.TraceEventRaised += _harnessController_TraceEventRaised;
 
             //  REGISTER FOR EVENTS FROM TESTS
             foreach (ITestOnHarness test in _harnessController.Tests)
@@ -60,6 +61,13 @@ namespace SocketMeister.Test
 
             //  START
             _harnessController.Start();
+        }
+
+        private void _harnessController_TraceEventRaised(object sender, TraceEventArgs e)
+        {
+            if (sender == _harnessController.FixedServer1) InsertListboxItem("FixedServer1", e);
+            else if (sender == _harnessController.FixedClient1) InsertListboxItem("FixedClient1", e);
+            else InsertListboxItem("Harness", e);
         }
 
         private void _harnessController_ExecuteModeChanged(object sender, EventArgs e)

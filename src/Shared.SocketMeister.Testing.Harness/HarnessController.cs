@@ -267,6 +267,8 @@ namespace SocketMeister.Testing
         {
             ControlBusServer.Start();
             PolicyServer.Start();
+            FixedServer1.Start();
+            FixedClient1.Start();
         }
 
 

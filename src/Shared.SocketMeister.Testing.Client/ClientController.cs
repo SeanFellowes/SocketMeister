@@ -136,9 +136,13 @@ namespace SocketMeister.Testing
 
         private void _controlBusClient_ExceptionRaised(object sender, ExceptionEventArgs e)
         {
-            ExceptionRaised?.Invoke(sender, e);
+            ExceptionRaised?.Invoke(this, e);
         }
 
+        public void Start()
+        {
+            _controlBusClient.Start();
+        }
 
         /// <summary>
         /// Attempts to cleanly disconnect the control bus client

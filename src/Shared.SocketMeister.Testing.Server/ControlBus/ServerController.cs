@@ -136,8 +136,15 @@ namespace SocketMeister.Testing.ControlBus
 
         private void ControlBus_ExceptionRaised(object sender, ExceptionEventArgs e)
         {
-            ExceptionRaised?.Invoke(sender, e);
+            ExceptionRaised?.Invoke(this, e);
         }
+
+
+        public void Start()
+        {
+            _controlBusClient.Start();
+        }
+
 
 
         /// <summary>
