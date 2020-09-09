@@ -13,6 +13,7 @@ namespace SocketMeister.Testing
         string Description { get; }
         int Id { get; }
         object Lock { get; }
+        string Name { get; }
 
 
     }

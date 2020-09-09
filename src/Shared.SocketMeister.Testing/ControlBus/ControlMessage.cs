@@ -4,25 +4,25 @@ using System.Text;
 
 namespace SocketMeister.Testing.ControlBus
 {
-    public enum ControlMessage
+    public class ControlMessage
     {
         /// <summary>
         /// A harness control bus socket client (ServerController or ClientController) is connecting to the HarnessController.
         /// </summary>
-        HarnessControlBusClientIsConnecting = 1,
+        public static readonly short HarnessControlBusClientIsConnecting = 1;
 
-        SocketServerStart = 100,
-        SocketServerStop = 101,
+        public static readonly short SocketServerStart = 100;
+        public static readonly short SocketServerStop = 101;
 
-        SocketClientStart = 200,
-        SocketClientStop = 201,
+        public static readonly short SocketClientStart = 200;
+        public static readonly short SocketClientStop = 201;
 
-        ExecuteMethod = 1000,
+        public static readonly short ExecuteMethod = 1000;
 
         /// <summary>
         /// Test harness sends this to a test client when it wants the client to disconnect and the client app to exit.
         /// </summary>
-        ExitClient = short.MaxValue
+        public static readonly short ExitClient = short.MaxValue;
     }
 
 }

@@ -33,7 +33,7 @@ namespace SocketMeister.Test
         }
 
         private int _port = 4502;
-        private int _clientCount = 0;
+        private readonly object _lock = new object();
         private SocketServerTypes _socketServerType = SocketServerTypes.SocketServer;
 
         public SocketServerOverview()
@@ -43,29 +43,17 @@ namespace SocketMeister.Test
         }
 
 
-        public int ClientCount
-        {
-            get
-            {
-                return _clientCount;
-            }
-            set
-            {
-                _clientCount = value;
-                ClientCountLabel.Text = value.ToString();
-            }
-        }
 
 
         public int Port
         {
             get
             {
-                return _port;
+                lock (_lock) { return _port; }
             }
             set
             {
-                _port = value;
+                lock (_lock) { _port = value; }
                 RefreshUserInterface();
             }
         }
@@ -74,67 +62,74 @@ namespace SocketMeister.Test
         {
             get
             {
-                return _socketServerType;
+                lock (_lock) { return _socketServerType; }
             }
             set
             {
-                _socketServerType = value;
+                lock (_lock) { _socketServerType = value; }
                 RefreshUserInterface();
             }
         }
 
-
-
-        public void SetListenerState(SocketServerStatus Status)
+        public void SetClientCount(int ClientCount)
         {
-            try
+            if (InvokeRequired) Invoke(new MethodInvoker(delegate { SetClientCount(ClientCount); }));
+            else
             {
-                if (InvokeRequired) Invoke(new MethodInvoker(delegate { SetListenerState(Status); }));
-                else
-                {
-                    if (Status == SocketServerStatus.Started)
-                    {
-                        LabelStatus.Text = "Started";
-                        StatusIndicator.BackColor = Color.DarkGreen;
-                        this.Cursor = Cursors.Default;
-                    }
-                    else if (Status == SocketServerStatus.Starting)
-                    {
-                        LabelStatus.Text = "Starting...";
-                        StatusIndicator.BackColor = Color.Yellow;
-                    }
-                    else if (Status == SocketServerStatus.Stopped)
-                    {
-                        LabelStatus.Text = "Stopped";
-                        StatusIndicator.BackColor = Color.Red;
-                        this.Cursor = Cursors.Default;
-                    }
-                    else
-                    {
-                        LabelStatus.Text = "Stopping...";
-                        StatusIndicator.BackColor = Color.DarkOrange;
-                    }
-                }
+                ClientCountLabel.Text = ClientCount.ToString();
             }
-            catch { }
         }
 
+
+        public void SetListenerState(object sender, SocketServer.SocketServerStatusChangedEventArgs e)
+        {
+            if (InvokeRequired) Invoke(new MethodInvoker(delegate { SetListenerState(sender, e); }));
+            else
+            {
+                if (e.Status == SocketServerStatus.Started)
+                {
+                    LabelStatus.Text = "Started";
+                    StatusIndicator.BackColor = Color.DarkGreen;
+                    this.Cursor = Cursors.Default;
+                }
+                else if (e.Status == SocketServerStatus.Starting)
+                {
+                    LabelStatus.Text = "Starting...";
+                    StatusIndicator.BackColor = Color.Yellow;
+                }
+                else if (e.Status == SocketServerStatus.Stopped)
+                {
+                    LabelStatus.Text = "Stopped";
+                    StatusIndicator.BackColor = Color.Red;
+                    this.Cursor = Cursors.Default;
+                }
+                else
+                {
+                    LabelStatus.Text = "Stopping...";
+                    StatusIndicator.BackColor = Color.DarkOrange;
+                }
+            }
+        }
 
 
 
         private void RefreshUserInterface()
         {
-            if (_socketServerType == SocketServerTypes.PolicyServer)
-            {
-                LabelPort.Text = "Policy server on port 943";
-                ClientCountIcon.Visible = false;
-                ClientCountLabel.Visible = false;
-            }
+            if (InvokeRequired) Invoke(new MethodInvoker(delegate { RefreshUserInterface(); }));
             else
             {
-                LabelPort.Text = "Socket server on port " + _port.ToString();
-                ClientCountIcon.Visible = true;
-                ClientCountLabel.Visible = true;
+                if (SocketServerType == SocketServerTypes.PolicyServer)
+                {
+                    LabelPort.Text = "Policy server on port 943";
+                    ClientCountIcon.Visible = false;
+                    ClientCountLabel.Visible = false;
+                }
+                else
+                {
+                    LabelPort.Text = "Socket server on port " + _port.ToString();
+                    ClientCountIcon.Visible = true;
+                    ClientCountLabel.Visible = true;
+                }
             }
         }
 

@@ -90,12 +90,12 @@ namespace SocketMeister.Testing
 
         private void fixedClient1_ExceptionRaised(object sender, ExceptionEventArgs e)
         {
-            TraceEventRaised?.Invoke(sender, new TraceEventArgs(e.Exception, e.EventId));
+            TraceEventRaised?.Invoke(sender, new TraceEventArgs(e.Exception, e.EventId, nameof(FixedClient1)));
         }
 
         private void fixedServer1_ExceptionRaised(object sender, ExceptionEventArgs e)
         {
-            TraceEventRaised?.Invoke(sender, new TraceEventArgs(e.Exception, e.EventId));
+            TraceEventRaised?.Invoke(sender, new TraceEventArgs(e.Exception, e.EventId, nameof(FixedServer1)));
         }
 
         public void Dispose()
@@ -162,7 +162,7 @@ namespace SocketMeister.Testing
 
         private void _controlBusServer_RequestReceived(object sender, SocketServer.RequestReceivedEventArgs e)
         {
-            ControlMessage messageType = (ControlMessage)Convert.ToInt16(e.Parameters[0]);
+            short messageType = (short)e.Parameters[0];
             if (messageType == ControlMessage.HarnessControlBusClientIsConnecting)
             {
                 int ClientId = Convert.ToInt32(e.Parameters[1]);

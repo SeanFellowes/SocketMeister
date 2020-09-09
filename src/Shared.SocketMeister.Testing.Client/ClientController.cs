@@ -71,7 +71,7 @@ namespace SocketMeister.Testing
 
         private void ControlBusClient_RequestReceived(object sender, SocketClient.RequestReceivedEventArgs e)
         {
-            ControlMessage messageType = (ControlMessage)Convert.ToInt16(e.Parameters[0]);
+            short messageType = Convert.ToInt16(e.Parameters[0]);
 
             if (messageType == ControlMessage.SocketClientStart)
             {

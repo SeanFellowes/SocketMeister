@@ -91,13 +91,13 @@ namespace SocketMeister.Testing.Tests
         public void RaiseTraceEventRaised(string message, SeverityType severity, int eventId)
         {
             if (Parent == null) throw new NullReferenceException("Base class property 'Parent'has not been set");
-            TraceEventRaised?.Invoke(Parent, new TraceEventArgs(message, severity, eventId));
+            TraceEventRaised?.Invoke(Parent, new TraceEventArgs(message, severity, eventId, base.Name));
         }
 
         public void RaiseTraceEventRaised(Exception ex, int eventId)
         {
             if (Parent == null) throw new NullReferenceException("Base class property 'Parent'has not been set");
-            TraceEventRaised?.Invoke(Parent, new TraceEventArgs(ex, eventId));
+            TraceEventRaised?.Invoke(Parent, new TraceEventArgs(ex, eventId, base.Name));
         }
 
 

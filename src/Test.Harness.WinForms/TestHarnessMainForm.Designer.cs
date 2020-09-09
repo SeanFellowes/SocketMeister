@@ -100,7 +100,6 @@
             // ControlPolicyServer
             // 
             this.ControlPolicyServer.BackColor = System.Drawing.Color.FloralWhite;
-            this.ControlPolicyServer.ClientCount = 0;
             this.ControlPolicyServer.Location = new System.Drawing.Point(406, 47);
             this.ControlPolicyServer.Margin = new System.Windows.Forms.Padding(2);
             this.ControlPolicyServer.Name = "ControlPolicyServer";
@@ -111,7 +110,6 @@
             // 
             // ControlServer
             // 
-            this.ControlServer.ClientCount = 0;
             this.ControlServer.Location = new System.Drawing.Point(4, 47);
             this.ControlServer.Margin = new System.Windows.Forms.Padding(2);
             this.ControlServer.Name = "ControlServer";
@@ -178,7 +176,6 @@
             // TestServer4
             // 
             this.TestServer4.BackColor = System.Drawing.Color.Transparent;
-            this.TestServer4.ClientCount = 0;
             this.TestServer4.Location = new System.Drawing.Point(358, 82);
             this.TestServer4.Margin = new System.Windows.Forms.Padding(2);
             this.TestServer4.Name = "TestServer4";
@@ -190,7 +187,6 @@
             // TestServer3
             // 
             this.TestServer3.BackColor = System.Drawing.Color.Honeydew;
-            this.TestServer3.ClientCount = 0;
             this.TestServer3.Location = new System.Drawing.Point(358, 47);
             this.TestServer3.Margin = new System.Windows.Forms.Padding(2);
             this.TestServer3.Name = "TestServer3";
@@ -202,7 +198,6 @@
             // TestServer2
             // 
             this.TestServer2.BackColor = System.Drawing.Color.Honeydew;
-            this.TestServer2.ClientCount = 0;
             this.TestServer2.Location = new System.Drawing.Point(4, 82);
             this.TestServer2.Margin = new System.Windows.Forms.Padding(2);
             this.TestServer2.Name = "TestServer2";
@@ -213,7 +208,6 @@
             // 
             // TestServer1
             // 
-            this.TestServer1.ClientCount = 0;
             this.TestServer1.Location = new System.Drawing.Point(4, 47);
             this.TestServer1.Margin = new System.Windows.Forms.Padding(2);
             this.TestServer1.Name = "TestServer1";

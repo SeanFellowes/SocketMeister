@@ -27,6 +27,11 @@ namespace SocketMeister.Testing.Tests
 
         public object Lock { get { return _lock; } }
 
+        /// <summary>
+        /// Short name for the test (e.g. Test001)
+        /// </summary>
+        public string Name {  get { return "Test" + _id.ToString("000"); } }
+
         internal T Parent
         {
             get { lock (_lock) { return _parent; } }
