@@ -34,6 +34,18 @@ namespace SocketMeister.Testing.ControlBus
         public event EventHandler<ExceptionEventArgs> ExceptionRaised;
 
 
+        /// <summary>
+        /// Event raised whenever a message is received from the server.
+        /// </summary>
+        public event EventHandler<SocketClient.MessageReceivedEventArgs> MessageReceived;
+
+        /// <summary>
+        /// Raised when a request message is received from the server. A response can be provided which will be returned to the server.
+        /// </summary>
+        public event EventHandler<SocketClient.RequestReceivedEventArgs> RequestReceived;
+
+
+
         public ControlBusClient(ControlBusClientType ControlBusClientType, int ControlBusClientId, string ControlBusServerIPAddress, int ControlBusPort)
         {
             _controlBusClientType = ControlBusClientType;
@@ -43,13 +55,13 @@ namespace SocketMeister.Testing.ControlBus
 
         }
 
-        public SocketClient ControlBusSocketClient
+        private SocketClient ControlBusSocketClient
         {
             get 
             { 
                 lock (_lock) 
                 {
-                    if (_controlBusSocketClient == null) Start();
+                    if (_controlBusSocketClient == null) throw new ApplicationException("Method Start() must be successfully called first.");
                     return _controlBusSocketClient; 
                 } 
             }
@@ -77,12 +89,6 @@ namespace SocketMeister.Testing.ControlBus
         }
 
 
-        private void ControlBus_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
-        {
-            //  MESSAGES ARE RECEIVED ELSEWHERE.
-        }
-
-
         /// <summary>
         /// The connection status of the socket client
         /// </summary>
@@ -92,34 +98,16 @@ namespace SocketMeister.Testing.ControlBus
         }
 
 
-        private void ControlBus_ConnectionStatusChanged(object sender, SocketClient.ConnectionStatusChangedEventArgs e)
-        {
-            try
-            {
-                //  SEND A CONTROL MESSAGE TO THE SERVER
-                if (e.Status == SocketClient.ConnectionStatuses.Connected)
-                {
-                    object[] parms = new object[2];
-                    parms[0] = ControlMessage.HarnessControlBusClientIsConnecting;
-                    parms[1] = ControlBusClientId;
-                    ControlBusSocketClient.SendRequest(parms);
-                }
-                ConnectionStatusChanged?.Invoke(this, e);
-            }
-            catch(Exception ex)
-            {
-                ExceptionRaised?.Invoke(this, new ExceptionEventArgs(ex, 12000));
-                throw;
-            }
-        }
 
         public void Start()
         {
             //  CONNECT TO THE TEST HARNESS ON THE CONTROL CHANNEL AT PORT Constants.HarnessControlBusPort. THE CONTROL CHANEL ALLOWS COMMUNICATION BACK AND FORTH FROM TEST HARNESS TO CLIENT
             List<SocketEndPoint> endPoints = new List<SocketEndPoint>() { new SocketEndPoint(ControlBusServerIPAddress, ControlBusPort) };
             ControlBusSocketClient = new SocketClient(endPoints, true);
-            ControlBusSocketClient.ConnectionStatusChanged += ControlBus_ConnectionStatusChanged;
-            ControlBusSocketClient.MessageReceived += ControlBus_MessageReceived;
+            ControlBusSocketClient.ConnectionStatusChanged += ControlBusSocketClient_ConnectionStatusChanged;
+            ControlBusSocketClient.ExceptionRaised += ControlBusSocketClient_ExceptionRaised;
+            ControlBusSocketClient.MessageReceived += ControlBusSocketClient_MessageReceived;
+            ControlBusSocketClient.RequestReceived += ControlBusSocketClient_RequestReceived;
 
             //Thread bgFailIfDisconnected = new Thread(new ThreadStart(delegate
             //{
@@ -145,6 +133,43 @@ namespace SocketMeister.Testing.ControlBus
             //}));
             //bgFailIfDisconnected.IsBackground = true;
             //bgFailIfDisconnected.Start();
+        }
+
+        private void ControlBusSocketClient_RequestReceived(object sender, SocketClient.RequestReceivedEventArgs e)
+        {
+            RequestReceived?.Invoke(this, e);
+        }
+
+        private void ControlBusSocketClient_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
+        {
+            MessageReceived?.Invoke(this, e);
+        }
+
+        private void ControlBusSocketClient_ExceptionRaised(object sender, ExceptionEventArgs e)
+        {
+            ExceptionRaised?.Invoke(this, e);
+        }
+
+
+        private void ControlBusSocketClient_ConnectionStatusChanged(object sender, SocketClient.ConnectionStatusChangedEventArgs e)
+        {
+            try
+            {
+                //  SEND A CONTROL MESSAGE TO THE SERVER
+                if (e.Status == SocketClient.ConnectionStatuses.Connected)
+                {
+                    object[] parms = new object[2];
+                    parms[0] = ControlMessage.HarnessControlBusClientIsConnecting;
+                    parms[1] = ControlBusClientId;
+                    ControlBusSocketClient.SendRequest(parms);
+                }
+                ConnectionStatusChanged?.Invoke(this, e);
+            }
+            catch (Exception ex)
+            {
+                ExceptionRaised?.Invoke(this, new ExceptionEventArgs(ex, 12000));
+                throw;
+            }
         }
 
 

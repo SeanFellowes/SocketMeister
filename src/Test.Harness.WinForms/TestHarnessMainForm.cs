@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 using SocketMeister.Testing;
 
@@ -61,8 +62,6 @@ namespace SocketMeister.Test
 
             Setup();
 
-            //  START
-            HarnessController.Start();
         }
 
         private void FormMain_Load(object sender, EventArgs e)
@@ -77,7 +76,13 @@ namespace SocketMeister.Test
             else
                 this.Width = Convert.ToInt32(Screen.PrimaryScreen.WorkingArea.Width * .5);
 
-            //testHarness.Initialize();
+
+            //  START HARNESS
+            new Thread(delegate ()
+            {
+                Thread.Sleep(5000);
+                HarnessController.Start();
+            }).Start();
         }
 
         private void FormMain_FormClosing(object sender, FormClosingEventArgs e)

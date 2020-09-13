@@ -57,10 +57,10 @@ namespace SocketMeister.Testing.ControlBus
         {
             //  CONNECT TO THE HarnessController
             _controlBusClient = new ControlBusClient(ControlBusClientType.ClientController, ControlBusClientId, ControlBusServerIPAddress, Constants.ControlBusPort);
-            _controlBusClient.ConnectionFailed += ControlBus_ConnectionFailed;
-            _controlBusClient.ControlBusSocketClient.MessageReceived += ControlBus_MessageReceived;
-            _controlBusClient.ControlBusSocketClient.RequestReceived += ControlBus_RequestReceived;
-            _controlBusClient.ExceptionRaised += ControlBus_ExceptionRaised;
+            _controlBusClient.ConnectionFailed += ControlBusClient_ConnectionFailed;
+            _controlBusClient.MessageReceived += ControlBusClient_MessageReceived;
+            _controlBusClient.RequestReceived += ControlBusClient_RequestReceived;
+            _controlBusClient.ExceptionRaised += ControlBusClient_ExceptionRaised;
         }
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace SocketMeister.Testing.ControlBus
 
 
 
-        private void ControlBus_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
+        private void ControlBusClient_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
         {
             int r = Convert.ToInt32(e.Parameters[0]);
 
@@ -108,7 +108,7 @@ namespace SocketMeister.Testing.ControlBus
             //}
         }
 
-        private void ControlBus_RequestReceived(object sender, SocketClient.RequestReceivedEventArgs e)
+        private void ControlBusClient_RequestReceived(object sender, SocketClient.RequestReceivedEventArgs e)
         {
             short messageType = (short)e.Parameters[0];
             if (messageType == ControlMessage.SocketServerStart)
@@ -128,13 +128,13 @@ namespace SocketMeister.Testing.ControlBus
         }
 
 
-        private void ControlBus_ConnectionFailed(object sender, EventArgs e)
+        private void ControlBusClient_ConnectionFailed(object sender, EventArgs e)
         {
             //  CONNECTION TO THE HarnessController COULD NOT BE ESTABLISHED. PARENT FORM (IF THERE IS ONE) SHOULD CLOSE
             ControlBusConnectionFailed?.Invoke(this, e);
         }
 
-        private void ControlBus_ExceptionRaised(object sender, ExceptionEventArgs e)
+        private void ControlBusClient_ExceptionRaised(object sender, ExceptionEventArgs e)
         {
             ExceptionRaised?.Invoke(this, e);
         }
