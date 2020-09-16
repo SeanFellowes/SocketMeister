@@ -550,8 +550,6 @@ namespace SocketMeister
         }
 
 
-
-
         /// <summary>
         /// Send a request to the server and wait for a response. 
         /// </summary>

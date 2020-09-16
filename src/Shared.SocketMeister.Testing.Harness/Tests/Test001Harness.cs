@@ -100,7 +100,7 @@ namespace SocketMeister.Testing.Tests
         internal void Test001Step001()
         {
             //  SEND A 1KB FILE
-            byte[] rVal = _harnessController.FixedClient1.Commands.ExecuteMethod("Test001", "Test001Step001");
+            byte[] rVal = _harnessController.FixedClient1.Commands.ExecuteMethod("Test001Client", "Test001Step001");
             
         }
 

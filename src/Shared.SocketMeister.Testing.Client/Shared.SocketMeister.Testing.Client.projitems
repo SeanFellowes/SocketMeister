@@ -6,13 +6,17 @@
     <SharedGUID>f31e9834-6fea-4178-89bd-f1e3da8447a0</SharedGUID>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
-    <Import_RootNamespace>Shared.SocketMeister.Testing.Client</Import_RootNamespace>
+    <Import_RootNamespace>SocketMeister.Testing</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)ControlBus\CommandClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ClientController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\ITestOnClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\Test000Client.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\Test001Client.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\TestOnClientBase.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)ControlBus\" />
   </ItemGroup>
 </Project>

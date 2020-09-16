@@ -10,7 +10,13 @@ namespace SocketMeister.Testing.Tests
             base.Parent = this;   
         }
 
-        
+
+        internal static void Test001Step001(ClientController Controller)
+        {
+            return;
+        }
+
+
 
 
     }

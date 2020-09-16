@@ -15,6 +15,7 @@ namespace SocketMeister.Testing.ControlBus
         private bool _disposed = false;
         private bool _disposeCalled = false;
         private readonly object _lock = new object();
+        private static OpenTransactions _openTransactions = new OpenTransactions();
         private int _port;
         private SocketServer _socketServer = null;
 
@@ -90,6 +91,9 @@ namespace SocketMeister.Testing.ControlBus
                 _disposed = true;
             }
         }
+
+
+        internal OpenTransactions OpenMessages {  get { return _openTransactions; } }
 
 
 
@@ -184,6 +188,7 @@ namespace SocketMeister.Testing.ControlBus
             //Thread bgStartSocketServer = new Thread(new ThreadStart(delegate
             //{
             this.Port = Port;
+            _openTransactions.Clear();
             _socketServer = new SocketServer(Port, true);
             _socketServer.ClientsChanged += SocketServer_ClientsChanged;
             _socketServer.ListenerStateChanged += SocketServer_ListenerStateChanged;
@@ -212,6 +217,7 @@ namespace SocketMeister.Testing.ControlBus
             {
                 _socketServer.Stop();
             }
+            _openTransactions.Clear();
         }
 
         private void SocketServer_MessageReceived(object sender, SocketServer.MessageReceivedEventArgs e)
@@ -221,6 +227,16 @@ namespace SocketMeister.Testing.ControlBus
 
         private void SocketServer_RequestReceived(object sender, SocketServer.RequestReceivedEventArgs e)
         {
+            int TransactionId = (int)e.Parameters[0];
+            OpenTransaction trans = _openTransactions[TransactionId];
+            if (trans != null)
+            {
+                trans.UserToken = e.Parameters;
+                trans.IsTransacted = true;
+                _openTransactions.Remove(trans);
+            }
+
+            //  RAISE EVENT
             RequestReceived?.Invoke(sender, e);
         }
 

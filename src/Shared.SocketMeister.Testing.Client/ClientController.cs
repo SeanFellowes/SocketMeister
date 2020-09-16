@@ -178,22 +178,31 @@ namespace SocketMeister.Testing
             if (thisObjectType == null) throw new ArgumentOutOfRangeException(nameof(ClassName), "Class '" + ClassName + "' does not exist in the assembly '" + Assembly.GetExecutingAssembly().GetName() + "'");
 
             //  GET THE METHOD. IT MUST BE STATIC
-            MethodInfo getMethod = thisObjectType.GetMethod(StaticMethodName, BindingFlags.Static);
+            MethodInfo getMethod = thisObjectType.GetMethod(StaticMethodName, BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public );
             if (getMethod == null)
             {
                 throw new ArgumentOutOfRangeException(nameof(StaticMethodName), "Method '" + StaticMethodName + "' does not exist or is not static, in the class '" + ClassName + "'.");
             }
 
             //  PARAMETERS MUST INCLUDE THIS ClientController INSTANCE. BUILD NEW PARAMETERS
-            object[] callParams = new object[Parameters.Length + 1];
-            callParams[0] = this;
-            for (int ptr = 0; ptr < Parameters.Length; ptr++)
+            object[] callParams;
+            if (Parameters == null)
             {
-                callParams[ptr + 1] = Parameters[ptr];
+                callParams = new object[1];
+                callParams[0] = this;
+            }
+            else
+            {
+                callParams = new object[Parameters.Length + 1];
+                callParams[0] = this;
+                for (int ptr = 0; ptr < Parameters.Length; ptr++)
+                {
+                    callParams[ptr + 1] = Parameters[ptr];
+                }
             }
 
             //  CALL THE STATIC CLASS
-            object rVal = getMethod.Invoke(null, null);
+            object rVal = getMethod.Invoke(null, callParams);
             if (rVal == null) return null;
             else if (rVal.GetType() != typeof(byte[]))
                 throw new ApplicationException("Static class '" + ClassName + "' must return void, null or a byte array (byte[]).");

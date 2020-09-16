@@ -9,6 +9,7 @@
     <Import_RootNamespace>SocketMeister.Testing</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)ControlBus\CommandHarness.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ControlBus\HarnessClientController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ControlBus\ControlBusServer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events.cs" />
@@ -19,8 +20,5 @@
     <Compile Include="$(MSBuildThisFileDirectory)Tests\Test000Harness.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\Test001Harness.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\TestOnHarnessBase.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)ControlBus\" />
   </ItemGroup>
 </Project>

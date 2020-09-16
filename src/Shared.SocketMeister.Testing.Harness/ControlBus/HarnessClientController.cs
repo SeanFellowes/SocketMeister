@@ -162,7 +162,7 @@ namespace SocketMeister.Testing.ControlBus
 
 
 
-        public class ControlBusCommands
+        internal class ControlBusCommands
         {
             private SocketServer.Client _controlBuslistenerClient = null;
             private readonly object _lock = new object();
