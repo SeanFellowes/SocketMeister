@@ -61,7 +61,7 @@ namespace SocketMeister.Testing.ControlBus
             { 
                 lock (_lock) 
                 {
-                    if (_controlBusSocketClient == null) throw new ApplicationException("Method Start() must be successfully called first.");
+                    if (_controlBusSocketClient == null) throw new InvalidOperationException("Method Start() must be successfully called first.");
                     return _controlBusSocketClient; 
                 } 
             }

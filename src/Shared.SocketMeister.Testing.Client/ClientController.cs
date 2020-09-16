@@ -175,7 +175,7 @@ namespace SocketMeister.Testing
 
             //  GET THE CLASS TYPE
             assemblyTypeDictionary.TryGetValue(ClassName, out thisObjectType);
-            if (thisObjectType == null) throw new ArgumentOutOfRangeException(nameof(ClassName), "Class '" + ClassName + "' does not exist in the assembly '" + Assembly.GetExecutingAssembly().GetName() + "'");
+            if (thisObjectType == null) throw new ArgumentOutOfRangeException(nameof(ClassName), "Class '" + ClassName + "' does not exist in the assembly '" + Assembly.GetExecutingAssembly().FullName + "'");
 
             //  GET THE METHOD. IT MUST BE STATIC
             MethodInfo getMethod = thisObjectType.GetMethod(StaticMethodName, BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public );
@@ -205,7 +205,7 @@ namespace SocketMeister.Testing
             object rVal = getMethod.Invoke(null, callParams);
             if (rVal == null) return null;
             else if (rVal.GetType() != typeof(byte[]))
-                throw new ApplicationException("Static class '" + ClassName + "' must return void, null or a byte array (byte[]).");
+                throw new InvalidOperationException("Static class '" + ClassName + "' must return void, null or a byte array (byte[]).");
             else
                 return (byte[])rVal;
         }
