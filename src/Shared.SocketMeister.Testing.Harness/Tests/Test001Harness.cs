@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SocketMeister.Testing.ControlBus;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
@@ -99,8 +100,10 @@ namespace SocketMeister.Testing.Tests
 
         internal void Test001Step001()
         {
+            HarnessController.ClientToServerSendRequestEcho01(_harnessController.FixedServer1, _harnessController.FixedClient1);
+
             //  SEND A 1KB FILE
-            byte[] rVal = _harnessController.FixedClient1.Commands.ExecuteMethod("Test001Client", "Test001Step001");
+            //byte[] rVal = _harnessController.FixedClient1.Commands.ExecuteMethod("Test001Client", "Test001Step001");
             
         }
 
