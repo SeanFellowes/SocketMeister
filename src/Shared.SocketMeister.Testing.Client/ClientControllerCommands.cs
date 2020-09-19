@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SocketMeister.Testing.ControlBus
+namespace SocketMeister.Testing
 {
     /// <summary>
     /// Commands executed on the client, via the ControlBus 
     /// </summary>
-    internal static class CommandClient
+    internal static class ClientControllerCommands
     {
         internal static void ClientToServerSendRequestEcho01(ClientController Controller, int TransactionId, int MessageLength, int TimeoutMilliseconds = 30000)
         {

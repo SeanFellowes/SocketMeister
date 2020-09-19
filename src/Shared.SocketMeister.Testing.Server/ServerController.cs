@@ -1,10 +1,11 @@
-﻿using System;
+﻿using SocketMeister.Testing.ControlBus;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 using System.Threading;
 
-namespace SocketMeister.Testing.ControlBus
+namespace SocketMeister.Testing
 {
     /// <summary>
     /// Controls a socket server
