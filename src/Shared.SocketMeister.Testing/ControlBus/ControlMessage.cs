@@ -17,7 +17,7 @@ namespace SocketMeister.Testing.ControlBus
         public static readonly short SocketClientStart = 200;
         public static readonly short SocketClientStop = 201;
 
-        public static readonly short ExecuteMethod = 1000;
+        public static readonly short ExecuteCommand = 1000;
 
         /// <summary>
         /// Test harness sends this to a test client when it wants the client to disconnect and the client app to exit.

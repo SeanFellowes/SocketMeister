@@ -15,7 +15,7 @@ namespace SocketMeister.Testing
         private readonly static object _lock = new object();
         private static int _lastMessageId = 0;
 
-        internal static async Task ClientToServerSendRequestEcho01(HarnessServerController Server, HarnessClientController Client, int MessageLength, int TimeoutMilliseconds = 60000)
+        internal static async Task ClientToServerSendRequestEcho01(HarnessServerController ServerController, HarnessClientController ClientController, int MessageLength, int TimeoutMilliseconds = 60000)
         {
             int messageId = GetNextMessageId();
             Task tasks = null;
@@ -27,7 +27,7 @@ namespace SocketMeister.Testing
                     p[0] = messageId;
                     p[1] = MessageLength;
                     p[2] = TimeoutMilliseconds;
-                    byte[] rVal = Server.Commands.ExecuteMethod(nameof(ServerControllerCommands), nameof(ServerControllerCommands.ClientToServerSendRequestEcho01), p);
+                    byte[] rVal = ServerController.Commands.ExecuteCommand(nameof(ServerControllerCommands), nameof(ServerControllerCommands.ClientToServerSendRequestEcho01), p);
                 });
                 var task2 = Task.Run(() => 
                 {
@@ -35,7 +35,7 @@ namespace SocketMeister.Testing
                     p[0] = messageId;
                     p[1] = MessageLength;
                     p[2] = TimeoutMilliseconds;
-                    byte[] rVal = Client.Commands.ExecuteMethod(nameof(ClientControllerCommands), nameof(ClientControllerCommands.ClientToServerSendRequestEcho01), p);
+                    byte[] rVal = ClientController.Commands.ExecuteCommand(nameof(ClientControllerCommands), nameof(ClientControllerCommands.ClientToServerSendRequestEcho01), p);
                     Thread.Sleep(30000);
                 });
                 tasks = Task.WhenAll(task1, task2);

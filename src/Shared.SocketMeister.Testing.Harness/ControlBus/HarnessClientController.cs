@@ -23,7 +23,6 @@ namespace SocketMeister.Testing.ControlBus
         private static int _maxClientId = 0;
 
 
-
         public HarnessClientController(int ControlBusClientId) : base(ControlBusClientId)
         {
             _commands = new ControlBusCommands();
@@ -186,12 +185,12 @@ namespace SocketMeister.Testing.ControlBus
             }
 
 
-            public byte[] ExecuteMethod(string ClassName, string StaticMethodName, object[] Parameters = null)
+            public byte[] ExecuteCommand(string ClassName, string StaticMethodName, object[] Parameters = null)
             {
                 if (Parameters != null)
                 {
                     object[] parms = new object[4];
-                    parms[0] = ControlMessage.ExecuteMethod;
+                    parms[0] = ControlMessage.ExecuteCommand;
                     parms[1] = ClassName;
                     parms[2] = StaticMethodName;
                     parms[3] = Serializer.SerializeParameters(Parameters);
@@ -200,7 +199,7 @@ namespace SocketMeister.Testing.ControlBus
                 else
                 {
                     object[] parms = new object[3];
-                    parms[0] = ControlMessage.ExecuteMethod;
+                    parms[0] = ControlMessage.ExecuteCommand;
                     parms[1] = ClassName;
                     parms[2] = StaticMethodName;
                     return ControlBusListenerClient.SendRequest(parms);

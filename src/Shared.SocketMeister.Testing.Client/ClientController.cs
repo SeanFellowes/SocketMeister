@@ -108,7 +108,7 @@ namespace SocketMeister.Testing
                 SocketClientStop();
             }
 
-            else if (messageType == ControlMessage.ExecuteMethod)
+            else if (messageType == ControlMessage.ExecuteCommand)
             {
                 if (e.Parameters.Length == 3)
                 {
