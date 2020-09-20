@@ -100,6 +100,30 @@ namespace SocketMeister.Testing.ControlBus
                 set { lock (_lock) { _controlBuslistenerClient = value; } }
             }
 
+
+            public byte[] ExecuteMethod(string ClassName, string StaticMethodName, object[] Parameters = null)
+            {
+                if (Parameters != null)
+                {
+                    object[] parms = new object[4];
+                    parms[0] = ControlMessage.ExecuteMethod;
+                    parms[1] = ClassName;
+                    parms[2] = StaticMethodName;
+                    parms[3] = Serializer.SerializeParameters(Parameters);
+                    return ControlBusListenerClient.SendRequest(parms);
+                }
+                else
+                {
+                    object[] parms = new object[3];
+                    parms[0] = ControlMessage.ExecuteMethod;
+                    parms[1] = ClassName;
+                    parms[2] = StaticMethodName;
+                    return ControlBusListenerClient.SendRequest(parms);
+                }
+            }
+
+
+
             public void SocketServerStart(int Port)
             {
                 object[] parms = new object[2];

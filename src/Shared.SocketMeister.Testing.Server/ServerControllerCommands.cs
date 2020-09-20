@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 
-namespace SocketMeister.Testing.ControlBus
+namespace SocketMeister.Testing
 {
     /// <summary>
     /// Commands executed on the server, via the ControlBus 
     /// </summary>
-    internal static class CommandServer
+    internal static class ServerControllerCommands
     {
 
         internal static byte[] ClientToServerSendRequestEcho01(ServerController Controller, int MessageId, int MessageLength, int TimeoutMilliseconds = 60000)

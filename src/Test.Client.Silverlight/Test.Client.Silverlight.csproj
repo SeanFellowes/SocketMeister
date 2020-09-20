@@ -74,6 +74,9 @@
     <Compile Include="..\Shared.SocketMeister.Testing.Client\ClientController.cs">
       <Link>Shared.SocketMeister.Testing.Client\ClientController.cs</Link>
     </Compile>
+    <Compile Include="..\Shared.SocketMeister.Testing.Client\ClientControllerCommands.cs">
+      <Link>Shared.SocketMeister.Testing.Client\ClientControllerCommands.cs</Link>
+    </Compile>
     <Compile Include="..\Shared.SocketMeister.Testing.Client\Tests\ITestOnClient.cs">
       <Link>Shared.SocketMeister.Testing.Client\Tests\ITestOnClient.cs</Link>
     </Compile>

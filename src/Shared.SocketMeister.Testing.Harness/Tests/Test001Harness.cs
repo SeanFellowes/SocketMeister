@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 #if TESTHARNESS
 #endif
 
@@ -98,9 +99,10 @@ namespace SocketMeister.Testing.Tests
         }
 
 
-        internal void Test001Step001()
+        internal async Task Test001Step001()
         {
-            HarnessControllerCommands.ClientToServerSendRequestEcho01(_harnessController.FixedServer1, _harnessController.FixedClient1);
+            Task task = HarnessControllerCommands.ClientToServerSendRequestEcho01(_harnessController.FixedServer1, _harnessController.FixedClient1, 1024, 10000);
+            await task;
 
             //  SEND A 1KB FILE
             //byte[] rVal = _harnessController.FixedClient1.Commands.ExecuteMethod("Test001Client", "Test001Step001");
