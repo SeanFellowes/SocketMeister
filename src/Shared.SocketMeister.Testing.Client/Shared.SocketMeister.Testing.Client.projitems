@@ -11,6 +11,7 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)ClientControllerCommands.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ClientController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Events.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\ITestOnClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\Test000Client.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\Test001Client.cs" />

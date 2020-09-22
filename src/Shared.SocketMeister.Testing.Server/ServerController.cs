@@ -10,7 +10,7 @@ namespace SocketMeister.Testing
     /// <summary>
     /// Controls a socket server
     /// </summary>
-    public class ServerController : IDisposable
+    internal class ServerController : IDisposable
     {
         private readonly ControlBusClient _controlBusClient;
         private bool _disposed = false;

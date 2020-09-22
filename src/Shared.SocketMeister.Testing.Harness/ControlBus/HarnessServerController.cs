@@ -9,7 +9,7 @@ using SocketMeister.Testing;
 
 namespace SocketMeister.Testing.ControlBus
 {
-    public class HarnessServerController : ServerController, IDisposable
+    internal class HarnessServerController : ServerController, IDisposable
     {
         private readonly ControlBusCommands _commands = null;
         private bool _disposed = false;

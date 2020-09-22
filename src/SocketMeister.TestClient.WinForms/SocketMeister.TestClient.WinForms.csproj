@@ -12,6 +12,10 @@
     <DefineConstants>TRACE;TESTCLIENT</DefineConstants>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>TRACE;TESTCLIENT</DefineConstants>
+  </PropertyGroup>
+
   <Import Project="..\Shared.SocketMeister\Shared.SocketMeister.projitems" Label="Shared" />
 
   <Import Project="..\Shared.SocketMeister.Testing\Shared.SocketMeister.Testing.projitems" Label="Shared" />
