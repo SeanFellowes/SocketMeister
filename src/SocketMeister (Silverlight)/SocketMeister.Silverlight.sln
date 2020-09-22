@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared.SocketMeister", "..\Shared.SocketMeister\Shared.SocketMeister.shproj", "{7FE383EC-5FD4-4D60-BEEB-149E51549260}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Client.Silverlight", "..\Test.Client.Silverlight\Test.Client.Silverlight.csproj", "{21C59E43-3C92-4D03-ABC6-84BE038EB1D1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocketMeister.TestClient.Silverlight", "..\Test.Client.Silverlight\SocketMeister.TestClient.Silverlight.csproj", "{21C59E43-3C92-4D03-ABC6-84BE038EB1D1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocketMeister (Silverlight)", "SocketMeister (Silverlight).csproj", "{41EFAA42-85D4-49EC-9AB2-4CC879D2E50A}"
 EndProject
