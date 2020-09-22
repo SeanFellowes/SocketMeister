@@ -4,8 +4,8 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net45</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
-    <AssemblyName>SocketMeister.Test.Client.WinForms</AssemblyName>
-    <RootNamespace>SocketMeister.Testing</RootNamespace>
+    <AssemblyName>SocketMeister.TestClient</AssemblyName>
+    <RootNamespace>SocketMeister</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

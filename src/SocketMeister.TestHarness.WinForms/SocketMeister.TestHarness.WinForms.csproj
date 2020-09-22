@@ -4,8 +4,8 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net45</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
-    <AssemblyName>SocketMeister.Test.Harness</AssemblyName>
-    <RootNamespace>SocketMeister.Test</RootNamespace>
+    <AssemblyName>SocketMeister.TestHarness</AssemblyName>
+    <RootNamespace>SocketMeister</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

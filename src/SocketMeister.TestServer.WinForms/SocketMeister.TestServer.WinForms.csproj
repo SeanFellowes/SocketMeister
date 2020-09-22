@@ -4,8 +4,8 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net45</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
-    <RootNamespace>SocketMeister.Testing</RootNamespace>
-    <AssemblyName>SocketMeister.Testing.Server</AssemblyName>
+    <RootNamespace>SocketMeister</RootNamespace>
+    <AssemblyName>SocketMeister.TestServer</AssemblyName>
   </PropertyGroup>
 
   <Import Project="..\Shared.SocketMeister\Shared.SocketMeister.projitems" Label="Shared" />
