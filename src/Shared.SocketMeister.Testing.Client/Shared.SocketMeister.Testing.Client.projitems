@@ -17,7 +17,4 @@
     <Compile Include="$(MSBuildThisFileDirectory)Tests\Test001Client.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\TestOnClientBase.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)ControlBus\" />
-  </ItemGroup>
 </Project>
