@@ -15,11 +15,11 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared.SocketMeister.Testin
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared.SocketMeister.Testing.Harness", "Shared.SocketMeister.Testing.Harness\Shared.SocketMeister.Testing.Harness.shproj", "{75699AC7-3CE3-4946-AA6A-98A932DAB76E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test.Server.WinForms", "Test.Server.WinForms\Test.Server.WinForms.csproj", "{FD22ADC4-4ECB-46D4-8379-8158C18DC483}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SocketMeister.TestServer.WinForms", "Test.Server.WinForms\SocketMeister.TestServer.WinForms.csproj", "{FD22ADC4-4ECB-46D4-8379-8158C18DC483}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test.Client.WinForms", "Test.Client.WinForms\Test.Client.WinForms.csproj", "{0F02EB8A-BB7C-446A-A67C-B6EFE186FF19}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SocketMeister.TestClient.WinForms", "Test.Client.WinForms\SocketMeister.TestClient.WinForms.csproj", "{0F02EB8A-BB7C-446A-A67C-B6EFE186FF19}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test.Harness.WinForms", "Test.Harness.WinForms\Test.Harness.WinForms.csproj", "{9924CB98-FE69-473B-B173-24AC6D0D9F81}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SocketMeister.TestHarness.WinForms", "Test.Harness.WinForms\SocketMeister.TestHarness.WinForms.csproj", "{9924CB98-FE69-473B-B173-24AC6D0D9F81}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared.SocketMeister.Testing.Server", "Shared.SocketMeister.Testing.Server\Shared.SocketMeister.Testing.Server.shproj", "{20D137CD-B17E-42F9-B281-5BD7D6248241}"
 EndProject
