@@ -8,10 +8,12 @@
     <AssemblyName>SocketMeister.TestServer</AssemblyName>
   </PropertyGroup>
 
-  <Import Project="..\Shared.SocketMeister\Shared.SocketMeister.projitems" Label="Shared" />
-
   <Import Project="..\Shared.SocketMeister.Testing.Server\Shared.SocketMeister.Testing.Server.projitems" Label="Shared" />
 
   <Import Project="..\Shared.SocketMeister.Testing\Shared.SocketMeister.Testing.projitems" Label="Shared" />
+
+  <ItemGroup>
+    <ProjectReference Include="..\SocketMeister (.NET Standard 2.0)\SocketMeister (.NET Standard 2.0).csproj" />
+  </ItemGroup>
 
 </Project>

@@ -1,0 +1,72 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard20</TargetFrameworks>
+    <RootNamespace>SocketMeister</RootNamespace>
+    <AssemblyName>SocketMeister</AssemblyName>
+    <Authors>Sean Fellowes</Authors>
+    <Description>Performant TCP socket server and client for .NET. Client features automated reconnect within single and multiple server environments.</Description>
+    <Copyright>Copyright © 2010-2020 Sean Fellowes</Copyright>
+    <PackageProjectUrl>https://github.com/SeanFellowes/SocketMeister</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/SeanFellowes/SocketMeister</RepositoryUrl>
+    <Version>2.0.2</Version>
+    <PackageTags>tcp socket</PackageTags>
+    <Company />
+    <PackageReleaseNotes>Resolved bugs with socketserver</PackageReleaseNotes>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageLicenseUrl></PackageLicenseUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageIconUrl></PackageIconUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <DocumentationFile>C:\Users\sfell\Source\Repos\SeanFellowes\SocketMeister\src\SocketMeister (.NET Standard 2.0)\SocketMeister.xml</DocumentationFile>
+    <PackageIcon>icon_128.png</PackageIcon>
+    <SelfContained>true</SelfContained>
+    <AssemblyVersion>2.0.2.0</AssemblyVersion>
+    <FileVersion>2.0.2.0</FileVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net35|AnyCPU'">
+    <DefineConstants>DEBUG;SMISPUBLIC</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net35|AnyCPU'">
+    <DefineConstants>SMISPUBLIC</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard20|AnyCPU'">
+    <DefineConstants>SMISPUBLIC</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Test.settings" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <None Include="..\..\images\icon_128.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Resource Include="Test.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Test.Designer.cs</LastGenOutput>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+
+
+  <Import Project="..\Shared.SocketMeister\Shared.SocketMeister.projitems" Label="Shared" />
+
+</Project>
