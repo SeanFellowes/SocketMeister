@@ -18,7 +18,7 @@ namespace SocketMeister.Messages
             _messageType = MessageType;
         }
 
-        public object Lock {  get { return _lock; } }
+        public object Lock { get { return _lock; } }
 
         public bool IsAborted
         {

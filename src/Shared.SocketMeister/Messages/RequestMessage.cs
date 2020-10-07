@@ -49,7 +49,7 @@ namespace SocketMeister.Messages
         /// <param name="Parameters">Array of parameters to send with the request. There must be at least 1 parameter.</param>
         /// <param name="TimeoutMilliseconds">The maximum number of milliseconds to wait for a response before timing out.</param>
         /// <param name="IsLongPolling">The maximum number of milliseconds to wait for a response before timing out.</param>
-        public RequestMessage(object[] Parameters, int TimeoutMilliseconds , bool IsLongPolling = false) : base(MessageTypes.RequestMessage)
+        public RequestMessage(object[] Parameters, int TimeoutMilliseconds, bool IsLongPolling = false) : base(MessageTypes.RequestMessageV2)
         {
             _parameters = Parameters;
             _timeoutMilliseconds = TimeoutMilliseconds;
@@ -80,12 +80,26 @@ namespace SocketMeister.Messages
         }
 
 
-        internal RequestMessage(BinaryReader bR) : base(MessageTypes.RequestMessage)
+        internal RequestMessage(BinaryReader bR, int Version) : base(MessageTypes.RequestMessageV2)
         {
-            _requestId = bR.ReadInt64();
-            _timeoutMilliseconds = bR.ReadInt32();
-            _isLongPolling = bR.ReadBoolean();
-            _parameters = Serializer.DeserializeParameters(bR);
+            if (Version == 1)
+            {
+                _requestId = bR.ReadInt64();
+                _timeoutMilliseconds = 60000;       //  NOT IN VERSION 1
+                _isLongPolling = bR.ReadBoolean();
+                _parameters = Serializer.DeserializeParameters(bR);
+            }
+            else if (Version == 2)
+            {
+                _requestId = bR.ReadInt64();
+                _timeoutMilliseconds = bR.ReadInt32();
+                _isLongPolling = bR.ReadBoolean();
+                _parameters = Serializer.DeserializeParameters(bR);
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException(nameof(Version), "Only versions 1 and 2 have a deserializer");
+            }
 
             //  SETUP TIMEOUT
             _timeout = DateTime.Now.AddMilliseconds(TimeoutMilliseconds);
@@ -120,7 +134,7 @@ namespace SocketMeister.Messages
         /// </summary>
         public bool IsTimeout
         {
-            get 
+            get
             {
                 if (DateTime.Now > _timeout) return true;
                 else return false;

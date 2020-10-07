@@ -141,9 +141,9 @@
             Basic message.
             </summary>
         </member>
-        <member name="F:SocketMeister.Messages.MessageTypes.RequestMessage">
+        <member name="F:SocketMeister.Messages.MessageTypes.RequestMessageV1">
             <summary>
-            Request (expecting a response)
+            Request (expecting a response). Version 1 (From SocketMeister 1.x.x.x)
             </summary>
         </member>
         <member name="F:SocketMeister.Messages.MessageTypes.ResponseMessage">
@@ -169,6 +169,11 @@
         <member name="F:SocketMeister.Messages.MessageTypes.PollResponse">
             <summary>
             Server sends a poll response when a poll request is received from a client
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Messages.MessageTypes.RequestMessageV2">
+            <summary>
+            Request (expecting a response). Version 2 (From SocketMeister 2.x.x.x)
             </summary>
         </member>
         <member name="T:SocketMeister.Messages.RequestResult">

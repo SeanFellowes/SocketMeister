@@ -142,7 +142,7 @@ namespace SocketMeister
 
         public SocketServerStatus Status
         {
-            get {  lock(_lock) { return _listenerState; } }
+            get { lock (_lock) { return _listenerState; } }
         }
 
         /// <summary>
@@ -341,9 +341,24 @@ namespace SocketMeister
                 {
                     if (receiveEnvelope.AddBytesFromSocketReceiveBuffer(receivedBytesCount, remoteClient.ReceiveBuffer, ref receiveBufferPtr) == true)
                     {
-                        if (receiveEnvelope.MessageType == MessageTypes.RequestMessage)
+                        if (receiveEnvelope.MessageType == MessageTypes.RequestMessageV1)
                         {
-                            RequestMessage request = receiveEnvelope.GetRequestMessage();
+                            RequestMessage request = receiveEnvelope.GetRequestMessage(1);
+                            request.RemoteClient = remoteClient;
+                            if (ListenerState == SocketServerStatus.Stopping)
+                            {
+                                ResponseMessage response = new ResponseMessage(request.RequestId, RequestResult.Stopping);
+                                SendMessage(request.RemoteClient, response, false);
+                            }
+                            else
+                            {
+                                lock (_lock) { _requestsInProgress += 1; }
+                                ThreadPool.QueueUserWorkItem(BgProcessRequestMessage, request);
+                            }
+                        }
+                        else if (receiveEnvelope.MessageType == MessageTypes.RequestMessageV2)
+                        {
+                            RequestMessage request = receiveEnvelope.GetRequestMessage(2);
                             request.RemoteClient = remoteClient;
                             if (ListenerState == SocketServerStatus.Stopping)
                             {

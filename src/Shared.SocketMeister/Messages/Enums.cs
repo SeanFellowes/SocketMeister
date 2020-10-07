@@ -18,9 +18,9 @@ namespace SocketMeister.Messages
         /// </summary>
         Message = 1,
         /// <summary>
-        /// Request (expecting a response)
+        /// Request (expecting a response). Version 1 (From SocketMeister 1.x.x.x)
         /// </summary>
-        RequestMessage = 2,
+        RequestMessageV1 = 2,
         /// <summary>
         /// Response to a client request
         /// </summary>
@@ -40,7 +40,12 @@ namespace SocketMeister.Messages
         /// <summary>
         /// Server sends a poll response when a poll request is received from a client
         /// </summary>
-        PollResponse = 7
+        PollResponse = 7,
+        /// <summary>
+        /// Request (expecting a response). Version 2 (From SocketMeister 2.x.x.x)
+        /// </summary>
+        RequestMessageV2 = 100
+
     }
 
 

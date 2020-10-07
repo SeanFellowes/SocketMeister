@@ -740,9 +740,15 @@ namespace SocketMeister
                         {
                             NotifyMessageReceived(_receiveEngine.GetMessage());
                         }
-                        else if (_receiveEngine.MessageType == MessageTypes.RequestMessage)
+                        else if (_receiveEngine.MessageType == MessageTypes.RequestMessageV1)
                         {
-                            RequestMessage request = _receiveEngine.GetRequestMessage();
+                            RequestMessage request = _receiveEngine.GetRequestMessage(1);
+                            lock (_lock) { _requestsInProgress += 1; }
+                            ThreadPool.QueueUserWorkItem(BgProcessRequestMessage, request);
+                        }
+                        else if (_receiveEngine.MessageType == MessageTypes.RequestMessageV2)
+                        {
+                            RequestMessage request = _receiveEngine.GetRequestMessage(2);
                             lock (_lock) { _requestsInProgress += 1; }
                             ThreadPool.QueueUserWorkItem(BgProcessRequestMessage, request);
                         }
