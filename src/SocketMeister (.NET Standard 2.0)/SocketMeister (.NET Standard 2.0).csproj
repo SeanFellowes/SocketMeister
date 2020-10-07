@@ -9,7 +9,7 @@
     <Copyright>Copyright © 2010-2020 Sean Fellowes</Copyright>
     <PackageProjectUrl>https://github.com/SeanFellowes/SocketMeister</PackageProjectUrl>
     <RepositoryUrl>https://github.com/SeanFellowes/SocketMeister</RepositoryUrl>
-    <Version>2.1.0</Version>
+    <Version>2.0.5</Version>
     <PackageTags>tcp socket</PackageTags>
     <Company />
     <PackageReleaseNotes>Fixed bug when stopped SocketMeister 1.x.x.x clients working in same environment as SocketMeister 2.x.x.x server</PackageReleaseNotes>
