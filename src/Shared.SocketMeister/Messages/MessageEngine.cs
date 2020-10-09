@@ -310,74 +310,34 @@ namespace SocketMeister.Messages
 
         internal ServerStoppingMessage GetDisconnectRequest()
         {
-            MemoryStream stream = null;
-            try
+            using (BinaryReader reader = new BinaryReader(new MemoryStream(GetBuffer())))
             {
-                stream = new MemoryStream(GetBuffer());
-                using (BinaryReader reader = new BinaryReader(stream))
-                {
-                    stream = null;
-                    return new ServerStoppingMessage(reader);
-                }
-            }
-            finally
-            {
-                if (stream != null) stream.Dispose();
+                return new ServerStoppingMessage(reader);
             }
         }
 
         internal Message GetMessage()
         {
-            MemoryStream stream = null;
-            try
+            using (BinaryReader reader = new BinaryReader(new MemoryStream(GetBuffer())))
             {
-                stream = new MemoryStream(GetBuffer());
-                using (BinaryReader reader = new BinaryReader(stream))
-                {
-                    stream = null;
-                    return new Message(reader);
-                }
-            }
-            finally
-            {
-                if (stream != null) stream.Dispose();
+                return new Message(reader);
             }
         }
 
 
         internal RequestMessage GetRequestMessage(int Version)
         {
-            MemoryStream stream = null;
-            try
+            using (BinaryReader reader = new BinaryReader(new MemoryStream(GetBuffer())))
             {
-                stream = new MemoryStream(GetBuffer());
-                using (BinaryReader reader = new BinaryReader(stream))
-                {
-                    stream = null;
-                    return new RequestMessage(reader, Version);
-                }
-            }
-            finally
-            {
-                if (stream != null) stream.Dispose();
+                return new RequestMessage(reader, Version);
             }
         }
 
         internal ResponseMessage GetResponseMessage()
         {
-            MemoryStream stream = null;
-            try
+            using (BinaryReader reader = new BinaryReader(new MemoryStream(GetBuffer())))
             {
-                stream = new MemoryStream(GetBuffer());
-                using (BinaryReader reader = new BinaryReader(stream))
-                {
-                    stream = null;
-                    return new ResponseMessage(reader);
-                }
-            }
-            finally
-            {
-                if (stream != null) stream.Dispose();
+                return new ResponseMessage(reader);
             }
         }
 

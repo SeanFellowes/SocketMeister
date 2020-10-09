@@ -59,7 +59,6 @@ namespace SocketMeister
         private DateTime _lastPollResponse = DateTime.Now;
         private readonly object _lock = new object();
         private DateTime _nextPollRequest;
-        private int _requestsInProgress = 0;
         private readonly OpenRequestMessageCollection _openRequests = new OpenRequestMessageCollection();
         private readonly Random _randomizer = new Random();
         private MessageEngine _receiveEngine;
@@ -743,13 +742,11 @@ namespace SocketMeister
                         else if (_receiveEngine.MessageType == MessageTypes.RequestMessageV1)
                         {
                             RequestMessage request = _receiveEngine.GetRequestMessage(1);
-                            lock (_lock) { _requestsInProgress += 1; }
                             ThreadPool.QueueUserWorkItem(BgProcessRequestMessage, request);
                         }
                         else if (_receiveEngine.MessageType == MessageTypes.RequestMessageV2)
                         {
                             RequestMessage request = _receiveEngine.GetRequestMessage(2);
-                            lock (_lock) { _requestsInProgress += 1; }
                             ThreadPool.QueueUserWorkItem(BgProcessRequestMessage, request);
                         }
                         else if (_receiveEngine.MessageType == MessageTypes.ServerStoppingMessage)
@@ -822,10 +819,6 @@ namespace SocketMeister
             {
                 NotifyExceptionRaised(ex);
                 SendResponseQuickly(new ResponseMessage(request.RequestId, ex));
-            }
-            finally
-            {
-                lock (_lock) { _requestsInProgress -= 1; }
             }
         }
 

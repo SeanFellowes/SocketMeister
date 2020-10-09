@@ -24,6 +24,9 @@ namespace SocketMeister
     internal partial class PolicyServer : IDisposable
 #endif
     {
+        /// <summary>
+        /// The port that the policy server is listening on.
+        /// </summary>
         public const int ServicePort = 943;
         private const string POLICY_REQUEST = "<policy-file-request/>";
 
@@ -62,11 +65,19 @@ namespace SocketMeister
             IPAddress = IPAddress.Parse("0.0.0.0");
         }
 
+        /// <summary>
+        /// Dispose
+        /// </summary>
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
+
+        /// <summary>
+        /// Dispose
+        /// </summary>
+        /// <param name="disposing">Disposing</param>
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
@@ -90,7 +101,10 @@ namespace SocketMeister
         /// </summary>
         public IPAddress IPAddress { get; private set; }
 
-        public int Port {  get { return ServicePort; } }
+        /// <summary>
+        /// Port number which the policy server is listening on.
+        /// </summary>
+        public static int Port {  get { return ServicePort; } }
 
         /// <summary>
         /// The current status of the listener socket. Statuses include Stopped, Starting, Started and Stopping
@@ -131,6 +145,11 @@ namespace SocketMeister
         //}
 
 
+        /// <summary>
+        /// Get the local IP4 address
+        /// </summary>
+        /// <param name="type">NetworkInterfaceType</param>
+        /// <returns>IP Address string</returns>
         public static string GetLocalIPv4(NetworkInterfaceType type)
         {
             string output = "";

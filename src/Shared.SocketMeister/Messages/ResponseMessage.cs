@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 
@@ -106,7 +107,7 @@ namespace SocketMeister.Messages
                 Writer.Write(true);
                 Writer.Write(_error);
             }
-            Writer.Write(Convert.ToInt16(_requestResultCode));
+            Writer.Write(Convert.ToInt16(_requestResultCode, CultureInfo.InvariantCulture));
         }
     }
 }

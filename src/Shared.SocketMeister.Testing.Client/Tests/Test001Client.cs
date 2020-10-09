@@ -16,7 +16,6 @@ namespace SocketMeister.Testing.Tests
         internal static void Test001Step001(ClientController Controller)
         {
             throw new System.Exception("Client blew up");
-            return;
         }
 
 

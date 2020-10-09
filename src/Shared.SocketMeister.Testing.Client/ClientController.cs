@@ -50,7 +50,7 @@ namespace SocketMeister.Testing
             _controlBusClient.ConnectionStatusChanged += ControlBusClient_ConnectionStatusChanged;
             _controlBusClient.MessageReceived += ControlBusClient_MessageReceived; ;
             _controlBusClient.RequestReceived += ControlBusClient_RequestReceived; ;
-            _controlBusClient.ExceptionRaised += _controlBusClient_ExceptionRaised;
+            _controlBusClient.ExceptionRaised += ControlBusClient_ExceptionRaised;
         }
 
         public void Dispose()
@@ -89,8 +89,7 @@ namespace SocketMeister.Testing
                 List<SocketEndPoint> endPoints = null;
                 bool enableCompression;
 
-                using (MemoryStream stream = new MemoryStream((byte[])e.Parameters[1]))
-                using (BinaryReader reader = new BinaryReader(stream))
+                using (BinaryReader reader = new BinaryReader(new MemoryStream((byte[])e.Parameters[1])))
                 {
                     int capacity = reader.ReadInt32();
                     endPoints = new List<SocketEndPoint>(capacity);
@@ -145,7 +144,7 @@ namespace SocketMeister.Testing
             ControlBusConnectionStatusChanged?.Invoke(sender, e);
         }
 
-        private void _controlBusClient_ExceptionRaised(object sender, ExceptionEventArgs e)
+        private void ControlBusClient_ExceptionRaised(object sender, ExceptionEventArgs e)
         {
             ExceptionRaised?.Invoke(this, e);
         }
@@ -164,7 +163,7 @@ namespace SocketMeister.Testing
             _controlBusClient.ConnectionStatusChanged -= ControlBusClient_ConnectionStatusChanged;
             _controlBusClient.MessageReceived -= ControlBusClient_MessageReceived; ;
             _controlBusClient.RequestReceived -= ControlBusClient_RequestReceived; ;
-            _controlBusClient.ExceptionRaised -= _controlBusClient_ExceptionRaised;
+            _controlBusClient.ExceptionRaised -= ControlBusClient_ExceptionRaised;
             _controlBusClient.Stop();
         }
 

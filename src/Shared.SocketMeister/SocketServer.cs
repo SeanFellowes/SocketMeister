@@ -140,6 +140,9 @@ namespace SocketMeister
             }
         }
 
+        /// <summary>
+        /// The execution status of the socket server.
+        /// </summary>
         public SocketServerStatus Status
         {
             get { lock (_lock) { return _listenerState; } }

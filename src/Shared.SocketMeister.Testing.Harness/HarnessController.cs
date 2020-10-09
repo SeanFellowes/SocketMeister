@@ -58,7 +58,7 @@ namespace SocketMeister.Testing
 
             //  START CONTROL BUS LISTENER
             ControlBusServer = new ControlBusServer();
-            ControlBusServer.RequestReceived += _controlBusServer_RequestReceived;
+            ControlBusServer.RequestReceived += ControlBusServer_RequestReceived;
 
             //  SETUP POLICY SERVER
             PolicyServer = new PolicyServer();
@@ -66,11 +66,11 @@ namespace SocketMeister.Testing
 
             //  SETUP FIXED SERVER
             FixedServer1 = new HarnessServerController(int.MaxValue - 1, Constants.ControlBusServerIPAddress);
-            FixedServer1.ExceptionRaised += fixedServer1_ExceptionRaised;
+            FixedServer1.ExceptionRaised += FixedServer1_ExceptionRaised;
 
             //  SETUP FIXED CLIENT
             FixedClient1 = new HarnessClientController(int.MaxValue);
-            FixedClient1.ExceptionRaised += fixedClient1_ExceptionRaised;
+            FixedClient1.ExceptionRaised += FixedClient1_ExceptionRaised;
 
 
             //new Thread(delegate ()
@@ -88,12 +88,12 @@ namespace SocketMeister.Testing
             //}).Start();
         }
 
-        private void fixedClient1_ExceptionRaised(object sender, ExceptionEventArgs e)
+        private void FixedClient1_ExceptionRaised(object sender, ExceptionEventArgs e)
         {
             TraceEventRaised?.Invoke(sender, new TraceEventArgs(e.Exception, e.EventId, nameof(FixedClient1)));
         }
 
-        private void fixedServer1_ExceptionRaised(object sender, ExceptionEventArgs e)
+        private void FixedServer1_ExceptionRaised(object sender, ExceptionEventArgs e)
         {
             TraceEventRaised?.Invoke(sender, new TraceEventArgs(e.Exception, e.EventId, nameof(FixedServer1)));
         }
@@ -123,7 +123,7 @@ namespace SocketMeister.Testing
                 {
                     try
                     {
-                        ControlBusServer.RequestReceived -= _controlBusServer_RequestReceived;
+                        ControlBusServer.RequestReceived -= ControlBusServer_RequestReceived;
                         ControlBusServer.Stop();
                         ControlBusServer.Dispose();
                     }
@@ -160,7 +160,7 @@ namespace SocketMeister.Testing
 
 
 
-        private void _controlBusServer_RequestReceived(object sender, SocketServer.RequestReceivedEventArgs e)
+        private void ControlBusServer_RequestReceived(object sender, SocketServer.RequestReceivedEventArgs e)
         {
             short messageType = (short)e.Parameters[0];
             if (messageType == ControlMessage.HarnessControlBusClientIsConnecting)

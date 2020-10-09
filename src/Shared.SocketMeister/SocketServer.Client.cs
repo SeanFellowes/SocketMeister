@@ -110,10 +110,7 @@ namespace SocketMeister
             {
                 if (_socketServer.ListenerState != SocketServerStatus.Started) return null;
 
-                DateTime nowTs = DateTime.Now;
                 _openRequests.Add(Request);
-
-                byte[] sendBytes = MessageEngine.GenerateSendBytes(Request, false);
 
                 while (Request.TrySendReceive == true)
                 {

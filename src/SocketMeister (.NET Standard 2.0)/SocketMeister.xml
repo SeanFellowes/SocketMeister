@@ -534,6 +534,71 @@
             Data types which are supported for parameters sent with messages.
             </summary>
         </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.BoolParam">
+            <summary>
+            Parameter is a boolean
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.DateTimeParam">
+            <summary>
+            Parameter is a DateTime type
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.DoubleParam">
+            <summary>
+            Parameter is a Double type
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.Int16Param">
+            <summary>
+            Parameter is an Int16 type
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.Int32Param">
+            <summary>
+            Parameter is an Int32 type
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.Int64Param">
+            <summary>
+            Parameter is an Int64 type
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.UInt16Param">
+            <summary>
+            Parameter is a UInt16 type
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.UInt32Param">
+            <summary>
+            Parameter is a UInt32 type
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.UInt64Param">
+            <summary>
+            Parameter is a UInt64 type
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.StringParam">
+            <summary>
+            Parameter is a string
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.ByteParam">
+            <summary>
+            Parameter is a byte
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.ByteArrayParam">
+            <summary>
+            Parameter is a byte array
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.Null">
+            <summary>
+            Parameter is a null
+            </summary>
+        </member>
         <member name="M:SocketMeister.Serializer.DeserializeParameters(System.Byte[])">
             <summary>
             Deserialize a byte array which was serialized using 'byte[] SerializeParameters(object[] Parameters)' from this class.
@@ -547,6 +612,20 @@
             </summary>
             <param name="Reader">Open BinaryReader which is queued exactly to the point where the serialized parameters are encoded.</param>
             <returns>A list of parameters</returns>
+        </member>
+        <member name="M:SocketMeister.Serializer.SerializeParameters(System.Object[])">
+            <summary>
+            Serializes an array of parameters into a byte array which can be deserialized using the deserializer in this class
+            </summary>
+            <param name="Parameters">Array of parameters (Supports basic value types)</param>
+            <returns>Byte array of serialized parameters</returns>
+        </member>
+        <member name="M:SocketMeister.Serializer.SerializeParameters(System.IO.BinaryWriter,System.Object[])">
+            <summary>
+            Serializes an array of parameters into a byte array which can be deserialized using the deserializer in this class
+            </summary>
+            <param name="Writer">BinaryWriter</param>
+            <param name="Parameters">Array of parameters (Supports basic value types)</param>
         </member>
         <member name="T:SocketMeister.SocketAsyncEventArgsPool">
             <summary>
@@ -571,12 +650,6 @@
             <param name="Capacity">Maximum number of SocketAsyncEventArgs objects the pool can hold.</param>
         </member>
         <member name="M:SocketMeister.SocketAsyncEventArgsPool.Pop">
-            <summary>
-            Removes a SocketAsyncEventArgs instance from the pool.
-            </summary>
-            <returns>SocketAsyncEventArgs removed from the pool.</returns>
-        </member>
-        <member name="M:SocketMeister.SocketAsyncEventArgsPool.Pop(System.Int32)">
             <summary>
             Removes a SocketAsyncEventArgs instance from the pool.
             </summary>
@@ -884,6 +957,11 @@
             The end point (client) requesting the policy file
             </summary>
         </member>
+        <member name="F:SocketMeister.PolicyServer.ServicePort">
+            <summary>
+            The port that the policy server is listening on.
+            </summary>
+        </member>
         <member name="E:SocketMeister.PolicyServer.TraceEventRaised">
             <summary>
             Trace message raised from within SocketMeister.
@@ -909,15 +987,38 @@
             PolicyServer Constructor. The policy server will connect to all network interfaces on port 943
             </summary>
         </member>
+        <member name="M:SocketMeister.PolicyServer.Dispose">
+            <summary>
+            Dispose
+            </summary>
+        </member>
+        <member name="M:SocketMeister.PolicyServer.Dispose(System.Boolean)">
+            <summary>
+            Dispose
+            </summary>
+            <param name="disposing">Disposing</param>
+        </member>
         <member name="P:SocketMeister.PolicyServer.IPAddress">
             <summary>
             The IP address being used.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.PolicyServer.Port">
+            <summary>
+            Port number which the policy server is listening on.
             </summary>
         </member>
         <member name="P:SocketMeister.PolicyServer.ListenerState">
             <summary>
             The current status of the listener socket. Statuses include Stopped, Starting, Started and Stopping
             </summary>
+        </member>
+        <member name="M:SocketMeister.PolicyServer.GetLocalIPv4(System.Net.NetworkInformation.NetworkInterfaceType)">
+            <summary>
+            Get the local IP4 address
+            </summary>
+            <param name="type">NetworkInterfaceType</param>
+            <returns>IP Address string</returns>
         </member>
         <member name="M:SocketMeister.PolicyServer.Start">
             <summary>
@@ -1071,6 +1172,11 @@
         <member name="P:SocketMeister.SocketServer.ListenerState">
             <summary>
             To be depricated. Replace with "Status". Status of the socket listener
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketServer.Status">
+            <summary>
+            The execution status of the socket server.
             </summary>
         </member>
         <member name="P:SocketMeister.SocketServer.RequestsInProgress">

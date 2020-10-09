@@ -32,7 +32,7 @@ namespace SocketMeister.Testing
 
     internal class OpenTransactions
     {
-        private List<OpenTransaction> _items = new List<OpenTransaction>();
+        private readonly List<OpenTransaction> _items = new List<OpenTransaction>();
         private readonly object _lock = new object();
 
         public OpenTransactions()

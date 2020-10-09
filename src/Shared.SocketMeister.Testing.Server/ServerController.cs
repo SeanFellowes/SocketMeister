@@ -16,7 +16,7 @@ namespace SocketMeister.Testing
         private bool _disposed = false;
         private bool _disposeCalled = false;
         private readonly object _lock = new object();
-        private static OpenTransactions _openTransactions = new OpenTransactions();
+        private readonly static OpenTransactions _openTransactions = new OpenTransactions();
         private int _port;
         private SocketServer _socketServer = null;
 
