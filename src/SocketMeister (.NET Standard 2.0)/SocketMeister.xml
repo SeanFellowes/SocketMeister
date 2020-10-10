@@ -126,6 +126,26 @@
             Service is stopping
             </summary>
         </member>
+        <member name="T:SocketMeister.Messages.ClientHandshake">
+            <summary>
+            Client sends this to server after it connects. It contains information about the client and version of the client software.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Messages.ClientHandshake.#ctor">
+            <summary>
+            RequestMessage constructor
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.ClientHandshake.SocketClientVersion">
+            <summary>
+            Version of the client accessing this server. Developer must update this when client functionality changes.
+            </summary>
+        </member>
+        <member name="T:SocketMeister.Messages.ClientHandshakeResponse">
+            <summary>
+            Server sends this back to the client after it processes a ClientHandshake.
+            </summary>
+        </member>
         <member name="T:SocketMeister.Messages.MessageTypes">
             <summary>
             Internal message types
@@ -136,12 +156,12 @@
             Unknown message type, usually associated with an error
             </summary>
         </member>
-        <member name="F:SocketMeister.Messages.MessageTypes.Message">
+        <member name="F:SocketMeister.Messages.MessageTypes.OLDMessage">
             <summary>
-            Basic message.
+            Basic message (OLD FORMAT)
             </summary>
         </member>
-        <member name="F:SocketMeister.Messages.MessageTypes.RequestMessageV1">
+        <member name="F:SocketMeister.Messages.MessageTypes.OLDRequestMessage">
             <summary>
             Request (expecting a response). Version 1 (From SocketMeister 1.x.x.x)
             </summary>
@@ -171,7 +191,22 @@
             Server sends a poll response when a poll request is received from a client
             </summary>
         </member>
-        <member name="F:SocketMeister.Messages.MessageTypes.RequestMessageV2">
+        <member name="F:SocketMeister.Messages.MessageTypes.Message">
+            <summary>
+            Basic message.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Messages.MessageTypes.ClientHandshake">
+            <summary>
+            Client sends this to server after it connects. It contains information about the client and version of the client software.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Messages.MessageTypes.ClientHandshakeResponse">
+            <summary>
+            Server sends this back to the client after it processes a ClientHandshake.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Messages.MessageTypes.RequestMessage">
             <summary>
             Request (expecting a response). Version 2 (From SocketMeister 2.x.x.x)
             </summary>
@@ -417,6 +452,11 @@
         <member name="P:SocketMeister.Messages.Message.TimeoutMilliseconds">
             <summary>
             Number of milliseconds to wait before a timeout will occur.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.MessageBase.SerializationVersion">
+            <summary>
+            Version of the serialized message. This provides the ability add new functionality to each message type, but maintain, for as long as possible, backward compatibility.
             </summary>
         </member>
         <member name="T:SocketMeister.Messages.PollRequest">
@@ -769,6 +809,11 @@
         <member name="F:SocketMeister.SocketClient.POLLING_FREQUENCY">
             <summary>
             The frequency, in seconds, that this client will poll the server, to ensure the socket is alive.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.SocketClient.VERSION">
+            <summary>
+            Version of this client accessing this SocketClient. This allows SocketServer to provide some backwards compatibility to older clients.
             </summary>
         </member>
         <member name="E:SocketMeister.SocketClient.ConnectionStatusChanged">

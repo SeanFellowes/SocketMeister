@@ -16,6 +16,8 @@ namespace SocketMeister.Messages
         /// </summary>
         MessageTypes MessageType { get; }
 
+        int SerializationVersion { get; }
+
         /// <summary>
         /// Status of a 'SendRequest()' operation, used only on the SocketClient, to track: If messages have been sent, a response has been received, or an error/timeout.
         /// </summary>

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net.Sockets;
-
+using System.Reflection;
 
 namespace SocketMeister.Messages
 {
@@ -40,7 +40,7 @@ namespace SocketMeister.Messages
         /// </summary>
         /// <param name="Parameters">Array of parameters to send with the request. There must be at least 1 parameter.</param>
         /// <param name="TimeoutMilliseconds">The maximum number of milliseconds to wait for a response before timing out.</param>
-        public Message(object[] Parameters, int TimeoutMilliseconds) : base(MessageTypes.Message)
+        public Message(object[] Parameters, int TimeoutMilliseconds) : base(MessageTypes.OLDMessage, 1)
         {
             _parameters = Parameters;
             _timeoutMilliseconds = TimeoutMilliseconds;
@@ -58,10 +58,17 @@ namespace SocketMeister.Messages
         }
 
 
-        internal Message(BinaryReader bR) : base(MessageTypes.Message)
+        internal Message(BinaryReader bR, int SerializationVersion) : base(MessageTypes.OLDMessage, SerializationVersion)
         {
-            _timeoutMilliseconds = TimeoutMilliseconds;
-            _parameters = Serializer.DeserializeParameters(bR);
+            if (SerializationVersion == 1 || SerializationVersion == 2)
+            {
+                _timeoutMilliseconds = TimeoutMilliseconds;
+                _parameters = Serializer.DeserializeParameters(bR);
+            }
+            else
+            {
+                throw new PlatformNotSupportedException("Deserializer does not exist for version " + SerializationVersion + " of message type " + nameof(Message) + " in this version of this assembly (" + Assembly.GetExecutingAssembly().FullName + ")");
+            }
         }
 
         /// <summary>

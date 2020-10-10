@@ -10,7 +10,7 @@ namespace SocketMeister.Messages
     /// </summary>
     internal class ClientDisconnectMessage : MessageBase, IMessage
     {
-        public ClientDisconnectMessage() : base(MessageTypes.ClientDisconnectMessage)
+        public ClientDisconnectMessage() : base(MessageTypes.ClientDisconnectMessage, 1)
         {
         }
 

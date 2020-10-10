@@ -37,7 +37,7 @@ namespace SocketMeister
         private SocketServerStatus _listenerState;
         private readonly IPEndPoint _localEndPoint = null;
         private readonly object _lock = new object();
-        private int _requestsInProgress = 0;
+        private int _requestsInProgress;
         private bool _isStopRequested;
         private readonly Thread _threadListener = null;
 
@@ -344,9 +344,9 @@ namespace SocketMeister
                 {
                     if (receiveEnvelope.AddBytesFromSocketReceiveBuffer(receivedBytesCount, remoteClient.ReceiveBuffer, ref receiveBufferPtr) == true)
                     {
-                        if (receiveEnvelope.MessageType == MessageTypes.RequestMessageV1)
+                        if (receiveEnvelope.MessageType == MessageTypes.OLDRequestMessage)
                         {
-                            RequestMessage request = receiveEnvelope.GetRequestMessage(1);
+                            RequestMessage request = receiveEnvelope.GetOLDRequestMessage();
                             request.RemoteClient = remoteClient;
                             if (ListenerState == SocketServerStatus.Stopping)
                             {
@@ -359,7 +359,7 @@ namespace SocketMeister
                                 ThreadPool.QueueUserWorkItem(BgProcessRequestMessage, request);
                             }
                         }
-                        else if (receiveEnvelope.MessageType == MessageTypes.RequestMessageV2)
+                        else if (receiveEnvelope.MessageType == MessageTypes.RequestMessage)
                         {
                             RequestMessage request = receiveEnvelope.GetRequestMessage(2);
                             request.RemoteClient = remoteClient;
@@ -382,7 +382,7 @@ namespace SocketMeister
                                 remoteClient.ProcessResponseMessage(receiveEnvelope.GetResponseMessage());
                             }
                         }
-                        else if (receiveEnvelope.MessageType == MessageTypes.Message)
+                        else if (receiveEnvelope.MessageType == MessageTypes.OLDMessage)
                         {
                             if (ListenerState == SocketServerStatus.Started)
                             {

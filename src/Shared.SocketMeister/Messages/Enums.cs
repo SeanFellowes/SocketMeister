@@ -14,13 +14,13 @@ namespace SocketMeister.Messages
         /// </summary>
         Unknown = 0,
         /// <summary>
-        /// Basic message.
+        /// Basic message (OLD FORMAT)
         /// </summary>
-        Message = 1,
+        OLDMessage = 1,
         /// <summary>
         /// Request (expecting a response). Version 1 (From SocketMeister 1.x.x.x)
         /// </summary>
-        RequestMessageV1 = 2,
+        OLDRequestMessage = 2,
         /// <summary>
         /// Response to a client request
         /// </summary>
@@ -42,10 +42,21 @@ namespace SocketMeister.Messages
         /// </summary>
         PollResponse = 7,
         /// <summary>
+        /// Basic message.
+        /// </summary>
+        Message = 10,
+        /// <summary>
+        /// Client sends this to server after it connects. It contains information about the client and version of the client software.
+        /// </summary>
+        ClientHandshake = 20,
+        /// <summary>
+        /// Server sends this back to the client after it processes a ClientHandshake.
+        /// </summary>
+        ClientHandshakeResponse = 21,
+        /// <summary>
         /// Request (expecting a response). Version 2 (From SocketMeister 2.x.x.x)
         /// </summary>
-        RequestMessageV2 = 100
-
+        RequestMessage = 100
     }
 
 

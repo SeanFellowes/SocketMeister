@@ -36,6 +36,11 @@ namespace SocketMeister
         /// </summary>
         private const int POLLING_FREQUENCY = 10;
 
+        /// <summary>
+        /// Version of this client accessing this SocketClient. This allows SocketServer to provide some backwards compatibility to older clients.
+        /// </summary>
+        public const int VERSION = 2;
+
 
         private SocketAsyncEventArgs _asyncEventArgsConnect = null;
         private SocketAsyncEventArgs _asyncEventArgsPolling = null;
@@ -739,12 +744,16 @@ namespace SocketMeister
                         {
                             NotifyMessageReceived(_receiveEngine.GetMessage());
                         }
-                        else if (_receiveEngine.MessageType == MessageTypes.RequestMessageV1)
+                        else if (_receiveEngine.MessageType == MessageTypes.OLDMessage)
                         {
-                            RequestMessage request = _receiveEngine.GetRequestMessage(1);
+                            NotifyMessageReceived(_receiveEngine.GetOLDMessage());
+                        }
+                        else if (_receiveEngine.MessageType == MessageTypes.OLDRequestMessage)
+                        {
+                            RequestMessage request = _receiveEngine.GetOLDRequestMessage();
                             ThreadPool.QueueUserWorkItem(BgProcessRequestMessage, request);
                         }
-                        else if (_receiveEngine.MessageType == MessageTypes.RequestMessageV2)
+                        else if (_receiveEngine.MessageType == MessageTypes.RequestMessage)
                         {
                             RequestMessage request = _receiveEngine.GetRequestMessage(2);
                             ThreadPool.QueueUserWorkItem(BgProcessRequestMessage, request);
@@ -781,7 +790,7 @@ namespace SocketMeister
                 DisconnectSocket();
             }
         }
-
+        
 
         private void BgProcessRequestMessage(object state)
         {
