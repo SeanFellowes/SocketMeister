@@ -25,26 +25,31 @@ namespace SocketMeister.Messages
 
     internal partial class ResponseMessage : MessageBase, IMessage
     {
+        /// <summary>
+        /// Increment this and add deserialization code when changing the serialized format.
+        /// </summary>
+        private const int SERIALIZER_VERSION = 1;
+
         //  RESPONSE VARIABLES
         private readonly string _error;
         private readonly long _requestId;
         private readonly RequestResult _requestResultCode;
         private readonly Byte[] _responseData = null;
 
-        public ResponseMessage(long RequestId, byte[] ResponseData) : base(MessageTypes.ResponseMessage, 1)
+        public ResponseMessage(long RequestId, byte[] ResponseData) : base(MessageTypes.ResponseMessage, SERIALIZER_VERSION)
         {
             _requestId = RequestId;
             _responseData = ResponseData;
             _requestResultCode = RequestResult.Success;
         }
 
-        public ResponseMessage(long RequestId, RequestResult RequestResultCode) : base(MessageTypes.ResponseMessage, 1)
+        public ResponseMessage(long RequestId, RequestResult RequestResultCode) : base(MessageTypes.ResponseMessage, SERIALIZER_VERSION)
         {
             _requestId = RequestId;
             _requestResultCode = RequestResultCode;
         }
 
-        public ResponseMessage(long RequestId, Exception Exception) : base(MessageTypes.ResponseMessage, 1)
+        public ResponseMessage(long RequestId, Exception Exception) : base(MessageTypes.ResponseMessage, SERIALIZER_VERSION)
         {
             _requestId = RequestId;
             _requestResultCode = RequestResult.Exception;

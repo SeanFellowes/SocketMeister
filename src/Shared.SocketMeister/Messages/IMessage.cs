@@ -16,20 +16,15 @@ namespace SocketMeister.Messages
         /// </summary>
         MessageTypes MessageType { get; }
 
-        int SerializationVersion { get; }
+        int SerializerVersion { get; }
 
         /// <summary>
         /// Status of a 'SendRequest()' operation, used only on the SocketClient, to track: If messages have been sent, a response has been received, or an error/timeout.
         /// </summary>
         MessageStatus Status { get; set; }
 
-        ///// <summary>
-        ///// Number of milliseconds to wait before a timeout will occur.
-        ///// </summary>
-        //int TimeoutMilliseconds { get; }
-
         /// <summary>
-        /// Mandatory method to append binary data to the IMessage object,
+        /// Mandatory method to serialize class and append to an open BinaryWriter.
         /// </summary>
         /// <param name="Writer"></param>
         void AppendBytes(BinaryWriter Writer);

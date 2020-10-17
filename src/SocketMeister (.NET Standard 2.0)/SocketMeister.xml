@@ -146,6 +146,16 @@
             Server sends this back to the client after it processes a ClientHandshake.
             </summary>
         </member>
+        <member name="M:SocketMeister.Messages.ClientHandshakeResponse.#ctor">
+            <summary>
+            RequestMessage constructor
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.ClientHandshakeResponse.SocketServerVersion">
+            <summary>
+            Version of the client accessing this server. Developer must update this when client functionality changes.
+            </summary>
+        </member>
         <member name="T:SocketMeister.Messages.MessageTypes">
             <summary>
             Internal message types
@@ -418,7 +428,7 @@
         </member>
         <member name="M:SocketMeister.Messages.IMessage.AppendBytes(System.IO.BinaryWriter)">
             <summary>
-            Mandatory method to append binary data to the IMessage object,
+            Mandatory method to serialize class and append to an open BinaryWriter.
             </summary>
             <param name="Writer"></param>
         </member>
@@ -454,7 +464,7 @@
             Number of milliseconds to wait before a timeout will occur.
             </summary>
         </member>
-        <member name="P:SocketMeister.Messages.MessageBase.SerializationVersion">
+        <member name="P:SocketMeister.Messages.MessageBase.SerializerVersion">
             <summary>
             Version of the serialized message. This provides the ability add new functionality to each message type, but maintain, for as long as possible, backward compatibility.
             </summary>
@@ -1160,6 +1170,11 @@
         <member name="F:SocketMeister.SocketServer.MAX_WAIT_FOR_CLIENT_DISCONNECT_WHEN_STOPPING">
             <summary>
             The maximum number of milliseconds to wait for clients to disconnect whien stopping the socket server
+            </summary>
+        </member>
+        <member name="F:SocketMeister.SocketServer.VERSION">
+            <summary>
+            Version of the SocketServer. This allows server specific functionality.
             </summary>
         </member>
         <member name="E:SocketMeister.SocketServer.ClientConnected">

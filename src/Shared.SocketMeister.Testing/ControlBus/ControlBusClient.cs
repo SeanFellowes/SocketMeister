@@ -111,9 +111,12 @@ namespace SocketMeister.Testing.ControlBus
 
             //Thread bgFailIfDisconnected = new Thread(new ThreadStart(delegate
             //{
-                //  WAIT UP TO 5 SECONDS FOR THE HarnessControlBusSocketClient TO CONNECT TO THE HarnessController
-                DateTime maxWait = DateTime.Now.AddMilliseconds(5000);
-                while (true == true)
+            //  WAIT UP TO 5 SECONDS FOR THE HarnessControlBusSocketClient TO CONNECT TO THE HarnessController
+            //  SEAN SEAN SEAN (Try 5000)
+            //DateTime maxWait = DateTime.Now.AddMilliseconds(5000);
+            DateTime maxWait = DateTime.Now.AddMilliseconds(60000);
+
+            while (true == true)
                 {
                     if (ControlBusSocketClient.ConnectionStatus == SocketClient.ConnectionStatuses.Connected)
                     {

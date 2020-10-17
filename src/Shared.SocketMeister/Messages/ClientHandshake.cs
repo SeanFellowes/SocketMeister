@@ -12,12 +12,17 @@ namespace SocketMeister.Messages
     /// </summary>
     internal partial class ClientHandshake : MessageBase, IMessage
     {
+        /// <summary>
+        /// Increment this and add deserialization code when changing the serialized format.
+        /// </summary>
+        private const int SERIALIZER_VERSION = 1;
+
         private readonly int _socketClientVersion;
 
         /// <summary>
         /// RequestMessage constructor
         /// </summary>
-        public ClientHandshake() : base(MessageTypes.ClientHandshake, 1)
+        public ClientHandshake() : base(MessageTypes.ClientHandshake, SERIALIZER_VERSION)
         {
             _socketClientVersion = SocketClient.VERSION;
         }
@@ -31,7 +36,7 @@ namespace SocketMeister.Messages
             }
             else
             {
-                throw new PlatformNotSupportedException("Deserializer does not exist for version " + base.SerializationVersion + " of message type " + nameof(ClientHandshake) + " in this version of this assembly (" + Assembly.GetExecutingAssembly().FullName + ")");
+                throw new PlatformNotSupportedException("Deserializer does not exist for version " + base.SerializerVersion + " of message type " + nameof(ClientHandshake) + " in this version of this assembly (" + Assembly.GetExecutingAssembly().FullName + ")");
             }
 
         }
@@ -49,7 +54,7 @@ namespace SocketMeister.Messages
 
         public void AppendBytes(BinaryWriter Writer)
         {
-            Writer.Write(base.SerializationVersion);
+            Writer.Write(base.SerializerVersion);
             Writer.Write(_socketClientVersion);
         }
 

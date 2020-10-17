@@ -10,7 +10,12 @@ namespace SocketMeister.Messages
     /// </summary>
     internal class ClientDisconnectMessage : MessageBase, IMessage
     {
-        public ClientDisconnectMessage() : base(MessageTypes.ClientDisconnectMessage, 1)
+        /// <summary>
+        /// Increment this and add deserialization code when changing the serialized format.
+        /// </summary>
+        private const int SERIALIZER_VERSION = 1;
+
+        public ClientDisconnectMessage() : base(MessageTypes.ClientDisconnectMessage, SERIALIZER_VERSION)
         {
         }
 

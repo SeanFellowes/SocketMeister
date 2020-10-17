@@ -7,10 +7,15 @@ namespace SocketMeister.Messages
 {
     internal class ServerStoppingMessage : MessageBase, IMessage
     {
+        /// <summary>
+        /// Increment this and add deserialization code when changing the serialized format.
+        /// </summary>
+        private const int SERIALIZER_VERSION = 1;
+
         //  INTERNAL (NOT SENT IN MESSAGE DATA)
         private readonly int _maxWaitMilliseconds;
 
-        public ServerStoppingMessage(int MaxWaitMilliseconds) : base(MessageTypes.ServerStoppingMessage, 1)
+        public ServerStoppingMessage(int MaxWaitMilliseconds) : base(MessageTypes.ServerStoppingMessage, SERIALIZER_VERSION)
         {
             _maxWaitMilliseconds = MaxWaitMilliseconds;
         }

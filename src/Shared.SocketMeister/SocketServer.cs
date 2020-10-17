@@ -42,6 +42,12 @@ namespace SocketMeister
         private readonly Thread _threadListener = null;
 
         /// <summary>
+        /// Version of the SocketServer. This allows server specific functionality.
+        /// </summary>
+        public const int VERSION = 2;
+
+
+        /// <summary>
         /// Event raised when a client connects to the socket server (Raised in a seperate thread)
         /// </summary>
         public event EventHandler<ClientConnectedEventArgs> ClientConnected;
@@ -414,6 +420,20 @@ namespace SocketMeister
                                 )).Start();
                             }
                         }
+                        else if (receiveEnvelope.MessageType == MessageTypes.ClientHandshake)
+                        {
+                            if (ListenerState == SocketServerStatus.Started)
+                            {
+                                ClientHandshake message = receiveEnvelope.GetClientHandshake();
+                                lock (_lock) { _requestsInProgress += 1; }
+                                new Thread(new ThreadStart(delegate
+                                {
+                                    BgProcessClientHandshake(remoteClient, message);
+                                }
+                                )).Start();
+                            }
+                        }
+
                     }
 
                 }
@@ -493,6 +513,24 @@ namespace SocketMeister
                 lock (_lock) { _requestsInProgress -= 1; }
             }
         }
+
+        private void BgProcessClientHandshake(Client remoteClient, ClientHandshake message)
+        {
+            try
+            {
+                //  SEND ClientHandshakeResponse
+                SendMessage(remoteClient, new ClientHandshakeResponse());
+            }
+            catch (Exception ex)
+            {
+                NotifyTraceEventRaised(ex, 5008);
+            }
+            finally
+            {
+                lock (_lock) { _requestsInProgress -= 1; }
+            }
+        }
+
 
         private void BgProcessRequestMessage(object state)
         {

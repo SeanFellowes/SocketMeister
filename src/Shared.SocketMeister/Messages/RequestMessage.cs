@@ -28,6 +28,11 @@ namespace SocketMeister.Messages
     /// </summary>
     internal partial class RequestMessage : MessageBase, IMessage
     {
+        /// <summary>
+        /// Increment this and add deserialization code when changing the serialized format.
+        /// </summary>
+        private const int SERIALIZER_VERSION = 2;
+
         //  REQUEST ID
         private static long _maxRequestId;
         private static readonly object _lockMaxRequestId = new object();
@@ -50,7 +55,7 @@ namespace SocketMeister.Messages
         /// <param name="Parameters">Array of parameters to send with the request. There must be at least 1 parameter.</param>
         /// <param name="TimeoutMilliseconds">The maximum number of milliseconds to wait for a response before timing out.</param>
         /// <param name="IsLongPolling">The maximum number of milliseconds to wait for a response before timing out.</param>
-        public RequestMessage(object[] Parameters, int TimeoutMilliseconds, bool IsLongPolling = false) : base(MessageTypes.RequestMessage, 1)
+        public RequestMessage(object[] Parameters, int TimeoutMilliseconds, bool IsLongPolling = false) : base(MessageTypes.RequestMessage, SERIALIZER_VERSION)
         {
             _parameters = Parameters;
             _timeoutMilliseconds = TimeoutMilliseconds;

@@ -23,6 +23,7 @@ namespace SocketMeister
             private readonly Socket _clientSocket;
             private int _clientVersion = 1;
             private readonly DateTime _connectTimestamp = DateTime.Now;
+            private readonly object _lock = new object();
             private readonly OpenRequestMessageCollection _openRequests = new OpenRequestMessageCollection();
             private readonly MessageEngine _receivedEnvelope;
             private readonly SocketServer _socketServer;
@@ -43,6 +44,13 @@ namespace SocketMeister
             /// Socket which the client is transmitting data on.
             /// </summary>
             internal Socket ClientSocket { get { return _clientSocket; } }
+
+            public int ClientVersion 
+            {
+                get { lock (_lock) { return _clientVersion; } }
+                set { lock(_lock) { _clientVersion = value; } }
+            }
+
 
             /// <summary>
             /// Date and time which the client connected.

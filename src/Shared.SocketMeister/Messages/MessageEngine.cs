@@ -333,12 +333,21 @@ namespace SocketMeister.Messages
             }
         }
 
-        internal RequestMessage GetClientHandshakeMessage()
+        internal ClientHandshake GetClientHandshake()
         {
             using (BinaryReader reader = new BinaryReader(new MemoryStream(GetBuffer())))
             {
                 int serializationVersion = reader.ReadInt32();
-                return new RequestMessage(reader, serializationVersion);
+                return new ClientHandshake(reader, serializationVersion);
+            }
+        }
+
+        internal ClientHandshakeResponse GetClientHandshakeResponse()
+        {
+            using (BinaryReader reader = new BinaryReader(new MemoryStream(GetBuffer())))
+            {
+                int serializationVersion = reader.ReadInt32();
+                return new ClientHandshakeResponse(reader, serializationVersion);
             }
         }
 
