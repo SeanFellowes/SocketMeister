@@ -25,6 +25,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SocketMeister.TestHarness.W
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SocketMeister.TestServer.WinForms", "SocketMeister.TestServer.WinForms\SocketMeister.TestServer.WinForms.csproj", "{C7D99721-27C2-4C3C-A471-F5AF7165E7B0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocketMeister.Server.TestApp", "SocketMeister.Server.TestApp\SocketMeister.Server.TestApp.csproj", "{2CC58ECF-362F-4581-AA51-13E0281237E1}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Shared.SocketMeister.Testing.Server\Shared.SocketMeister.Testing.Server.projitems*{20d137cd-b17e-42f9-b281-5bd7d6248241}*SharedItemsImports = 13
@@ -179,6 +181,26 @@ Global
 		{C7D99721-27C2-4C3C-A471-F5AF7165E7B0}.Release|x64.Build.0 = Release|Any CPU
 		{C7D99721-27C2-4C3C-A471-F5AF7165E7B0}.Release|x86.ActiveCfg = Release|Any CPU
 		{C7D99721-27C2-4C3C-A471-F5AF7165E7B0}.Release|x86.Build.0 = Release|Any CPU
+		{2CC58ECF-362F-4581-AA51-13E0281237E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2CC58ECF-362F-4581-AA51-13E0281237E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2CC58ECF-362F-4581-AA51-13E0281237E1}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{2CC58ECF-362F-4581-AA51-13E0281237E1}.Debug|ARM.Build.0 = Debug|Any CPU
+		{2CC58ECF-362F-4581-AA51-13E0281237E1}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{2CC58ECF-362F-4581-AA51-13E0281237E1}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{2CC58ECF-362F-4581-AA51-13E0281237E1}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2CC58ECF-362F-4581-AA51-13E0281237E1}.Debug|x64.Build.0 = Debug|Any CPU
+		{2CC58ECF-362F-4581-AA51-13E0281237E1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2CC58ECF-362F-4581-AA51-13E0281237E1}.Debug|x86.Build.0 = Debug|Any CPU
+		{2CC58ECF-362F-4581-AA51-13E0281237E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2CC58ECF-362F-4581-AA51-13E0281237E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2CC58ECF-362F-4581-AA51-13E0281237E1}.Release|ARM.ActiveCfg = Release|Any CPU
+		{2CC58ECF-362F-4581-AA51-13E0281237E1}.Release|ARM.Build.0 = Release|Any CPU
+		{2CC58ECF-362F-4581-AA51-13E0281237E1}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{2CC58ECF-362F-4581-AA51-13E0281237E1}.Release|ARM64.Build.0 = Release|Any CPU
+		{2CC58ECF-362F-4581-AA51-13E0281237E1}.Release|x64.ActiveCfg = Release|Any CPU
+		{2CC58ECF-362F-4581-AA51-13E0281237E1}.Release|x64.Build.0 = Release|Any CPU
+		{2CC58ECF-362F-4581-AA51-13E0281237E1}.Release|x86.ActiveCfg = Release|Any CPU
+		{2CC58ECF-362F-4581-AA51-13E0281237E1}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
