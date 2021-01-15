@@ -6,7 +6,9 @@ using System.Text;
 namespace SocketMeister
 {
 #if SMISPUBLIC
+#pragma warning disable CA1001 // Types that own disposable fields should be disposable
     public partial class SocketServer
+#pragma warning restore CA1001 // Types that own disposable fields should be disposable
 #else
     internal partial class SocketServer
 #endif

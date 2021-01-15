@@ -51,8 +51,8 @@ namespace SocketMeister
                 if (Client == null) return;
                 int clientCount = 0;
 
-                lock (_lock) 
-                { 
+                lock (_lock)
+                {
                     _list.Add(Client);
                     clientCount = _list.Count;
                 }

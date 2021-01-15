@@ -61,6 +61,22 @@ namespace SocketMeister
 
 
         /// <summary>
+        /// Removes a SocketAsyncEventArgs instance from the pool.
+        /// </summary>
+        /// <returns>SocketAsyncEventArgs removed from the pool.</returns>
+        internal SocketAsyncEventArgs Pop(int MaxTryMilliseconds)
+        {
+            while (true == true)
+                lock (_pool)
+                {
+                    //  ENSURE THERE IS ALWAYS AT LEAST ONE ITEM
+                    if (_pool.Count > 0) return _pool.Pop();
+                    return null;
+                }
+        }
+
+
+        /// <summary>
         /// Add a SocketAsyncEventArg instance to the pool. 
         /// </summary>
         /// <param name="item">SocketAsyncEventArgs instance to add to the pool.</param>

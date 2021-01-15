@@ -10,12 +10,7 @@ namespace SocketMeister.Messages
     /// </summary>
     internal class PollRequest : MessageBase, IMessage
     {
-        /// <summary>
-        /// Increment this and add deserialization code when changing the serialized format.
-        /// </summary>
-        private const int SERIALIZER_VERSION = 1;
-
-        public PollRequest() : base(MessageTypes.PollRequest, SERIALIZER_VERSION) { }
+        public PollRequest() : base(MessageTypes.PollRequest) { }
 
         ///// <summary>
         ///// Fastest was to build this is to create it directly from the SocketEnvelope buffer.

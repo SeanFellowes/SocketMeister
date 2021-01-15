@@ -6,7 +6,7 @@
     <AssemblyName>SocketMeister</AssemblyName>
     <Authors>Sean Fellowes</Authors>
     <Description>Performant TCP socket server and client for .NET. Client features automated reconnect within single and multiple server environments.</Description>
-    <Copyright>Copyright © 2010-2020 Sean Fellowes</Copyright>
+    <Copyright>Copyright © 2010-2021 Sean Fellowes</Copyright>
     <PackageProjectUrl>https://github.com/SeanFellowes/SocketMeister</PackageProjectUrl>
     <RepositoryUrl>https://github.com/SeanFellowes/SocketMeister</RepositoryUrl>
     <Version>2.0.5</Version>
@@ -21,8 +21,8 @@
     <DocumentationFile>C:\Users\sfell\Source\Repos\SeanFellowes\SocketMeister\src\SocketMeister (.NET Standard 2.0)\SocketMeister.xml</DocumentationFile>
     <PackageIcon>icon_128.png</PackageIcon>
     <SelfContained>true</SelfContained>
-    <AssemblyVersion>2.1.0.0</AssemblyVersion>
-    <FileVersion>2.1.0.0</FileVersion>
+    <AssemblyVersion>2.0.6.0</AssemblyVersion>
+    <FileVersion>2.0.6.0</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net35|AnyCPU'">

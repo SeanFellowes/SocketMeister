@@ -5,7 +5,7 @@
 namespace SocketMeister
 {
 #if SMISPUBLIC
-     public partial class PolicyServer : IDisposable
+    public partial class PolicyServer : IDisposable
 #else
     internal partial class PolicyServer : IDisposable
 #endif
@@ -13,7 +13,9 @@ namespace SocketMeister
         /// <summary>
         /// Raised whenever a policy request is received
         /// </summary>
+#pragma warning disable CA1034 // Nested types should not be visible
         public class PolicyRequestReceivedEventArgs : EventArgs
+#pragma warning restore CA1034 // Nested types should not be visible
         {
             /// <summary>
             /// The end point (client) requesting the policy file

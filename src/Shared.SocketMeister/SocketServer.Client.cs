@@ -9,7 +9,9 @@ using SocketMeister.Messages;
 namespace SocketMeister
 {
 #if SMISPUBLIC
+#pragma warning disable CA1001 // Types that own disposable fields should be disposable
     public partial class SocketServer
+#pragma warning restore CA1001 // Types that own disposable fields should be disposable
 #else
     internal partial class SocketServer
 #endif
@@ -17,13 +19,13 @@ namespace SocketMeister
         /// <summary>
         /// Remote client which has connected to the socket server
         /// </summary>
+#pragma warning disable CA1034 // Nested types should not be visible
         public class Client
+#pragma warning restore CA1034 // Nested types should not be visible
         {
             private readonly Guid _clientId = Guid.NewGuid();
             private readonly Socket _clientSocket;
-            private int _clientVersion = 1;
             private readonly DateTime _connectTimestamp = DateTime.Now;
-            private readonly object _lock = new object();
             private readonly OpenRequestMessageCollection _openRequests = new OpenRequestMessageCollection();
             private readonly MessageEngine _receivedEnvelope;
             private readonly SocketServer _socketServer;
@@ -44,13 +46,6 @@ namespace SocketMeister
             /// Socket which the client is transmitting data on.
             /// </summary>
             internal Socket ClientSocket { get { return _clientSocket; } }
-
-            public int ClientVersion 
-            {
-                get { lock (_lock) { return _clientVersion; } }
-                set { lock(_lock) { _clientVersion = value; } }
-            }
-
 
             /// <summary>
             /// Date and time which the client connected.
@@ -119,7 +114,10 @@ namespace SocketMeister
             {
                 if (_socketServer.ListenerState != SocketServerStatus.Started) return null;
 
+                DateTime nowTs = DateTime.Now;
                 _openRequests.Add(Request);
+
+                byte[] sendBytes = MessageEngine.GenerateSendBytes(Request, false);
 
                 while (Request.TrySendReceive == true)
                 {

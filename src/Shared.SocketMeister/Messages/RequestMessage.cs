@@ -2,7 +2,6 @@
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using System.Reflection;
 using System.Threading;
 
 namespace SocketMeister.Messages
@@ -28,18 +27,13 @@ namespace SocketMeister.Messages
     /// </summary>
     internal partial class RequestMessage : MessageBase, IMessage
     {
-        /// <summary>
-        /// Increment this and add deserialization code when changing the serialized format.
-        /// </summary>
-        private const int SERIALIZER_VERSION = 2;
-
         //  REQUEST ID
-        private static long _maxRequestId;
+        private static long _maxRequestId = 0;
         private static readonly object _lockMaxRequestId = new object();
 
         //  REQUEST VARIABLES
-        private readonly bool _isLongPolling;
-        private bool _isResponseReceived;
+        private readonly bool _isLongPolling = false;
+        private bool _isResponseReceived = false;
         private readonly byte[] _parameterBytes = null;
         private readonly object[] _parameters = null;
         private readonly long _requestId;
@@ -55,7 +49,7 @@ namespace SocketMeister.Messages
         /// <param name="Parameters">Array of parameters to send with the request. There must be at least 1 parameter.</param>
         /// <param name="TimeoutMilliseconds">The maximum number of milliseconds to wait for a response before timing out.</param>
         /// <param name="IsLongPolling">The maximum number of milliseconds to wait for a response before timing out.</param>
-        public RequestMessage(object[] Parameters, int TimeoutMilliseconds, bool IsLongPolling = false) : base(MessageTypes.RequestMessage, SERIALIZER_VERSION)
+        public RequestMessage(object[] Parameters, int TimeoutMilliseconds, bool IsLongPolling = false) : base(MessageTypes.RequestMessageV2)
         {
             _parameters = Parameters;
             _timeoutMilliseconds = TimeoutMilliseconds;
@@ -86,18 +80,16 @@ namespace SocketMeister.Messages
         }
 
 
-        internal RequestMessage(BinaryReader bR, int SerializationVersion) : base(MessageTypes.RequestMessage, SerializationVersion)
+        internal RequestMessage(BinaryReader bR, int Version) : base(MessageTypes.RequestMessageV2)
         {
-            if (SerializationVersion == 1)
+            if (Version == 1)
             {
-                //  NOT SERIALIZED IN SV1
-                _timeoutMilliseconds = 60000;       //  NOT IN VERSION 1
-
                 _requestId = bR.ReadInt64();
+                _timeoutMilliseconds = 60000;       //  NOT IN VERSION 1
                 _isLongPolling = bR.ReadBoolean();
                 _parameters = Serializer.DeserializeParameters(bR);
             }
-            else if (SerializationVersion == 2)
+            else if (Version == 2)
             {
                 _requestId = bR.ReadInt64();
                 _timeoutMilliseconds = bR.ReadInt32();
@@ -106,7 +98,7 @@ namespace SocketMeister.Messages
             }
             else
             {
-                throw new PlatformNotSupportedException("Deserializer does not exist for version " + SerializationVersion + " of message type " + nameof(RequestMessage) + " in this version of this assembly (" + Assembly.GetExecutingAssembly().FullName + ")");
+                throw new ArgumentOutOfRangeException(nameof(Version), "Only versions 1 and 2 have a deserializer");
             }
 
             //  SETUP TIMEOUT

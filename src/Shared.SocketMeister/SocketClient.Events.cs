@@ -17,7 +17,9 @@ namespace SocketMeister
         /// <summary>
         /// Information provided when a SocketClient connection to a socket server changes status
         /// </summary>
+#pragma warning disable CA1034 // Nested types should not be visible
         public class ConnectionStatusChangedEventArgs : EventArgs
+#pragma warning restore CA1034 // Nested types should not be visible
         {
             private string _iPAddress = "";
             private readonly object _lock = new object();
@@ -98,7 +100,9 @@ namespace SocketMeister
         /// <summary>
         /// Values provided when a message is received from the socket server. 
         /// </summary>
+#pragma warning disable CA1034 // Nested types should not be visible
         public class MessageReceivedEventArgs : EventArgs
+#pragma warning restore CA1034 // Nested types should not be visible
         {
             private readonly object[] _parameters;
 
@@ -117,7 +121,9 @@ namespace SocketMeister
         /// <summary>
         /// Values provided when a request is received from a server. 
         /// </summary>
+#pragma warning disable CA1034 // Nested types should not be visible
         public class RequestReceivedEventArgs : MessageReceivedEventArgs
+#pragma warning restore CA1034 // Nested types should not be visible
         {
             internal RequestReceivedEventArgs(object[] Parameters) : base(Parameters) { }
 

@@ -7,7 +7,7 @@ using System.Net.Sockets;
 namespace SocketMeister
 {
 #if SMISPUBLIC
-     public partial class PolicyServer : IDisposable
+    public partial class PolicyServer : IDisposable
 #else
     internal partial class PolicyServer : IDisposable
 #endif

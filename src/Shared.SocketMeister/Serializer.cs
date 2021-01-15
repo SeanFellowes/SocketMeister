@@ -15,57 +15,18 @@ namespace SocketMeister
         /// </summary>
         public enum ParameterType
         {
-            /// <summary>
-            /// Parameter is a boolean
-            /// </summary>
             BoolParam = 0,
-            /// <summary>
-            /// Parameter is a DateTime type
-            /// </summary>
             DateTimeParam = 1,
-            /// <summary>
-            /// Parameter is a Double type
-            /// </summary>
             DoubleParam = 2,
-            /// <summary>
-            /// Parameter is an Int16 type
-            /// </summary>
             Int16Param = 3,
-            /// <summary>
-            /// Parameter is an Int32 type
-            /// </summary>
             Int32Param = 4,
-            /// <summary>
-            /// Parameter is an Int64 type
-            /// </summary>
             Int64Param = 5,
-            /// <summary>
-            /// Parameter is a UInt16 type
-            /// </summary>
             UInt16Param = 6,
-            /// <summary>
-            /// Parameter is a UInt32 type
-            /// </summary>
             UInt32Param = 7,
-            /// <summary>
-            /// Parameter is a UInt64 type
-            /// </summary>
             UInt64Param = 8,
-            /// <summary>
-            /// Parameter is a string
-            /// </summary>
             StringParam = 9,
-            /// <summary>
-            /// Parameter is a byte
-            /// </summary>
             ByteParam = 10,
-            /// <summary>
-            /// Parameter is a byte array
-            /// </summary>
             ByteArrayParam = 11,
-            /// <summary>
-            /// Parameter is a null
-            /// </summary>
             Null = 99
         }
 
@@ -77,9 +38,13 @@ namespace SocketMeister
         public static object[] DeserializeParameters(byte[] Data)
         {
             if (Data == null) throw new ArgumentNullException(nameof(Data));
-            using (BinaryReader reader = new BinaryReader(new MemoryStream(Data)))
+
+            using (MemoryStream stream = new MemoryStream(Data))
             {
-                return Serializer.DeserializeParameters(reader);
+                using (BinaryReader reader = new BinaryReader(stream))
+                {
+                    return Serializer.DeserializeParameters(reader);
+                }
             }
         }
 
@@ -116,11 +81,6 @@ namespace SocketMeister
             return parameters;
         }
 
-        /// <summary>
-        /// Serializes an array of parameters into a byte array which can be deserialized using the deserializer in this class
-        /// </summary>
-        /// <param name="Parameters">Array of parameters (Supports basic value types)</param>
-        /// <returns>Byte array of serialized parameters</returns>
         public static byte[] SerializeParameters(object[] Parameters)
         {
             if (Parameters == null) throw new ArgumentNullException(nameof(Parameters));
@@ -136,11 +96,7 @@ namespace SocketMeister
             }
         }
 
-        /// <summary>
-        /// Serializes an array of parameters into a byte array which can be deserialized using the deserializer in this class
-        /// </summary>
-        /// <param name="Writer">BinaryWriter</param>
-        /// <param name="Parameters">Array of parameters (Supports basic value types)</param>
+
         public static void SerializeParameters(BinaryWriter Writer, object[] Parameters)
         {
             if (Writer == null) throw new ArgumentNullException(nameof(Writer));

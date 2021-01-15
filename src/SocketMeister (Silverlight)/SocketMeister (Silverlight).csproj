@@ -71,12 +71,6 @@
     <Compile Include="..\Shared.SocketMeister\Messages\ClientDisconnectMessage.cs">
       <Link>Shared.SocketMeister\Messages\ClientDisconnectMessage.cs</Link>
     </Compile>
-    <Compile Include="..\Shared.SocketMeister\Messages\ClientHandshake.cs">
-      <Link>Shared.SocketMeister\Messages\ClientHandshake.cs</Link>
-    </Compile>
-    <Compile Include="..\Shared.SocketMeister\Messages\ClientHandshakeResponse.cs">
-      <Link>Shared.SocketMeister\Messages\ClientHandshakeResponse.cs</Link>
-    </Compile>
     <Compile Include="..\Shared.SocketMeister\Messages\Enums.cs">
       <Link>Shared.SocketMeister\Messages\Enums.cs</Link>
     </Compile>

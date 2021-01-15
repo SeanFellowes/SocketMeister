@@ -19,14 +19,11 @@ namespace SocketMeister
     /// Lightweight TCP server which listens on port 943 for policy file requests from Silverlight clients. Policy file describes which ports between 4502-4534 can be used by Silverlight.
     /// </summary>
 #if SMISPUBLIC
-     public partial class PolicyServer : IDisposable
+    public partial class PolicyServer : IDisposable
 #else
     internal partial class PolicyServer : IDisposable
 #endif
     {
-        /// <summary>
-        /// The port that the policy server is listening on.
-        /// </summary>
         public const int ServicePort = 943;
         private const string POLICY_REQUEST = "<policy-file-request/>";
 
@@ -65,19 +62,11 @@ namespace SocketMeister
             IPAddress = IPAddress.Parse("0.0.0.0");
         }
 
-        /// <summary>
-        /// Dispose
-        /// </summary>
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-
-        /// <summary>
-        /// Dispose
-        /// </summary>
-        /// <param name="disposing">Disposing</param>
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
@@ -101,10 +90,7 @@ namespace SocketMeister
         /// </summary>
         public IPAddress IPAddress { get; private set; }
 
-        /// <summary>
-        /// Port number which the policy server is listening on.
-        /// </summary>
-        public static int Port {  get { return ServicePort; } }
+        public int Port { get { return ServicePort; } }
 
         /// <summary>
         /// The current status of the listener socket. Statuses include Stopped, Starting, Started and Stopping
@@ -114,12 +100,12 @@ namespace SocketMeister
             get { lock (classLock) { return status; } }
             private set
             {
-                lock (classLock) 
-                { 
-                    if (status == value) return; 
-                    status = value; 
+                lock (classLock)
+                {
+                    if (status == value) return;
+                    status = value;
                 }
-                try 
+                try
                 {
                     ListenerStateChanged?.Invoke(this, new SocketServer.SocketServerStatusChangedEventArgs(value));
                 }
@@ -145,11 +131,6 @@ namespace SocketMeister
         //}
 
 
-        /// <summary>
-        /// Get the local IP4 address
-        /// </summary>
-        /// <param name="type">NetworkInterfaceType</param>
-        /// <returns>IP Address string</returns>
         public static string GetLocalIPv4(NetworkInterfaceType type)
         {
             string output = "";
@@ -201,7 +182,7 @@ namespace SocketMeister
                         //  REGISTER AS STARTED AND START THE MESSAGE SENDER (NOTE: WILL NOT RUN UNLESS SocketServer.SocketServerStatus = STARTED
                         this.ListenerState = SocketServerStatus.Started;
 
-                        TraceEventRaised?.Invoke(this, new TraceEventArgs("Policy server started on port " + ServicePort.ToString(CultureInfo.InvariantCulture),  SeverityType.Information, 10023));
+                        TraceEventRaised?.Invoke(this, new TraceEventArgs("Policy server started on port " + ServicePort.ToString(CultureInfo.InvariantCulture), SeverityType.Information, 10023));
                     }
                     catch (Exception ex)
                     {

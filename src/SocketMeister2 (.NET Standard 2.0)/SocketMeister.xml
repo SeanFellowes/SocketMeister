@@ -126,6 +126,46 @@
             Service is stopping
             </summary>
         </member>
+        <member name="T:SocketMeister.Messages.ClientHandshake">
+            <summary>
+            Client sends this to server after it connects. It contains information about the client and version of the client software.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Messages.ClientHandshake.SERIALIZER_VERSION">
+            <summary>
+            Increment this and add deserialization code when changing the serialized format.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Messages.ClientHandshake.#ctor">
+            <summary>
+            RequestMessage constructor
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.ClientHandshake.SocketClientVersion">
+            <summary>
+            Version of the client accessing this server. Developer must update this when client functionality changes.
+            </summary>
+        </member>
+        <member name="T:SocketMeister.Messages.ClientHandshakeResponse">
+            <summary>
+            Server sends this back to the client after it processes a ClientHandshake.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Messages.ClientHandshakeResponse.SERIALIZER_VERSION">
+            <summary>
+            Increment this and add deserialization code when changing the serialized format.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Messages.ClientHandshakeResponse.#ctor">
+            <summary>
+            RequestMessage constructor
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.ClientHandshakeResponse.SocketServerVersion">
+            <summary>
+            Version of the client accessing this server. Developer must update this when client functionality changes.
+            </summary>
+        </member>
         <member name="T:SocketMeister.Messages.MessageTypes">
             <summary>
             Internal message types
@@ -136,14 +176,14 @@
             Unknown message type, usually associated with an error
             </summary>
         </member>
-        <member name="F:SocketMeister.Messages.MessageTypes.Message">
+        <member name="F:SocketMeister.Messages.MessageTypes.OLDMessage">
             <summary>
-            Basic message.
+            Basic message (OLD FORMAT)
             </summary>
         </member>
-        <member name="F:SocketMeister.Messages.MessageTypes.RequestMessageV1">
+        <member name="F:SocketMeister.Messages.MessageTypes.OLDRequestMessage">
             <summary>
-            Request (expecting a response). Version 1 (From SocketMeister 1.x.x.x)
+            Request (expecting a response). Version 1 (From SocketMeister2 1.x.x.x)
             </summary>
         </member>
         <member name="F:SocketMeister.Messages.MessageTypes.ResponseMessage">
@@ -171,9 +211,24 @@
             Server sends a poll response when a poll request is received from a client
             </summary>
         </member>
-        <member name="F:SocketMeister.Messages.MessageTypes.RequestMessageV2">
+        <member name="F:SocketMeister.Messages.MessageTypes.Message">
             <summary>
-            Request (expecting a response). Version 2 (From SocketMeister 2.x.x.x)
+            Basic message.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Messages.MessageTypes.ClientHandshake">
+            <summary>
+            Client sends this to server after it connects. It contains information about the client and version of the client software.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Messages.MessageTypes.ClientHandshakeResponse">
+            <summary>
+            Server sends this back to the client after it processes a ClientHandshake.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Messages.MessageTypes.RequestMessage">
+            <summary>
+            Request (expecting a response). Version 2 (From SocketMeister2 2.x.x.x)
             </summary>
         </member>
         <member name="T:SocketMeister.Messages.RequestResult">
@@ -366,6 +421,11 @@
             Sent when a client is disconnecting
             </summary>
         </member>
+        <member name="F:SocketMeister.Messages.ClientDisconnectMessage.SERIALIZER_VERSION">
+            <summary>
+            Increment this and add deserialization code when changing the serialized format.
+            </summary>
+        </member>
         <member name="T:SocketMeister.Messages.IMessage">
             <summary>
             Interface for internal messages, sent between socket clients and the socket server. Internal messages are not visible outside the socket library.
@@ -383,7 +443,7 @@
         </member>
         <member name="M:SocketMeister.Messages.IMessage.AppendBytes(System.IO.BinaryWriter)">
             <summary>
-            Mandatory method to append binary data to the IMessage object,
+            Mandatory method to serialize class and append to an open BinaryWriter.
             </summary>
             <param name="Writer"></param>
         </member>
@@ -395,6 +455,11 @@
         <member name="P:SocketMeister.Messages.Message.RemoteClient">
             <summary>
             Only populated for messages received on the server. This is the remote client which sent the message
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Messages.Message.SERIALIZER_VERSION">
+            <summary>
+            Increment this and add deserialization code when changing the serialized format.
             </summary>
         </member>
         <member name="M:SocketMeister.Messages.Message.#ctor(System.Object[],System.Int32)">
@@ -419,14 +484,29 @@
             Number of milliseconds to wait before a timeout will occur.
             </summary>
         </member>
+        <member name="P:SocketMeister.Messages.MessageBase.SerializerVersion">
+            <summary>
+            Version of the serialized message. This provides the ability add new functionality to each message type, but maintain, for as long as possible, backward compatibility.
+            </summary>
+        </member>
         <member name="T:SocketMeister.Messages.PollRequest">
             <summary>
             Internal Message: Socket client regulary sends a poll request to the server to check that the server is alive.
             </summary>
         </member>
+        <member name="F:SocketMeister.Messages.PollRequest.SERIALIZER_VERSION">
+            <summary>
+            Increment this and add deserialization code when changing the serialized format.
+            </summary>
+        </member>
         <member name="T:SocketMeister.Messages.PollResponse">
             <summary>
             Internal Message: Socket server sends a response to a 'PollRequest' message to indicate (to the client) that the server is alive.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Messages.PollResponse.SERIALIZER_VERSION">
+            <summary>
+            Increment this and add deserialization code when changing the serialized format.
             </summary>
         </member>
         <member name="T:SocketMeister.Messages.RequestMessage">
@@ -437,6 +517,11 @@
         <member name="P:SocketMeister.Messages.RequestMessage.RemoteClient">
             <summary>
             The remote client which sent this RequestMessage (value null on SocketClient)
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Messages.RequestMessage.SERIALIZER_VERSION">
+            <summary>
+            Increment this and add deserialization code when changing the serialized format.
             </summary>
         </member>
         <member name="M:SocketMeister.Messages.RequestMessage.#ctor(System.Object[],System.Int32,System.Boolean)">
@@ -487,6 +572,11 @@
             The remote client which sent this RequestMessage (value null on SocketClient)
             </summary>
         </member>
+        <member name="F:SocketMeister.Messages.ResponseMessage.SERIALIZER_VERSION">
+            <summary>
+            Increment this and add deserialization code when changing the serialized format.
+            </summary>
+        </member>
         <member name="M:SocketMeister.Messages.ResponseMessage.#ctor(System.IO.BinaryReader)">
             <summary>
             Fastest was to build this is to create it directly from the SocketEnvelope buffer.
@@ -496,6 +586,11 @@
         <member name="P:SocketMeister.Messages.ResponseMessage.RequestId">
             <summary>
             The request that this response refers to
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Messages.ServerStoppingMessage.SERIALIZER_VERSION">
+            <summary>
+            Increment this and add deserialization code when changing the serialized format.
             </summary>
         </member>
         <member name="M:SocketMeister.Messages.ServerStoppingMessage.#ctor(System.IO.BinaryReader)">
@@ -534,6 +629,71 @@
             Data types which are supported for parameters sent with messages.
             </summary>
         </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.BoolParam">
+            <summary>
+            Parameter is a boolean
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.DateTimeParam">
+            <summary>
+            Parameter is a DateTime type
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.DoubleParam">
+            <summary>
+            Parameter is a Double type
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.Int16Param">
+            <summary>
+            Parameter is an Int16 type
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.Int32Param">
+            <summary>
+            Parameter is an Int32 type
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.Int64Param">
+            <summary>
+            Parameter is an Int64 type
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.UInt16Param">
+            <summary>
+            Parameter is a UInt16 type
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.UInt32Param">
+            <summary>
+            Parameter is a UInt32 type
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.UInt64Param">
+            <summary>
+            Parameter is a UInt64 type
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.StringParam">
+            <summary>
+            Parameter is a string
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.ByteParam">
+            <summary>
+            Parameter is a byte
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.ByteArrayParam">
+            <summary>
+            Parameter is a byte array
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.Null">
+            <summary>
+            Parameter is a null
+            </summary>
+        </member>
         <member name="M:SocketMeister.Serializer.DeserializeParameters(System.Byte[])">
             <summary>
             Deserialize a byte array which was serialized using 'byte[] SerializeParameters(object[] Parameters)' from this class.
@@ -547,6 +707,20 @@
             </summary>
             <param name="Reader">Open BinaryReader which is queued exactly to the point where the serialized parameters are encoded.</param>
             <returns>A list of parameters</returns>
+        </member>
+        <member name="M:SocketMeister.Serializer.SerializeParameters(System.Object[])">
+            <summary>
+            Serializes an array of parameters into a byte array which can be deserialized using the deserializer in this class
+            </summary>
+            <param name="Parameters">Array of parameters (Supports basic value types)</param>
+            <returns>Byte array of serialized parameters</returns>
+        </member>
+        <member name="M:SocketMeister.Serializer.SerializeParameters(System.IO.BinaryWriter,System.Object[])">
+            <summary>
+            Serializes an array of parameters into a byte array which can be deserialized using the deserializer in this class
+            </summary>
+            <param name="Writer">BinaryWriter</param>
+            <param name="Parameters">Array of parameters (Supports basic value types)</param>
         </member>
         <member name="T:SocketMeister.SocketAsyncEventArgsPool">
             <summary>
@@ -571,12 +745,6 @@
             <param name="Capacity">Maximum number of SocketAsyncEventArgs objects the pool can hold.</param>
         </member>
         <member name="M:SocketMeister.SocketAsyncEventArgsPool.Pop">
-            <summary>
-            Removes a SocketAsyncEventArgs instance from the pool.
-            </summary>
-            <returns>SocketAsyncEventArgs removed from the pool.</returns>
-        </member>
-        <member name="M:SocketMeister.SocketAsyncEventArgsPool.Pop(System.Int32)">
             <summary>
             Removes a SocketAsyncEventArgs instance from the pool.
             </summary>
@@ -698,6 +866,11 @@
             The frequency, in seconds, that this client will poll the server, to ensure the socket is alive.
             </summary>
         </member>
+        <member name="F:SocketMeister.SocketClient.VERSION">
+            <summary>
+            Version of this client accessing this SocketClient. This allows SocketServer to provide some backwards compatibility to older clients.
+            </summary>
+        </member>
         <member name="E:SocketMeister.SocketClient.ConnectionStatusChanged">
             <summary>
             Event raised when a status of a socket connection has changed
@@ -751,6 +924,11 @@
             The next time this socket client should attempt to poll the socket server.
             </summary>
         </member>
+        <member name="P:SocketMeister.SocketClient.SocketServerVersion">
+            <summary>
+            Version of the SocketServer that this client is connected to / last connected to
+            </summary>
+        </member>
         <member name="M:SocketMeister.SocketClient.DisconnectSocket">
             <summary>
             Disconnect the socket. Note: This is performed in the background.
@@ -773,7 +951,7 @@
             <param name="sender">Sending Socket</param>
             <param name="e">Socket Arguments</param>
         </member>
-        <member name="M:SocketMeister.SocketClient.Stop">
+        <member name="M:SocketMeister.SocketClient.Stop(System.Int32)">
             <summary>
             Stops the client.
             </summary>
@@ -884,6 +1062,11 @@
             The end point (client) requesting the policy file
             </summary>
         </member>
+        <member name="F:SocketMeister.PolicyServer.ServicePort">
+            <summary>
+            The port that the policy server is listening on.
+            </summary>
+        </member>
         <member name="E:SocketMeister.PolicyServer.TraceEventRaised">
             <summary>
             Trace message raised from within SocketMeister.
@@ -909,15 +1092,38 @@
             PolicyServer Constructor. The policy server will connect to all network interfaces on port 943
             </summary>
         </member>
+        <member name="M:SocketMeister.PolicyServer.Dispose">
+            <summary>
+            Dispose
+            </summary>
+        </member>
+        <member name="M:SocketMeister.PolicyServer.Dispose(System.Boolean)">
+            <summary>
+            Dispose
+            </summary>
+            <param name="disposing">Disposing</param>
+        </member>
         <member name="P:SocketMeister.PolicyServer.IPAddress">
             <summary>
             The IP address being used.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.PolicyServer.Port">
+            <summary>
+            Port number which the policy server is listening on.
             </summary>
         </member>
         <member name="P:SocketMeister.PolicyServer.ListenerState">
             <summary>
             The current status of the listener socket. Statuses include Stopped, Starting, Started and Stopping
             </summary>
+        </member>
+        <member name="M:SocketMeister.PolicyServer.GetLocalIPv4(System.Net.NetworkInformation.NetworkInterfaceType)">
+            <summary>
+            Get the local IP4 address
+            </summary>
+            <param name="type">NetworkInterfaceType</param>
+            <returns>IP Address string</returns>
         </member>
         <member name="M:SocketMeister.PolicyServer.Start">
             <summary>
@@ -1016,6 +1222,11 @@
             The maximum number of milliseconds to wait for clients to disconnect whien stopping the socket server
             </summary>
         </member>
+        <member name="F:SocketMeister.SocketServer.VERSION">
+            <summary>
+            Version of the SocketServer. This allows server specific functionality.
+            </summary>
+        </member>
         <member name="E:SocketMeister.SocketServer.ClientConnected">
             <summary>
             Event raised when a client connects to the socket server (Raised in a seperate thread)
@@ -1071,6 +1282,11 @@
         <member name="P:SocketMeister.SocketServer.ListenerState">
             <summary>
             To be depricated. Replace with "Status". Status of the socket listener
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketServer.Status">
+            <summary>
+            The execution status of the socket server.
             </summary>
         </member>
         <member name="P:SocketMeister.SocketServer.RequestsInProgress">

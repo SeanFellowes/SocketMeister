@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Text;
 
@@ -25,31 +24,26 @@ namespace SocketMeister.Messages
 
     internal partial class ResponseMessage : MessageBase, IMessage
     {
-        /// <summary>
-        /// Increment this and add deserialization code when changing the serialized format.
-        /// </summary>
-        private const int SERIALIZER_VERSION = 1;
-
         //  RESPONSE VARIABLES
-        private readonly string _error;
+        private readonly string _error = null;
         private readonly long _requestId;
         private readonly RequestResult _requestResultCode;
         private readonly Byte[] _responseData = null;
 
-        public ResponseMessage(long RequestId, byte[] ResponseData) : base(MessageTypes.ResponseMessage, SERIALIZER_VERSION)
+        public ResponseMessage(long RequestId, byte[] ResponseData) : base(MessageTypes.ResponseMessage)
         {
             _requestId = RequestId;
             _responseData = ResponseData;
             _requestResultCode = RequestResult.Success;
         }
 
-        public ResponseMessage(long RequestId, RequestResult RequestResultCode) : base(MessageTypes.ResponseMessage, SERIALIZER_VERSION)
+        public ResponseMessage(long RequestId, RequestResult RequestResultCode) : base(MessageTypes.ResponseMessage)
         {
             _requestId = RequestId;
             _requestResultCode = RequestResultCode;
         }
 
-        public ResponseMessage(long RequestId, Exception Exception) : base(MessageTypes.ResponseMessage, SERIALIZER_VERSION)
+        public ResponseMessage(long RequestId, Exception Exception) : base(MessageTypes.ResponseMessage)
         {
             _requestId = RequestId;
             _requestResultCode = RequestResult.Exception;
@@ -61,7 +55,7 @@ namespace SocketMeister.Messages
         /// Fastest was to build this is to create it directly from the SocketEnvelope buffer.
         /// </summary>
         /// <param name="Reader">Binary Reader</param>
-        public ResponseMessage(BinaryReader Reader) : base(MessageTypes.ResponseMessage, 1)
+        public ResponseMessage(BinaryReader Reader) : base(MessageTypes.ResponseMessage)
         {
             _requestId = Reader.ReadInt64();
             if (Reader.ReadBoolean() == true) _responseData = Reader.ReadBytes(Reader.ReadInt32());
@@ -84,9 +78,9 @@ namespace SocketMeister.Messages
         }
 
 
-        public RequestResult RequestResultCode 
-        {  
-            get { return _requestResultCode; } 
+        public RequestResult RequestResultCode
+        {
+            get { return _requestResultCode; }
         }
 
 
@@ -112,7 +106,7 @@ namespace SocketMeister.Messages
                 Writer.Write(true);
                 Writer.Write(_error);
             }
-            Writer.Write(Convert.ToInt16(_requestResultCode, CultureInfo.InvariantCulture));
+            Writer.Write(Convert.ToInt16(_requestResultCode));
         }
     }
 }

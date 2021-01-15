@@ -36,19 +36,12 @@ namespace SocketMeister
         /// </summary>
         private const int POLLING_FREQUENCY = 10;
 
-        /// <summary>
-        /// Version of this client accessing this SocketClient. This allows SocketServer to provide some backwards compatibility to older clients.
-        /// </summary>
-        public const int VERSION = 2;
-
 
         private SocketAsyncEventArgs _asyncEventArgsConnect = null;
         private SocketAsyncEventArgs _asyncEventArgsPolling = null;
-        private SocketAsyncEventArgs _asyncEventArgsClientHandshake = null;
         private SocketAsyncEventArgs _asyncEventArgsReceive = null;
         private readonly ManualResetEvent _autoResetConnectEvent = new ManualResetEvent(false);
         private readonly ManualResetEvent _autoResetPollEvent = new ManualResetEvent(false);
-        private readonly ManualResetEvent _autoResetClientHandshakeSent = new ManualResetEvent(false);
         private ConnectionStatuses _connectionStatus = ConnectionStatuses.Disconnected;
 #pragma warning disable CA2213 // Disposable fields should be disposed
         private SocketEndPoint _currentEndPoint = null;
@@ -63,15 +56,14 @@ namespace SocketMeister
         private bool _isBackgroundPollingRunning;
         private bool _isStopAllRequested = false;
         private bool _isStopPollingRequested = false;
-        private bool _isClientHandshakeCompleted;
         private DateTime _lastPollResponse = DateTime.Now;
         private readonly object _lock = new object();
         private DateTime _nextPollRequest;
+        private int _requestsInProgress = 0;
         private readonly OpenRequestMessageCollection _openRequests = new OpenRequestMessageCollection();
         private readonly Random _randomizer = new Random();
         private MessageEngine _receiveEngine;
         private readonly SocketAsyncEventArgsPool _sendEventArgsPool;
-        private int _socketServerVersion = 1;
 
         /// <summary>
         /// Event raised when a status of a socket connection has changed
@@ -138,11 +130,6 @@ namespace SocketMeister
             _asyncEventArgsPolling.SetBuffer(new byte[Constants.SEND_RECEIVE_BUFFER_SIZE], 0, Constants.SEND_RECEIVE_BUFFER_SIZE);
             _asyncEventArgsPolling.Completed += ProcessSendPollRequest;
 
-
-            _asyncEventArgsClientHandshake = new SocketAsyncEventArgs();
-            _asyncEventArgsClientHandshake.SetBuffer(new byte[Constants.SEND_RECEIVE_BUFFER_SIZE], 0, Constants.SEND_RECEIVE_BUFFER_SIZE);
-            _asyncEventArgsClientHandshake.Completed += ProcessSendClientHandshake;
-
             BgConnectToServer();
         }
 
@@ -169,8 +156,6 @@ namespace SocketMeister
                 _asyncEventArgsConnect = null;
                 if (_asyncEventArgsPolling != null) _asyncEventArgsPolling.Dispose();
                 _asyncEventArgsPolling = null;
-                if (_asyncEventArgsClientHandshake != null) _asyncEventArgsClientHandshake.Dispose();
-                _asyncEventArgsClientHandshake = null;
                 if (_asyncEventArgsReceive != null) _asyncEventArgsReceive.Dispose();
                 _asyncEventArgsReceive = null;
                 _receiveEngine = null; ;
@@ -217,8 +202,6 @@ namespace SocketMeister
 
         private bool IsStopAllRequested { get { lock (_lock) { return _isStopAllRequested; } } set { lock (_lock) { _isStopAllRequested = value; } } }
 
-        private bool IsClientHandshakeCompleted { get { lock (_lock) { return _isClientHandshakeCompleted; } } set { lock (_lock) { _isClientHandshakeCompleted = value; } } }
-
         private bool IsStopPollingRequested { get { lock (_lock) { return _isStopPollingRequested; } } set { lock (_lock) { _isStopPollingRequested = value; } } }
 
         /// <summary>
@@ -231,10 +214,7 @@ namespace SocketMeister
         /// </summary>
         private DateTime NextPollRequest { get { lock (_lock) { return _nextPollRequest; } } set { lock (_lock) { _nextPollRequest = value; } } }
 
-        /// <summary>
-        /// Version of the SocketServer that this client is connected to / last connected to
-        /// </summary>
-        public int SocketServerVersion { get { lock (_lock) { return _socketServerVersion; } } private set { lock (_lock) { _socketServerVersion = value; } } }
+
 
 
         #region Socket async connect
@@ -324,7 +304,6 @@ namespace SocketMeister
                 if (_isBackgroundConnectRunning == true) return;
                 _isBackgroundConnectRunning = true;
             }
-            IsClientHandshakeCompleted = false;
             ConnectionStatus = ConnectionStatuses.Connecting;
 
             Thread bgConnect = new Thread(new ThreadStart(delegate
@@ -357,8 +336,6 @@ namespace SocketMeister
                                 BgPollServer();
                                 break;
                             }
-
-
                         }
                     }
                     catch { }
@@ -421,7 +398,6 @@ namespace SocketMeister
 
 
 
-
         /// <summary>
         /// Connect operation has completed
         /// </summary>
@@ -434,40 +410,12 @@ namespace SocketMeister
                 //  ATTEMPT TO START RECEIVING
                 try
                 {
-                    //Thread bgReceiving = new Thread(new ThreadStart(delegate
-                    //{
-                        _asyncEventArgsReceive = new SocketAsyncEventArgs();
-                        _asyncEventArgsReceive.SetBuffer(new byte[Constants.SEND_RECEIVE_BUFFER_SIZE], 0, Constants.SEND_RECEIVE_BUFFER_SIZE);
-                        _asyncEventArgsReceive.Completed += new EventHandler<SocketAsyncEventArgs>(ProcessReceive);
-                        if (!CurrentEndPoint.Socket.ReceiveAsync(_asyncEventArgsReceive)) ProcessReceive(null, _asyncEventArgsReceive);
-                    //}));
-                    //bgReceiving.IsBackground = true;
-                    //bgReceiving.Start();
-
-                    //  SEND CLIENT HANDSHAKE 
-                    IsClientHandshakeCompleted = false;
-                    DateTime clientHandshakeTimeout = DateTime.Now.AddSeconds(30);
-                    byte[] sendBytes = MessageEngine.GenerateSendBytes(new ClientHandshake(), false);
-                    _asyncEventArgsClientHandshake.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
-                    _asyncEventArgsClientHandshake.SetBuffer(sendBytes, 0, sendBytes.Length);
-                    if (!CurrentEndPoint.Socket.SendAsync(_asyncEventArgsClientHandshake)) ProcessSendClientHandshake(null, _asyncEventArgsClientHandshake);
-                    _autoResetClientHandshakeSent.Reset();
-                    _autoResetClientHandshakeSent.WaitOne();
-
-                    ////  WAIT FOR CLIENT HANDSHAKE TO COMPLETE
-                    //while (IsStopAllRequested == false)
-                    //{
-                    //    if (DateTime.Now > clientHandshakeTimeout)
-                    //    {
-                    //        throw new TimeoutException();
-                    //    }
-                    //    if (IsClientHandshakeCompleted == true) break;
-                    //    Thread.Sleep(50);
-                    //}
-
+                    _asyncEventArgsReceive = new SocketAsyncEventArgs();
+                    _asyncEventArgsReceive.SetBuffer(new byte[Constants.SEND_RECEIVE_BUFFER_SIZE], 0, Constants.SEND_RECEIVE_BUFFER_SIZE);
+                    _asyncEventArgsReceive.Completed += new EventHandler<SocketAsyncEventArgs>(ProcessReceive);
+                    if (!CurrentEndPoint.Socket.ReceiveAsync(_asyncEventArgsReceive)) ProcessReceive(null, _asyncEventArgsReceive);
                     //  CONNECTED
                     ConnectionStatus = ConnectionStatuses.Connected;
-
                     //  DONE
                     _autoResetConnectEvent.Set();
                 }
@@ -503,24 +451,19 @@ namespace SocketMeister
         /// <summary>
         /// Stops the client.
         /// </summary>
-        public void Stop(int TimeoutSeconds = 30)
+        public void Stop()
         {
-            DateTime timeout = DateTime.Now.AddSeconds(TimeoutSeconds);
             IsStopAllRequested = true;
 
             //  ENSURE BACKGROUND CONNECT HAS STOPPED
             _autoResetConnectEvent.Set();
-            while (IsBackgroundConnectRunning == true) { Thread.Sleep(10); }
+            while (IsBackgroundConnectRunning == true) { Thread.Sleep(5); }
 
             //  SHUTDOWN SOCKET
             DisconnectSocket();
 
             //  WAIT UNTIL DISCONNECT HAS FINISHED
-            while (ConnectionStatus != ConnectionStatuses.Disconnected) 
-            {
-                if (DateTime.Now > timeout) throw new TimeoutException("Timout waiting for SocketClient to disconnect.");
-                Thread.Sleep(50); 
-            }
+            while (ConnectionStatus != ConnectionStatuses.Disconnected) { Thread.Sleep(50); }
         }
 
 
@@ -696,12 +639,6 @@ namespace SocketMeister
             _autoResetPollEvent.Set();
         }
 
-        private void ProcessSendClientHandshake(object sender, SocketAsyncEventArgs e)
-        {
-            _autoResetClientHandshakeSent.Set();
-        }
-
-
 
         //  CALLED AFTER SendAsync COMPLETES
         private void ProcessSend(object sender, SocketAsyncEventArgs e)
@@ -803,25 +740,17 @@ namespace SocketMeister
                         {
                             NotifyMessageReceived(_receiveEngine.GetMessage());
                         }
-                        else if (_receiveEngine.MessageType == MessageTypes.OLDMessage)
+                        else if (_receiveEngine.MessageType == MessageTypes.RequestMessageV1)
                         {
-                            NotifyMessageReceived(_receiveEngine.GetOLDMessage());
-                        }
-                        else if (_receiveEngine.MessageType == MessageTypes.OLDRequestMessage)
-                        {
-                            RequestMessage request = _receiveEngine.GetOLDRequestMessage();
+                            RequestMessage request = _receiveEngine.GetRequestMessage(1);
+                            lock (_lock) { _requestsInProgress += 1; }
                             ThreadPool.QueueUserWorkItem(BgProcessRequestMessage, request);
                         }
-                        else if (_receiveEngine.MessageType == MessageTypes.RequestMessage)
+                        else if (_receiveEngine.MessageType == MessageTypes.RequestMessageV2)
                         {
                             RequestMessage request = _receiveEngine.GetRequestMessage(2);
+                            lock (_lock) { _requestsInProgress += 1; }
                             ThreadPool.QueueUserWorkItem(BgProcessRequestMessage, request);
-                        }
-                        else if (_receiveEngine.MessageType == MessageTypes.ClientHandshakeResponse)
-                        {
-                            ClientHandshakeResponse response = _receiveEngine.GetClientHandshakeResponse();
-                            SocketServerVersion = response.SocketServerVersion;
-                            IsClientHandshakeCompleted = true;
                         }
                         else if (_receiveEngine.MessageType == MessageTypes.ServerStoppingMessage)
                         {
@@ -855,7 +784,7 @@ namespace SocketMeister
                 DisconnectSocket();
             }
         }
-        
+
 
         private void BgProcessRequestMessage(object state)
         {
@@ -893,6 +822,10 @@ namespace SocketMeister
             {
                 NotifyExceptionRaised(ex);
                 SendResponseQuickly(new ResponseMessage(request.RequestId, ex));
+            }
+            finally
+            {
+                lock (_lock) { _requestsInProgress -= 1; }
             }
         }
 

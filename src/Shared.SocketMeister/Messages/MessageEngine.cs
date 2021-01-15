@@ -71,17 +71,17 @@ namespace SocketMeister.Messages
         private readonly bool _enableCompression;
 #pragma warning restore IDE0052 // Remove unread private members
         private readonly ParseHistory _history = new ParseHistory();
-        private bool _messageIsCompressed;
-        private int _messageLength;
-        private int _messageLengthUncompressed;
+        private bool _messageIsCompressed = false;
+        private int _messageLength = 0;
+        private int _messageLengthUncompressed = 0;
         private MessageTypes _messageType = MessageTypes.Unknown;
         private readonly byte[] _headerBuffer = new byte[11];
-        private int _headerBufferPtr;
-        private bool _headerReceived;
+        private int _headerBufferPtr = 0;
+        private bool _headerReceived = false;
 #pragma warning disable CA1825 // Avoid zero-length array allocations.
         private byte[] _receiveBuffer = new byte[0];
 #pragma warning restore CA1825 // Avoid zero-length array allocations.
-        private int _receiveBufferPtr;
+        private int _receiveBufferPtr = 0;
         private long _statMessageNumber = 1;
         private bool _statMessageReceived;
         private int _statSocketBufferLength;
@@ -310,70 +310,74 @@ namespace SocketMeister.Messages
 
         internal ServerStoppingMessage GetDisconnectRequest()
         {
-            using (BinaryReader reader = new BinaryReader(new MemoryStream(GetBuffer())))
+            MemoryStream stream = null;
+            try
             {
-                return new ServerStoppingMessage(reader);
+                stream = new MemoryStream(GetBuffer());
+                using (BinaryReader reader = new BinaryReader(stream))
+                {
+                    stream = null;
+                    return new ServerStoppingMessage(reader);
+                }
             }
-        }
-
-        internal Message GetOLDMessage()
-        {
-            using (BinaryReader reader = new BinaryReader(new MemoryStream(GetBuffer())))
+            finally
             {
-                return new Message(reader, 1);
+                if (stream != null) stream.Dispose();
             }
         }
 
         internal Message GetMessage()
         {
-            using (BinaryReader reader = new BinaryReader(new MemoryStream(GetBuffer())))
+            MemoryStream stream = null;
+            try
             {
-                int serializationVersion = reader.ReadInt32();
-                return new Message(reader, serializationVersion);
+                stream = new MemoryStream(GetBuffer());
+                using (BinaryReader reader = new BinaryReader(stream))
+                {
+                    stream = null;
+                    return new Message(reader);
+                }
             }
-        }
-
-        internal ClientHandshake GetClientHandshake()
-        {
-            using (BinaryReader reader = new BinaryReader(new MemoryStream(GetBuffer())))
+            finally
             {
-                int serializationVersion = reader.ReadInt32();
-                return new ClientHandshake(reader, serializationVersion);
-            }
-        }
-
-        internal ClientHandshakeResponse GetClientHandshakeResponse()
-        {
-            using (BinaryReader reader = new BinaryReader(new MemoryStream(GetBuffer())))
-            {
-                int serializationVersion = reader.ReadInt32();
-                return new ClientHandshakeResponse(reader, serializationVersion);
+                if (stream != null) stream.Dispose();
             }
         }
 
 
-        internal RequestMessage GetOLDRequestMessage()
+        internal RequestMessage GetRequestMessage(int Version)
         {
-            using (BinaryReader reader = new BinaryReader(new MemoryStream(GetBuffer())))
+            MemoryStream stream = null;
+            try
             {
-                return new RequestMessage(reader, 1);
+                stream = new MemoryStream(GetBuffer());
+                using (BinaryReader reader = new BinaryReader(stream))
+                {
+                    stream = null;
+                    return new RequestMessage(reader, Version);
+                }
             }
-        }
-
-
-        internal RequestMessage GetRequestMessage(int SerializationVersion)
-        {
-            using (BinaryReader reader = new BinaryReader(new MemoryStream(GetBuffer())))
+            finally
             {
-                return new RequestMessage(reader, SerializationVersion);
+                if (stream != null) stream.Dispose();
             }
         }
 
         internal ResponseMessage GetResponseMessage()
         {
-            using (BinaryReader reader = new BinaryReader(new MemoryStream(GetBuffer())))
+            MemoryStream stream = null;
+            try
             {
-                return new ResponseMessage(reader);
+                stream = new MemoryStream(GetBuffer());
+                using (BinaryReader reader = new BinaryReader(stream))
+                {
+                    stream = null;
+                    return new ResponseMessage(reader);
+                }
+            }
+            finally
+            {
+                if (stream != null) stream.Dispose();
             }
         }
 

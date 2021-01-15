@@ -37,15 +37,9 @@ namespace SocketMeister
         private SocketServerStatus _listenerState;
         private readonly IPEndPoint _localEndPoint = null;
         private readonly object _lock = new object();
-        private int _requestsInProgress;
+        private int _requestsInProgress = 0;
         private bool _isStopRequested;
         private readonly Thread _threadListener = null;
-
-        /// <summary>
-        /// Version of the SocketServer. This allows server specific functionality.
-        /// </summary>
-        public const int VERSION = 2;
-
 
         /// <summary>
         /// Event raised when a client connects to the socket server (Raised in a seperate thread)
@@ -146,9 +140,6 @@ namespace SocketMeister
             }
         }
 
-        /// <summary>
-        /// The execution status of the socket server.
-        /// </summary>
         public SocketServerStatus Status
         {
             get { lock (_lock) { return _listenerState; } }
@@ -350,9 +341,9 @@ namespace SocketMeister
                 {
                     if (receiveEnvelope.AddBytesFromSocketReceiveBuffer(receivedBytesCount, remoteClient.ReceiveBuffer, ref receiveBufferPtr) == true)
                     {
-                        if (receiveEnvelope.MessageType == MessageTypes.OLDRequestMessage)
+                        if (receiveEnvelope.MessageType == MessageTypes.RequestMessageV1)
                         {
-                            RequestMessage request = receiveEnvelope.GetOLDRequestMessage();
+                            RequestMessage request = receiveEnvelope.GetRequestMessage(1);
                             request.RemoteClient = remoteClient;
                             if (ListenerState == SocketServerStatus.Stopping)
                             {
@@ -362,10 +353,14 @@ namespace SocketMeister
                             else
                             {
                                 lock (_lock) { _requestsInProgress += 1; }
-                                ThreadPool.QueueUserWorkItem(BgProcessRequestMessage, request);
+                                new Thread(new ThreadStart(delegate
+                                {
+                                    BgProcessRequestMessage(request);
+                                }
+                                 )).Start();
                             }
                         }
-                        else if (receiveEnvelope.MessageType == MessageTypes.RequestMessage)
+                        else if (receiveEnvelope.MessageType == MessageTypes.RequestMessageV2)
                         {
                             RequestMessage request = receiveEnvelope.GetRequestMessage(2);
                             request.RemoteClient = remoteClient;
@@ -377,7 +372,12 @@ namespace SocketMeister
                             else
                             {
                                 lock (_lock) { _requestsInProgress += 1; }
-                                ThreadPool.QueueUserWorkItem(BgProcessRequestMessage, request);
+                                //ThreadPool.QueueUserWorkItem(BgProcessRequestMessage, request);
+                                new Thread(new ThreadStart(delegate
+                                {
+                                    BgProcessRequestMessage(request);
+                                }
+                                )).Start();
                             }
                         }
                         else if (receiveEnvelope.MessageType == MessageTypes.ResponseMessage)
@@ -388,13 +388,24 @@ namespace SocketMeister
                                 remoteClient.ProcessResponseMessage(receiveEnvelope.GetResponseMessage());
                             }
                         }
-                        else if (receiveEnvelope.MessageType == MessageTypes.OLDMessage)
+                        else if (receiveEnvelope.MessageType == MessageTypes.Message)
                         {
                             if (ListenerState == SocketServerStatus.Started)
                             {
                                 Message message = receiveEnvelope.GetMessage();
                                 message.RemoteClient = remoteClient;
-                                ThreadPool.QueueUserWorkItem(BgProcessMessage, message);
+                                new Thread(new ThreadStart(delegate
+                                {
+                                    try
+                                    {
+                                        MessageReceived?.Invoke(this, new MessageReceivedEventArgs(message.RemoteClient, message.Parameters));
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        NotifyTraceEventRaised(ex, 5008);
+                                    }
+                                }
+                                )).Start();
                             }
                         }
                         else if (receiveEnvelope.MessageType == MessageTypes.ClientDisconnectMessage)
@@ -420,20 +431,10 @@ namespace SocketMeister
                                 )).Start();
                             }
                         }
-                        else if (receiveEnvelope.MessageType == MessageTypes.ClientHandshake)
+                        else
                         {
-                            if (ListenerState == SocketServerStatus.Started)
-                            {
-                                ClientHandshake message = receiveEnvelope.GetClientHandshake();
-                                lock (_lock) { _requestsInProgress += 1; }
-                                new Thread(new ThreadStart(delegate
-                                {
-                                    BgProcessClientHandshake(remoteClient, message);
-                                }
-                                )).Start();
-                            }
+                            string gtgg = "";
                         }
-
                     }
 
                 }
@@ -483,22 +484,9 @@ namespace SocketMeister
             }
         }
 
-        private void BgProcessMessage(object state)
-        {
-            Messages.Message request = (Messages.Message)state;
-            try
-            {
-                MessageReceived?.Invoke(this, new MessageReceivedEventArgs(request.RemoteClient, request.Parameters));
-            }
-            catch (Exception ex)
-            {
-                NotifyTraceEventRaised(ex, 5008);
-            }
-        }
 
-        private void BgProcessPollRequest(object state)
+        private void BgProcessPollRequest(Client remoteClient)
         {
-            Client remoteClient = (Client)state;
             try
             {
                 //  SEND POLL RESPONSE
@@ -514,27 +502,9 @@ namespace SocketMeister
             }
         }
 
-        private void BgProcessClientHandshake(Client remoteClient, ClientHandshake message)
-        {
-            try
-            {
-                //  SEND ClientHandshakeResponse
-                SendMessage(remoteClient, new ClientHandshakeResponse());
-            }
-            catch (Exception ex)
-            {
-                NotifyTraceEventRaised(ex, 5008);
-            }
-            finally
-            {
-                lock (_lock) { _requestsInProgress -= 1; }
-            }
-        }
 
-
-        private void BgProcessRequestMessage(object state)
+        private void BgProcessRequestMessage(RequestMessage request)
         {
-            RequestMessage request = (RequestMessage)state;
             try
             {
                 //  DESERIALIZE THE REQUEST FROM THE CLIENT

@@ -8,19 +8,15 @@ namespace SocketMeister.Messages
 {
     internal partial class MessageBase
     {
-        private bool _isAborted;
+        private bool _isAborted = false;
         private readonly object _lock = new object();
         private readonly MessageTypes _messageType;
         private MessageStatus _messageStatus = MessageStatus.Unsent;
-        private readonly int _serializerVersion;    
 
-
-        internal MessageBase(MessageTypes MessageType, int SerializationVersion)
+        internal MessageBase(MessageTypes MessageType)
         {
             _messageType = MessageType;
-            _serializerVersion = SerializationVersion;
         }
-
 
         public object Lock { get { return _lock; } }
 
@@ -30,15 +26,8 @@ namespace SocketMeister.Messages
             set { lock (_lock) { _isAborted = value; } }
         }
 
-        public MessageTypes MessageType { get { return _messageType; } }
 
-        /// <summary>
-        /// Version of the serialized message. This provides the ability add new functionality to each message type, but maintain, for as long as possible, backward compatibility.
-        /// </summary>
-        public int SerializerVersion
-        {
-            get { lock (_lock) { return _serializerVersion; } }
-        }
+        public MessageTypes MessageType { get { return _messageType; } }
 
 
         public MessageStatus Status
