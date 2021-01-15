@@ -884,6 +884,11 @@
             The end point (client) requesting the policy file
             </summary>
         </member>
+        <member name="F:SocketMeister.PolicyServer.ServicePort">
+            <summary>
+            TCP port that the policy service listens on
+            </summary>
+        </member>
         <member name="E:SocketMeister.PolicyServer.TraceEventRaised">
             <summary>
             Trace message raised from within SocketMeister.

@@ -24,7 +24,11 @@ namespace SocketMeister
     internal partial class PolicyServer : IDisposable
 #endif
     {
+        /// <summary>
+        /// TCP port that the policy service listens on
+        /// </summary>
         public const int ServicePort = 943;
+
         private const string POLICY_REQUEST = "<policy-file-request/>";
 
         private readonly object classLock = new object();

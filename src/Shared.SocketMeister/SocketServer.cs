@@ -431,10 +431,6 @@ namespace SocketMeister
                                 )).Start();
                             }
                         }
-                        else
-                        {
-                            string gtgg = "";
-                        }
                     }
 
                 }
