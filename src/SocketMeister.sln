@@ -25,7 +25,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SocketMeister.TestHarness.W
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SocketMeister.TestServer.WinForms", "SocketMeister.TestServer.WinForms\SocketMeister.TestServer.WinForms.csproj", "{C7D99721-27C2-4C3C-A471-F5AF7165E7B0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocketMeister.Server.TestApp", "SocketMeister.Server.TestApp\SocketMeister.Server.TestApp.csproj", "{2CC58ECF-362F-4581-AA51-13E0281237E1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocketMeister.MiniTestServer", "SocketMeister.Server.TestApp\SocketMeister.MiniTestServer.csproj", "{2CC58ECF-362F-4581-AA51-13E0281237E1}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
