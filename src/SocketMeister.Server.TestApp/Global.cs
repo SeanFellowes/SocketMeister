@@ -4,14 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SocketMeister1.Server.TestApp
+namespace SocketMeister
 {
     internal static class Global
     {
-        private static SMServer _server;
+        private static SocketServer _server = null;
 
 
-        internal static SMServer Server
+        internal static SocketServer Server
         {
             get { return _server; }
             set { _server = value; }

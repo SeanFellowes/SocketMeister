@@ -8,8 +8,8 @@
     <ProjectGuid>{2CC58ECF-362F-4581-AA51-13E0281237E1}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SocketMeister1.Server.TestApp</RootNamespace>
-    <AssemblyName>SocketMeister1.Server.TestApp</AssemblyName>
+    <RootNamespace>SocketMeister</RootNamespace>
+    <AssemblyName>SocketMeister.Server.TestApp</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile>
@@ -35,7 +35,7 @@
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>SocketMeister1.Server.TestApp.Program</StartupObject>
+    <StartupObject>SocketMeister.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Monitor.ico</ApplicationIcon>
@@ -64,11 +64,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Code\GlobalAssemblyInfo.cs">
-      <Link>Properties\GlobalAssemblyInfo.cs</Link>
-    </Compile>
     <Compile Include="Global.cs" />
     <Compile Include="GridItem.cs" />
+    <Compile Include="IThreadHost.cs" />
     <Compile Include="Main.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -81,12 +79,6 @@
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
-    <Compile Include="ucThreadFarm.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="ucThreadFarm.designer.cs">
-      <DependentUpon>ucThreadFarm.cs</DependentUpon>
     </Compile>
     <EmbeddedResource Include="Main.resx">
       <DependentUpon>Main.cs</DependentUpon>
@@ -101,9 +93,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="ucThreadFarm.resx">
-      <DependentUpon>ucThreadFarm.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Monitor.ico" />
@@ -135,9 +124,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SocketMeister.Server.Net4\SocketMeister.Server.Net4.csproj">
-      <Project>{f3cb7f1d-2229-4693-b0a7-8b3e86d9ca8e}</Project>
-      <Name>SocketMeister.Server.Net4</Name>
+    <ProjectReference Include="..\SocketMeister %28.NET 4.7.2%29\SocketMeister %28.NET 4.7.2%29.csproj">
+      <Project>{719e367c-132f-4c9d-ad8e-db25f59e707b}</Project>
+      <Name>SocketMeister %28.NET 4.7.2%29</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -4,9 +4,8 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Text;
 using System.Windows.Forms;
-using SocketMeister1;
 
-namespace SocketMeister1.Server.TestApp
+namespace SocketMeister
 {
     public class GridItem : INotifyPropertyChanged
     {
@@ -28,16 +27,16 @@ namespace SocketMeister1.Server.TestApp
 
         public GridItem() { }
 
-        public GridItem(string source, string message, int ClientID, int EndPointID, int MessageID, SocketMessageTypes MessageType)
+        public GridItem(string source, string message, int ClientID, int EndPointID, int MessageID)
         {
             _object = source;
             _message = message;
             if (MessageID != 0) _messageID = MessageID.ToString();
             if (ClientID != 0) _clientID = ClientID.ToString();
             if (EndPointID != 0) _endPointID = EndPointID.ToString();
-            if (MessageType == SocketMessageTypes.Broadcast) _messageType = "Broadcast";
-            else if (MessageType == SocketMessageTypes.Response) _messageType = "Response";
-            else if (MessageType == SocketMessageTypes.Request) _messageType = "Request";
+            //if (MessageType == SocketMessageTypes.Broadcast) _messageType = "Broadcast";
+            //else if (MessageType == SocketMessageTypes.Response) _messageType = "Response";
+            //else if (MessageType == SocketMessageTypes.Request) _messageType = "Request";
             this.NotifyPropertyChanged("TimeStamp");
             this.NotifyPropertyChanged("Source");
             this.NotifyPropertyChanged("ClientID");

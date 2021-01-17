@@ -1,4 +1,4 @@
-﻿namespace SocketMeister1.Server.TestApp
+﻿namespace SocketMeister
 {
     partial class Main
     {
@@ -15,7 +15,7 @@
         {
             if (disposing && (components != null))
             {
-                if (Global.Server != null) Global.Server.Dispose();
+                //if (Global.Server != null) Global.Server.Dispose();
                 Global.Server = null;
                 components.Dispose();
             }
@@ -42,19 +42,12 @@
             this.btnSendM2Subs = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
             this.btnBroadcast = new System.Windows.Forms.Button();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.ucThreadFarm = new SocketMeister1.Server.TestApp.ucThreadFarm();
             this.pnlDiagnostics = new System.Windows.Forms.Panel();
             this.pnlSettings = new System.Windows.Forms.GroupBox();
-            this.label7 = new System.Windows.Forms.Label();
-            this.cbPolicyListener = new System.Windows.Forms.CheckBox();
             this.label14 = new System.Windows.Forms.Label();
             this.tbPort = new System.Windows.Forms.TextBox();
             this.label15 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.tbIPAddress = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.cbCompressMessage = new System.Windows.Forms.CheckBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.btnStop = new System.Windows.Forms.Button();
@@ -97,16 +90,11 @@
             this.MessageID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Message = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
-            this.label18 = new System.Windows.Forms.Label();
-            this.cbEnableDiagnostics = new System.Windows.Forms.CheckBox();
-            this.label19 = new System.Windows.Forms.Label();
-            this.cbEnableClientPinging = new System.Windows.Forms.CheckBox();
             this.pnlFooter.SuspendLayout();
             this.panelOuter.SuspendLayout();
             this.panel2.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.panel3.SuspendLayout();
-            this.groupBox1.SuspendLayout();
             this.pnlDiagnostics.SuspendLayout();
             this.pnlSettings.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -154,7 +142,6 @@
             // panel2
             // 
             this.panel2.Controls.Add(this.groupBox4);
-            this.panel2.Controls.Add(this.groupBox1);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(365, 3);
             this.panel2.Margin = new System.Windows.Forms.Padding(6);
@@ -168,11 +155,11 @@
             this.groupBox4.Controls.Add(this.tbBroadcast);
             this.groupBox4.Controls.Add(this.panel3);
             this.groupBox4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox4.Location = new System.Drawing.Point(6, 113);
+            this.groupBox4.Location = new System.Drawing.Point(6, 1);
             this.groupBox4.Margin = new System.Windows.Forms.Padding(6);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Padding = new System.Windows.Forms.Padding(6);
-            this.groupBox4.Size = new System.Drawing.Size(574, 368);
+            this.groupBox4.Size = new System.Drawing.Size(574, 480);
             this.groupBox4.TabIndex = 42;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Broadcast and Subscriber Messaging";
@@ -183,7 +170,7 @@
             this.tbBroadcast.Location = new System.Drawing.Point(6, 19);
             this.tbBroadcast.Multiline = true;
             this.tbBroadcast.Name = "tbBroadcast";
-            this.tbBroadcast.Size = new System.Drawing.Size(562, 282);
+            this.tbBroadcast.Size = new System.Drawing.Size(562, 394);
             this.tbBroadcast.TabIndex = 45;
             this.tbBroadcast.Text = "Test message from server";
             // 
@@ -194,7 +181,7 @@
             this.panel3.Controls.Add(this.panel1);
             this.panel3.Controls.Add(this.btnBroadcast);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel3.Location = new System.Drawing.Point(6, 301);
+            this.panel3.Location = new System.Drawing.Point(6, 413);
             this.panel3.Margin = new System.Windows.Forms.Padding(6);
             this.panel3.Name = "panel3";
             this.panel3.Padding = new System.Windows.Forms.Padding(6);
@@ -203,27 +190,17 @@
             // 
             // btnSendM1Subs
             // 
-            this.btnSendM1Subs.Dock = System.Windows.Forms.DockStyle.Right;
-            this.btnSendM1Subs.Enabled = false;
-            this.btnSendM1Subs.Location = new System.Drawing.Point(120, 6);
+            this.btnSendM1Subs.Location = new System.Drawing.Point(0, 0);
             this.btnSendM1Subs.Name = "btnSendM1Subs";
-            this.btnSendM1Subs.Size = new System.Drawing.Size(140, 49);
-            this.btnSendM1Subs.TabIndex = 39;
-            this.btnSendM1Subs.Text = "Send to \"MESSAGE1\" Subscribers";
-            this.btnSendM1Subs.UseVisualStyleBackColor = true;
-            this.btnSendM1Subs.Click += new System.EventHandler(this.btnSendM1Subs_Click);
+            this.btnSendM1Subs.Size = new System.Drawing.Size(75, 23);
+            this.btnSendM1Subs.TabIndex = 0;
             // 
             // btnSendM2Subs
             // 
-            this.btnSendM2Subs.Dock = System.Windows.Forms.DockStyle.Right;
-            this.btnSendM2Subs.Enabled = false;
-            this.btnSendM2Subs.Location = new System.Drawing.Point(260, 6);
+            this.btnSendM2Subs.Location = new System.Drawing.Point(0, 0);
             this.btnSendM2Subs.Name = "btnSendM2Subs";
-            this.btnSendM2Subs.Size = new System.Drawing.Size(140, 49);
-            this.btnSendM2Subs.TabIndex = 38;
-            this.btnSendM2Subs.Text = "Send to \"MESSAGE2\" Subscribers";
-            this.btnSendM2Subs.UseVisualStyleBackColor = true;
-            this.btnSendM2Subs.Click += new System.EventHandler(this.btnSendM2Subs_Click);
+            this.btnSendM2Subs.Size = new System.Drawing.Size(75, 23);
+            this.btnSendM2Subs.TabIndex = 1;
             // 
             // panel1
             // 
@@ -246,30 +223,6 @@
             this.btnBroadcast.UseVisualStyleBackColor = true;
             this.btnBroadcast.Click += new System.EventHandler(this.btnBroadcast_Click);
             // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.ucThreadFarm);
-            this.groupBox1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.groupBox1.Location = new System.Drawing.Point(6, 1);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(6);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(6);
-            this.groupBox1.Size = new System.Drawing.Size(574, 112);
-            this.groupBox1.TabIndex = 41;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Threading";
-            // 
-            // ucThreadFarm
-            // 
-            this.ucThreadFarm.AutoScroll = true;
-            this.ucThreadFarm.BackColor = System.Drawing.Color.White;
-            this.ucThreadFarm.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.ucThreadFarm.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ucThreadFarm.Location = new System.Drawing.Point(6, 19);
-            this.ucThreadFarm.Name = "ucThreadFarm";
-            this.ucThreadFarm.Size = new System.Drawing.Size(562, 87);
-            this.ucThreadFarm.TabIndex = 39;
-            // 
             // pnlDiagnostics
             // 
             this.pnlDiagnostics.Controls.Add(this.pnlSettings);
@@ -286,19 +239,10 @@
             // 
             // pnlSettings
             // 
-            this.pnlSettings.Controls.Add(this.label19);
-            this.pnlSettings.Controls.Add(this.cbEnableClientPinging);
-            this.pnlSettings.Controls.Add(this.label18);
-            this.pnlSettings.Controls.Add(this.cbEnableDiagnostics);
-            this.pnlSettings.Controls.Add(this.label7);
-            this.pnlSettings.Controls.Add(this.cbPolicyListener);
             this.pnlSettings.Controls.Add(this.label14);
             this.pnlSettings.Controls.Add(this.tbPort);
             this.pnlSettings.Controls.Add(this.label15);
             this.pnlSettings.Controls.Add(this.label13);
-            this.pnlSettings.Controls.Add(this.label6);
-            this.pnlSettings.Controls.Add(this.tbIPAddress);
-            this.pnlSettings.Controls.Add(this.label1);
             this.pnlSettings.Controls.Add(this.cbCompressMessage);
             this.pnlSettings.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.pnlSettings.Enabled = false;
@@ -311,32 +255,10 @@
             this.pnlSettings.TabStop = false;
             this.pnlSettings.Text = "Socket Server Settings";
             // 
-            // label7
-            // 
-            this.label7.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.label7.Location = new System.Drawing.Point(173, 78);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(171, 29);
-            this.label7.TabIndex = 84;
-            this.label7.Text = "Starts a listener for Silverlight clients";
-            this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // cbPolicyListener
-            // 
-            this.cbPolicyListener.AutoSize = true;
-            this.cbPolicyListener.Checked = true;
-            this.cbPolicyListener.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cbPolicyListener.Location = new System.Drawing.Point(23, 85);
-            this.cbPolicyListener.Name = "cbPolicyListener";
-            this.cbPolicyListener.Size = new System.Drawing.Size(119, 17);
-            this.cbPolicyListener.TabIndex = 83;
-            this.cbPolicyListener.Text = "Start Policy Listener";
-            this.cbPolicyListener.UseVisualStyleBackColor = true;
-            // 
             // label14
             // 
             this.label14.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.label14.Location = new System.Drawing.Point(173, 190);
+            this.label14.Location = new System.Drawing.Point(173, 66);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(171, 42);
             this.label14.TabIndex = 82;
@@ -346,7 +268,7 @@
             // 
             // tbPort
             // 
-            this.tbPort.Location = new System.Drawing.Point(85, 202);
+            this.tbPort.Location = new System.Drawing.Point(85, 78);
             this.tbPort.MaxLength = 5;
             this.tbPort.Name = "tbPort";
             this.tbPort.Size = new System.Drawing.Size(43, 20);
@@ -356,7 +278,7 @@
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(21, 205);
+            this.label15.Location = new System.Drawing.Point(21, 81);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(29, 13);
             this.label15.TabIndex = 80;
@@ -366,48 +288,19 @@
             // label13
             // 
             this.label13.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.label13.Location = new System.Drawing.Point(173, 44);
+            this.label13.Location = new System.Drawing.Point(173, 22);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(171, 29);
             this.label13.TabIndex = 79;
             this.label13.Text = "Automatically compress messages > 99 bytes";
             this.label13.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // label6
-            // 
-            this.label6.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.label6.Location = new System.Drawing.Point(173, 24);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(171, 13);
-            this.label6.TabIndex = 78;
-            this.label6.Text = "Of the network card to use";
-            this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // tbIPAddress
-            // 
-            this.tbIPAddress.Location = new System.Drawing.Point(85, 21);
-            this.tbIPAddress.MaxLength = 15;
-            this.tbIPAddress.Name = "tbIPAddress";
-            this.tbIPAddress.Size = new System.Drawing.Size(85, 20);
-            this.tbIPAddress.TabIndex = 77;
-            this.tbIPAddress.Text = "127.0.0.1";
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(21, 23);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(61, 13);
-            this.label1.TabIndex = 76;
-            this.label1.Text = "IP Address:";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
             // cbCompressMessage
             // 
             this.cbCompressMessage.AutoSize = true;
             this.cbCompressMessage.Checked = true;
             this.cbCompressMessage.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cbCompressMessage.Location = new System.Drawing.Point(23, 51);
+            this.cbCompressMessage.Location = new System.Drawing.Point(23, 29);
             this.cbCompressMessage.Name = "cbCompressMessage";
             this.cbCompressMessage.Size = new System.Drawing.Size(148, 17);
             this.cbCompressMessage.TabIndex = 61;
@@ -834,49 +727,6 @@
             this.Message.Name = "Message";
             this.Message.Width = 75;
             // 
-            // label18
-            // 
-            this.label18.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.label18.Location = new System.Drawing.Point(173, 112);
-            this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(171, 29);
-            this.label18.TabIndex = 86;
-            this.label18.Text = "Diagnostic will be generated";
-            this.label18.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // cbEnableDiagnostics
-            // 
-            this.cbEnableDiagnostics.AutoSize = true;
-            this.cbEnableDiagnostics.Checked = true;
-            this.cbEnableDiagnostics.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cbEnableDiagnostics.Location = new System.Drawing.Point(23, 119);
-            this.cbEnableDiagnostics.Name = "cbEnableDiagnostics";
-            this.cbEnableDiagnostics.Size = new System.Drawing.Size(117, 17);
-            this.cbEnableDiagnostics.TabIndex = 85;
-            this.cbEnableDiagnostics.Text = "Enable Diagnostics";
-            this.cbEnableDiagnostics.UseVisualStyleBackColor = true;
-            // 
-            // label19
-            // 
-            this.label19.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.label19.Location = new System.Drawing.Point(173, 141);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(171, 43);
-            this.label19.TabIndex = 88;
-            this.label19.Text = "The server will periodically ping clients and terminate sessions where there is n" +
-    "o response.";
-            this.label19.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // cbEnableClientPinging
-            // 
-            this.cbEnableClientPinging.AutoSize = true;
-            this.cbEnableClientPinging.Location = new System.Drawing.Point(23, 155);
-            this.cbEnableClientPinging.Name = "cbEnableClientPinging";
-            this.cbEnableClientPinging.Size = new System.Drawing.Size(126, 17);
-            this.cbEnableClientPinging.TabIndex = 87;
-            this.cbEnableClientPinging.Text = "Enable Client Pinging";
-            this.cbEnableClientPinging.UseVisualStyleBackColor = true;
-            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -889,7 +739,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Main";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
-            this.Text = "SocketMeister Test Server (V1.3  -  22-Dec-2016)";
+            this.Text = "SocketMeister Test Server 2.0.6";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Main_FormClosed);
             this.Load += new System.EventHandler(this.Main_Load);
             this.Shown += new System.EventHandler(this.Main_Shown);
@@ -899,7 +749,6 @@
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             this.panel3.ResumeLayout(false);
-            this.groupBox1.ResumeLayout(false);
             this.pnlDiagnostics.ResumeLayout(false);
             this.pnlSettings.ResumeLayout(false);
             this.pnlSettings.PerformLayout();
@@ -928,9 +777,6 @@
         private System.Windows.Forms.TextBox tbPort;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.TextBox tbIPAddress;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.CheckBox cbCompressMessage;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.Button btnStop;
@@ -978,15 +824,8 @@
         private System.Windows.Forms.Button btnSendM1Subs;
         private System.Windows.Forms.Button btnSendM2Subs;
         private System.Windows.Forms.Button btnBroadcast;
-        private System.Windows.Forms.GroupBox groupBox1;
-        private ucThreadFarm ucThreadFarm;
+        //private ucThreadFarm ucThreadFarm;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.CheckBox cbPolicyListener;
-        private System.Windows.Forms.Label label19;
-        private System.Windows.Forms.CheckBox cbEnableClientPinging;
-        private System.Windows.Forms.Label label18;
-        private System.Windows.Forms.CheckBox cbEnableDiagnostics;
     }
 }
 
