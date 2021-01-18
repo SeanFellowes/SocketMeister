@@ -14,7 +14,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="icon_128.png" />
+    <None Remove="Production_128.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\SocketMeister (.NET Standard 2.0)\SocketMeister (.NET Standard 2.0).csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="icon_128.png" />
+    <Resource Include="Production_128.png" />
   </ItemGroup>
 
 </Project>

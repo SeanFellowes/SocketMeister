@@ -5,8 +5,50 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SocketMeister.MiniTestClient"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="SocketMeister Mini Client Tester" Height="450" Width="800" Icon="/icon_128.png" Closing="Window_Closing">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0" Height="40">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="60"/>
+                    <ColumnDefinition Width="70"/>
+                    <ColumnDefinition Width="60"/>
+                    <ColumnDefinition Width="60"/>
+                    <ColumnDefinition Width="60"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="100"/>
+                </Grid.ColumnDefinitions>
+                <Border Grid.Column="0" Grid.ColumnSpan="6" Background="#FF274F5F" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Border>
+                <TextBlock Grid.Column="0" Foreground="White" Text="Client #" TextAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="1" Foreground="White" Text="Connection Status" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="2" Foreground="White" Text="Messages Received" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="3" Foreground="White" Text="Requests Received" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="4" Foreground="White" Text="Requests Sent" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center"/>
+            </Grid>
+            <local:ClientControl Grid.Row="1" x:Name="Client1" />
+            <local:ClientControl Grid.Row="2" x:Name="Client2" ClientId="2" />
+            <local:ClientControl Grid.Row="3" x:Name="Client3" ClientId="3" />
+            <local:ClientControl Grid.Row="4" x:Name="Client4" ClientId="4" />
+            <local:ClientControl Grid.Row="5" x:Name="Client5" ClientId="5" />
+            <local:ClientControl Grid.Row="6" x:Name="Client6" ClientId="6" />
+            <Border Grid.Row="7" Height="1" Background="DarkGray"/>
+        </Grid>
     </Grid>
 </Window>

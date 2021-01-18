@@ -21,9 +21,38 @@ namespace SocketMeister.MiniTestClient
     /// </summary>
     public partial class MainWindow : Window
     {
+        List<ClientControl> _clients = new List<ClientControl>();
+
         public MainWindow()
         {
             InitializeComponent();
+
+            _clients.Add(Client1);
+            _clients.Add(Client2);
+            _clients.Add(Client3);
+            _clients.Add(Client4);
+            _clients.Add(Client5);
+            _clients.Add(Client6);
+
+            foreach (ClientControl Client in _clients)
+            {
+                Client.SendRequestButtonPressed += Client_SendRequestButtonPressed;
+            }
+
+        }
+
+        private void Client_SendRequestButtonPressed(object sender, EventArgs e)
+        {
+            ClientControl client = (ClientControl)sender;
+            client.SendRequest("This is a test");
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            foreach (ClientControl c in _clients)
+            {
+                c.Stop();
+            }
         }
     }
 }
