@@ -55,7 +55,7 @@ namespace SocketMeister.MiniTestClient
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            Start();
+            //Start();
         }
 
 
@@ -108,7 +108,7 @@ namespace SocketMeister.MiniTestClient
         }
 
 
-        private void Start()
+        public void Start()
         {
             SocketEndPoint ep = new SocketEndPoint("127.0.0.1", 4505);
             List<SocketEndPoint> eps = new List<SocketEndPoint>();

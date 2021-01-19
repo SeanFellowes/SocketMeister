@@ -154,7 +154,7 @@
             this.tbBroadcast.Name = "tbBroadcast";
             this.tbBroadcast.Size = new System.Drawing.Size(562, 237);
             this.tbBroadcast.TabIndex = 45;
-            this.tbBroadcast.Text = "Test message from server";
+            this.tbBroadcast.Text = resources.GetString("tbBroadcast.Text");
             // 
             // panel3
             // 
@@ -545,6 +545,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Main";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "SocketMeister Mini Test Server 2.0.6";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Main_FormClosed);
             this.Load += new System.EventHandler(this.Main_Load);

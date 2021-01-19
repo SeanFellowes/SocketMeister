@@ -25,7 +25,8 @@ namespace SocketMeister
         public Main()
         {
             InitializeComponent();
-
+            this.Top = 0;
+            this.Left = 0;
         }
 
         private void Server_ListenerStateChanged(object sender, SocketServer.SocketServerStatusChangedEventArgs e)

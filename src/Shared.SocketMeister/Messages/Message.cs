@@ -60,7 +60,7 @@ namespace SocketMeister.Messages
 
         internal Message(BinaryReader bR) : base(MessageTypes.Message)
         {
-            _timeoutMilliseconds = TimeoutMilliseconds;
+            _timeoutMilliseconds = bR.ReadInt32();
             _parameters = Serializer.DeserializeParameters(bR);
         }
 
