@@ -21,8 +21,6 @@
             <ColumnDefinition Width="60"/>
             <ColumnDefinition Width="60"/>
             <ColumnDefinition Width="100"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
 
         <Border Grid.Row="0" Grid.ColumnSpan="10" Background="DarkGray" Height="1" HorizontalAlignment="Stretch"></Border>

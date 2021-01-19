@@ -12,7 +12,7 @@ using System.Windows.Forms;
 namespace SocketMeister
 {
     delegate void SetLabelTextDelegate(Label label, string text);
-    delegate void ListBoxAddItemDelegate(string source, string text, int clientID, int endPointID, int messageID);
+    delegate void ListBoxAddItemDelegate(GridItem.SeverityType Severity, string Source, string Text);
     delegate void SetButtonEnabledDelegate(Button button, bool enabled);
     delegate void SetGroupBoxEnabledDelegate(GroupBox groupbox, bool enabled);
 
@@ -38,7 +38,7 @@ namespace SocketMeister
         {
             if (e.Exception != null)
             {
-                InsertListboxItem("SocketServer", e.Exception.Message, 0, 0, 0);
+                InsertListboxItem(GridItem.SeverityType.Error, "SocketServer", e.Exception.Message);
             }
         }
 
@@ -56,10 +56,26 @@ namespace SocketMeister
         }
 
 
-        void socketServer_MessageReceived(object sender, SocketServer.MessageReceivedEventArgs e)
+        private void Server_RequestReceived(object sender, SocketServer.RequestReceivedEventArgs e)
+        {
+
+            //MESSAGE RECEIVED. SEND IT BACK IF LOGGING IS ON
+            int clientId = (int)e.Parameters[0];
+            byte[] receivedBytes = (byte[])e.Parameters[1];
+            string msgRec = Encoding.UTF8.GetString(receivedBytes, 0, receivedBytes.Length);
+
+            InsertListboxItem(GridItem.SeverityType.Information, "Client " + clientId, msgRec);
+
+            byte[] toSend = new byte[msgRec.Length];
+            Buffer.BlockCopy(Encoding.UTF8.GetBytes(msgRec), 0, toSend, 0, toSend.Length);
+            e.Response = receivedBytes;
+        }
+
+
+        void Server_MessageReceived(object sender, SocketServer.MessageReceivedEventArgs e)
         {
             SocketServer.Client cli = (SocketServer.Client)sender;
-            InsertListboxItem("Test App", "Message received from " + e.Client.ClientId, 0, 0, 0);
+            InsertListboxItem( GridItem.SeverityType.Information, "Test App", "Message received from " + e.Client.ClientId);
             //  MESSAGE RECEIVED. SEND IT BACK IF LOGGING IS ON
             //string msgRec = Encoding.UTF8.GetString(e.MessageBytes, 0, e.MessageBytes.Length);
             //byte[] toSend = new byte[msgRec.Length];
@@ -139,19 +155,19 @@ namespace SocketMeister
             }
             else { groupbox.Enabled = enabled; }
         }
-        private void InsertListboxItem(string source, string text, int clientID, int endPointID, int messageID)
+        private void InsertListboxItem(GridItem.SeverityType Severity, string Source, string Text)
         {
             try
             {
                 if (this.dGrid.InvokeRequired)
                 {
                     ListBoxAddItemDelegate d = new ListBoxAddItemDelegate(InsertListboxItem);
-                    this.Invoke(d, new object[] { source, text, clientID, endPointID, messageID });
+                    this.Invoke(d, new object[] { Severity, Source, Text });
                 }
                 else
                 {
-                    if (_gridItems.Count == 0) _gridItems.Add(new GridItem(source, text, clientID, endPointID, messageID));
-                    else _gridItems.Insert(0, new GridItem(source, text, clientID, endPointID, messageID));
+                    if (_gridItems.Count == 0) _gridItems.Add(new GridItem(Severity, Source, Text));
+                    else _gridItems.Insert(0, new GridItem(Severity, Source, Text));
 
                 }
             }
@@ -181,13 +197,14 @@ namespace SocketMeister
                 if (Global.Server != null)
                 {
                     Global.Server.ExceptionRaised -= Server_ExceptionRaised;
-                    Global.Server.MessageReceived -= socketServer_MessageReceived;
+                    Global.Server.MessageReceived -= Server_MessageReceived;
                     Global.Server.ListenerStateChanged -= Server_ListenerStateChanged;
                 }
 
                 Global.Server = new SocketServer(Convert.ToInt32(tbPort.Text), cbCompressMessage.Checked);
                 Global.Server.ExceptionRaised += Server_ExceptionRaised;
-                Global.Server.MessageReceived += socketServer_MessageReceived;
+                Global.Server.MessageReceived += Server_MessageReceived;
+                Global.Server.RequestReceived += Server_RequestReceived;
                 Global.Server.ListenerStateChanged += Server_ListenerStateChanged;
                 Global.Server.Start();
 
@@ -200,7 +217,6 @@ namespace SocketMeister
                 btnStart.Enabled = true;
             }
         }
-
 
         private void btnStop_Click(object sender, EventArgs e)
         {

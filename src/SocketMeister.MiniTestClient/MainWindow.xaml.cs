@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,11 +22,42 @@ namespace SocketMeister.MiniTestClient
     /// </summary>
     public partial class MainWindow : Window
     {
+        internal class LogItem
+        {
+            public enum SeverityType { Information = 0, Warning = 1, Error = 2 }
+
+            public SeverityType Severity { get; set; }
+            public string Source { get; set; }
+            public string Text { get; set; }
+            public SolidColorBrush Background 
+            { 
+                get
+                {
+                    if (Severity == SeverityType.Error) return new SolidColorBrush(Color.FromArgb(255, 255, 204, 204));
+                    if (Severity == SeverityType.Warning) return new SolidColorBrush(Color.FromArgb(255, 253, 210, 159));
+                    else return new SolidColorBrush(Color.FromArgb(255, 255, 204, 204));
+                }
+            }
+            public string SeverityDescription
+            {
+                get
+                {
+                    if (Severity == SeverityType.Error) return "Error";
+                    if (Severity == SeverityType.Warning) return "Warning";
+                    else return "Info";
+                }
+            }
+        }
+
+
         List<ClientControl> _clients = new List<ClientControl>();
+        ObservableCollection<LogItem> _log = new ObservableCollection<LogItem>();
 
         public MainWindow()
         {
             InitializeComponent();
+
+            lvLog.ItemsSource = _log;
 
             _clients.Add(Client1);
             _clients.Add(Client2);
@@ -37,14 +69,20 @@ namespace SocketMeister.MiniTestClient
             foreach (ClientControl Client in _clients)
             {
                 Client.SendRequestButtonPressed += Client_SendRequestButtonPressed;
+                Client.ExceptionRaised += Client_ExceptionRaised;
             }
+        }
 
+        private void Client_ExceptionRaised(object sender, ExceptionEventArgs e)
+        {
+            ClientControl ct = (ClientControl)sender;
+            Log("Error", "Client " + ct.ClientId, e.Exception.Message);
         }
 
         private void Client_SendRequestButtonPressed(object sender, EventArgs e)
         {
             ClientControl client = (ClientControl)sender;
-            client.SendRequest("This is a test");
+            client.SendRequest(tbTextToSend.Text);
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -53,6 +91,19 @@ namespace SocketMeister.MiniTestClient
             {
                 c.Stop();
             }
+        }
+
+        private void Log(string LogType, string Source, string Text)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                if (Text.Length > 200) Text = Text.Substring(0, 197) + "...";
+                LogItem i = new LogItem() { Severity =  LogItem.SeverityType.Error, Source = Source, Text = Text };
+                if (_log.Count > 99) _log.RemoveAt(_log.Count - 1);
+
+                _log.Insert(0, i);
+            });
+
         }
     }
 }

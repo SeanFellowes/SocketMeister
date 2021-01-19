@@ -82,22 +82,29 @@ namespace SocketMeister.MiniTestClient
 
         public void SendRequest(string Message)
         {
-            if (string.IsNullOrEmpty(Message)) throw new ArgumentNullException("Message cannot be null or empty");
-            if (_client == null) throw new Exception("Client is null");
-
-            byte[] toSend = new byte[Message.Length];
-            Buffer.BlockCopy(Encoding.UTF8.GetBytes(Message), 0, toSend, 0, toSend.Length);
-            object[] p = new object[1];
-            p[0] = toSend;
-            byte[] result = _client.SendRequest(p);
-
-            Dispatcher.Invoke(() =>
+            try
             {
-                _requestsSent++;
-                tbRequestsSent.Text = _requestsSent.ToString();
-            });
+                if (string.IsNullOrEmpty(Message)) throw new ArgumentNullException("Message cannot be null or empty");
+                if (_client == null) throw new Exception("Client is null");
 
+                byte[] toSend = new byte[Message.Length];
+                Buffer.BlockCopy(Encoding.UTF8.GetBytes(Message), 0, toSend, 0, toSend.Length);
+                object[] p = new object[2];
+                p[0] = _clientId;
+                p[1] = toSend;
+                byte[] result = _client.SendRequest(p);
 
+                Dispatcher.Invoke(() =>
+                {
+                    _requestsSent++;
+                    tbRequestsSent.Text = _requestsSent.ToString();
+
+                });
+            }
+            catch (Exception ex)
+            {
+                ExceptionRaised?.Invoke(this, new ExceptionEventArgs(ex, 1200));
+            }
         }
 
 

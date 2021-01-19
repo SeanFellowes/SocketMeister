@@ -506,11 +506,21 @@ namespace SocketMeister
                 //  DESERIALIZE THE REQUEST FROM THE CLIENT
                 //  WE HAVE A MESSAGE IN FULL. UNPACK, (RESETS COUNTERS) AND RAISE AN EVENT
                 RequestReceivedEventArgs args = new RequestReceivedEventArgs(request.RemoteClient, request.Parameters);
-                RequestReceived(this, args);
 
-                //  SEND RESPONSE
-                ResponseMessage response = new ResponseMessage(request.RequestId, args.Response);
-                SendMessage(request.RemoteClient, response, false);
+                if (RequestReceived == null)
+                {
+                    Exception ex = new Exception("There is no process on the server listening to 'RequestReceived' events from the socket server.");
+                    ResponseMessage noListener = new ResponseMessage(request.RequestId, ex);
+                    SendMessage(request.RemoteClient, noListener, false);
+                }
+                else
+                {
+                    RequestReceived(this, args);
+
+                    //  SEND RESPONSE
+                    ResponseMessage response = new ResponseMessage(request.RequestId, args.Response);
+                    SendMessage(request.RemoteClient, response, false);
+                }
             }
             catch (Exception ex)
             {

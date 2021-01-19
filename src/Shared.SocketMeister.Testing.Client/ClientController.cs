@@ -48,8 +48,8 @@ namespace SocketMeister.Testing
             _controlBusClient = new ControlBusClient( ControlBusClientType.ClientController, ControlBusClientId, Constants.ControlBusServerIPAddress, Constants.ControlBusPort);
             _controlBusClient.ConnectionFailed += ControlBusClient_ConnectionFailed;
             _controlBusClient.ConnectionStatusChanged += ControlBusClient_ConnectionStatusChanged;
-            _controlBusClient.MessageReceived += ControlBusClient_MessageReceived; ;
-            _controlBusClient.RequestReceived += ControlBusClient_RequestReceived; ;
+            _controlBusClient.MessageReceived += ControlBusClient_MessageReceived; 
+            _controlBusClient.RequestReceived += ControlBusClient_RequestReceived; 
             _controlBusClient.ExceptionRaised += ControlBusClient_ExceptionRaised;
         }
 

@@ -9,41 +9,29 @@ namespace SocketMeister
 {
     public class GridItem : INotifyPropertyChanged
     {
-        DateTime _timeStamp = DateTime.Now;
-        string _object = "";
-        string _message = "";
-        string _clientID = "";
-        string _endPointID = "";
-        string _messageID = "";
-        string _messageType = "";
+         public enum SeverityType { Information = 0, Warning = 1, Error = 2 }
+
+        public SeverityType Severity { get; }
+
+        readonly DateTime _timeStamp = DateTime.Now;
 
         public string TimeStamp { get { return _timeStamp.ToString("HH:mm:ss fff"); } }
-        public String Object { get { return _object; } }
-        public string ClientID { get { return _clientID; } }
-        public string EndPointID { get { return _endPointID; } }
-        public string Message { get { return _message; } }
-        public string MessageID { get { return _messageID; } }
-        public string MessageType { get { return _messageType; } }
+        public string Source { get; }
+        public string Text { get; }
 
         public GridItem() { }
 
-        public GridItem(string source, string message, int ClientID, int EndPointID, int MessageID)
+        public GridItem(SeverityType Severity, string Source, string Text)
         {
-            _object = source;
-            _message = message;
-            if (MessageID != 0) _messageID = MessageID.ToString();
-            if (ClientID != 0) _clientID = ClientID.ToString();
-            if (EndPointID != 0) _endPointID = EndPointID.ToString();
-            //if (MessageType == SocketMessageTypes.Broadcast) _messageType = "Broadcast";
-            //else if (MessageType == SocketMessageTypes.Response) _messageType = "Response";
-            //else if (MessageType == SocketMessageTypes.Request) _messageType = "Request";
-            this.NotifyPropertyChanged("TimeStamp");
+            this.Severity = Severity;
+            this.Source = Source;
+
+            if (Text.Length > 150) this.Text = Text.Substring(0, 147) + "...";
+            else this.Text = Text;
+
+            this.NotifyPropertyChanged("Severity");
             this.NotifyPropertyChanged("Source");
-            this.NotifyPropertyChanged("ClientID");
-            this.NotifyPropertyChanged("EndPointID");
-            this.NotifyPropertyChanged("MessageID");
-            this.NotifyPropertyChanged("MessageType");
-            this.NotifyPropertyChanged("Message");
+            this.NotifyPropertyChanged("Text");
         }
         public event PropertyChangedEventHandler PropertyChanged;
         private void NotifyPropertyChanged(string name)
