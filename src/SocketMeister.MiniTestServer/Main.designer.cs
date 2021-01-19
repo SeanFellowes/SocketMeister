@@ -38,9 +38,6 @@
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.tbBroadcast = new System.Windows.Forms.TextBox();
             this.panel3 = new System.Windows.Forms.Panel();
-            this.btnSendM1Subs = new System.Windows.Forms.Button();
-            this.btnSendM2Subs = new System.Windows.Forms.Button();
-            this.panel1 = new System.Windows.Forms.Panel();
             this.btnBroadcast = new System.Windows.Forms.Button();
             this.pnlDiagnostics = new System.Windows.Forms.Panel();
             this.pnlSettings = new System.Windows.Forms.GroupBox();
@@ -62,7 +59,7 @@
             this.lblTotalConnectedClients = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.lblTotalMessagesSent = new System.Windows.Forms.Label();
-            this.lblTotalMessagesReceived = new System.Windows.Forms.Label();
+            this.lblTotalRequestsReceived = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.pnlAutoBroadcast = new System.Windows.Forms.GroupBox();
@@ -70,11 +67,11 @@
             this.rbAutoBCLarge = new System.Windows.Forms.RadioButton();
             this.rbAutoBCOff = new System.Windows.Forms.RadioButton();
             this.dGrid = new System.Windows.Forms.DataGridView();
-            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.TimeStamp = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Type = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.MessageID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Message = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.pnlFooter.SuspendLayout();
             this.panelOuter.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -121,7 +118,7 @@
             this.panelOuter.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
             this.panelOuter.Name = "panelOuter";
             this.panelOuter.Padding = new System.Windows.Forms.Padding(3);
-            this.panelOuter.Size = new System.Drawing.Size(954, 337);
+            this.panelOuter.Size = new System.Drawing.Size(954, 314);
             this.panelOuter.TabIndex = 26;
             // 
             // panel2
@@ -132,7 +129,7 @@
             this.panel2.Margin = new System.Windows.Forms.Padding(6);
             this.panel2.Name = "panel2";
             this.panel2.Padding = new System.Windows.Forms.Padding(6, 1, 6, 6);
-            this.panel2.Size = new System.Drawing.Size(586, 331);
+            this.panel2.Size = new System.Drawing.Size(586, 308);
             this.panel2.TabIndex = 45;
             // 
             // groupBox4
@@ -144,7 +141,7 @@
             this.groupBox4.Margin = new System.Windows.Forms.Padding(6);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Padding = new System.Windows.Forms.Padding(6);
-            this.groupBox4.Size = new System.Drawing.Size(574, 324);
+            this.groupBox4.Size = new System.Drawing.Size(574, 301);
             this.groupBox4.TabIndex = 42;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Broadcast and Subscriber Messaging";
@@ -155,56 +152,31 @@
             this.tbBroadcast.Location = new System.Drawing.Point(6, 19);
             this.tbBroadcast.Multiline = true;
             this.tbBroadcast.Name = "tbBroadcast";
-            this.tbBroadcast.Size = new System.Drawing.Size(562, 238);
+            this.tbBroadcast.Size = new System.Drawing.Size(562, 237);
             this.tbBroadcast.TabIndex = 45;
             this.tbBroadcast.Text = "Test message from server";
             // 
             // panel3
             // 
-            this.panel3.Controls.Add(this.btnSendM1Subs);
-            this.panel3.Controls.Add(this.btnSendM2Subs);
-            this.panel3.Controls.Add(this.panel1);
             this.panel3.Controls.Add(this.btnBroadcast);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel3.Location = new System.Drawing.Point(6, 257);
+            this.panel3.Location = new System.Drawing.Point(6, 256);
             this.panel3.Margin = new System.Windows.Forms.Padding(6);
             this.panel3.Name = "panel3";
             this.panel3.Padding = new System.Windows.Forms.Padding(6);
-            this.panel3.Size = new System.Drawing.Size(562, 61);
+            this.panel3.Size = new System.Drawing.Size(562, 39);
             this.panel3.TabIndex = 44;
-            // 
-            // btnSendM1Subs
-            // 
-            this.btnSendM1Subs.Location = new System.Drawing.Point(0, 0);
-            this.btnSendM1Subs.Name = "btnSendM1Subs";
-            this.btnSendM1Subs.Size = new System.Drawing.Size(75, 23);
-            this.btnSendM1Subs.TabIndex = 0;
-            // 
-            // btnSendM2Subs
-            // 
-            this.btnSendM2Subs.Location = new System.Drawing.Point(0, 0);
-            this.btnSendM2Subs.Name = "btnSendM2Subs";
-            this.btnSendM2Subs.Size = new System.Drawing.Size(75, 23);
-            this.btnSendM2Subs.TabIndex = 1;
-            // 
-            // panel1
-            // 
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel1.Location = new System.Drawing.Point(400, 6);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(16, 49);
-            this.panel1.TabIndex = 40;
             // 
             // btnBroadcast
             // 
             this.btnBroadcast.Dock = System.Windows.Forms.DockStyle.Right;
             this.btnBroadcast.Enabled = false;
-            this.btnBroadcast.Location = new System.Drawing.Point(416, 6);
+            this.btnBroadcast.Location = new System.Drawing.Point(429, 6);
             this.btnBroadcast.Margin = new System.Windows.Forms.Padding(12, 3, 3, 3);
             this.btnBroadcast.Name = "btnBroadcast";
-            this.btnBroadcast.Size = new System.Drawing.Size(140, 49);
+            this.btnBroadcast.Size = new System.Drawing.Size(127, 27);
             this.btnBroadcast.TabIndex = 37;
-            this.btnBroadcast.Text = "Broadcast";
+            this.btnBroadcast.Text = "Send Message";
             this.btnBroadcast.UseVisualStyleBackColor = true;
             this.btnBroadcast.Click += new System.EventHandler(this.btnBroadcast_Click);
             // 
@@ -219,7 +191,7 @@
             this.pnlDiagnostics.Margin = new System.Windows.Forms.Padding(6);
             this.pnlDiagnostics.Name = "pnlDiagnostics";
             this.pnlDiagnostics.Padding = new System.Windows.Forms.Padding(6);
-            this.pnlDiagnostics.Size = new System.Drawing.Size(362, 331);
+            this.pnlDiagnostics.Size = new System.Drawing.Size(362, 308);
             this.pnlDiagnostics.TabIndex = 42;
             // 
             // pnlSettings
@@ -231,7 +203,7 @@
             this.pnlSettings.Controls.Add(this.cbCompressMessage);
             this.pnlSettings.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.pnlSettings.Enabled = false;
-            this.pnlSettings.Location = new System.Drawing.Point(6, 6);
+            this.pnlSettings.Location = new System.Drawing.Point(6, 3);
             this.pnlSettings.Margin = new System.Windows.Forms.Padding(6, 12, 6, 6);
             this.pnlSettings.Name = "pnlSettings";
             this.pnlSettings.Padding = new System.Windows.Forms.Padding(6);
@@ -299,7 +271,7 @@
             this.groupBox3.Controls.Add(this.cbLogInfo);
             this.groupBox3.Controls.Add(this.serviceStatusIndicator);
             this.groupBox3.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.groupBox3.Location = new System.Drawing.Point(6, 118);
+            this.groupBox3.Location = new System.Drawing.Point(6, 115);
             this.groupBox3.Margin = new System.Windows.Forms.Padding(6);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Padding = new System.Windows.Forms.Padding(6);
@@ -360,22 +332,22 @@
             this.groupBox2.Controls.Add(this.lblTotalConnectedClients);
             this.groupBox2.Controls.Add(this.label4);
             this.groupBox2.Controls.Add(this.lblTotalMessagesSent);
-            this.groupBox2.Controls.Add(this.lblTotalMessagesReceived);
+            this.groupBox2.Controls.Add(this.lblTotalRequestsReceived);
             this.groupBox2.Controls.Add(this.label3);
             this.groupBox2.Controls.Add(this.label2);
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.groupBox2.Location = new System.Drawing.Point(6, 176);
+            this.groupBox2.Location = new System.Drawing.Point(6, 173);
             this.groupBox2.Margin = new System.Windows.Forms.Padding(6);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Padding = new System.Windows.Forms.Padding(6);
-            this.groupBox2.Size = new System.Drawing.Size(350, 104);
+            this.groupBox2.Size = new System.Drawing.Size(350, 84);
             this.groupBox2.TabIndex = 68;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Diagnostics";
             // 
             // lblBytesSent
             // 
-            this.lblBytesSent.Location = new System.Drawing.Point(253, 80);
+            this.lblBytesSent.Location = new System.Drawing.Point(88, 63);
             this.lblBytesSent.Name = "lblBytesSent";
             this.lblBytesSent.Size = new System.Drawing.Size(90, 13);
             this.lblBytesSent.TabIndex = 86;
@@ -384,7 +356,7 @@
             // 
             // lblBytesReceived
             // 
-            this.lblBytesReceived.Location = new System.Drawing.Point(256, 63);
+            this.lblBytesReceived.Location = new System.Drawing.Point(91, 46);
             this.lblBytesReceived.Name = "lblBytesReceived";
             this.lblBytesReceived.Size = new System.Drawing.Size(87, 13);
             this.lblBytesReceived.TabIndex = 85;
@@ -394,7 +366,7 @@
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(193, 80);
+            this.label16.Location = new System.Drawing.Point(5, 63);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(61, 13);
             this.label16.TabIndex = 84;
@@ -404,16 +376,16 @@
             // label17
             // 
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(193, 63);
+            this.label17.Location = new System.Drawing.Point(5, 46);
             this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(68, 13);
+            this.label17.Size = new System.Drawing.Size(88, 13);
             this.label17.TabIndex = 83;
-            this.label17.Text = "Bytes Rcvd: ";
+            this.label17.Text = "Bytes Received: ";
             this.label17.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblTotalConnectedClients
             // 
-            this.lblTotalConnectedClients.Location = new System.Drawing.Point(122, 22);
+            this.lblTotalConnectedClients.Location = new System.Drawing.Point(137, 22);
             this.lblTotalConnectedClients.Name = "lblTotalConnectedClients";
             this.lblTotalConnectedClients.Size = new System.Drawing.Size(41, 13);
             this.lblTotalConnectedClients.TabIndex = 72;
@@ -423,7 +395,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(11, 22);
+            this.label4.Location = new System.Drawing.Point(5, 22);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(96, 13);
             this.label4.TabIndex = 71;
@@ -432,26 +404,26 @@
             // 
             // lblTotalMessagesSent
             // 
-            this.lblTotalMessagesSent.Location = new System.Drawing.Point(293, 39);
+            this.lblTotalMessagesSent.Location = new System.Drawing.Point(293, 63);
             this.lblTotalMessagesSent.Name = "lblTotalMessagesSent";
             this.lblTotalMessagesSent.Size = new System.Drawing.Size(50, 13);
             this.lblTotalMessagesSent.TabIndex = 70;
             this.lblTotalMessagesSent.Text = "0";
             this.lblTotalMessagesSent.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // lblTotalMessagesReceived
+            // lblTotalRequestsReceived
             // 
-            this.lblTotalMessagesReceived.Location = new System.Drawing.Point(293, 22);
-            this.lblTotalMessagesReceived.Name = "lblTotalMessagesReceived";
-            this.lblTotalMessagesReceived.Size = new System.Drawing.Size(50, 13);
-            this.lblTotalMessagesReceived.TabIndex = 69;
-            this.lblTotalMessagesReceived.Text = "0";
-            this.lblTotalMessagesReceived.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lblTotalRequestsReceived.Location = new System.Drawing.Point(293, 46);
+            this.lblTotalRequestsReceived.Name = "lblTotalRequestsReceived";
+            this.lblTotalRequestsReceived.Size = new System.Drawing.Size(50, 13);
+            this.lblTotalRequestsReceived.TabIndex = 69;
+            this.lblTotalRequestsReceived.Text = "0";
+            this.lblTotalRequestsReceived.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(193, 39);
+            this.label3.Location = new System.Drawing.Point(186, 63);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(83, 13);
             this.label3.TabIndex = 68;
@@ -461,11 +433,11 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(193, 22);
+            this.label2.Location = new System.Drawing.Point(186, 46);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(90, 13);
+            this.label2.Size = new System.Drawing.Size(107, 13);
             this.label2.TabIndex = 67;
-            this.label2.Text = "Messages Rcvd: ";
+            this.label2.Text = "Requests Received: ";
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // pnlAutoBroadcast
@@ -474,7 +446,7 @@
             this.pnlAutoBroadcast.Controls.Add(this.rbAutoBCLarge);
             this.pnlAutoBroadcast.Controls.Add(this.rbAutoBCOff);
             this.pnlAutoBroadcast.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnlAutoBroadcast.Location = new System.Drawing.Point(6, 280);
+            this.pnlAutoBroadcast.Location = new System.Drawing.Point(6, 257);
             this.pnlAutoBroadcast.Margin = new System.Windows.Forms.Padding(6);
             this.pnlAutoBroadcast.Name = "pnlAutoBroadcast";
             this.pnlAutoBroadcast.Padding = new System.Windows.Forms.Padding(6);
@@ -527,9 +499,9 @@
             this.MessageID,
             this.Message});
             this.dGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dGrid.Location = new System.Drawing.Point(0, 337);
+            this.dGrid.Location = new System.Drawing.Point(0, 314);
             this.dGrid.Name = "dGrid";
-            this.dGrid.Size = new System.Drawing.Size(954, 320);
+            this.dGrid.Size = new System.Drawing.Size(954, 343);
             this.dGrid.TabIndex = 28;
             // 
             // TimeStamp
@@ -620,7 +592,7 @@
         private System.Windows.Forms.Label lblTotalConnectedClients;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label lblTotalMessagesSent;
-        private System.Windows.Forms.Label lblTotalMessagesReceived;
+        private System.Windows.Forms.Label lblTotalRequestsReceived;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.GroupBox pnlAutoBroadcast;
@@ -635,11 +607,7 @@
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.TextBox tbBroadcast;
         private System.Windows.Forms.Panel panel3;
-        private System.Windows.Forms.Button btnSendM1Subs;
-        private System.Windows.Forms.Button btnSendM2Subs;
         private System.Windows.Forms.Button btnBroadcast;
-        //private ucThreadFarm ucThreadFarm;
-        private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.DataGridView dGrid;
         private System.Windows.Forms.DataGridViewTextBoxColumn TimeStamp;
         private System.Windows.Forms.DataGridViewTextBoxColumn Type;

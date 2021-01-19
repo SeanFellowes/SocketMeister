@@ -26,9 +26,12 @@ namespace SocketMeister.MiniTestClient
         {
             public enum SeverityType { Information = 0, Warning = 1, Error = 2 }
 
+            readonly DateTime timeStamp = DateTime.Now;
+
             public SeverityType Severity { get; set; }
             public string Source { get; set; }
             public string Text { get; set; }
+            public string TimeStamp { get { return timeStamp.ToString("HH:mm:ss fff"); } }
             public SolidColorBrush Background 
             { 
                 get

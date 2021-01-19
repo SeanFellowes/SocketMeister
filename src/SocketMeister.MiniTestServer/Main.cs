@@ -19,13 +19,12 @@ namespace SocketMeister
     public partial class Main : Form
     {
         BindingList<GridItem> _gridItems;
+        private readonly object _lock = new object();
+        private bool _stop = false;
 
         public Main()
         {
             InitializeComponent();
-
-            //  START A BACKGROUND PROCESS WHICH AUTOMATICALLY GENERATES BROADCASTS
-            new Thread(new ThreadStart(delegate { ExecuteBroadcaster(); })).Start();
 
         }
 
@@ -58,13 +57,15 @@ namespace SocketMeister
 
         private void Server_RequestReceived(object sender, SocketServer.RequestReceivedEventArgs e)
         {
+            SetLabelText(lblTotalRequestsReceived, Global.Server.TotalRequestsReceived.ToString("N0"));
+            SetLabelText(lblBytesReceived, Global.Server.TotalBytesReceived.ToString("N0"));
 
             //MESSAGE RECEIVED. SEND IT BACK IF LOGGING IS ON
             int clientId = (int)e.Parameters[0];
             byte[] receivedBytes = (byte[])e.Parameters[1];
             string msgRec = Encoding.UTF8.GetString(receivedBytes, 0, receivedBytes.Length);
 
-            InsertListboxItem(GridItem.SeverityType.Information, "Client " + clientId, msgRec);
+            InsertListboxItem(GridItem.SeverityType.Information, "Client " + clientId, "RequestReceived: " + msgRec);
 
             byte[] toSend = new byte[msgRec.Length];
             Buffer.BlockCopy(Encoding.UTF8.GetBytes(msgRec), 0, toSend, 0, toSend.Length);
@@ -74,66 +75,16 @@ namespace SocketMeister
 
         void Server_MessageReceived(object sender, SocketServer.MessageReceivedEventArgs e)
         {
-            SocketServer.Client cli = (SocketServer.Client)sender;
-            InsertListboxItem( GridItem.SeverityType.Information, "Test App", "Message received from " + e.Client.ClientId);
-            //  MESSAGE RECEIVED. SEND IT BACK IF LOGGING IS ON
-            //string msgRec = Encoding.UTF8.GetString(e.MessageBytes, 0, e.MessageBytes.Length);
-            //byte[] toSend = new byte[msgRec.Length];
-            //Buffer.BlockCopy(Encoding.UTF8.GetBytes(msgRec), 0, toSend, 0, toSend.Length);
-            //cli.SendResponse(toSend, e.RequestID, e.EndPointID);
+            SetLabelText(lblTotalRequestsReceived, Global.Server.TotalRequestsReceived.ToString("N0"));
+            SetLabelText(lblBytesReceived, Global.Server.TotalBytesReceived.ToString("N0"));
+
+            //MESSAGE RECEIVED. SEND IT BACK IF LOGGING IS ON
+            int clientId = (int)e.Parameters[0];
+            byte[] receivedBytes = (byte[])e.Parameters[1];
+            string msgRec = Encoding.UTF8.GetString(receivedBytes, 0, receivedBytes.Length);
+
+            InsertListboxItem(GridItem.SeverityType.Information, "Client " + clientId, "MessageReceived: " + msgRec);
         }
-
-
-        //  DIAGNOSTICS EVENTS
-        //void diagnostics_BroadcastMessagesInQueueChanged(object sender, SockMstrCounterChangedArgs e)
-        //{
-        //    SetLabelText(lblOutboundMessageQueue, e.Count.ToString());
-        //}
-        //void diagnostics_BroadcastRecipientsChanged(object sender, SockMstrCounterChangedArgs e)
-        //{
-        //    SetLabelText(lblBroadcastRecipients, e.Count.ToString());
-        //}
-        //void diagnostics_CounterSubscriptionEndPointsChanged(object sender, SockMstrCounterChangedArgs e)
-        //{
-        //    SetLabelText(lblSubscriptionEndPoints, e.Count.ToString());
-        //}
-        //void diagnostics_CounterSubscriptionSubscribersChanged(object sender, SockMstrCounterSubscriptionSubscribersChangedArgs e)
-        //{
-        //    if (e.SubscriptionName == "MESSAGE1") SetLabelText(lblMessage1Subscribers, e.Count.ToString());
-        //    else if (e.SubscriptionName == "MESSAGE2") SetLabelText(lblMessage2Subscribers, e.Count.ToString());
-        //}
-
-        //private void diagnostics_CounterTotalAbortedClientsChanged(object sender, SockMstrCounterChangedArgs e)
-        //{
-        //    SetLabelText(lblAbortedClients, e.Count.ToString());
-        //}
-
-        //void diagnostics_TotalConnectedClientsChanged(object sender, SockMstrCounterChangedArgs e)
-        //{
-        //    SetLabelText(lblTotalConnectedClients, e.Count.ToString());
-        //}
-        //void diagnostics_TotalMessagesReceivedChanged(object sender, SockMstrCounterChangedArgs e)
-        //{
-        //    SetLabelText(lblTotalMessagesReceived, e.Count.ToString());
-        //}
-        //void diagnostics_TotalMessagesSentChanged(object sender, SockMstrCounterChangedArgs e)
-        //{
-        //    SetLabelText(lblTotalMessagesSent, e.Count.ToString());
-        //}
-        //void diagnostics_CounterTotalBytesReceivedChanged(object sender, SockMstrCounterChangedArgs e)
-        //{
-        //    string val = "";
-        //    val = e.Count.ToString("#,##0");
-        //    SetLabelText(lblBytesReceived, val);
-        //}
-        //void diagnostics_CounterTotalBytesSentChanged(object sender, SockMstrCounterChangedArgs e)
-        //{
-        //    string val = "";
-        //    val = e.Count.ToString("#,##0");
-        //    SetLabelText(lblBytesSent, val);
-        //}
-
-
 
 
 
@@ -193,15 +144,22 @@ namespace SocketMeister
         {
             try
             {
+                lock(_lock) { _stop = false; }
+
                 //Global.Server.Start(tbIPAddress.Text, 100, cbCompressMessage.Checked, Convert.ToInt32(tbPort.Text), cbPolicyListener.Checked, cbEnableDiagnostics.Checked, cbEnableClientPinging.Checked);
                 if (Global.Server != null)
                 {
+                    Global.Server.ClientConnected -= Server_ClientConnected;
+                    Global.Server.ClientDisconnected -= Server_ClientDisconnected;
                     Global.Server.ExceptionRaised -= Server_ExceptionRaised;
                     Global.Server.MessageReceived -= Server_MessageReceived;
+                    Global.Server.RequestReceived -= Server_RequestReceived;
                     Global.Server.ListenerStateChanged -= Server_ListenerStateChanged;
                 }
 
                 Global.Server = new SocketServer(Convert.ToInt32(tbPort.Text), cbCompressMessage.Checked);
+                Global.Server.ClientConnected += Server_ClientConnected;
+                Global.Server.ClientDisconnected += Server_ClientDisconnected;
                 Global.Server.ExceptionRaised += Server_ExceptionRaised;
                 Global.Server.MessageReceived += Server_MessageReceived;
                 Global.Server.RequestReceived += Server_RequestReceived;
@@ -210,6 +168,10 @@ namespace SocketMeister
 
                 btnStart.Enabled = false;       //  CHANGED WHEN EVENT IS RECEIVED
                 pnlSettings.Enabled = false;
+
+                //  START A BACKGROUND PROCESS WHICH AUTOMATICALLY GENERATES BROADCASTS
+                new Thread(new ThreadStart(delegate { ExecuteBroadcaster(); })).Start();
+
             }
             catch (Exception ex)
             {
@@ -218,11 +180,22 @@ namespace SocketMeister
             }
         }
 
+        private void Server_ClientDisconnected(object sender, SocketServer.ClientDisconnectedEventArgs e)
+        {
+            SetLabelText(lblTotalConnectedClients, Global.Server.ClientCount.ToString("N0"));
+        }
+
+        private void Server_ClientConnected(object sender, SocketServer.ClientConnectedEventArgs e)
+        {
+            SetLabelText(lblTotalConnectedClients, Global.Server.ClientCount.ToString("N0"));
+        }
+
         private void btnStop_Click(object sender, EventArgs e)
         {
             try
             {
                 //  STOP
+                lock (_lock) { _stop = true; }
                 Global.Server.Stop();
                 lblStatus.Text = "STOPPING ...";
                 btnStop.Enabled = false;
@@ -280,8 +253,6 @@ namespace SocketMeister
                 SetButtonEnabled(btnStart, false);
                 SetButtonEnabled(btnStop, true);
                 SetButtonEnabled(btnBroadcast, true);
-                SetButtonEnabled(btnSendM1Subs, true);
-                SetButtonEnabled(btnSendM2Subs, true);
                 SetLabelText(lblStatus, "STARTED");
             }
             else if (Status == SocketServerStatus.Stopped)
@@ -290,8 +261,6 @@ namespace SocketMeister
                 SetButtonEnabled(btnStart, true);
                 SetButtonEnabled(btnStop, false);
                 SetButtonEnabled(btnBroadcast, false);
-                SetButtonEnabled(btnSendM1Subs, false);
-                SetButtonEnabled(btnSendM2Subs, false);
                 SetGroupBoxEnabled(pnlSettings, true);
                 SetLabelText(lblStatus, "STOPPED");
             }
@@ -301,8 +270,6 @@ namespace SocketMeister
                 SetButtonEnabled(btnStart, false);
                 SetButtonEnabled(btnStop, false);
                 SetButtonEnabled(btnBroadcast, false);
-                SetButtonEnabled(btnSendM1Subs, false);
-                SetButtonEnabled(btnSendM2Subs, false);
             }
 
         }
@@ -311,6 +278,7 @@ namespace SocketMeister
         {
             while (true == true)
             {
+                lock(_lock) { if (_stop == true) return; }
                 if (Global.Server == null)
                 {
                     Thread.Sleep(1000);
@@ -365,6 +333,9 @@ namespace SocketMeister
             {
                 i.SendMessage(parms);
             }
+            SetLabelText(lblTotalMessagesSent, Global.Server.TotalMessagesSent.ToString("N0"));
+            SetLabelText(lblBytesSent, Global.Server.TotalBytesSent.ToString("N0"));
+
         }
 
 

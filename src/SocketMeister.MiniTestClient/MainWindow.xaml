@@ -92,6 +92,7 @@
             
             <Border Background="#FF274F5F" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Border>
             <StackPanel Orientation="Horizontal" Margin="6,0,0,0">
+                <TextBlock Foreground="White" Text="Timestamp" Width="80" TextAlignment="Left" VerticalAlignment="Center"/>
                 <TextBlock Foreground="White" Text="Severity" Width="70" TextAlignment="Left" VerticalAlignment="Center"/>
                 <TextBlock Foreground="White" Text="Source" Width="70" TextAlignment="Left" VerticalAlignment="Center"/>
                 <TextBlock Foreground="White" Text="Log Text" Width="100" TextAlignment="Left" VerticalAlignment="Center"/>
@@ -102,13 +103,15 @@
                     <DataTemplate>
                         <Grid Background="{Binding Background}">
                             <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="80"/>
                                 <ColumnDefinition Width="70"/>
                                 <ColumnDefinition Width="70"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text="{Binding SeverityDescription}" Grid.Column="0" />
-                            <TextBlock Text="{Binding Source}" Grid.Column="1" />
-                            <TextBlock Text="{Binding Text}" Grid.Column="2"/>
+                            <TextBlock Text="{Binding TimeStamp}" Grid.Column="0" />
+                            <TextBlock Text="{Binding SeverityDescription}" Grid.Column="1" />
+                            <TextBlock Text="{Binding Source}" Grid.Column="2" />
+                            <TextBlock Text="{Binding Text}" Grid.Column="3"/>
                         </Grid>
                     </DataTemplate>
                 </ListView.ItemTemplate>

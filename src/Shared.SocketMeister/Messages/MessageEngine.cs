@@ -295,6 +295,10 @@ namespace SocketMeister.Messages
             get { return _messageType; }
         }
 
+        internal int MessageLength { get { return _messageLength; } }
+
+        internal int MessageLengthUncompressed { get { return _messageLengthUncompressed; } }
+
 
         private void AddParseAttemptDetails()
         {

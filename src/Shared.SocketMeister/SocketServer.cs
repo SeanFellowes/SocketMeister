@@ -37,9 +37,14 @@ namespace SocketMeister
         private SocketServerStatus _listenerState;
         private readonly IPEndPoint _localEndPoint = null;
         private readonly object _lock = new object();
+        private readonly object _lockTotals = new object();
         private int _requestsInProgress = 0;
         private bool _isStopRequested;
         private readonly Thread _threadListener = null;
+        private long _totalBytesReceived;
+        private long _totalBytesSent;
+        private int _totalMessagesSent;
+        private int _totalRequestsReceived;
 
         /// <summary>
         /// Event raised when a client connects to the socket server (Raised in a seperate thread)
@@ -146,6 +151,44 @@ namespace SocketMeister
         }
 
         /// <summary>
+        /// The total number of bytes which have been received through the socket server since it started
+        /// </summary>
+        public long TotalBytesReceived
+        {
+            get { lock (_lockTotals) { return _totalBytesReceived; } }
+        }
+
+        /// <summary>
+        /// The total number of bytes which have been sent through the socket server since it started
+        /// </summary>
+        public long TotalBytesSent
+        {
+            get { lock (_lockTotals) { return _totalBytesSent; } }
+        }
+
+
+        /// <summary>
+        /// The total number of messages that have been sent through the socket server since it started;
+        /// </summary>
+        public int TotalMessagesSent
+        {
+            get { lock (_lockTotals) { return _totalMessagesSent; } }
+        }
+
+
+
+        /// <summary>
+        /// The total number of messages that have been received through the socket server since it started;
+        /// </summary>
+        public int TotalRequestsReceived
+        {
+            get { lock(_lockTotals) { return _totalRequestsReceived; } }
+        }
+
+
+
+
+        /// <summary>
         /// The number of client requests currently being executed.
         /// </summary>
         public int RequestsInProgress { get { lock (_lock) { return _requestsInProgress; } } }
@@ -204,6 +247,13 @@ namespace SocketMeister
         public void Start()
         {
             IsStopRequested = false;
+            lock(_lockTotals) 
+            { 
+                _totalBytesReceived = 0;
+                _totalBytesSent = 0;
+                _totalMessagesSent = 0;
+                _totalRequestsReceived = 0; 
+            }
             _threadListener.Start();
         }
 
@@ -223,7 +273,7 @@ namespace SocketMeister
             //  SEND SYNCRONOUS DISCONNECT MESSAGE TO CLIENTS
             foreach (Client remoteClient in toProcess)
             {
-                SendDisconnectMessage(remoteClient.ClientSocket);
+                SendDisconnectMessage(remoteClient);
             }
 
             //  WAIT FOR CLIENTS TO DISCONNECT
@@ -341,8 +391,20 @@ namespace SocketMeister
                 {
                     if (receiveEnvelope.AddBytesFromSocketReceiveBuffer(receivedBytesCount, remoteClient.ReceiveBuffer, ref receiveBufferPtr) == true)
                     {
+                        lock (_lockTotals)
+                        {
+                            if (_totalBytesReceived > (long.MaxValue * 0.9)) _totalBytesReceived = 0;
+                            _totalBytesReceived += receiveEnvelope.MessageLength;
+                        }
+
                         if (receiveEnvelope.MessageType == MessageTypes.RequestMessageV1)
                         {
+                            lock (_lockTotals)
+                            {
+                                if (_totalRequestsReceived == int.MaxValue) _totalRequestsReceived = 0;
+                                _totalRequestsReceived++;
+                            }
+
                             RequestMessage request = receiveEnvelope.GetRequestMessage(1);
                             request.RemoteClient = remoteClient;
                             if (ListenerState == SocketServerStatus.Stopping)
@@ -362,8 +424,15 @@ namespace SocketMeister
                         }
                         else if (receiveEnvelope.MessageType == MessageTypes.RequestMessageV2)
                         {
+                            lock (_lockTotals)
+                            {
+                                if (_totalRequestsReceived == int.MaxValue) _totalRequestsReceived = 0;
+                                _totalRequestsReceived++;
+                            }
+
                             RequestMessage request = receiveEnvelope.GetRequestMessage(2);
                             request.RemoteClient = remoteClient;
+
                             if (ListenerState == SocketServerStatus.Stopping)
                             {
                                 ResponseMessage response = new ResponseMessage(request.RequestId, RequestResult.Stopping);
@@ -599,13 +668,13 @@ namespace SocketMeister
             }
         }
 
-        private void SendDisconnectMessage(Socket Socket)
+        private void SendDisconnectMessage(Client RemoteClient)
         {
             try
             {
-                if (Socket == null || Socket.Connected == false) return;
+                if (RemoteClient.ClientSocket == null || RemoteClient.ClientSocket.Connected == false) return;
                 byte[] sendBytes = MessageEngine.GenerateSendBytes(new ServerStoppingMessage(MAX_WAIT_FOR_CLIENT_DISCONNECT_WHEN_STOPPING), _enableCompression);
-                Socket.Send(sendBytes, sendBytes.Length, SocketFlags.None);
+                RemoteClient.ClientSocket.Send(sendBytes, sendBytes.Length, SocketFlags.None);
             }
             catch (Exception ex)
             {
@@ -621,6 +690,15 @@ namespace SocketMeister
             try
             {
                 byte[] sendBytes = MessageEngine.GenerateSendBytes(Message, _enableCompression);
+                lock (_lockTotals)
+                {
+                    if (_totalBytesSent > (long.MaxValue * 0.9)) _totalBytesSent = 0;
+                    _totalBytesSent += sendBytes.Length;
+
+                    if (_totalMessagesSent == int.MaxValue) _totalMessagesSent = 0;
+                    _totalMessagesSent++;
+                }
+
                 if (Async == true)
                 {
                     RemoteClient.ClientSocket.BeginSend(sendBytes, 0, sendBytes.Length, 0, new AsyncCallback(SendCallback), RemoteClient);
