@@ -101,7 +101,6 @@ namespace SocketMeister.MiniTestClient
             byte[] receivedBytes = (byte[])e.Parameters[0];
             string msgRec = Encoding.UTF8.GetString(receivedBytes, 0, receivedBytes.Length);
 
-
             Log(LogItem.SeverityType.Information, "Client " + ct.ClientId, "MessageReceived: " + msgRec);
         }
 

@@ -55,7 +55,7 @@ namespace SocketMeister.MiniTestClient
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            //Start();
+            tbPort.Text = "-";
         }
 
 
@@ -110,39 +110,53 @@ namespace SocketMeister.MiniTestClient
 
         public void Start()
         {
-            SocketEndPoint ep = new SocketEndPoint("127.0.0.1", 4505);
             List<SocketEndPoint> eps = new List<SocketEndPoint>();
-            eps.Add(new SocketEndPoint("127.0.0.1", 4505));
+
+            SocketEndPoint ep1 = new SocketEndPoint("127.0.0.1", 4505);
+            SocketEndPoint ep2 = new SocketEndPoint("127.0.0.1", 4506);
+
+            eps.Add(ep1);
+            eps.Add(ep2);
+
             _client = new SocketClient(eps, true);
-            _client.ConnectionStatusChanged += _client_ConnectionStatusChanged;
-            _client.ExceptionRaised += _client_ExceptionRaised;
-            _client.MessageReceived += _client_MessageReceived;
-            _client.RequestReceived += _client_RequestReceived;
+            _client.ConnectionStatusChanged += Client_ConnectionStatusChanged;
+            _client.ExceptionRaised += Client_ExceptionRaised;
+            _client.MessageReceived += Client_MessageReceived;
+            _client.RequestReceived += Client_RequestReceived;
         }
 
         public void Stop()
         {
             if (_client == null) throw new Exception("Client has not been started");
 
-            _client.ConnectionStatusChanged -= _client_ConnectionStatusChanged;
-            _client.ExceptionRaised -= _client_ExceptionRaised;
-            _client.MessageReceived -= _client_MessageReceived;
-            _client.RequestReceived -= _client_RequestReceived;
             _client.Stop();
+            _client.ConnectionStatusChanged -= Client_ConnectionStatusChanged;
+            _client.ExceptionRaised -= Client_ExceptionRaised;
+            _client.MessageReceived -= Client_MessageReceived;
+            _client.RequestReceived -= Client_RequestReceived;
             _client.Dispose();
         }
 
-        private void _client_RequestReceived(object sender, SocketClient.RequestReceivedEventArgs e)
+        private void Client_ConnectionStatusChanged(object sender, SocketClient.ConnectionStatusChangedEventArgs e)
         {
             Dispatcher.Invoke(() =>
             {
-                _requestsReceived++;
-                tbRequestsReceived.Text = _requestsReceived.ToString();
+                if (e.Status == SocketClient.ConnectionStatuses.Connected) bdStatus.Background = new SolidColorBrush(Colors.Green);
+                else if (e.Status == SocketClient.ConnectionStatuses.Disconnected) bdStatus.Background = new SolidColorBrush(Colors.Red);
+                else bdStatus.Background = new SolidColorBrush(Colors.Orange);
+
+                if (e.Status == SocketClient.ConnectionStatuses.Connected) tbPort.Text = e.Port.ToString();
+                else tbPort.Text = "-";
             });
-            RequestReceived?.Invoke(this, e);
+            StatusChanged?.Invoke(this, new EventArgs());
         }
 
-        private void _client_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
+        private void Client_ExceptionRaised(object sender, ExceptionEventArgs e)
+        {
+            ExceptionRaised?.Invoke(this, e);
+        }
+
+        private void Client_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
         {
             Dispatcher.Invoke(() =>
             {
@@ -152,20 +166,14 @@ namespace SocketMeister.MiniTestClient
             MessageReceived?.Invoke(this, e);
         }
 
-        private void _client_ExceptionRaised(object sender, ExceptionEventArgs e)
-        {
-            ExceptionRaised?.Invoke(this, e);
-        }
-
-        private void _client_ConnectionStatusChanged(object sender, SocketClient.ConnectionStatusChangedEventArgs e)
+        private void Client_RequestReceived(object sender, SocketClient.RequestReceivedEventArgs e)
         {
             Dispatcher.Invoke(() =>
             {
-                if (e.Status == SocketClient.ConnectionStatuses.Connected) bdStatus.Background = new SolidColorBrush(Colors.Green);
-                else if (e.Status == SocketClient.ConnectionStatuses.Disconnected) bdStatus.Background = new SolidColorBrush(Colors.Red);
-                else bdStatus.Background = new SolidColorBrush(Colors.Orange);
+                _requestsReceived++;
+                tbRequestsReceived.Text = _requestsReceived.ToString();
             });
-            StatusChanged?.Invoke(this, new EventArgs());
+            RequestReceived?.Invoke(this, e);
         }
 
 

@@ -11,7 +11,7 @@
     <RepositoryUrl>https://github.com/SeanFellowes/SocketMeister</RepositoryUrl>
     <PackageTags>tcp socket</PackageTags>
     <Company />
-    <PackageReleaseNotes>Resolved issues where messages not being processed in timely manner in high load situations</PackageReleaseNotes>
+    <PackageReleaseNotes>Miscellaneous bug fixes and stability issues, included fix broken message sending from server to client.</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseUrl></PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>

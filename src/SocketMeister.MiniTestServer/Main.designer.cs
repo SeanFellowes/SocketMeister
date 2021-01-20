@@ -218,7 +218,7 @@
             this.Name = "Main";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
-            this.Text = "SocketMeister Mini Test Server 2.0.6";
+            this.Text = "SocketMeister Mini Test Server 2.0.7";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Main_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Main_FormClosed);
             this.pnlFooter.ResumeLayout(false);

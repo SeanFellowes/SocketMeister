@@ -27,7 +27,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SocketMeister.TestServer.Wi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocketMeister.MiniTestServer", "SocketMeister.MiniTestServer\SocketMeister.MiniTestServer.csproj", "{2CC58ECF-362F-4581-AA51-13E0281237E1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocketMeister.MiniTestClient", "SocketMeister.MiniTestClient\SocketMeister.MiniTestClient.csproj", "{F1DF664F-2081-4D45-954D-FBC54A87348C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SocketMeister.MiniTestClient", "SocketMeister.MiniTestClient\SocketMeister.MiniTestClient.csproj", "{F1DF664F-2081-4D45-954D-FBC54A87348C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Code", "Code", "{F79E4971-502A-4616-9205-7CB01FD066F8}"
 	ProjectSection(SolutionItems) = preProject

@@ -37,7 +37,7 @@ namespace SocketMeister
                 this.Left = 0;
                 lblStatus.Text = "";
 
-                dGrid.AutoGenerateColumns = true;
+                dGrid.AutoGenerateColumns = false;
                 _gridItems.AllowNew = true;
                 _gridItems.AllowRemove = true;
                 _gridItems.RaiseListChangedEvents = true;
