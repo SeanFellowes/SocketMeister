@@ -97,12 +97,6 @@ namespace SocketMeister
         {
             _enableCompression = EnableCompression;
 
-            //  SETUP BACKGROUND PROCESS TO FOR LISTENING
-            _threadListener = new Thread(new ThreadStart(BgListen))
-            {
-                IsBackground = true
-            };
-
             //  CONNECT TO ALL INTERFACES (I.P. 0.0.0.0 IS ALL)
             IPAddress ipAddress = IPAddress.Parse("0.0.0.0");
             _localEndPoint = new IPEndPoint(ipAddress, Port);
@@ -119,6 +113,14 @@ namespace SocketMeister
             _connectedClients.ClientConnected += ConnectedClients_ClientConnected;
             _connectedClients.ClientsChanged += ConnectedClients_ClientsChanged;
             _connectedClients.TraceEventRaised += ConnectedClients_ExceptionRaised;
+
+            //  SETUP BACKGROUND PROCESS TO FOR LISTENING
+            _threadListener = new Thread(new ThreadStart(BgListen))
+            {
+                IsBackground = true
+            };
+
+
         }
 
 
@@ -230,7 +232,13 @@ namespace SocketMeister
         /// <summary>
         /// Number of clients connected to the socket server.
         /// </summary>
-        public int ClientCount { get { return _connectedClients.Count; } }
+        public int ClientCount 
+        { 
+            get 
+            {
+                return _connectedClients.Count; 
+            } 
+        }
 
         /// <summary>
         /// Returns a list of clients which are connected to the socket server

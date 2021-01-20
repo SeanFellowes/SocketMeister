@@ -58,26 +58,33 @@ namespace SocketMeister.MiniTestClient
 
         public MainWindow()
         {
-            InitializeComponent();
-
-            this.Top = 0;
-            this.Left = 1000;
-
-            lvLog.ItemsSource = _log;
-
-            _clients.Add(Client1);
-            _clients.Add(Client2);
-            _clients.Add(Client3);
-            _clients.Add(Client4);
-            _clients.Add(Client5);
-            _clients.Add(Client6);
-
-            foreach (ClientControl Client in _clients)
+            try
             {
-                Client.ExceptionRaised += Client_ExceptionRaised;
-                Client.MessageReceived += Client_MessageReceived;
-                Client.SendRequestButtonPressed += Client_SendRequestButtonPressed;
-                Client.Start();
+                InitializeComponent();
+
+                this.Top = 0;
+                this.Left = 1000;
+
+                lvLog.ItemsSource = _log;
+
+                _clients.Add(Client1);
+                _clients.Add(Client2);
+                _clients.Add(Client3);
+                _clients.Add(Client4);
+                _clients.Add(Client5);
+                _clients.Add(Client6);
+
+                foreach (ClientControl Client in _clients)
+                {
+                    Client.ExceptionRaised += Client_ExceptionRaised;
+                    Client.MessageReceived += Client_MessageReceived;
+                    Client.SendRequestButtonPressed += Client_SendRequestButtonPressed;
+                    Client.Start();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

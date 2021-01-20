@@ -381,7 +381,7 @@ namespace SocketMeister
                         catch { }
                     }
 
-                    if (LastPollResponse < (DateTime.Now.AddSeconds(-DISCONNECT_AFTER_NO_POLL_RESPONSE_SECONDS)))
+                    if (CanPoll() && LastPollResponse < (DateTime.Now.AddSeconds(-DISCONNECT_AFTER_NO_POLL_RESPONSE_SECONDS)))
                     {
                         NotifyExceptionRaised(new Exception("Disconnecting: Server failed to reply to polling after " + DISCONNECT_AFTER_NO_POLL_RESPONSE_SECONDS + " seconds."));
                         DisconnectSocket();
@@ -692,20 +692,14 @@ namespace SocketMeister
         /// <param name="e">Socket Arguments</param>
         private void ProcessReceive(object sender, SocketAsyncEventArgs e)
         {
-            //if (e.BytesTransferred == 0 || e.SocketError != SocketError.Success)
-            //{
-            //    if (e.BytesTransferred == 0) NotifyExceptionRaised(new Exception("Disconnecting: ProcessReceive returned 0 bytes."));
-            //    else NotifyExceptionRaised(new Exception("Disconnecting: ProcessReceive received socket error code " + (int)e.SocketError));
-            //    DisconnectSocket();
-            //    return;
-            //}
+            if (ConnectionStatus == ConnectionStatuses.Disconnecting || ConnectionStatus == ConnectionStatuses.Disconnected)  return;
+
             if (e.BytesTransferred == 0 || e.SocketError != SocketError.Success)
             {
                 NotifyExceptionRaised(new Exception("Disconnecting: ProcessReceive received socket error code " + (int)e.SocketError));
                 DisconnectSocket();
                 return;
             }
-
 
             try
             {
@@ -861,8 +855,21 @@ namespace SocketMeister
 
         private void NotifyExceptionRaised(Exception ex)
         {
-            try { ExceptionRaised?.Invoke(this, new ExceptionEventArgs(ex, 1234)); }
-            catch { }
+            if (ExceptionRaised != null)
+            {
+                //  RAISE EVENT IN THE BACKGROUND
+                new Thread(new ThreadStart(delegate
+                {
+                    try
+                    {
+                        ExceptionRaised(this, new ExceptionEventArgs(ex, 1234));
+                    }
+                    catch
+                    {
+                    }
+                }
+                )).Start();
+            }
         }
 
 
@@ -873,8 +880,14 @@ namespace SocketMeister
                 //  RAISE EVENT IN THE BACKGROUND
                 new Thread(new ThreadStart(delegate
                 {
-                    try { MessageReceived(this, new MessageReceivedEventArgs(Message.Parameters)); }
-                    catch (Exception ex) { NotifyExceptionRaised(ex); }
+                    try 
+                    { 
+                        MessageReceived(this, new MessageReceivedEventArgs(Message.Parameters)); 
+                    }
+                    catch (Exception ex) 
+                    { 
+                        NotifyExceptionRaised(ex); 
+                    }
                 }
                 )).Start();
 

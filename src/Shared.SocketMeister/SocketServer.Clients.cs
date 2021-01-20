@@ -44,7 +44,10 @@ namespace SocketMeister
             /// <summary>
             /// Total number of syschronous and asynchronous clients connected
             /// </summary>
-            public int Count { get { lock (_lock) { return _list.Count; } } }
+            public int Count 
+            { 
+                get { lock (_lock) { return _list.Count; } } 
+            }
 
             public void Add(Client Client)
             {
@@ -63,6 +66,7 @@ namespace SocketMeister
             {
                 if (Client == null) return;
                 int clientCount = 0;
+
                 lock (_lock)
                 {
                     _list.Remove(Client);
