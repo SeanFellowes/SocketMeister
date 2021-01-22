@@ -534,6 +534,71 @@
             Data types which are supported for parameters sent with messages.
             </summary>
         </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.BoolParam">
+            <summary>
+            Boolean
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.DateTimeParam">
+            <summary>
+            DateTime
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.DoubleParam">
+            <summary>
+            Double Type
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.Int16Param">
+            <summary>
+            Int16
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.Int32Param">
+            <summary>
+            Int32
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.Int64Param">
+            <summary>
+            Int64
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.UInt16Param">
+            <summary>
+            Unsigned Int16
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.UInt32Param">
+            <summary>
+            Unsigned Int32
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.UInt64Param">
+            <summary>
+            Unsigned Int64
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.StringParam">
+            <summary>
+            String
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.ByteParam">
+            <summary>
+            Byte
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.ByteArrayParam">
+            <summary>
+            Byte Array
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.Null">
+            <summary>
+            Null
+            </summary>
+        </member>
         <member name="M:SocketMeister.Serializer.DeserializeParameters(System.Byte[])">
             <summary>
             Deserialize a byte array which was serialized using 'byte[] SerializeParameters(object[] Parameters)' from this class.
@@ -736,6 +801,11 @@
             </summary>
             <param name="disposing"></param>
         </member>
+        <member name="P:SocketMeister.SocketClient.ClientTokens">
+            <summary>
+            User tokens which can be set, which will be automatically syncronized between the client and server
+            </summary>
+        </member>
         <member name="P:SocketMeister.SocketClient.ConnectionStatus">
             <summary>
             The connection status of the socket client
@@ -749,6 +819,11 @@
         <member name="P:SocketMeister.SocketClient.NextPollRequest">
             <summary>
             The next time this socket client should attempt to poll the socket server.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketClient.ServerTokens">
+            <summary>
+            User tokens which can be set on the SocketServer, which will be automatically syncronized between the client and server
             </summary>
         </member>
         <member name="M:SocketMeister.SocketClient.DisconnectSocket">
@@ -1210,6 +1285,185 @@
         <member name="P:SocketMeister.SocketServer.SocketServerStatusChangedEventArgs.Status">
             <summary>
             Execution status of the service.
+            </summary>
+        </member>
+        <member name="T:SocketMeister.Token">
+            <summary>
+            Value which is automatically synchronised between SocketClient and SocketServer. Multiple Tokens are 
+            </summary>
+        </member>
+        <member name="E:SocketMeister.Token.Changed">
+            <summary>
+            Raised when the value is changed.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Token.#ctor(System.String)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="Name">Name of the token</param>
+        </member>
+        <member name="M:SocketMeister.Token.#ctor(System.String,System.Object)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="Name">Name of the token</param>
+            <param name="Value">Value to assign to the token</param>
+        </member>
+        <member name="P:SocketMeister.Token.NeedsSynchronization">
+            <summary>
+            Internal setting to track syncronisation between server and client.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Token.Name">
+            <summary>
+            Readonly name of the token
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Token.Value">
+            <summary>
+            Value for the token. Supports null, bool, DateTime, double, short, int, long, ushort, uint, ulong, string, byte, byte[]
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Token.ValueType">
+            <summary>
+            The type of data stored in the value
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Token.Serialize(System.IO.BinaryWriter)">
+            <summary>
+            Appends the binary data for this token to an open BinaryWriter
+            </summary>
+            <param name="Writer"></param>
+        </member>
+        <member name="T:SocketMeister.TokenCollection">
+            <summary>
+            Dictionary based collection of 
+            </summary>
+        </member>
+        <member name="E:SocketMeister.TokenCollection.TokenAdded">
+            <summary>
+            Raised when a token value has added (Token is the source).
+            </summary>
+        </member>
+        <member name="E:SocketMeister.TokenCollection.TokenChanged">
+            <summary>
+            Raised when a token value has changed (Token is the source).
+            </summary>
+        </member>
+        <member name="E:SocketMeister.TokenCollection.TokenDeleted">
+            <summary>
+            Raised when a token value was deleted (Token is the source).
+            </summary>
+        </member>
+        <member name="P:SocketMeister.TokenCollection.Item(System.String)">
+            <summary>
+            Indexed search returning the token or null, for a given token name.
+            </summary>
+            <param name="Name">Token requested.</param>
+            <returns>Found token or null if not found</returns>
+        </member>
+        <member name="P:SocketMeister.TokenCollection.Count">
+            <summary>
+            Number of tokens in the token collection
+            </summary>
+        </member>
+        <member name="M:SocketMeister.TokenCollection.Add(SocketMeister.Token)">
+            <summary>
+            Add a token to the token collection. Throws ArgumentException if Token.Name (case insensitive) already exists.
+            </summary>
+            <param name="Token">Token to add</param>
+        </member>
+        <member name="M:SocketMeister.TokenCollection.Clear">
+            <summary>
+            Clears all tokens
+            </summary>
+        </member>
+        <member name="M:SocketMeister.TokenCollection.Remove(System.String)">
+            <summary>
+            Removes a token from the dictionary
+            </summary>
+            <param name="Name">Name of the token (Case insensitive)</param>
+        </member>
+        <member name="M:SocketMeister.TokenCollection.ToList">
+            <summary>
+            Returns a list of all the tokens in the collection
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:ValueType">
+            <summary>
+            Type of value stored in a token
+            </summary>
+        </member>
+        <member name="F:ValueType.Unknown">
+            <summary>
+            Unknown
+            </summary>
+        </member>
+        <member name="F:ValueType.BoolValue">
+            <summary>
+            Boolean
+            </summary>
+        </member>
+        <member name="F:ValueType.DateTimeValue">
+            <summary>
+            DateTime
+            </summary>
+        </member>
+        <member name="F:ValueType.DoubleValue">
+            <summary>
+            Double Type
+            </summary>
+        </member>
+        <member name="F:ValueType.Int16Value">
+            <summary>
+            Int16
+            </summary>
+        </member>
+        <member name="F:ValueType.Int32Value">
+            <summary>
+            Int32
+            </summary>
+        </member>
+        <member name="F:ValueType.Int64Value">
+            <summary>
+            Int64
+            </summary>
+        </member>
+        <member name="F:ValueType.UInt16Value">
+            <summary>
+            Unsigned Int16
+            </summary>
+        </member>
+        <member name="F:ValueType.UInt32Value">
+            <summary>
+            Unsigned Int32
+            </summary>
+        </member>
+        <member name="F:ValueType.UInt64Value">
+            <summary>
+            Unsigned Int64
+            </summary>
+        </member>
+        <member name="F:ValueType.StringValue">
+            <summary>
+            String
+            </summary>
+        </member>
+        <member name="F:ValueType.ByteValue">
+            <summary>
+            Byte
+            </summary>
+        </member>
+        <member name="F:ValueType.ByteArrayValue">
+            <summary>
+            Byte Array
+            </summary>
+        </member>
+        <member name="F:ValueType.NullValue">
+            <summary>
+            Null
             </summary>
         </member>
     </members>

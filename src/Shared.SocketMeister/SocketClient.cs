@@ -42,6 +42,7 @@ namespace SocketMeister
         private SocketAsyncEventArgs _asyncEventArgsReceive = null;
         private readonly ManualResetEvent _autoResetConnectEvent = new ManualResetEvent(false);
         private readonly ManualResetEvent _autoResetPollEvent = new ManualResetEvent(false);
+        private readonly TokenCollection _clientTokens = new TokenCollection();
         private ConnectionStatuses _connectionStatus = ConnectionStatuses.Disconnected;
 #pragma warning disable CA2213 // Disposable fields should be disposed
         private SocketEndPoint _currentEndPoint = null;
@@ -59,11 +60,12 @@ namespace SocketMeister
         private DateTime _lastPollResponse = DateTime.Now;
         private readonly object _lock = new object();
         private DateTime _nextPollRequest;
-        private int _requestsInProgress = 0;
         private readonly OpenRequestMessageCollection _openRequests = new OpenRequestMessageCollection();
+        private int _requestsInProgress = 0;
         private readonly Random _randomizer = new Random();
         private MessageEngine _receiveEngine;
         private readonly SocketAsyncEventArgsPool _sendEventArgsPool;
+        private readonly TokenCollection _serverTokens = new TokenCollection();
 
         /// <summary>
         /// Event raised when a status of a socket connection has changed
@@ -168,6 +170,10 @@ namespace SocketMeister
             }
         }
 
+        /// <summary>
+        /// User tokens which can be set, which will be automatically syncronized between the client and server
+        /// </summary>
+        public TokenCollection ClientTokens {  get { return _clientTokens; } }
 
         /// <summary>
         /// The connection status of the socket client
@@ -214,6 +220,10 @@ namespace SocketMeister
         /// </summary>
         private DateTime NextPollRequest { get { lock (_lock) { return _nextPollRequest; } } set { lock (_lock) { _nextPollRequest = value; } } }
 
+        /// <summary>
+        /// User tokens which can be set on the SocketServer, which will be automatically syncronized between the client and server
+        /// </summary>
+        public TokenCollection ServerTokens { get { return _serverTokens; } }
 
 
 

@@ -168,6 +168,73 @@ namespace SocketMeister
 }
 
 
+/// <summary>
+/// Type of value stored in a token
+/// </summary>
+#if SMISPUBLIC
+public enum ValueType
+#else
+internal enum ValueType
+#endif
+{
+    /// <summary>
+    /// Unknown
+    /// </summary>
+    Unknown = 0,
+    /// <summary>
+    /// Boolean
+    /// </summary>
+    BoolValue = 10,
+    /// <summary>
+    /// DateTime
+    /// </summary>
+    DateTimeValue = 20,
+    /// <summary>
+    /// Double Type
+    /// </summary>
+    DoubleValue = 30,
+    /// <summary>
+    /// Int16
+    /// </summary>
+    Int16Value = 40,
+    /// <summary>
+    /// Int32
+    /// </summary>
+    Int32Value = 41,
+    /// <summary>
+    /// Int64
+    /// </summary>
+    Int64Value = 42,
+    /// <summary>
+    /// Unsigned Int16
+    /// </summary>
+    UInt16Value = 50,
+    /// <summary>
+    /// Unsigned Int32
+    /// </summary>
+    UInt32Value = 51,
+    /// <summary>
+    /// Unsigned Int64
+    /// </summary>
+    UInt64Value = 52,
+    /// <summary>
+    /// String
+    /// </summary>
+    StringValue = 60,
+    /// <summary>
+    /// Byte
+    /// </summary>
+    ByteValue = 70,
+    /// <summary>
+    /// Byte Array
+    /// </summary>
+    ByteArrayValue = 71,
+    /// <summary>
+    /// Null
+    /// </summary>
+    NullValue = 99
+}
+
 
 
 

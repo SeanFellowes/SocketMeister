@@ -15,18 +15,57 @@ namespace SocketMeister
         /// </summary>
         public enum ParameterType
         {
+            /// <summary>
+            /// Boolean
+            /// </summary>
             BoolParam = 0,
+            /// <summary>
+            /// DateTime
+            /// </summary>
             DateTimeParam = 1,
+            /// <summary>
+            /// Double Type
+            /// </summary>
             DoubleParam = 2,
+            /// <summary>
+            /// Int16
+            /// </summary>
             Int16Param = 3,
+            /// <summary>
+            /// Int32
+            /// </summary>
             Int32Param = 4,
+            /// <summary>
+            /// Int64
+            /// </summary>
             Int64Param = 5,
+            /// <summary>
+            /// Unsigned Int16
+            /// </summary>
             UInt16Param = 6,
+            /// <summary>
+            /// Unsigned Int32
+            /// </summary>
             UInt32Param = 7,
+            /// <summary>
+            /// Unsigned Int64
+            /// </summary>
             UInt64Param = 8,
+            /// <summary>
+            /// String
+            /// </summary>
             StringParam = 9,
+            /// <summary>
+            /// Byte
+            /// </summary>
             ByteParam = 10,
+            /// <summary>
+            /// Byte Array
+            /// </summary>
             ByteArrayParam = 11,
+            /// <summary>
+            /// Null
+            /// </summary>
             Null = 99
         }
 
