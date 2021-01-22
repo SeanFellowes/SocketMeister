@@ -36,7 +36,6 @@ namespace SocketMeister
         /// </summary>
         private const int POLLING_FREQUENCY = 10;
 
-
         private SocketAsyncEventArgs _asyncEventArgsConnect = null;
         private SocketAsyncEventArgs _asyncEventArgsPolling = null;
         private SocketAsyncEventArgs _asyncEventArgsReceive = null;
@@ -65,7 +64,7 @@ namespace SocketMeister
         private readonly Random _randomizer = new Random();
         private MessageEngine _receiveEngine;
         private readonly SocketAsyncEventArgsPool _sendEventArgsPool;
-        private readonly TokenCollection _serverTokens = new TokenCollection();
+        private readonly TokenCollectionReadOnly _serverTokens = new TokenCollectionReadOnly();
 
         /// <summary>
         /// Event raised when a status of a socket connection has changed
@@ -223,7 +222,7 @@ namespace SocketMeister
         /// <summary>
         /// User tokens which can be set on the SocketServer, which will be automatically syncronized between the client and server
         /// </summary>
-        public TokenCollection ServerTokens { get { return _serverTokens; } }
+        public TokenCollectionReadOnly ServerTokens { get { return _serverTokens; } }
 
 
 

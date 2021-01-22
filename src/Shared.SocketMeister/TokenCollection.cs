@@ -6,7 +6,7 @@ using System.Text;
 namespace SocketMeister
 {
     /// <summary>
-    /// Dictionary based collection of 
+    /// Dictionary based collection of tokens. Data is updatable.
     /// </summary>
 #if SMISPUBLIC
     public class TokenCollection
@@ -70,6 +70,8 @@ namespace SocketMeister
             {
                 _dict.Add(Token.Name.ToUpper(CultureInfo.InvariantCulture), Token);
                 Token.Changed += Token_Changed;
+
+                TokenAdded?.Invoke(Token, new EventArgs());
             }
         }
 
@@ -99,6 +101,9 @@ namespace SocketMeister
                 if (fnd == null) return false;
 
                 fnd.Changed -= Token_Changed;
+
+                TokenDeleted?.Invoke(fnd, new EventArgs());
+
                 return _dict.Remove(Name.ToUpper(CultureInfo.InvariantCulture));
             }
         }

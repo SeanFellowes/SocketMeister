@@ -237,6 +237,19 @@ internal enum ValueType
 
 
 
+/// <summary>
+/// Action taken with a token
+/// </summary>
+internal enum TokenAction
+{
+    Unknown = 0,
+    Add = 10,
+    Modify = 20,
+    Delete = 30
+}
+
+
+
 
 //#if !SILVERLIGHT && !SMNOSERVER
 //using System;

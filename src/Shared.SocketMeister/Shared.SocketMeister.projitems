@@ -13,7 +13,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Enums.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\Enums.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)OpenRequestMessageCollection.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ReadOnlyToken.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SocketAsyncEventArgsPool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\MessageEngine.CLZF2.cs" />
@@ -39,6 +38,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)SocketServer.Clients.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SocketServer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SocketServer.Events.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TokenChanges.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TokenCollectionReadOnly.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Token.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TokenCollection.cs" />
   </ItemGroup>

@@ -1287,6 +1287,49 @@
             Execution status of the service.
             </summary>
         </member>
+        <member name="T:SocketMeister.TokenChanges">
+            <summary>
+            Used internally to track token changes to publish
+            </summary>
+        </member>
+        <member name="T:SocketMeister.TokenCollectionReadOnly">
+            <summary>
+            Dictionary based collection of tokens. Data is readonly.
+            </summary>
+        </member>
+        <member name="E:SocketMeister.TokenCollectionReadOnly.TokenAdded">
+            <summary>
+            Raised when a token value was added after synchronization with the master collection. Token is the 'Sender' in the event.
+            </summary>
+        </member>
+        <member name="E:SocketMeister.TokenCollectionReadOnly.TokenChanged">
+            <summary>
+            Raised when a token value was deleted after synchronization with the master collection. Token is the 'Sender' in the event.
+            </summary>
+        </member>
+        <member name="E:SocketMeister.TokenCollectionReadOnly.TokenDeleted">
+            <summary>
+            Raised when a token value was changed after synchronization with the master collection. Token is the 'Sender' in the event.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.TokenCollectionReadOnly.Item(System.String)">
+            <summary>
+            Indexed search returning the token or null, for a given token name.
+            </summary>
+            <param name="Name">Token requested.</param>
+            <returns>Found token or null if not found</returns>
+        </member>
+        <member name="P:SocketMeister.TokenCollectionReadOnly.Count">
+            <summary>
+            Number of tokens in the token collection
+            </summary>
+        </member>
+        <member name="M:SocketMeister.TokenCollectionReadOnly.ToList">
+            <summary>
+            Returns a list of all the tokens in the collection
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:SocketMeister.Token">
             <summary>
             Value which is automatically synchronised between SocketClient and SocketServer. Multiple Tokens are 
@@ -1339,7 +1382,7 @@
         </member>
         <member name="T:SocketMeister.TokenCollection">
             <summary>
-            Dictionary based collection of 
+            Dictionary based collection of tokens. Data is updatable.
             </summary>
         </member>
         <member name="E:SocketMeister.TokenCollection.TokenAdded">
@@ -1465,6 +1508,11 @@
         <member name="F:ValueType.NullValue">
             <summary>
             Null
+            </summary>
+        </member>
+        <member name="T:TokenAction">
+            <summary>
+            Action taken with a token
             </summary>
         </member>
     </members>
