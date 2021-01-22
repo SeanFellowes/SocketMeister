@@ -1310,11 +1310,6 @@
             <param name="Name">Name of the token</param>
             <param name="Value">Value to assign to the token</param>
         </member>
-        <member name="P:SocketMeister.Token.NeedsSynchronization">
-            <summary>
-            Internal setting to track syncronisation between server and client.
-            </summary>
-        </member>
         <member name="P:SocketMeister.Token.Name">
             <summary>
             Readonly name of the token
@@ -1329,6 +1324,12 @@
             <summary>
             The type of data stored in the value
             </summary>
+        </member>
+        <member name="M:SocketMeister.Token.Deserialize(System.IO.BinaryReader)">
+            <summary>
+            Used internally to update the value from the other side 
+            </summary>
+            <param name="Reader"></param>
         </member>
         <member name="M:SocketMeister.Token.Serialize(System.IO.BinaryWriter)">
             <summary>

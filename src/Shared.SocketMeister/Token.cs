@@ -14,10 +14,9 @@ namespace SocketMeister
     internal class Token
 #endif
     {
-        private readonly bool _isReadOnly;
-        private readonly string _name;
-        private bool _needsSynchronization;
-        private object _value = null;
+        private bool _isReadOnly;
+        private string _name;
+        private object _value;
         private ValueType _valueType = ValueType.NullValue;
         private readonly object _lock = new object();
 
@@ -50,56 +49,28 @@ namespace SocketMeister
             this.Value = Value;
         }
 
+
         internal Token(BinaryReader Reader)
         {
-            if (Reader == null) throw new ArgumentNullException(nameof(Reader));
-
-            _isReadOnly = true;
-
-            short readVal = Reader.ReadInt16();
-            _valueType = (ValueType)readVal;
-
-            if (_valueType == ValueType.NullValue) _value = null;
-            else if (_valueType == ValueType.BoolValue) _value = Reader.ReadBoolean();
-            else if (_valueType == ValueType.Int16Value) _value = Reader.ReadInt16();
-            else if (_valueType == ValueType.Int32Value) _value = Reader.ReadInt32();
-            else if (_valueType == ValueType.Int64Value) _value = Reader.ReadInt64();
-            else if (_valueType == ValueType.UInt16Value) _value = Reader.ReadUInt16();
-            else if (_valueType == ValueType.UInt32Value) _value = Reader.ReadUInt32();
-            else if (_valueType == ValueType.UInt64Value) _value = Reader.ReadUInt64();
-            else if (_valueType == ValueType.StringValue) _value = Reader.ReadString();
-            else if (_valueType == ValueType.DateTimeValue) _value = new DateTime(Reader.ReadInt64());
-            else if (_valueType == ValueType.DoubleValue) _value = Reader.ReadDouble();
-            else if (_valueType == ValueType.ByteValue) _value = Reader.ReadByte();
-            else if (_valueType == ValueType.ByteArrayValue) _value = Reader.ReadBytes(Reader.ReadInt32());
-            throw new NotImplementedException("No code for " + nameof(ValueType) + " = " + readVal);
+            Deserialize(Reader);
         }
-
-        /// <summary>
-        /// Internal setting to track syncronisation between server and client.
-        /// </summary>
-        internal bool NeedsSynchronization
-        {
-            get { lock (_lock) { return _needsSynchronization; } }
-            set { lock (_lock) { _needsSynchronization = value; } }
-        }
-
 
         /// <summary>
         /// Readonly name of the token
         /// </summary>
-        public string Name {  get { return _name; } }
+        public string Name { get { lock (_lock) { return _name; } } }
 
         /// <summary>
         /// Value for the token. Supports null, bool, DateTime, double, short, int, long, ushort, uint, ulong, string, byte, byte[]
         /// </summary>
         public object Value
         {
-            get {  lock (_lock) { return _value; } }
+            get { lock (_lock) { return _value; } }
             set
             {
                 lock (_lock)
                 {
+                    if (_isReadOnly == true) throw new InvalidOperationException("This token is readonly. It's value is syncronized with a master token.");
                     if (value == null) _valueType = ValueType.NullValue;
                     else
                     {
@@ -116,10 +87,7 @@ namespace SocketMeister
                         else if (ParamType == typeof(string)) _valueType = ValueType.StringValue;
                         else if (ParamType == typeof(byte)) _valueType = ValueType.ByteValue;
                         else if (ParamType == typeof(byte[])) _valueType = ValueType.ByteArrayValue;
-                        else
-                        {
-                            throw new ArgumentException("Type " + ParamType.Name + " unsupported. Supported types are Supports null, bool, DateTime, double, short, int, long, ushort, uint, ulong, string, byte, byte[]", nameof(Value));
-                        }
+                        else throw new ArgumentException("Type " + ParamType.Name + " unsupported. Supported types are Supports null, bool, DateTime, double, short, int, long, ushort, uint, ulong, string, byte, byte[]", nameof(Value));
                     }
                     _value = Value;
                 }
@@ -135,6 +103,41 @@ namespace SocketMeister
             get { lock (_lock) { return _valueType; } }
         }
 
+        /// <summary>
+        /// Used internally to update the value from the other side 
+        /// </summary>
+        /// <param name="Reader"></param>
+        internal void Deserialize(BinaryReader Reader)
+        {
+            if (Reader == null) throw new ArgumentNullException(nameof(Reader));
+
+            lock (_lock)
+            {
+                _isReadOnly = true;
+
+                _name = Reader.ReadString();
+                short readVal = Reader.ReadInt16();
+
+                _valueType = (ValueType)readVal;
+                if (_valueType == ValueType.NullValue) _value = null;
+                else if (_valueType == ValueType.BoolValue) _value = Reader.ReadBoolean();
+                else if (_valueType == ValueType.Int16Value) _value = Reader.ReadInt16();
+                else if (_valueType == ValueType.Int32Value) _value = Reader.ReadInt32();
+                else if (_valueType == ValueType.Int64Value) _value = Reader.ReadInt64();
+                else if (_valueType == ValueType.UInt16Value) _value = Reader.ReadUInt16();
+                else if (_valueType == ValueType.UInt32Value) _value = Reader.ReadUInt32();
+                else if (_valueType == ValueType.UInt64Value) _value = Reader.ReadUInt64();
+                else if (_valueType == ValueType.StringValue) _value = Reader.ReadString();
+                else if (_valueType == ValueType.DateTimeValue) _value = new DateTime(Reader.ReadInt64());
+                else if (_valueType == ValueType.DoubleValue) _value = Reader.ReadDouble();
+                else if (_valueType == ValueType.ByteValue) _value = Reader.ReadByte();
+                else if (_valueType == ValueType.ByteArrayValue) _value = Reader.ReadBytes(Reader.ReadInt32());
+                else throw new NotImplementedException("No code for " + nameof(ValueType) + " = " + readVal);
+            }
+
+            Changed?.Invoke(this, new EventArgs());
+        }
+
 
         /// <summary>
         /// Appends the binary data for this token to an open BinaryWriter
@@ -146,11 +149,12 @@ namespace SocketMeister
 
             lock (_lock)
             {
+                Writer.Write(_name);
                 Writer.Write((short)_valueType);
 
-                if (_valueType == ValueType.NullValue) 
+                if (_valueType == ValueType.NullValue)
                     return;
-                else if (_valueType ==  ValueType.BoolValue)
+                else if (_valueType == ValueType.BoolValue)
                     Writer.Write((bool)_value);
                 else if (_valueType == ValueType.DateTimeValue)
                     Writer.Write(((DateTime)_value).Ticks);
@@ -183,6 +187,7 @@ namespace SocketMeister
                     throw new NotImplementedException("No code for " + nameof(ValueType) + " = " + _valueType.ToString());
             }
         }
+
 
 
     }
