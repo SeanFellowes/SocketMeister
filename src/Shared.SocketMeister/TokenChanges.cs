@@ -55,6 +55,7 @@ namespace SocketMeister
             //  IF EXISTING RECORD EXISTS, DELETE IT
             _dict.Remove(Token.Name.ToUpper(CultureInfo.InvariantCulture));
 
+            //  ADD IT BACK IN
             if (Action == TokenAction.Delete)
                 _dict.Add(Token.Name.ToUpper(CultureInfo.InvariantCulture), new Change(Action, null));
             else
@@ -71,6 +72,7 @@ namespace SocketMeister
                 using (BinaryReader reader = new BinaryReader(stream))
                 {
                     int itemCount = reader.ReadInt32();
+
                     for (int i = 0; i < itemCount; i++)
                     {
                         string name = reader.ReadString();
@@ -95,6 +97,7 @@ namespace SocketMeister
                 using (BinaryWriter writer = new BinaryWriter(new MemoryStream()))
                 {
                     writer.Write(_dict.Count);
+
                     foreach(KeyValuePair<string, Change> kvp in _dict)
                     {
                         writer.Write(kvp.Key);                  //  NAME
