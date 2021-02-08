@@ -41,11 +41,12 @@
             this.ucSocketServer2 = new SocketMeister.ucSocketServer();
             this.ucSocketServer1 = new SocketMeister.ucSocketServer();
             this.dGrid = new System.Windows.Forms.DataGridView();
+            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.TimeStamp = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Type = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Server = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.MessageID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Message = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.pnlFooter.SuspendLayout();
             this.panelOuter.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -168,6 +169,7 @@
             this.dGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.TimeStamp,
             this.Type,
+            this.Server,
             this.MessageID,
             this.Message});
             this.dGrid.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -189,6 +191,13 @@
             this.Type.HeaderText = "Severity";
             this.Type.Name = "Type";
             this.Type.Width = 70;
+            // 
+            // Server
+            // 
+            this.Server.DataPropertyName = "Server";
+            this.Server.HeaderText = "Server";
+            this.Server.Name = "Server";
+            this.Server.Width = 63;
             // 
             // MessageID
             // 
@@ -244,12 +253,13 @@
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.TextBox tbMessageText;
         private System.Windows.Forms.DataGridView dGrid;
-        private System.Windows.Forms.DataGridViewTextBoxColumn TimeStamp;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Type;
-        private System.Windows.Forms.DataGridViewTextBoxColumn MessageID;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Message;
         private ucSocketServer ucSocketServer2;
         private ucSocketServer ucSocketServer1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn TimeStamp;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Type;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Server;
+        private System.Windows.Forms.DataGridViewTextBoxColumn MessageID;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Message;
     }
 }
 

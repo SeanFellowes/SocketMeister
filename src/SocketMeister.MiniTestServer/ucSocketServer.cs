@@ -102,16 +102,6 @@ namespace SocketMeister
         {
             try
             {
-                if (Server != null)
-                {
-                    Server.ClientConnected -= Server_ClientConnected;
-                    Server.ClientDisconnected -= Server_ClientDisconnected;
-                    Server.ExceptionRaised -= Server_ExceptionRaised;
-                    Server.MessageReceived -= Server_MessageReceived;
-                    Server.RequestReceived -= Server_RequestReceived;
-                    Server.ListenerStateChanged -= Server_ListenerStateChanged;
-                }
-
                 Server = new SocketServer(_port, cbCompressMessage.Checked);
                 Server.ClientConnected += Server_ClientConnected;
                 Server.ClientDisconnected += Server_ClientDisconnected;
@@ -131,6 +121,42 @@ namespace SocketMeister
             }
         }
 
+        public void Stop(bool AppExiting)
+        {
+            try
+            {
+                if (AppExiting == true)
+                {
+                    Server.ClientConnected -= Server_ClientConnected;
+                    Server.ClientDisconnected -= Server_ClientDisconnected;
+                    Server.ExceptionRaised -= Server_ExceptionRaised;
+                    Server.MessageReceived -= Server_MessageReceived;
+                    Server.RequestReceived -= Server_RequestReceived;
+                    Server.ListenerStateChanged -= Server_ListenerStateChanged;
+                    Server.Stop();
+                }
+                else
+                {
+                    Server.Stop();
+                    Server.ClientConnected -= Server_ClientConnected;
+                    Server.ClientDisconnected -= Server_ClientDisconnected;
+                    Server.ExceptionRaised -= Server_ExceptionRaised;
+                    Server.MessageReceived -= Server_MessageReceived;
+                    Server.RequestReceived -= Server_RequestReceived;
+                    Server.ListenerStateChanged -= Server_ListenerStateChanged;
+                    SetButtonEnabled(btnStop, false);
+                    SetButtonEnabled(btnSendMessage, false);
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowException(ex);
+            }
+        }
+
+
+
+
         private void Server_ClientDisconnected(object sender, SocketServer.ClientDisconnectedEventArgs e)
         {
             SetLabelText(lblTotalConnectedClients, Server.ClientCount.ToString("N0"));
@@ -145,7 +171,7 @@ namespace SocketMeister
         {
             if (e.Exception != null)
             {
-                LogEventRaised?.Invoke(this, new LogEventArgs(e.Exception, "SocketServer" + _serverId));
+                LogEventRaised?.Invoke(this, new LogEventArgs(e.Exception, "Server #" + ServerId.ToString(), "SocketServer" + _serverId));
             }
         }
 
@@ -165,7 +191,7 @@ namespace SocketMeister
             byte[] receivedBytes = (byte[])e.Parameters[1];
             string msgRec = Encoding.UTF8.GetString(receivedBytes, 0, receivedBytes.Length);
 
-            LogEventRaised?.Invoke(this, new LogEventArgs(SeverityType.Information, "Client " + clientId, "MessageReceived: " + msgRec));
+            LogEventRaised?.Invoke(this, new LogEventArgs(SeverityType.Information, "Server #" + ServerId.ToString(), "Client " + clientId, "MessageReceived: " + msgRec));
         }
 
 
@@ -179,7 +205,7 @@ namespace SocketMeister
             byte[] receivedBytes = (byte[])e.Parameters[1];
             string msgRec = Encoding.UTF8.GetString(receivedBytes, 0, receivedBytes.Length);
 
-            LogEventRaised?.Invoke(this, new LogEventArgs(SeverityType.Information, "Client " + clientId, "RequestReceived: " + msgRec));
+            LogEventRaised?.Invoke(this, new LogEventArgs(SeverityType.Information, "Server #" + ServerId.ToString(), "Client " + clientId, "RequestReceived: " + msgRec));
 
             byte[] toSend = new byte[msgRec.Length];
             Buffer.BlockCopy(Encoding.UTF8.GetBytes(msgRec), 0, toSend, 0, toSend.Length);
@@ -291,21 +317,7 @@ namespace SocketMeister
 
         private void btnStop_Click(object sender, EventArgs e)
         {
-            Stop();
-        }
-
-        public void Stop()
-        {
-            try
-            {
-                Server.Stop();
-                SetButtonEnabled(btnStop, false);
-                SetButtonEnabled(btnSendMessage, false);
-            }
-            catch (Exception ex)
-            {
-                ShowException(ex);
-            }
+            Stop(false);
         }
 
         private void ShowException(Exception ex)

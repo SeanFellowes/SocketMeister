@@ -66,7 +66,7 @@ namespace SocketMeister
             lock (_lock) { _stopAutomaticMessageGenerator = true; }
             foreach (ucSocketServer uc in _servers)
             {
-                uc.Stop();
+                uc.Stop(true);
             }
         }
 
@@ -118,7 +118,7 @@ namespace SocketMeister
                     }
                     catch (Exception ex)
                     {
-                        InsertListboxItem(new LogEventArgs(ex, "Server #" + uc.ServerId.ToString()));
+                        InsertListboxItem(new LogEventArgs(ex, "Server #" + uc.ServerId.ToString(), "Server #" + uc.ServerId.ToString()));
                         uc.NextAutomatedSend = DateTime.Now.AddMilliseconds(10000);
                     }
                 }

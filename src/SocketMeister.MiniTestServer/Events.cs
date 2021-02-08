@@ -10,22 +10,25 @@ namespace SocketMeister
     {
         private readonly Exception _exception;
         private readonly SeverityType _severity;
+        private readonly string _server;
         private readonly string _source;
         private readonly string _text;
         private readonly DateTime _timeStamp = DateTime.Now;
 
 
-        public LogEventArgs(SeverityType Severity, string Source, string Text)
+        public LogEventArgs(SeverityType Severity, string Server, string Source, string Text)
         {
             _severity = Severity;
+            _server = Server;
             _source = Source;
             _text = Text;
             _exception = null;
         }
 
-        public LogEventArgs(Exception Exception, string Source)
+        public LogEventArgs(Exception Exception, string Server, string Source)
         {
             _severity = SeverityType.Error;
+            _server = Server;
             _source = Source;
             _text = Exception.Message;
             _exception = Exception;
@@ -33,6 +36,7 @@ namespace SocketMeister
 
         public Exception Exception {  get { return _exception; } }
         public SeverityType Severity { get { return _severity; } }
+        public string Server { get { return _server; } }
         public string Source { get { return _source; } }
         public string Text { get { return _text; } }
         public string TimeStamp { get { return _timeStamp.ToString("HH:mm:ss fff"); } }

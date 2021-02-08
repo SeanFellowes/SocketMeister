@@ -288,10 +288,21 @@ namespace SocketMeister
             DateTime maxWaitClientDisconnect = DateTime.Now.AddMilliseconds(MAX_WAIT_FOR_CLIENT_DISCONNECT_WHEN_STOPPING);
             while (true == true)
             {
-                if (_connectedClients.Count == 0) break;
+                int connectedClients = _connectedClients.Count;
+                if (connectedClients == 0) break;
                 if (DateTime.Now > maxWaitClientDisconnect)
                 {
-                    ExceptionRaised?.Invoke(this, new ExceptionEventArgs(new Exception("There were " + _connectedClients.Count + " client/s still connected after an attempt to close them. They will now be force closed"), 5013));
+                    if (ExceptionRaised != null)
+                    {
+                        if (connectedClients == 1)
+                        {
+                            ExceptionRaised(this, new ExceptionEventArgs(new Exception("There was 1 client connected after attempting to gracefully close all clients. It will be forced closed"), 5013));
+                        }
+                        else
+                        {
+                            ExceptionRaised(this, new ExceptionEventArgs(new Exception("There were " + _connectedClients.Count + " clients connected after attempting to gracefully close all clients. They will be forced closed"), 5013));
+                        }
+                    }
                     break;
                 }
                 Thread.Sleep(200);
