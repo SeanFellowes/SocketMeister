@@ -42,17 +42,19 @@
                         <ColumnDefinition Width="60"/>
                         <ColumnDefinition Width="60"/>
                         <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="90"/>
                     </Grid.ColumnDefinitions>
-                    <Border Grid.Column="0" Grid.ColumnSpan="6" Background="#FF274F5F" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Border>
+                    <Border Grid.Column="0" Grid.ColumnSpan="12" Background="#FF274F5F" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Border>
                     <TextBlock Grid.Column="0" Foreground="White" Text="Client #" TextAlignment="Center" VerticalAlignment="Center"/>
                     <TextBlock Grid.Column="1" Foreground="White" Text="Connection Status/Port" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center"/>
                     <TextBlock Grid.Column="2" Foreground="White" Text="Messages Received" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center"/>
                     <TextBlock Grid.Column="3" Foreground="White" Text="Requests Received" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center"/>
                     <TextBlock Grid.Column="4" Foreground="White" Text="Requests Sent" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Grid.Column="6" Foreground="White" Text="Subscriptions" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center"/>
                 </Grid>
 
                 <!-- CLIENT STATS - CLIENT ROWS -->
-                <local:ClientControl Grid.Row="1" x:Name="Client1" />
+                <local:ClientControl Grid.Row="1" x:Name="Client1" TestSubscriptions="True" />
                 <local:ClientControl Grid.Row="2" x:Name="Client2" ClientId="2" />
                 <local:ClientControl Grid.Row="3" x:Name="Client3" ClientId="3" />
                 <local:ClientControl Grid.Row="4" x:Name="Client4" ClientId="4" />

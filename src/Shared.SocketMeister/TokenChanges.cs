@@ -47,8 +47,9 @@ namespace SocketMeister
 
         private Dictionary<string, Change> _dict = new Dictionary<string, Change>();
         private readonly object _lock = new object();
+        private readonly TokenCollection _tokenCollection = null;
 
-        public void Add(TokenAction Action, Token Token)
+        private void AddChange(TokenAction Action, Token Token)
         {
             if (Token == null) throw new ArgumentException("Token cannot be null", nameof(Token));
 
@@ -61,6 +62,32 @@ namespace SocketMeister
             else
                 _dict.Add(Token.Name.ToUpper(CultureInfo.InvariantCulture), new Change(Action, Token));
 
+        }
+
+        public TokenChanges(TokenCollection tokenCollection)
+        {
+            _tokenCollection = tokenCollection;
+            _tokenCollection.TokenAdded += _tokenCollection_TokenAdded;
+            _tokenCollection.TokenChanged += _tokenCollection_TokenChanged;
+            _tokenCollection.TokenDeleted += _tokenCollection_TokenDeleted;
+        }
+
+        private void _tokenCollection_TokenAdded(object sender, EventArgs e)
+        {
+            Token t = (Token)sender;
+            AddChange(TokenAction.Add, t);
+        }
+
+        private void _tokenCollection_TokenChanged(object sender, EventArgs e)
+        {
+            Token t = (Token)sender;
+            AddChange(TokenAction.Modify, t);
+        }
+
+        private void _tokenCollection_TokenDeleted(object sender, EventArgs e)
+        {
+            Token t = (Token)sender;
+            AddChange(TokenAction.Delete, t);
         }
 
         public TokenChanges(byte[] Data)
@@ -89,11 +116,16 @@ namespace SocketMeister
             }
         }
 
-
+        /// <summary>
+        /// If there are any changes, returns a byte[] array containing the seralized data. If there are no changes, returns null
+        /// </summary>
+        /// <returns></returns>
         public byte[] Serialize()
         {
             lock (_lock)
             {
+                if (_dict.Count == 0) return null;
+
                 using (BinaryWriter writer = new BinaryWriter(new MemoryStream()))
                 {
                     writer.Write(_dict.Count);

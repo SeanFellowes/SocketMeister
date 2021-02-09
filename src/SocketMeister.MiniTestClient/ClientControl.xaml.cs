@@ -23,7 +23,9 @@ namespace SocketMeister.MiniTestClient
         private int _clientId = 1;
         private int _requestsReceived = 0;
         private int _requestsSent = 0;
+        private Random _rnd = new Random();
         private int _messagesReceived = 0;
+        private int _subscriptionCount = 0;
         private SocketClient _client = null;
 
         /// <summary>
@@ -45,6 +47,10 @@ namespace SocketMeister.MiniTestClient
         /// </summary>
         public event EventHandler<SocketClient.RequestReceivedEventArgs> RequestReceived;
 
+        /// <summary>
+        /// Raised when a request message is received from the server. A response can be provided which will be returned to the server.
+        /// </summary>
+        public event EventHandler<EventArgs> ServerStopping;
 
 
         public ClientControl()
@@ -71,6 +77,16 @@ namespace SocketMeister.MiniTestClient
 
         }
 
+        public bool TestSubscriptions
+        {
+            get { return cbSubscriptions.IsChecked.Value; }
+            set
+            {
+                cbSubscriptions.IsChecked = value;
+            }
+
+        }
+
         public SocketClient.ConnectionStatuses Status
         {
             get
@@ -78,6 +94,34 @@ namespace SocketMeister.MiniTestClient
                 if (_client == null) return SocketClient.ConnectionStatuses.Disconnected;
                 else return _client.ConnectionStatus;
             }
+        }
+
+        public void ProcessSubscriptions()
+        {
+            if (cbSubscriptions.IsChecked == false) return;
+
+            int cnt = _rnd.Next(1, 21);
+            int direction = _rnd.Next(1, 3);
+
+            if (direction == 1)
+            {
+                for (int ctr = 1; ctr <= cnt; ctr++)
+                {
+                    _client.AddSubscription(Guid.NewGuid().ToString());
+                }
+            }
+            else
+            {
+                for (int ctr = 1; ctr <= cnt; ctr++)
+                {
+                    List<string> subs = _client.GetSubscriptions();
+                    if (subs.Count > 0) _client.RemoveSubscription(subs[0]);
+                    else break;
+                }
+            }
+
+            int count = _client.GetSubscriptions().Count;
+            tbSubscriptions.Text = count.ToString();
         }
 
         public void SendRequest(string Message)
@@ -123,6 +167,7 @@ namespace SocketMeister.MiniTestClient
             _client.ExceptionRaised += Client_ExceptionRaised;
             _client.MessageReceived += Client_MessageReceived;
             _client.RequestReceived += Client_RequestReceived;
+            _client.ServerStopping += Client_ServerStopping;
         }
 
         public void Stop()
@@ -134,6 +179,7 @@ namespace SocketMeister.MiniTestClient
             _client.ExceptionRaised -= Client_ExceptionRaised;
             _client.MessageReceived -= Client_MessageReceived;
             _client.RequestReceived -= Client_RequestReceived;
+            _client.ServerStopping -= Client_ServerStopping;
             _client.Dispose();
         }
 
@@ -176,6 +222,10 @@ namespace SocketMeister.MiniTestClient
             RequestReceived?.Invoke(this, e);
         }
 
+        private void Client_ServerStopping(object sender, EventArgs e)
+        {
+            ServerStopping?.Invoke(this, e);
+        }
 
         private void btnSendRequest_Click(object sender, RoutedEventArgs e)
         {

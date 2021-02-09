@@ -29,6 +29,7 @@ namespace SocketMeister
             private readonly OpenRequestMessageCollection _openRequests = new OpenRequestMessageCollection();
             private readonly MessageEngine _receivedEnvelope;
             private readonly SocketServer _socketServer;
+            private readonly TokenCollectionReadOnly _subscriptions = new TokenCollectionReadOnly();
 
             internal Client(SocketServer Server, Socket ClientSocket, bool EnableCompression)
             {
@@ -147,6 +148,7 @@ namespace SocketMeister
                 }
                 else throw new TimeoutException("SendReceive() timed out after " + Request.TimeoutMilliseconds + " milliseconds");
             }
+
 
 
 

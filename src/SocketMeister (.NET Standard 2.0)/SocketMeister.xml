@@ -171,6 +171,16 @@
             Server sends a poll response when a poll request is received from a client
             </summary>
         </member>
+        <member name="F:SocketMeister.Messages.MessageTypes.SubscriptionRequest">
+            <summary>
+            Clients send subscription information to the server. The server updates it's local client details
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Messages.MessageTypes.SubscriptionResponse">
+            <summary>
+            Server sends a subscription response when a subscription request is received from a client
+            </summary>
+        </member>
         <member name="F:SocketMeister.Messages.MessageTypes.RequestMessageV2">
             <summary>
             Request (expecting a response). Version 2 (From SocketMeister 2.x.x.x)
@@ -219,6 +229,16 @@
         <member name="F:SocketMeister.Messages.MessageStatus.Finished">
             <summary>
             Send operation finished (Could be unsuccessful or successful)
+            </summary>
+        </member>
+        <member name="T:SocketMeister.Messages.SubscriptionRequest">
+            <summary>
+            Internal Message: Socket client regulary sends subscription messages to the server.
+            </summary>
+        </member>
+        <member name="T:SocketMeister.Messages.SubscriptionResponse">
+            <summary>
+            Internal Message: Socket server sends a response to a 'PollRequest' message to indicate (to the client) that the server is alive.
             </summary>
         </member>
         <member name="T:SocketMeister.Messages.MessageEngine">
@@ -783,6 +803,11 @@
             Raised when a request message is received from the server. A response can be provided which will be returned to the server.
             </summary>
         </member>
+        <member name="E:SocketMeister.SocketClient.ServerStopping">
+            <summary>
+            Event raised when a the server stops
+            </summary>
+        </member>
         <member name="M:SocketMeister.SocketClient.#ctor(System.Collections.Generic.List{SocketMeister.SocketEndPoint},System.Boolean)">
             <summary>
             Constructor
@@ -801,15 +826,29 @@
             </summary>
             <param name="disposing"></param>
         </member>
-        <member name="P:SocketMeister.SocketClient.ClientTokens">
+        <member name="M:SocketMeister.SocketClient.AddSubscription(System.String)">
             <summary>
-            User tokens which can be set, which will be automatically syncronized between the client and server
+            Adds a subscription name to the list of subscriptions. Throws an error if the name (case insensitive) exists.
             </summary>
+            <param name="SubscriptionName"></param>
+        </member>
+        <member name="M:SocketMeister.SocketClient.RemoveSubscription(System.String)">
+            <summary>
+            Removes a subscription name from the list of subscriptions
+            </summary>
+            <param name="SubscriptionName">Name of the subscription to remove</param>
+            <returns>True if the subscription was removed</returns>
         </member>
         <member name="P:SocketMeister.SocketClient.ConnectionStatus">
             <summary>
             The connection status of the socket client
             </summary>
+        </member>
+        <member name="M:SocketMeister.SocketClient.GetSubscriptions">
+            <summary>
+            Get a list of subscription names
+            </summary>
+            <returns>List of subscription names</returns>
         </member>
         <member name="P:SocketMeister.SocketClient.LastPollResponse">
             <summary>
@@ -819,11 +858,6 @@
         <member name="P:SocketMeister.SocketClient.NextPollRequest">
             <summary>
             The next time this socket client should attempt to poll the socket server.
-            </summary>
-        </member>
-        <member name="P:SocketMeister.SocketClient.ServerTokens">
-            <summary>
-            User tokens which can be set on the SocketServer, which will be automatically syncronized between the client and server
             </summary>
         </member>
         <member name="M:SocketMeister.SocketClient.DisconnectSocket">
@@ -836,9 +870,9 @@
             Background process which creates a connection with one of the servers specified
             </summary>
         </member>
-        <member name="M:SocketMeister.SocketClient.BgPollServer">
+        <member name="M:SocketMeister.SocketClient.ExecuteBackgroundOperations">
             <summary>
-            Background process which polls the server to determine if the socket is alive
+            Background process which performas various operations
             </summary>
         </member>
         <member name="M:SocketMeister.SocketClient.ProcessConnect(System.Object,System.Net.Sockets.SocketAsyncEventArgs)">
@@ -1292,6 +1326,12 @@
             Used internally to track token changes to publish
             </summary>
         </member>
+        <member name="M:SocketMeister.TokenChanges.Serialize">
+            <summary>
+            If there are any changes, returns a byte[] array containing the seralized data. If there are no changes, returns null
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:SocketMeister.TokenCollectionReadOnly">
             <summary>
             Dictionary based collection of tokens. Data is readonly.
@@ -1407,6 +1447,11 @@
             <param name="Name">Token requested.</param>
             <returns>Found token or null if not found</returns>
         </member>
+        <member name="P:SocketMeister.TokenCollection.Changes">
+            <summary>
+            Token Changes
+            </summary>
+        </member>
         <member name="P:SocketMeister.TokenCollection.Count">
             <summary>
             Number of tokens in the token collection
@@ -1428,6 +1473,7 @@
             Removes a token from the dictionary
             </summary>
             <param name="Name">Name of the token (Case insensitive)</param>
+            <returns>The token which was removed (Null if nothing removed)</returns>
         </member>
         <member name="M:SocketMeister.TokenCollection.ToList">
             <summary>

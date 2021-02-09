@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using SocketMeister;
 
 namespace SocketMeister.MiniTestClient
@@ -52,7 +53,7 @@ namespace SocketMeister.MiniTestClient
             }
         }
 
-
+        DispatcherTimer _dispatcherTimer = new DispatcherTimer(); 
         List<ClientControl> _clients = new List<ClientControl>();
         ObservableCollection<LogItem> _log = new ObservableCollection<LogItem>();
 
@@ -79,12 +80,28 @@ namespace SocketMeister.MiniTestClient
                     Client.ExceptionRaised += Client_ExceptionRaised;
                     Client.MessageReceived += Client_MessageReceived;
                     Client.SendRequestButtonPressed += Client_SendRequestButtonPressed;
+                    Client.ServerStopping += Client_ServerStopping;
                     Client.Start();
                 }
+
+                _dispatcherTimer.Tick += _dispatcherTimer_Tick;
+                _dispatcherTimer.Interval = new TimeSpan(0, 0, 5);
+                _dispatcherTimer.Start();
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void _dispatcherTimer_Tick(object sender, EventArgs e)
+        {
+            foreach(ClientControl clientControl in _clients)
+            {
+                if (clientControl.TestSubscriptions == true)
+                {
+                    clientControl.ProcessSubscriptions();
+                }
             }
         }
 
@@ -104,6 +121,12 @@ namespace SocketMeister.MiniTestClient
             Log(LogItem.SeverityType.Information, "Client " + ct.ClientId, "MessageReceived: " + msgRec);
         }
 
+        private void Client_ServerStopping(object sender, EventArgs e)
+        {
+            ClientControl ct = (ClientControl)sender;
+            Log(LogItem.SeverityType.Warning, "Client " + ct.ClientId, "Server is stopping");
+        }
+
         private void Client_SendRequestButtonPressed(object sender, EventArgs e)
         {
             ClientControl client = (ClientControl)sender;
@@ -112,6 +135,7 @@ namespace SocketMeister.MiniTestClient
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            _dispatcherTimer.Stop();
             foreach (ClientControl c in _clients)
             {
                 c.Stop();

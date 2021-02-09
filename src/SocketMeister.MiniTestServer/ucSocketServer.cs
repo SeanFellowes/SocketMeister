@@ -171,7 +171,7 @@ namespace SocketMeister
         {
             if (e.Exception != null)
             {
-                LogEventRaised?.Invoke(this, new LogEventArgs(e.Exception, "Server #" + ServerId.ToString(), "SocketServer" + _serverId));
+                LogEventRaised?.Invoke(this, new LogEventArgs(e.Exception, "Server #" + ServerId.ToString(), "-"));
             }
         }
 

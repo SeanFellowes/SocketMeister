@@ -14,8 +14,14 @@ namespace SocketMeister
     internal class TokenCollection
 #endif
     {
+        private readonly TokenChanges _changes;
         private readonly Dictionary<string, Token> _dict = new Dictionary<string, Token>();
         private readonly object _lock = new object();
+
+        public TokenCollection()
+        {
+            _changes = new TokenChanges(this);
+        }
 
         /// <summary>
         /// Raised when a token value has added (Token is the source).
@@ -52,6 +58,10 @@ namespace SocketMeister
             }
         }
 
+        /// <summary>
+        /// Token Changes
+        /// </summary>
+        internal TokenChanges Changes {  get { return _changes; } }
 
         /// <summary>
         /// Number of tokens in the token collection
@@ -86,11 +96,18 @@ namespace SocketMeister
             }
         }
 
+        internal byte[] GetChangeBytes()
+        {
+            return _changes.Serialize();
+        }
+
+
         /// <summary>
         /// Removes a token from the dictionary
         /// </summary>
         /// <param name="Name">Name of the token (Case insensitive)</param>
-        internal bool Remove(string Name)
+        /// <returns>The token which was removed (Null if nothing removed)</returns>
+        internal Token Remove(string Name)
         {
             if (string.IsNullOrEmpty(Name)) throw new ArgumentException("Name cannot be null or empty", nameof(Name));
 
@@ -98,13 +115,14 @@ namespace SocketMeister
             {
                 Token fnd;
                 _dict.TryGetValue(Name.ToUpper(CultureInfo.InvariantCulture), out fnd);
-                if (fnd == null) return false;
+                if (fnd == null) return null;
 
                 fnd.Changed -= Token_Changed;
 
                 TokenDeleted?.Invoke(fnd, new EventArgs());
 
-                return _dict.Remove(Name.ToUpper(CultureInfo.InvariantCulture));
+                _dict.Remove(Name.ToUpper(CultureInfo.InvariantCulture));
+                return fnd;
             }
         }
 
