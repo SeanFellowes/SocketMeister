@@ -10,18 +10,42 @@ namespace SocketMeister.Messages
     /// </summary>
     internal class TokenChangesResponseV1 : MessageBase, IMessage
     {
-        private readonly List<int> _changeIdentifiers = new List<int>();
-
-        public TokenChangesResponseV1(List<int> ChangeIdentifiers) : base(MessageTypes.SubscriptionChangesResponseV1) 
+        internal struct ChangeIdentifier
         {
-            _changeIdentifiers = new List<int>(ChangeIdentifiers.Count);
+            public ChangeIdentifier(string TokenName, int ChangeId)
+            {
+                this.TokenName = TokenName;
+                this.ChangeId = ChangeId;
+            }
+
+            public int ChangeId { get; }
+            public string TokenName { get; }
+        }
+
+        private readonly List<ChangeIdentifier> _changes = new List<ChangeIdentifier>();
+
+        //public TokenChangesResponseV1(List<int> ChangeIdentifiers) : base(MessageTypes.SubscriptionChangesResponseV1) 
+        //{
+        //    _changeIdentifiers = new List<int>(ChangeIdentifiers.Count);
+
+        //    //  CREATE A LOCAL COPY OF THE LIST
+        //    foreach (int i in ChangeIdentifiers)
+        //    {
+        //        _changeIdentifiers.Add(i);
+        //    }
+        //}
+
+        public TokenChangesResponseV1(List<TokenChange> Changes) : base(MessageTypes.SubscriptionChangesResponseV1)
+        {
+            _changes = new List<ChangeIdentifier>(Changes.Count);
 
             //  CREATE A LOCAL COPY OF THE LIST
-            foreach (int i in ChangeIdentifiers)
+            foreach (TokenChange i in Changes)
             {
-                _changeIdentifiers.Add(i);
+                _changes.Add(new ChangeIdentifier(i.TokenName, i.ChangeId));
             }
         }
+
 
         /// <summary>
         /// Fastest was to build this is to create it directly from the SocketEnvelope buffer.
@@ -30,21 +54,22 @@ namespace SocketMeister.Messages
         public TokenChangesResponseV1(BinaryReader Reader) : base(MessageTypes.SubscriptionChangesResponseV1)
         {
             int changeCount = Reader.ReadInt32();
-            _changeIdentifiers = new List<int>(changeCount);
+            _changes = new List<ChangeIdentifier>(changeCount);
             for (int ctr = 1; ctr <= changeCount; ctr++)
             {
-                _changeIdentifiers.Add(Reader.ReadInt32());
+                _changes.Add(new ChangeIdentifier(Reader.ReadString(), Reader.ReadInt32()));
             }
         }
 
-        public List<int> ChangeIdentifiers { get { return _changeIdentifiers; } }
+        public List<ChangeIdentifier> ChangeIdentifiers { get { return _changes; } }
 
         public void AppendBytes(BinaryWriter Writer)
         {
-            Writer.Write(_changeIdentifiers.Count);
-            foreach(int i in _changeIdentifiers)
+            Writer.Write(_changes.Count);
+            foreach(ChangeIdentifier i in _changes)
             {
-                Writer.Write(i);
+                Writer.Write(i.TokenName);
+                Writer.Write(i.ChangeId);
             }
         }
     }

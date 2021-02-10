@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SocketMeister.Messages;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
@@ -14,13 +15,13 @@ namespace SocketMeister
     internal class TokenCollection
 #endif
     {
-        private readonly TokenChanges _changes;
+        private readonly TokenChangeCollection _changes;
         private readonly Dictionary<string, Token> _dict = new Dictionary<string, Token>();
         private readonly object _lock = new object();
 
         public TokenCollection()
         {
-            _changes = new TokenChanges(this);
+            _changes = new TokenChangeCollection(this);
         }
 
         /// <summary>
@@ -58,10 +59,10 @@ namespace SocketMeister
             }
         }
 
-        /// <summary>
-        /// Token Changes
-        /// </summary>
-        internal TokenChanges Changes {  get { return _changes; } }
+        ///// <summary>
+        ///// Token Changes. Used to syncronize changes between CLIENT <-> SERVER
+        ///// </summary>
+        //internal TokenChangeCollection Changes {  get { return _changes; } }
 
         /// <summary>
         /// Number of tokens in the token collection
@@ -90,9 +91,18 @@ namespace SocketMeister
         /// </summary>
         internal void Clear()
         {
+            List<Token> deletedTokens = new List<Token>();
             lock (_lock)
             {
+                foreach (KeyValuePair<string, Token> kvp in _dict)
+                {
+                    deletedTokens.Add(kvp.Value);
+                }
                 _dict.Clear();
+            }
+            foreach (Token t in deletedTokens)
+            {
+                TokenDeleted?.Invoke(t, new EventArgs());
             }
         }
 
@@ -101,41 +111,11 @@ namespace SocketMeister
             return _changes.Serialize();
         }
 
-        public void ImportTokenChangesResponseV1(byte[] changeResponseBytes)
+
+        internal void ImportTokenChangesResponseV1(TokenChangesResponseV1 Response)
         {
-            List<TokenChanges.Change> tokenChanges = TokenChanges.DeserializeTokenChanges(changeResponseBytes);
-
-            //  IMPORT CHANGES
-            foreach (TokenChanges.Change change in tokenChanges)
-            {
-                Token fnd = null;
-                lock (_lock) { _dict.TryGetValue(change.Token.Name, out fnd); }
-
-                if (change.Action == TokenAction.Delete)
-                {
-                    if (fnd != null)
-                    {
-                        lock (_lock) { _dict.Remove(change.Token.Name); }
-                        change.Token.Changed -= Token_Changed;
-                        if (TokenDeleted != null) TokenDeleted(fnd, new EventArgs());
-                    }
-                }
-                else
-                {
-                    if (fnd == null)
-                    {
-                        lock (_lock) { _dict.Add(change.Token.Name, change.Token); }
-                        change.Token.Changed += Token_Changed;
-                        if (TokenAdded != null) TokenAdded(fnd, new EventArgs());
-                    }
-                    else
-                    {
-                        fnd.Value = change.Token.Value;
-                    }
-                }
-            }
+            _changes.ImportTokenChangesResponseV1(Response);
         }
-
 
 
         /// <summary>
@@ -143,23 +123,27 @@ namespace SocketMeister
         /// </summary>
         /// <param name="Name">Name of the token (Case insensitive)</param>
         /// <returns>The token which was removed (Null if nothing removed)</returns>
-        internal Token Remove(string Name)
+        public Token Remove(string Name)
         {
             if (string.IsNullOrEmpty(Name)) throw new ArgumentException("Name cannot be null or empty", nameof(Name));
 
+            Token fnd = null;
             lock (_lock)
             {
-                Token fnd;
                 _dict.TryGetValue(Name.ToUpper(CultureInfo.InvariantCulture), out fnd);
-                if (fnd == null) return null;
+            }
 
+            if (fnd != null)
+            {
                 fnd.Changed -= Token_Changed;
 
+                lock (_lock)
+                {
+                    _dict.Remove(Name.ToUpper(CultureInfo.InvariantCulture));
+                }
                 TokenDeleted?.Invoke(fnd, new EventArgs());
-
-                _dict.Remove(Name.ToUpper(CultureInfo.InvariantCulture));
-                return fnd;
             }
+            return fnd;
         }
 
         /// <summary>

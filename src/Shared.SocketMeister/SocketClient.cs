@@ -856,7 +856,7 @@ namespace SocketMeister
                         else if (_receiveEngine.MessageType == MessageTypes.SubscriptionChangesResponseV1)
                         {
                             TokenChangesResponseV1 response = _receiveEngine.GetSubscriptionResponseV1();
-                            //_subscriptions.ImportTokenChangesResponseV1()
+                            _subscriptions.ImportTokenChangesResponseV1(response);
                         }
 
 

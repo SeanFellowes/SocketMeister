@@ -62,20 +62,20 @@ namespace SocketMeister
 
         internal TokenChangesResponseV1 ImportTokenChangesV1(byte[] changeBytes)
         {
-            List<TokenChanges.Change> tokenChanges = TokenChanges.DeserializeTokenChanges(changeBytes);
+            List<TokenChange> tokenChanges = TokenChangeCollection.DeserializeTokenChanges(changeBytes);
 
             //  IMPORT CHANGES
-            foreach (TokenChanges.Change change in tokenChanges)
+            foreach (TokenChange change in tokenChanges)
             {
                 Token fnd = null;
-                lock (_lock) { _dict.TryGetValue(change.Token.Name, out fnd); }
+                lock (_lock) { _dict.TryGetValue(change.TokenName, out fnd); }
 
                 if (change.Action == TokenAction.Delete)
                 {
                     if (fnd != null)
                     {
-                        lock (_lock) { _dict.Remove(change.Token.Name); }
-                        change.Token.Changed -= Token_Changed;
+                        lock (_lock) { _dict.Remove(change.TokenName); }
+                        fnd.Changed -= Token_Changed;
                         if (TokenDeleted != null) TokenDeleted(fnd, new EventArgs());
                     }
                 }
@@ -83,7 +83,7 @@ namespace SocketMeister
                 {
                     if (fnd == null)
                     {
-                        lock (_lock) { _dict.Add(change.Token.Name, change.Token); }
+                        lock (_lock) { _dict.Add(change.TokenName, change.Token); }
                         change.Token.Changed += Token_Changed;
                         if (TokenAdded != null) TokenAdded(fnd, new EventArgs());
                     }
@@ -95,12 +95,7 @@ namespace SocketMeister
             }
 
             //  RETURN A SubscriptionResponseV1
-            List<int> changeIds = new List<int>();
-            foreach (TokenChanges.Change change in tokenChanges)
-            {
-                changeIds.Add(change.ChangeId);
-            }
-            return new TokenChangesResponseV1(changeIds);
+            return new TokenChangesResponseV1(tokenChanges);
         }
 
         /// <summary>

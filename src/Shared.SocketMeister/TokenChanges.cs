@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SocketMeister.Messages;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -9,43 +10,9 @@ namespace SocketMeister
     /// <summary>
     /// Used internally to track token changes to publish
     /// </summary>
-    internal class TokenChanges
+    internal class TokenChangeCollection
     {
-        internal class Change
-        {
-            private static int _maxTokenChangeId = 0;
-            private static readonly object _lockMaxTokenChangeId = new object();
-
-            public int ChangeId { get; }
-            public TokenAction Action { get; }
-            public Token Token { get; }
-
-            public Change(TokenAction Action, Token Token = null)
-            {
-                ChangeId = GetTokenChangeId();
-                this.Action = Action;
-                this.Token = Token;
-            }
-
-            public Change(int ChangeId, TokenAction Action, Token Token = null)
-            {
-                this.ChangeId = ChangeId;
-                this.Action = Action;
-                this.Token = Token;
-            }
-
-            internal static int GetTokenChangeId()
-            {
-                lock (_lockMaxTokenChangeId)
-                {
-                    _maxTokenChangeId++;
-                    if (_maxTokenChangeId == int.MaxValue) _maxTokenChangeId = 1;
-                    return _maxTokenChangeId;
-                }
-            }
-        }
-
-        private Dictionary<string, Change> _dict = new Dictionary<string, Change>();
+        private Dictionary<string, TokenChange> _dictName = new Dictionary<string, TokenChange>();
         private readonly object _lock = new object();
         private readonly TokenCollection _tokenCollection = null;
 
@@ -53,18 +20,23 @@ namespace SocketMeister
         {
             if (Token == null) throw new ArgumentException("Token cannot be null", nameof(Token));
 
-            //  IF EXISTING RECORD EXISTS, DELETE IT
-            _dict.Remove(Token.Name.ToUpper(CultureInfo.InvariantCulture));
+            TokenChange foundTokenChange;
+            lock (_lock)
+            {
+                _dictName.TryGetValue(Token.Name.ToUpper(CultureInfo.InvariantCulture), out foundTokenChange);
 
-            //  ADD IT BACK IN
-            if (Action == TokenAction.Delete)
-                _dict.Add(Token.Name.ToUpper(CultureInfo.InvariantCulture), new Change(Action, null));
-            else
-                _dict.Add(Token.Name.ToUpper(CultureInfo.InvariantCulture), new Change(Action, Token));
+                //  IF EXISTING RECORD EXISTS, DELETE IT
+                _dictName.Remove(Token.Name.ToUpper(CultureInfo.InvariantCulture));
 
+                //  ADD IT BACK IN
+                if (Action == TokenAction.Delete)
+                    _dictName.Add(Token.Name.ToUpper(CultureInfo.InvariantCulture), new TokenChange(Action, Token.Name, null));
+                else
+                    _dictName.Add(Token.Name.ToUpper(CultureInfo.InvariantCulture), new TokenChange(Action, Token.Name, Token));
+            }
         }
 
-        public TokenChanges(TokenCollection tokenCollection)
+        public TokenChangeCollection(TokenCollection tokenCollection)
         {
             _tokenCollection = tokenCollection;
             _tokenCollection.TokenAdded += _tokenCollection_TokenAdded;
@@ -98,11 +70,27 @@ namespace SocketMeister
         //    }
         //}
 
-        public static List<Change> DeserializeTokenChanges(byte[] Data)
+
+        internal void ImportTokenChangesResponseV1(TokenChangesResponseV1 Response)
+        {
+            //  DELETE ANY CHANGES WHICH MATCH
+            lock (_lock)
+            {
+                foreach (TokenChangesResponseV1.ChangeIdentifier i in Response.ChangeIdentifiers)
+                {
+                    TokenChange fnd;
+                    _dictName.TryGetValue(i.TokenName.ToUpper(CultureInfo.InvariantCulture), out fnd);
+                    if (fnd != null && fnd.ChangeId == i.ChangeId) _dictName.Remove(i.TokenName);
+                }
+            }
+        }
+
+
+        public static List<TokenChange> DeserializeTokenChanges(byte[] Data)
         {
             if (Data == null) throw new ArgumentNullException(nameof(Data));
 
-            List<Change> rVal = new List<Change>();
+            List<TokenChange> rVal = new List<TokenChange>();
             using (MemoryStream stream = new MemoryStream(Data))
             {
                 using (BinaryReader reader = new BinaryReader(stream))
@@ -119,7 +107,7 @@ namespace SocketMeister
                         if (reader.ReadBoolean() == false) t = null;
                         else t = new Token(reader);
 
-                        rVal.Add(new Change(changeId, action, t));
+                        rVal.Add(new TokenChange(changeId, action, name, t));
                     }
                 }
             }
@@ -136,13 +124,13 @@ namespace SocketMeister
         {
             lock (_lock)
             {
-                if (_dict.Count == 0) return null;
+                if (_dictName.Count == 0) return null;
 
                 using (BinaryWriter writer = new BinaryWriter(new MemoryStream()))
                 {
-                    writer.Write(_dict.Count);
+                    writer.Write(_dictName.Count);
 
-                    foreach(KeyValuePair<string, Change> kvp in _dict)
+                    foreach(KeyValuePair<string, TokenChange> kvp in _dictName)
                     {
                         writer.Write(kvp.Key);                  //  NAME
 

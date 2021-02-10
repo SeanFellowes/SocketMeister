@@ -171,12 +171,12 @@
             Server sends a poll response when a poll request is received from a client
             </summary>
         </member>
-        <member name="F:SocketMeister.Messages.MessageTypes.SubscriptionRequest">
+        <member name="F:SocketMeister.Messages.MessageTypes.SubscriptionChangesRequestV1">
             <summary>
             Clients send subscription information to the server. The server updates it's local client details
             </summary>
         </member>
-        <member name="F:SocketMeister.Messages.MessageTypes.SubscriptionResponse">
+        <member name="F:SocketMeister.Messages.MessageTypes.SubscriptionChangesResponseV1">
             <summary>
             Server sends a subscription response when a subscription request is received from a client
             </summary>
@@ -231,21 +231,27 @@
             Send operation finished (Could be unsuccessful or successful)
             </summary>
         </member>
-        <member name="T:SocketMeister.Messages.SubscriptionRequest">
+        <member name="T:SocketMeister.Messages.TokenChangesRequestV1">
             <summary>
-            Internal Message: Socket client regulary sends subscription messages to the server.
+            Internal Message: Response when tokens are changed. Contains ChangeIds of token changes.
             </summary>
         </member>
-        <member name="M:SocketMeister.Messages.SubscriptionRequest.#ctor(System.IO.BinaryReader)">
+        <member name="M:SocketMeister.Messages.TokenChangesRequestV1.#ctor(System.IO.BinaryReader)">
             <summary>
             Fastest was to build this is to create it directly from the SocketEnvelope buffer.
             </summary>
             <param name="Reader">Binary Reader</param>
         </member>
-        <member name="T:SocketMeister.Messages.SubscriptionResponse">
+        <member name="T:SocketMeister.Messages.TokenChangesResponseV1">
             <summary>
-            Internal Message: Socket server sends a response to a 'PollRequest' message to indicate (to the client) that the server is alive.
+            Internal Message: COntains information related to changed tokens.
             </summary>
+        </member>
+        <member name="M:SocketMeister.Messages.TokenChangesResponseV1.#ctor(System.IO.BinaryReader)">
+            <summary>
+            Fastest was to build this is to create it directly from the SocketEnvelope buffer.
+            </summary>
+            <param name="Reader">Binary Reader</param>
         </member>
         <member name="T:SocketMeister.Messages.MessageEngine">
             <summary>
@@ -1327,12 +1333,12 @@
             Execution status of the service.
             </summary>
         </member>
-        <member name="T:SocketMeister.TokenChanges">
+        <member name="T:SocketMeister.TokenChangeCollection">
             <summary>
             Used internally to track token changes to publish
             </summary>
         </member>
-        <member name="M:SocketMeister.TokenChanges.Serialize">
+        <member name="M:SocketMeister.TokenChangeCollection.Serialize">
             <summary>
             If there are any changes, returns a byte[] array containing the seralized data. If there are no changes, returns null
             </summary>
@@ -1452,11 +1458,6 @@
             </summary>
             <param name="Name">Token requested.</param>
             <returns>Found token or null if not found</returns>
-        </member>
-        <member name="P:SocketMeister.TokenCollection.Changes">
-            <summary>
-            Token Changes
-            </summary>
         </member>
         <member name="P:SocketMeister.TokenCollection.Count">
             <summary>
