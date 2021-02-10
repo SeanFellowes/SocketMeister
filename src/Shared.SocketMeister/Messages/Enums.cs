@@ -45,11 +45,12 @@ namespace SocketMeister.Messages
         /// <summary>
         /// Clients send subscription information to the server. The server updates it's local client details
         /// </summary>
-        SubscriptionRequest = 20,
+        SubscriptionChangesRequestV1 = 20,
+
         /// <summary>
         /// Server sends a subscription response when a subscription request is received from a client
         /// </summary>
-        SubscriptionResponse = 21,
+        SubscriptionChangesResponseV1 = 31,
 
         /// <summary>
         /// Request (expecting a response). Version 2 (From SocketMeister 2.x.x.x)

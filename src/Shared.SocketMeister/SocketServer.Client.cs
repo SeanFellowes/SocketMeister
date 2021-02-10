@@ -87,6 +87,11 @@ namespace SocketMeister
                 //});
             }
 
+            internal TokenChangesResponseV1 ImportSubscriptionChanges(TokenChangesRequestV1 request)
+            {
+                return _subscriptions.ImportTokenChangesV1(request.ChangeBytes);
+            }
+
             /// <summary>
             /// Send a request to the server and wait for a response. 
             /// </summary>

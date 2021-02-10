@@ -6,22 +6,46 @@ using System.Text;
 namespace SocketMeister.Messages
 {
     /// <summary>
-    /// Internal Message: Socket server sends a response to a 'PollRequest' message to indicate (to the client) that the server is alive.
+    /// Internal Message: COntains information related to changed tokens.
     /// </summary>
-    internal class SubscriptionResponse : MessageBase, IMessage
+    internal class TokenChangesResponseV1 : MessageBase, IMessage
     {
-        public SubscriptionResponse() : base(MessageTypes.SubscriptionResponse) { }
+        private readonly List<int> _changeIdentifiers = new List<int>();
 
-        ///// <summary>
-        ///// Fastest was to build this is to create it directly from the SocketEnvelope buffer.
-        ///// </summary>
-        ///// <param name="Reader">Binary Reader</param>
-        //public PollResponse(BinaryReader Reader) : base(MessageTypes.PollResponse)
-        //{
-        //}
+        public TokenChangesResponseV1(List<int> ChangeIdentifiers) : base(MessageTypes.SubscriptionChangesResponseV1) 
+        {
+            _changeIdentifiers = new List<int>(ChangeIdentifiers.Count);
+
+            //  CREATE A LOCAL COPY OF THE LIST
+            foreach (int i in ChangeIdentifiers)
+            {
+                _changeIdentifiers.Add(i);
+            }
+        }
+
+        /// <summary>
+        /// Fastest was to build this is to create it directly from the SocketEnvelope buffer.
+        /// </summary>
+        /// <param name="Reader">Binary Reader</param>
+        public TokenChangesResponseV1(BinaryReader Reader) : base(MessageTypes.SubscriptionChangesResponseV1)
+        {
+            int changeCount = Reader.ReadInt32();
+            _changeIdentifiers = new List<int>(changeCount);
+            for (int ctr = 1; ctr <= changeCount; ctr++)
+            {
+                _changeIdentifiers.Add(Reader.ReadInt32());
+            }
+        }
+
+        public List<int> ChangeIdentifiers { get { return _changeIdentifiers; } }
 
         public void AppendBytes(BinaryWriter Writer)
         {
+            Writer.Write(_changeIdentifiers.Count);
+            foreach(int i in _changeIdentifiers)
+            {
+                Writer.Write(i);
+            }
         }
     }
 }

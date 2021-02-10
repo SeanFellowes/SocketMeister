@@ -1,6 +1,8 @@
-﻿using System;
+﻿using SocketMeister.Messages;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Text;
 
 namespace SocketMeister
@@ -57,6 +59,49 @@ namespace SocketMeister
         /// Number of tokens in the token collection
         /// </summary>
         public int Count { get { lock (_lock) { return _dict.Count; } } }
+
+        internal TokenChangesResponseV1 ImportTokenChangesV1(byte[] changeBytes)
+        {
+            List<TokenChanges.Change> tokenChanges = TokenChanges.DeserializeTokenChanges(changeBytes);
+
+            //  IMPORT CHANGES
+            foreach (TokenChanges.Change change in tokenChanges)
+            {
+                Token fnd = null;
+                lock (_lock) { _dict.TryGetValue(change.Token.Name, out fnd); }
+
+                if (change.Action == TokenAction.Delete)
+                {
+                    if (fnd != null)
+                    {
+                        lock (_lock) { _dict.Remove(change.Token.Name); }
+                        change.Token.Changed -= Token_Changed;
+                        if (TokenDeleted != null) TokenDeleted(fnd, new EventArgs());
+                    }
+                }
+                else
+                {
+                    if (fnd == null)
+                    {
+                        lock (_lock) { _dict.Add(change.Token.Name, change.Token); }
+                        change.Token.Changed += Token_Changed;
+                        if (TokenAdded != null) TokenAdded(fnd, new EventArgs());
+                    }
+                    else
+                    {
+                        fnd.Value = change.Token.Value;
+                    }
+                }
+            }
+
+            //  RETURN A SubscriptionResponseV1
+            List<int> changeIds = new List<int>();
+            foreach (TokenChanges.Change change in tokenChanges)
+            {
+                changeIds.Add(change.ChangeId);
+            }
+            return new TokenChangesResponseV1(changeIds);
+        }
 
         /// <summary>
         /// Returns a list of all the tokens in the collection

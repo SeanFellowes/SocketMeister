@@ -519,6 +519,22 @@ namespace SocketMeister
                                 )).Start();
                             }
                         }
+
+                        else if (receiveEnvelope.MessageType == MessageTypes.SubscriptionChangesRequestV1)
+                        {
+                            if (ListenerState == SocketServerStatus.Started)
+                            {
+                                lock (_lock) { _requestsInProgress += 1; }
+
+                                TokenChangesRequestV1 request = receiveEnvelope.GetSubscriptionRequestV1();
+                                new Thread(new ThreadStart(delegate
+                                {
+                                    BgProcessSubscriptionRequest(remoteClient, request);
+                                }
+                                )).Start();
+                            }
+                        }
+
                     }
 
                 }
@@ -585,6 +601,24 @@ namespace SocketMeister
                 lock (_lock) { _requestsInProgress -= 1; }
             }
         }
+
+        private void BgProcessSubscriptionRequest(Client remoteClient, TokenChangesRequestV1 request)
+        {
+            try
+            {
+                //  IMPORTS AND SEND SUBSCRIPTION RESPONSE
+                SendMessage(remoteClient, remoteClient.ImportSubscriptionChanges(request), false);
+            }
+            catch (Exception ex)
+            {
+                NotifyTraceEventRaised(ex, 5008);
+            }
+            finally
+            {
+                lock (_lock) { _requestsInProgress -= 1; }
+            }
+        }
+
 
 
         private void BgProcessRequestMessage(RequestMessage request)

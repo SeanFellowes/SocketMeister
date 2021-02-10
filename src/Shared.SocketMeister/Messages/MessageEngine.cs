@@ -367,6 +367,45 @@ namespace SocketMeister.Messages
             }
         }
 
+        internal TokenChangesRequestV1 GetSubscriptionRequestV1()
+        {
+            MemoryStream stream = null;
+            try
+            {
+                stream = new MemoryStream(GetBuffer());
+                using (BinaryReader reader = new BinaryReader(stream))
+                {
+                    stream = null;
+                    return new TokenChangesRequestV1(reader);
+                }
+            }
+            finally
+            {
+                if (stream != null) stream.Dispose();
+            }
+        }
+
+
+        internal TokenChangesResponseV1 GetSubscriptionResponseV1()
+        {
+            MemoryStream stream = null;
+            try
+            {
+                stream = new MemoryStream(GetBuffer());
+                using (BinaryReader reader = new BinaryReader(stream))
+                {
+                    stream = null;
+                    return new TokenChangesResponseV1(reader);
+                }
+            }
+            finally
+            {
+                if (stream != null) stream.Dispose();
+            }
+        }
+
+
+
         internal ResponseMessage GetResponseMessage()
         {
             MemoryStream stream = null;

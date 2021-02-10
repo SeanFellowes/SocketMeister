@@ -72,28 +72,37 @@ namespace SocketMeister
             _tokenCollection.TokenDeleted += _tokenCollection_TokenDeleted;
         }
 
-        private void _tokenCollection_TokenAdded(object sender, EventArgs e)
-        {
-            Token t = (Token)sender;
-            AddChange(TokenAction.Add, t);
-        }
+        //public static TokenChanges(byte[] Data)
+        //{
+        //    if (Data == null) throw new ArgumentNullException(nameof(Data));
 
-        private void _tokenCollection_TokenChanged(object sender, EventArgs e)
-        {
-            Token t = (Token)sender;
-            AddChange(TokenAction.Modify, t);
-        }
+        //    using (MemoryStream stream = new MemoryStream(Data))
+        //    {
+        //        using (BinaryReader reader = new BinaryReader(stream))
+        //        {
+        //            int itemCount = reader.ReadInt32();
 
-        private void _tokenCollection_TokenDeleted(object sender, EventArgs e)
-        {
-            Token t = (Token)sender;
-            AddChange(TokenAction.Delete, t);
-        }
+        //            for (int i = 0; i < itemCount; i++)
+        //            {
+        //                string name = reader.ReadString();
+        //                int changeId = reader.ReadInt32();
+        //                TokenAction action = (TokenAction)reader.ReadInt16();
 
-        public TokenChanges(byte[] Data)
+        //                Token t;
+        //                if (reader.ReadBoolean() == false) t = null;
+        //                else t = new Token(reader);
+
+        //                _dict.Add(name, new Change(changeId, action, t));
+        //            }
+        //        }
+        //    }
+        //}
+
+        public static List<Change> DeserializeTokenChanges(byte[] Data)
         {
             if (Data == null) throw new ArgumentNullException(nameof(Data));
 
+            List<Change> rVal = new List<Change>();
             using (MemoryStream stream = new MemoryStream(Data))
             {
                 using (BinaryReader reader = new BinaryReader(stream))
@@ -110,11 +119,14 @@ namespace SocketMeister
                         if (reader.ReadBoolean() == false) t = null;
                         else t = new Token(reader);
 
-                        _dict.Add(name, new Change(changeId, action, t));
+                        rVal.Add(new Change(changeId, action, t));
                     }
                 }
             }
+            return rVal;
         }
+
+
 
         /// <summary>
         /// If there are any changes, returns a byte[] array containing the seralized data. If there are no changes, returns null
@@ -153,6 +165,25 @@ namespace SocketMeister
                 }
             }
         }
+
+        private void _tokenCollection_TokenAdded(object sender, EventArgs e)
+        {
+            Token t = (Token)sender;
+            AddChange(TokenAction.Add, t);
+        }
+
+        private void _tokenCollection_TokenChanged(object sender, EventArgs e)
+        {
+            Token t = (Token)sender;
+            AddChange(TokenAction.Modify, t);
+        }
+
+        private void _tokenCollection_TokenDeleted(object sender, EventArgs e)
+        {
+            Token t = (Token)sender;
+            AddChange(TokenAction.Delete, t);
+        }
+
 
     }
 

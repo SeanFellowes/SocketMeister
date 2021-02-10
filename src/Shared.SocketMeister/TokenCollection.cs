@@ -101,6 +101,42 @@ namespace SocketMeister
             return _changes.Serialize();
         }
 
+        public void ImportTokenChangesResponseV1(byte[] changeResponseBytes)
+        {
+            List<TokenChanges.Change> tokenChanges = TokenChanges.DeserializeTokenChanges(changeResponseBytes);
+
+            //  IMPORT CHANGES
+            foreach (TokenChanges.Change change in tokenChanges)
+            {
+                Token fnd = null;
+                lock (_lock) { _dict.TryGetValue(change.Token.Name, out fnd); }
+
+                if (change.Action == TokenAction.Delete)
+                {
+                    if (fnd != null)
+                    {
+                        lock (_lock) { _dict.Remove(change.Token.Name); }
+                        change.Token.Changed -= Token_Changed;
+                        if (TokenDeleted != null) TokenDeleted(fnd, new EventArgs());
+                    }
+                }
+                else
+                {
+                    if (fnd == null)
+                    {
+                        lock (_lock) { _dict.Add(change.Token.Name, change.Token); }
+                        change.Token.Changed += Token_Changed;
+                        if (TokenAdded != null) TokenAdded(fnd, new EventArgs());
+                    }
+                    else
+                    {
+                        fnd.Value = change.Token.Value;
+                    }
+                }
+            }
+        }
+
+
 
         /// <summary>
         /// Removes a token from the dictionary

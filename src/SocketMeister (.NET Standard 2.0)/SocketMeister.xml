@@ -236,6 +236,12 @@
             Internal Message: Socket client regulary sends subscription messages to the server.
             </summary>
         </member>
+        <member name="M:SocketMeister.Messages.SubscriptionRequest.#ctor(System.IO.BinaryReader)">
+            <summary>
+            Fastest was to build this is to create it directly from the SocketEnvelope buffer.
+            </summary>
+            <param name="Reader">Binary Reader</param>
+        </member>
         <member name="T:SocketMeister.Messages.SubscriptionResponse">
             <summary>
             Internal Message: Socket server sends a response to a 'PollRequest' message to indicate (to the client) that the server is alive.

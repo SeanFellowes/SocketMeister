@@ -464,7 +464,7 @@ namespace SocketMeister
                             if (changesBytes != null)
                             {
                                 NextSendSubscriptions = DateTime.Now.AddSeconds(60);
-                                byte[] sendBytes = MessageEngine.GenerateSendBytes(new SubscriptionRequest(changesBytes), false);
+                                byte[] sendBytes = MessageEngine.GenerateSendBytes(new TokenChangesRequestV1(changesBytes), false);
                                 _asyncEventArgsSendSubscriptionChanges.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
                                 _asyncEventArgsSendSubscriptionChanges.SetBuffer(sendBytes, 0, sendBytes.Length);
                                 if (!CurrentEndPoint.Socket.SendAsync(_asyncEventArgsSendSubscriptionChanges)) ProcessSendSubscriptionChanges(null, _asyncEventArgsSendSubscriptionChanges);
@@ -852,6 +852,13 @@ namespace SocketMeister
                         {
                             LastPollResponse = DateTime.Now;
                         }
+
+                        else if (_receiveEngine.MessageType == MessageTypes.SubscriptionChangesResponseV1)
+                        {
+                            TokenChangesResponseV1 response = _receiveEngine.GetSubscriptionResponseV1();
+                            //_subscriptions.ImportTokenChangesResponseV1()
+                        }
+
 
                     }
                 }
