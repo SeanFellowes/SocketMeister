@@ -12,8 +12,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Constants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\Enums.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Messages\SubscriptionRequest.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Messages\SubscriptionResponse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Messages\TokenChangesRequestV1.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Messages\TokenChangesResponseV1.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)OpenRequestMessageCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SocketAsyncEventArgsPool.cs" />
