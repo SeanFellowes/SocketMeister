@@ -214,7 +214,7 @@ namespace SocketMeister
         /// <param name="TimeoutMilliseconds">Number of milliseconds to wait before timing out</param>
         public void BroadcastMessage(object[] Parameters, int TimeoutMilliseconds = 60000)
         {
-            Messages.Message message = new Messages.Message(Parameters, TimeoutMilliseconds);
+            Message message = new Message(Parameters, TimeoutMilliseconds);
             List<Client> clients = _connectedClients.ToList();
             foreach (Client client in clients)
             {
@@ -228,6 +228,35 @@ namespace SocketMeister
                 }
             }
         }
+
+        /// <summary>
+        /// Send a message to all clients subscribing to a subscription name. Exceptions will not halt this process, but generate 'ExceptionRaised' events. 
+        /// </summary>
+        /// <param name="SubscriptionName">The name of the scription (Case insensitive)</param>
+        /// <param name="Parameters">Parameters to send with the message</param>
+        /// <param name="TimeoutMilliseconds">Number of milliseconds to wait before timing out</param>
+        public void BroadcastMessage(string SubscriptionName, object[] Parameters, int TimeoutMilliseconds = 60000)
+        {
+            if (string.IsNullOrEmpty(SubscriptionName) == true) throw new ArgumentNullException(nameof(SubscriptionName));
+
+            Message message = null;
+            List<Client> clients = _connectedClients.ToList();
+            foreach (Client client in clients)
+            {
+                if (client.DoesSubscriptionExist(SubscriptionName) == false) continue;
+
+                if (message == null) message = new Message(Parameters, TimeoutMilliseconds);
+                try
+                {
+                    SendMessage(client, message, true);
+                }
+                catch (Exception ex)
+                {
+                    NotifyTraceEventRaised(ex, 5008);
+                }
+            }
+        }
+
 
         /// <summary>
         /// Number of clients connected to the socket server.

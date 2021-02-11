@@ -64,6 +64,38 @@ namespace SocketMeister
             internal MessageEngine ReceiveEnvelope { get { return _receivedEnvelope; } }
 
             /// <summary>
+            /// The number of subscriptions for this client
+            /// </summary>
+            public int SubscriptionCount { get { return _subscriptions.Count; } }
+
+            /// <summary>
+            /// Whether a subscription exists. 
+            /// </summary>
+            /// <param name="SubscriptionName">Name of the subscription (Case insensitive).</param>
+            /// <returns>True if exists, false if the subscription does not exist</returns>
+            public bool DoesSubscriptionExist(string SubscriptionName)
+            {
+                if (string.IsNullOrEmpty(SubscriptionName) == true) return false;
+                else if (_subscriptions[SubscriptionName] != null) return true;
+                else return false;
+            }
+
+            /// <summary>
+            /// Get a list of subscription names
+            /// </summary>
+            /// <returns>List of subscription names</returns>
+            public List<string> GetSubscriptions()
+            {
+                List<string> rVal = new List<string>();
+                List<Token> tokens = _subscriptions.ToList();
+                foreach (Token t in tokens)
+                {
+                    rVal.Add(t.Name);
+                }
+                return rVal;
+            }
+
+            /// <summary>
             /// Send a message to this client
             /// </summary>
             /// <param name="Parameters">Parameters to send to the client.</param>
@@ -153,10 +185,6 @@ namespace SocketMeister
                 }
                 else throw new TimeoutException("SendReceive() timed out after " + Request.TimeoutMilliseconds + " milliseconds");
             }
-
-
-
-
 
         }
     }

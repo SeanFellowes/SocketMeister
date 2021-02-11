@@ -86,33 +86,33 @@ namespace SocketMeister
         }
 
 
-        public static List<TokenChange> DeserializeTokenChanges(byte[] Data)
-        {
-            if (Data == null) throw new ArgumentNullException(nameof(Data));
+        //public static List<TokenChange> DeserializeTokenChanges(byte[] Data)
+        //{
+        //    if (Data == null) throw new ArgumentNullException(nameof(Data));
 
-            List<TokenChange> rVal = new List<TokenChange>();
-            using (MemoryStream stream = new MemoryStream(Data))
-            {
-                using (BinaryReader reader = new BinaryReader(stream))
-                {
-                    int itemCount = reader.ReadInt32();
+        //    List<TokenChange> rVal = new List<TokenChange>();
+        //    using (MemoryStream stream = new MemoryStream(Data))
+        //    {
+        //        using (BinaryReader reader = new BinaryReader(stream))
+        //        {
+        //            int itemCount = reader.ReadInt32();
 
-                    for (int i = 0; i < itemCount; i++)
-                    {
-                        string name = reader.ReadString();
-                        int changeId = reader.ReadInt32();
-                        TokenAction action = (TokenAction)reader.ReadInt16();
+        //            for (int i = 0; i < itemCount; i++)
+        //            {
+        //                string name = reader.ReadString();
+        //                int changeId = reader.ReadInt32();
+        //                TokenAction action = (TokenAction)reader.ReadInt16();
 
-                        Token t;
-                        if (reader.ReadBoolean() == false) t = null;
-                        else t = new Token(reader);
+        //                Token t;
+        //                if (reader.ReadBoolean() == false) t = null;
+        //                else t = new Token(reader);
 
-                        rVal.Add(new TokenChange(changeId, action, name, t));
-                    }
-                }
-            }
-            return rVal;
-        }
+        //                rVal.Add(new TokenChange(changeId, action, name, t));
+        //            }
+        //        }
+        //    }
+        //    return rVal;
+        //}
 
 
 
@@ -137,10 +137,8 @@ namespace SocketMeister
                         writer.Write(kvp.Value.ChangeId);       //  CHANGE ID
                         writer.Write((short)kvp.Value.Action);  //  ACTION
 
-                        if (kvp.Value.Token == null) writer.Write(false);
-                        else
+                        if (kvp.Value.Action == TokenAction.Add || kvp.Value.Action == TokenAction.Modify)
                         {
-                            writer.Write(true);
                             kvp.Value.Token.Serialize(writer);  //  TOKEN
                         }
                     }

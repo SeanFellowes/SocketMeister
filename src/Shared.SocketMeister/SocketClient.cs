@@ -242,23 +242,6 @@ namespace SocketMeister
             set { lock (_lock) { _currentEndPoint = value; } }
         }
 
-        /// <summary>
-        /// Get a list of subscription names
-        /// </summary>
-        /// <returns>List of subscription names</returns>
-        public List<string> GetSubscriptions()
-        {
-            List<string> rVal = new List<string>();
-            lock(_lock)
-            {
-                List<Token> tokens = _subscriptions.ToList();
-                foreach(Token t in tokens)
-                {
-                    rVal.Add(t.Name);
-                }
-            }
-            return rVal;
-        }
 
         private bool IsBackgroundConnectRunning { get { lock (_lock) { return _isBackgroundConnectRunning; } } set { lock (_lock) { _isBackgroundConnectRunning = value; } } }
 
@@ -279,6 +262,43 @@ namespace SocketMeister
         private DateTime NextPollRequest { get { lock (_lock) { return _nextPollRequest; } } set { lock (_lock) { _nextPollRequest = value; } } }
 
         private DateTime NextSendSubscriptions { get { lock (_lock) { return _nextSendSubscriptions; } } set { lock (_lock) { _nextSendSubscriptions = value; } } }
+
+        /// <summary>
+        /// The number of subscriptions for this client
+        /// </summary>
+        public int SubscriptionCount { get { return _subscriptions.Count; } }
+
+
+        /// <summary>
+        /// Whether a subscription exists. 
+        /// </summary>
+        /// <param name="SubscriptionName">Name of the subscription (Case insensitive).</param>
+        /// <returns>True if exists, false if the subscription does not exist</returns>
+        public bool DoesSubscriptionExist(string SubscriptionName)
+        {
+            if (string.IsNullOrEmpty(SubscriptionName) == true) return false;
+            else if (_subscriptions[SubscriptionName] != null) return true;
+            else return false;
+        }
+
+
+        /// <summary>
+        /// Get a list of subscription names
+        /// </summary>
+        /// <returns>List of subscription names</returns>
+        public List<string> GetSubscriptions()
+        {
+            List<string> rVal = new List<string>();
+            List<Token> tokens = _subscriptions.ToList();
+            foreach (Token t in tokens)
+            {
+                rVal.Add(t.Name);
+            }
+            return rVal;
+        }
+
+
+
 
 
         #region Socket async connect

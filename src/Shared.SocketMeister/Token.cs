@@ -14,8 +14,6 @@ namespace SocketMeister
     internal class Token
 #endif
     {
-
-
         private bool _isReadOnly;
         private string _name;
         private object _value;

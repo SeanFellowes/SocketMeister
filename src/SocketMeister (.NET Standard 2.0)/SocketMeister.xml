@@ -645,6 +645,20 @@
             <param name="Reader">Open BinaryReader which is queued exactly to the point where the serialized parameters are encoded.</param>
             <returns>A list of parameters</returns>
         </member>
+        <member name="M:SocketMeister.Serializer.SerializeParameters(System.Object[])">
+            <summary>
+            Serializes an array of parameters 
+            </summary>
+            <param name="Parameters">Array of objects. Only simple values permitted</param>
+            <returns>Byte array</returns>
+        </member>
+        <member name="M:SocketMeister.Serializer.SerializeParameters(System.IO.BinaryWriter,System.Object[])">
+            <summary>
+            Serializes an array of parameters 
+            </summary>
+            <param name="Writer">Binary Writer. Serialization will be appended to the BinaryWriter.</param>
+            <param name="Parameters">Array of objects. Only simple values permitted</param>
+        </member>
         <member name="T:SocketMeister.SocketAsyncEventArgsPool">
             <summary>
             Based on example from http://msdn2.microsoft.com/en-us/library/system.net.sockets.socketasynceventargs.socketasynceventargs.aspx
@@ -856,12 +870,6 @@
             The connection status of the socket client
             </summary>
         </member>
-        <member name="M:SocketMeister.SocketClient.GetSubscriptions">
-            <summary>
-            Get a list of subscription names
-            </summary>
-            <returns>List of subscription names</returns>
-        </member>
         <member name="P:SocketMeister.SocketClient.LastPollResponse">
             <summary>
             The last time a polling response was received from the socket server.
@@ -871,6 +879,24 @@
             <summary>
             The next time this socket client should attempt to poll the socket server.
             </summary>
+        </member>
+        <member name="P:SocketMeister.SocketClient.SubscriptionCount">
+            <summary>
+            The number of subscriptions for this client
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketClient.DoesSubscriptionExist(System.String)">
+            <summary>
+            Whether a subscription exists. 
+            </summary>
+            <param name="SubscriptionName">Name of the subscription (Case insensitive).</param>
+            <returns>True if exists, false if the subscription does not exist</returns>
+        </member>
+        <member name="M:SocketMeister.SocketClient.GetSubscriptions">
+            <summary>
+            Get a list of subscription names
+            </summary>
+            <returns>List of subscription names</returns>
         </member>
         <member name="M:SocketMeister.SocketClient.DisconnectSocket">
             <summary>
@@ -1090,6 +1116,24 @@
             Class which processes raw data directly from the socket and converts into usable messages.
             </summary>
         </member>
+        <member name="P:SocketMeister.SocketServer.Client.SubscriptionCount">
+            <summary>
+            The number of subscriptions for this client
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketServer.Client.DoesSubscriptionExist(System.String)">
+            <summary>
+            Whether a subscription exists. 
+            </summary>
+            <param name="SubscriptionName">Name of the subscription (Case insensitive).</param>
+            <returns>True if exists, false if the subscription does not exist</returns>
+        </member>
+        <member name="M:SocketMeister.SocketServer.Client.GetSubscriptions">
+            <summary>
+            Get a list of subscription names
+            </summary>
+            <returns>List of subscription names</returns>
+        </member>
         <member name="M:SocketMeister.SocketServer.Client.SendMessage(System.Object[],System.Int32)">
             <summary>
             Send a message to this client
@@ -1233,6 +1277,14 @@
             <summary>
             Send a message to all connected clients. Exceptions will not halt this process, but generate 'ExceptionRaised' events. 
             </summary>
+            <param name="Parameters">Parameters to send with the message</param>
+            <param name="TimeoutMilliseconds">Number of milliseconds to wait before timing out</param>
+        </member>
+        <member name="M:SocketMeister.SocketServer.BroadcastMessage(System.String,System.Object[],System.Int32)">
+            <summary>
+            Send a message to all clients subscribing to a subscription name. Exceptions will not halt this process, but generate 'ExceptionRaised' events. 
+            </summary>
+            <param name="SubscriptionName">The name of the scription (Case insensitive)</param>
             <param name="Parameters">Parameters to send with the message</param>
             <param name="TimeoutMilliseconds">Number of milliseconds to wait before timing out</param>
         </member>
@@ -1435,6 +1487,11 @@
         <member name="T:SocketMeister.TokenCollection">
             <summary>
             Dictionary based collection of tokens. Data is updatable.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.TokenCollection.#ctor">
+            <summary>
+            Constructor
             </summary>
         </member>
         <member name="E:SocketMeister.TokenCollection.TokenAdded">

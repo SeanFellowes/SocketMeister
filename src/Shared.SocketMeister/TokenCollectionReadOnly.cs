@@ -62,34 +62,53 @@ namespace SocketMeister
 
         internal TokenChangesResponseV1 ImportTokenChangesV1(byte[] changeBytes)
         {
-            List<TokenChange> tokenChanges = TokenChangeCollection.DeserializeTokenChanges(changeBytes);
+            if (changeBytes == null) throw new ArgumentNullException(nameof(changeBytes));
 
-            //  IMPORT CHANGES
-            foreach (TokenChange change in tokenChanges)
+            List<TokenChange> tokenChanges = new List<TokenChange>();
+            using (MemoryStream stream = new MemoryStream(changeBytes))
             {
-                Token fnd = null;
-                lock (_lock) { _dict.TryGetValue(change.TokenName, out fnd); }
+                using (BinaryReader reader = new BinaryReader(stream))
+                {
+                    int itemCount = reader.ReadInt32();
 
-                if (change.Action == TokenAction.Delete)
-                {
-                    if (fnd != null)
+                    for (int i = 0; i < itemCount; i++)
                     {
-                        lock (_lock) { _dict.Remove(change.TokenName); }
-                        fnd.Changed -= Token_Changed;
-                        if (TokenDeleted != null) TokenDeleted(fnd, new EventArgs());
-                    }
-                }
-                else
-                {
-                    if (fnd == null)
-                    {
-                        lock (_lock) { _dict.Add(change.TokenName, change.Token); }
-                        change.Token.Changed += Token_Changed;
-                        if (TokenAdded != null) TokenAdded(fnd, new EventArgs());
-                    }
-                    else
-                    {
-                        fnd.Value = change.Token.Value;
+                        string name = reader.ReadString().ToUpper(CultureInfo.InvariantCulture);
+                        int changeId = reader.ReadInt32();
+                        TokenAction action = (TokenAction)reader.ReadInt16();
+
+                        Token fnd = null;
+                        lock (_lock) { _dict.TryGetValue(name, out fnd); }
+
+                        if (action == TokenAction.Delete || action == TokenAction.Unknown)
+                        {
+                            //  DELETE TOKEN
+                            if (fnd != null)
+                            {
+                                lock (_lock) { _dict.Remove(name); }
+                                fnd.Changed -= Token_Changed;
+                                if (TokenDeleted != null) TokenDeleted(fnd, new EventArgs());
+                            }
+                            tokenChanges.Add(new TokenChange(changeId, action, name, null));
+                        }
+                        else
+                        {
+                            if (fnd == null)
+                            {
+                                //  ADD NEW TOKEN
+                                Token newToken = new Token(reader);
+                                lock (_lock) { _dict.Add(name, newToken); }
+                                newToken.Changed += Token_Changed;
+                                tokenChanges.Add(new TokenChange(changeId, action, name, newToken));
+                                TokenAdded?.Invoke(fnd, new EventArgs());
+                            }
+                            else
+                            {
+                                //  UPDATE VALUE
+                                fnd.Deserialize(reader);
+                                tokenChanges.Add(new TokenChange(changeId, action, name, fnd));
+                            }
+                        }
                     }
                 }
             }

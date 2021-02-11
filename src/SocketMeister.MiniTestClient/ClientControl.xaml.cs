@@ -103,6 +103,7 @@ namespace SocketMeister.MiniTestClient
             int cnt = _rnd.Next(1, 21);
             int direction = _rnd.Next(1, 3);
 
+
             if (direction == 1)
             {
                 for (int ctr = 1; ctr <= cnt; ctr++)
@@ -118,6 +119,11 @@ namespace SocketMeister.MiniTestClient
                     if (subs.Count > 0) _client.RemoveSubscription(subs[0]);
                     else break;
                 }
+            }
+
+            if (_client.DoesSubscriptionExist("My Test Subscription 1") == false)
+            {
+                _client.AddSubscription("My Test Subscription 1");
             }
 
             int count = _client.GetSubscriptions().Count;

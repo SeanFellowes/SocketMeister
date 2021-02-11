@@ -120,6 +120,11 @@ namespace SocketMeister
             return parameters;
         }
 
+        /// <summary>
+        /// Serializes an array of parameters 
+        /// </summary>
+        /// <param name="Parameters">Array of objects. Only simple values permitted</param>
+        /// <returns>Byte array</returns>
         public static byte[] SerializeParameters(object[] Parameters)
         {
             if (Parameters == null) throw new ArgumentNullException(nameof(Parameters));
@@ -135,7 +140,11 @@ namespace SocketMeister
             }
         }
 
-
+        /// <summary>
+        /// Serializes an array of parameters 
+        /// </summary>
+        /// <param name="Writer">Binary Writer. Serialization will be appended to the BinaryWriter.</param>
+        /// <param name="Parameters">Array of objects. Only simple values permitted</param>
         public static void SerializeParameters(BinaryWriter Writer, object[] Parameters)
         {
             if (Writer == null) throw new ArgumentNullException(nameof(Writer));

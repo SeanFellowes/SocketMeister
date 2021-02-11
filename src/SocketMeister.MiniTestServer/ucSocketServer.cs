@@ -146,6 +146,7 @@ namespace SocketMeister
                     Server.ListenerStateChanged -= Server_ListenerStateChanged;
                     SetButtonEnabled(btnStop, false);
                     SetButtonEnabled(btnSendMessage, false);
+                    SetButtonEnabled(btnBroadcastToSubscribers, false);
                 }
             }
             catch (Exception ex)
@@ -222,6 +223,7 @@ namespace SocketMeister
                 SetButtonEnabled(btnStart, false);
                 SetButtonEnabled(btnStop, true);
                 SetButtonEnabled(btnSendMessage, true);
+                SetButtonEnabled(btnBroadcastToSubscribers, true);
             }
             else if (Status == SocketServerStatus.Stopped)
             {
@@ -229,6 +231,7 @@ namespace SocketMeister
                 SetButtonEnabled(btnStart, true);
                 SetButtonEnabled(btnStop, false);
                 SetButtonEnabled(btnSendMessage, false);
+                SetButtonEnabled(btnBroadcastToSubscribers, false);
                 SetCheckBoxEnabled(cbCompressMessage, true);
             }
             else
@@ -237,6 +240,7 @@ namespace SocketMeister
                 SetButtonEnabled(btnStart, false);
                 SetButtonEnabled(btnStop, false);
                 SetButtonEnabled(btnSendMessage, false);
+                SetButtonEnabled(btnBroadcastToSubscribers, false);
             }
 
         }
@@ -298,6 +302,18 @@ namespace SocketMeister
             SetLabelText(lblTotalMessagesSent, Server.TotalMessagesSent.ToString("N0"));
             SetLabelText(lblBytesSent, Server.TotalBytesSent.ToString("N0"));
             return items.Count;
+        }
+
+        private void btnBroadcastToSubscribers_Click(object sender, EventArgs e)
+        {
+            string msg = "Message to clients subscribing to \"My Test Subscription 1\"";
+            byte[] toSend = new byte[msg.Length];
+            Buffer.BlockCopy(Encoding.UTF8.GetBytes(msg), 0, toSend, 0, toSend.Length);
+
+            object[] parms = new object[1];
+            parms[0] = toSend;
+
+            _server.BroadcastMessage("My Test Subscription 1", parms);
         }
 
         private void btnSendMessage_Click(object sender, EventArgs e)

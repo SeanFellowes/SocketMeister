@@ -19,6 +19,9 @@ namespace SocketMeister
         private readonly Dictionary<string, Token> _dict = new Dictionary<string, Token>();
         private readonly object _lock = new object();
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public TokenCollection()
         {
             _changes = new TokenChangeCollection(this);

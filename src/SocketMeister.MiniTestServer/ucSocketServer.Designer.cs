@@ -51,8 +51,9 @@ namespace SocketMeister
             this.rbAutoBCOff = new System.Windows.Forms.RadioButton();
             this.pnlMain = new System.Windows.Forms.GroupBox();
             this.lbPort = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
             this.btnSendMessage = new System.Windows.Forms.Button();
+            this.label5 = new System.Windows.Forms.Label();
+            this.btnBroadcastToSubscribers = new System.Windows.Forms.Button();
             this.pnlMain.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -114,7 +115,7 @@ namespace SocketMeister
             this.cbLogInfo.AutoSize = true;
             this.cbLogInfo.Checked = true;
             this.cbLogInfo.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cbLogInfo.Location = new System.Drawing.Point(206, 60);
+            this.cbLogInfo.Location = new System.Drawing.Point(40, 89);
             this.cbLogInfo.Name = "cbLogInfo";
             this.cbLogInfo.Size = new System.Drawing.Size(65, 17);
             this.cbLogInfo.TabIndex = 52;
@@ -125,7 +126,7 @@ namespace SocketMeister
             // 
             this.serviceStatusIndicator.BackColor = System.Drawing.Color.Red;
             this.serviceStatusIndicator.Enabled = false;
-            this.serviceStatusIndicator.Location = new System.Drawing.Point(177, 55);
+            this.serviceStatusIndicator.Location = new System.Drawing.Point(9, 84);
             this.serviceStatusIndicator.Name = "serviceStatusIndicator";
             this.serviceStatusIndicator.Size = new System.Drawing.Size(25, 25);
             this.serviceStatusIndicator.TabIndex = 51;
@@ -134,7 +135,7 @@ namespace SocketMeister
             // lblBytesSent
             // 
             this.lblBytesSent.ForeColor = System.Drawing.Color.Blue;
-            this.lblBytesSent.Location = new System.Drawing.Point(87, 159);
+            this.lblBytesSent.Location = new System.Drawing.Point(87, 173);
             this.lblBytesSent.Name = "lblBytesSent";
             this.lblBytesSent.Size = new System.Drawing.Size(90, 13);
             this.lblBytesSent.TabIndex = 86;
@@ -144,7 +145,7 @@ namespace SocketMeister
             // lblBytesReceived
             // 
             this.lblBytesReceived.ForeColor = System.Drawing.Color.Blue;
-            this.lblBytesReceived.Location = new System.Drawing.Point(90, 142);
+            this.lblBytesReceived.Location = new System.Drawing.Point(90, 156);
             this.lblBytesReceived.Name = "lblBytesReceived";
             this.lblBytesReceived.Size = new System.Drawing.Size(87, 13);
             this.lblBytesReceived.TabIndex = 85;
@@ -154,7 +155,7 @@ namespace SocketMeister
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(4, 159);
+            this.label16.Location = new System.Drawing.Point(4, 173);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(61, 13);
             this.label16.TabIndex = 84;
@@ -164,7 +165,7 @@ namespace SocketMeister
             // label17
             // 
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(4, 142);
+            this.label17.Location = new System.Drawing.Point(4, 156);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(88, 13);
             this.label17.TabIndex = 83;
@@ -174,7 +175,7 @@ namespace SocketMeister
             // lblTotalConnectedClients
             // 
             this.lblTotalConnectedClients.ForeColor = System.Drawing.Color.Blue;
-            this.lblTotalConnectedClients.Location = new System.Drawing.Point(136, 118);
+            this.lblTotalConnectedClients.Location = new System.Drawing.Point(136, 140);
             this.lblTotalConnectedClients.Name = "lblTotalConnectedClients";
             this.lblTotalConnectedClients.Size = new System.Drawing.Size(41, 13);
             this.lblTotalConnectedClients.TabIndex = 72;
@@ -184,7 +185,7 @@ namespace SocketMeister
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(4, 118);
+            this.label4.Location = new System.Drawing.Point(4, 140);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(96, 13);
             this.label4.TabIndex = 71;
@@ -194,7 +195,7 @@ namespace SocketMeister
             // lblTotalMessagesSent
             // 
             this.lblTotalMessagesSent.ForeColor = System.Drawing.Color.Blue;
-            this.lblTotalMessagesSent.Location = new System.Drawing.Point(292, 159);
+            this.lblTotalMessagesSent.Location = new System.Drawing.Point(292, 173);
             this.lblTotalMessagesSent.Name = "lblTotalMessagesSent";
             this.lblTotalMessagesSent.Size = new System.Drawing.Size(59, 13);
             this.lblTotalMessagesSent.TabIndex = 70;
@@ -204,7 +205,7 @@ namespace SocketMeister
             // lblTotalRequestsReceived
             // 
             this.lblTotalRequestsReceived.ForeColor = System.Drawing.Color.Blue;
-            this.lblTotalRequestsReceived.Location = new System.Drawing.Point(292, 142);
+            this.lblTotalRequestsReceived.Location = new System.Drawing.Point(292, 156);
             this.lblTotalRequestsReceived.Name = "lblTotalRequestsReceived";
             this.lblTotalRequestsReceived.Size = new System.Drawing.Size(59, 13);
             this.lblTotalRequestsReceived.TabIndex = 69;
@@ -214,7 +215,7 @@ namespace SocketMeister
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(185, 159);
+            this.label3.Location = new System.Drawing.Point(185, 173);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(83, 13);
             this.label3.TabIndex = 68;
@@ -224,7 +225,7 @@ namespace SocketMeister
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(185, 142);
+            this.label2.Location = new System.Drawing.Point(185, 156);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(107, 13);
             this.label2.TabIndex = 67;
@@ -234,7 +235,7 @@ namespace SocketMeister
             // rbAutoBCFast
             // 
             this.rbAutoBCFast.AutoSize = true;
-            this.rbAutoBCFast.Location = new System.Drawing.Point(298, 92);
+            this.rbAutoBCFast.Location = new System.Drawing.Point(298, 118);
             this.rbAutoBCFast.Name = "rbAutoBCFast";
             this.rbAutoBCFast.Size = new System.Drawing.Size(71, 17);
             this.rbAutoBCFast.TabIndex = 60;
@@ -244,7 +245,7 @@ namespace SocketMeister
             // rbAutoBCLarge
             // 
             this.rbAutoBCLarge.AutoSize = true;
-            this.rbAutoBCLarge.Location = new System.Drawing.Point(217, 91);
+            this.rbAutoBCLarge.Location = new System.Drawing.Point(217, 117);
             this.rbAutoBCLarge.Name = "rbAutoBCLarge";
             this.rbAutoBCLarge.Size = new System.Drawing.Size(66, 17);
             this.rbAutoBCLarge.TabIndex = 59;
@@ -255,7 +256,7 @@ namespace SocketMeister
             // 
             this.rbAutoBCOff.AutoSize = true;
             this.rbAutoBCOff.Checked = true;
-            this.rbAutoBCOff.Location = new System.Drawing.Point(167, 91);
+            this.rbAutoBCOff.Location = new System.Drawing.Point(167, 117);
             this.rbAutoBCOff.Name = "rbAutoBCOff";
             this.rbAutoBCOff.Size = new System.Drawing.Size(39, 17);
             this.rbAutoBCOff.TabIndex = 58;
@@ -265,6 +266,7 @@ namespace SocketMeister
             // 
             // pnlMain
             // 
+            this.pnlMain.Controls.Add(this.btnBroadcastToSubscribers);
             this.pnlMain.Controls.Add(this.cbCompressMessage);
             this.pnlMain.Controls.Add(this.label14);
             this.pnlMain.Controls.Add(this.lbPort);
@@ -292,7 +294,7 @@ namespace SocketMeister
             this.pnlMain.Location = new System.Drawing.Point(0, 0);
             this.pnlMain.Name = "pnlMain";
             this.pnlMain.Padding = new System.Windows.Forms.Padding(6);
-            this.pnlMain.Size = new System.Drawing.Size(384, 181);
+            this.pnlMain.Size = new System.Drawing.Size(384, 198);
             this.pnlMain.TabIndex = 75;
             this.pnlMain.TabStop = false;
             this.pnlMain.Text = "Socket Server 1";
@@ -308,26 +310,37 @@ namespace SocketMeister
             this.lbPort.Text = "4505";
             this.lbPort.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // btnSendMessage
+            // 
+            this.btnSendMessage.Enabled = false;
+            this.btnSendMessage.Location = new System.Drawing.Point(231, 55);
+            this.btnSendMessage.Name = "btnSendMessage";
+            this.btnSendMessage.Size = new System.Drawing.Size(139, 26);
+            this.btnSendMessage.TabIndex = 87;
+            this.btnSendMessage.Text = "Send Message";
+            this.btnSendMessage.UseVisualStyleBackColor = true;
+            this.btnSendMessage.Click += new System.EventHandler(this.btnSendMessage_Click);
+            // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(4, 93);
+            this.label5.Location = new System.Drawing.Point(4, 119);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(153, 13);
             this.label5.TabIndex = 81;
             this.label5.Text = "Automatic Message Generator:";
             this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // btnSendMessage
+            // btnBroadcastToSubscribers
             // 
-            this.btnSendMessage.Enabled = false;
-            this.btnSendMessage.Location = new System.Drawing.Point(277, 54);
-            this.btnSendMessage.Name = "btnSendMessage";
-            this.btnSendMessage.Size = new System.Drawing.Size(101, 26);
-            this.btnSendMessage.TabIndex = 87;
-            this.btnSendMessage.Text = "Send Message";
-            this.btnSendMessage.UseVisualStyleBackColor = true;
-            this.btnSendMessage.Click += new System.EventHandler(this.btnSendMessage_Click);
+            this.btnBroadcastToSubscribers.Enabled = false;
+            this.btnBroadcastToSubscribers.Location = new System.Drawing.Point(231, 84);
+            this.btnBroadcastToSubscribers.Name = "btnBroadcastToSubscribers";
+            this.btnBroadcastToSubscribers.Size = new System.Drawing.Size(139, 26);
+            this.btnBroadcastToSubscribers.TabIndex = 88;
+            this.btnBroadcastToSubscribers.Text = "Broadcast to Subscribers";
+            this.btnBroadcastToSubscribers.UseVisualStyleBackColor = true;
+            this.btnBroadcastToSubscribers.Click += new System.EventHandler(this.btnBroadcastToSubscribers_Click);
             // 
             // ucSocketServer
             // 
@@ -335,7 +348,7 @@ namespace SocketMeister
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.pnlMain);
             this.Name = "ucSocketServer";
-            this.Size = new System.Drawing.Size(384, 181);
+            this.Size = new System.Drawing.Size(384, 198);
             this.pnlMain.ResumeLayout(false);
             this.pnlMain.PerformLayout();
             this.ResumeLayout(false);
@@ -367,5 +380,6 @@ namespace SocketMeister
         private System.Windows.Forms.GroupBox pnlMain;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Button btnSendMessage;
+        private System.Windows.Forms.Button btnBroadcastToSubscribers;
     }
 }

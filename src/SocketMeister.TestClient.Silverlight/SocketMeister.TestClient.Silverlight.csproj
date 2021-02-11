@@ -158,6 +158,12 @@
     <Compile Include="..\Shared.SocketMeister\Messages\ServerStoppingMessage.cs">
       <Link>Shared.SocketMeister\Messages\ServerStoppingMessage.cs</Link>
     </Compile>
+    <Compile Include="..\Shared.SocketMeister\Messages\TokenChangesRequestV1.cs">
+      <Link>Shared.SocketMeister\Messages\TokenChangesRequestV1.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\Messages\TokenChangesResponseV1.cs">
+      <Link>Shared.SocketMeister\Messages\TokenChangesResponseV1.cs</Link>
+    </Compile>
     <Compile Include="..\Shared.SocketMeister\OpenRequestMessageCollection.cs">
       <Link>Shared.SocketMeister\OpenRequestMessageCollection.cs</Link>
     </Compile>
@@ -199,6 +205,21 @@
     </Compile>
     <Compile Include="..\Shared.SocketMeister\SocketServer.Events.cs">
       <Link>Shared.SocketMeister\SocketServer.Events.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\Token.cs">
+      <Link>Shared.SocketMeister\Token.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\TokenChange.cs">
+      <Link>Shared.SocketMeister\TokenChange.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\TokenChangeCollection.cs">
+      <Link>Shared.SocketMeister\TokenChangeCollection.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\TokenCollection.cs">
+      <Link>Shared.SocketMeister\TokenCollection.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\TokenCollectionReadOnly.cs">
+      <Link>Shared.SocketMeister\TokenCollectionReadOnly.cs</Link>
     </Compile>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
