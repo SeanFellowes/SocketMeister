@@ -14,15 +14,22 @@ namespace SocketMeister
         public int ChangeId { get; }
         public TokenAction Action { get; }
         public Token Token { get; }
-        public string TokenName { get; }
+        public string TokenNameUppercase { get; }
 
         public TokenChange(TokenAction Action, string TokenName, Token Token)
         {
             if (string.IsNullOrEmpty(TokenName) == true) throw new ArgumentNullException(nameof(TokenName));
 
-            ChangeId = GetTokenChangeId();
+            //  GENERATE NEXT ChangeId
+            lock (_lockMaxTokenChangeId)
+            {
+                _maxTokenChangeId++;
+                if (_maxTokenChangeId == int.MaxValue) _maxTokenChangeId = 1;
+                ChangeId = _maxTokenChangeId;
+            }
+
             this.Action = Action;
-            this.TokenName = TokenName.ToUpper(CultureInfo.InvariantCulture);
+            this.TokenNameUppercase = TokenName.ToUpper(CultureInfo.InvariantCulture);
             this.Token = Token;
         }
 
@@ -32,19 +39,10 @@ namespace SocketMeister
 
             this.ChangeId = ChangeId;
             this.Action = Action;
-            this.TokenName = TokenName.ToUpper(CultureInfo.InvariantCulture);
+            this.TokenNameUppercase = TokenName.ToUpper(CultureInfo.InvariantCulture);
             this.Token = Token;
         }
 
-        internal static int GetTokenChangeId()
-        {
-            lock (_lockMaxTokenChangeId)
-            {
-                _maxTokenChangeId++;
-                if (_maxTokenChangeId == int.MaxValue) _maxTokenChangeId = 1;
-                return _maxTokenChangeId;
-            }
-        }
     }
 
 }

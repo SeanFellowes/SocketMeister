@@ -44,32 +44,6 @@ namespace SocketMeister
             _tokenCollection.TokenDeleted += _tokenCollection_TokenDeleted;
         }
 
-        //public static TokenChanges(byte[] Data)
-        //{
-        //    if (Data == null) throw new ArgumentNullException(nameof(Data));
-
-        //    using (MemoryStream stream = new MemoryStream(Data))
-        //    {
-        //        using (BinaryReader reader = new BinaryReader(stream))
-        //        {
-        //            int itemCount = reader.ReadInt32();
-
-        //            for (int i = 0; i < itemCount; i++)
-        //            {
-        //                string name = reader.ReadString();
-        //                int changeId = reader.ReadInt32();
-        //                TokenAction action = (TokenAction)reader.ReadInt16();
-
-        //                Token t;
-        //                if (reader.ReadBoolean() == false) t = null;
-        //                else t = new Token(reader);
-
-        //                _dict.Add(name, new Change(changeId, action, t));
-        //            }
-        //        }
-        //    }
-        //}
-
 
         internal void ImportTokenChangesResponseV1(TokenChangesResponseV1 Response)
         {
@@ -79,40 +53,11 @@ namespace SocketMeister
                 foreach (TokenChangesResponseV1.ChangeIdentifier i in Response.ChangeIdentifiers)
                 {
                     TokenChange fnd;
-                    _dictName.TryGetValue(i.TokenName.ToUpper(CultureInfo.InvariantCulture), out fnd);
-                    if (fnd != null && fnd.ChangeId == i.ChangeId) _dictName.Remove(i.TokenName);
+                    _dictName.TryGetValue(i.TokenNameUppercase, out fnd);
+                    if (fnd != null && fnd.ChangeId == i.ChangeId) _dictName.Remove(i.TokenNameUppercase);
                 }
             }
         }
-
-
-        //public static List<TokenChange> DeserializeTokenChanges(byte[] Data)
-        //{
-        //    if (Data == null) throw new ArgumentNullException(nameof(Data));
-
-        //    List<TokenChange> rVal = new List<TokenChange>();
-        //    using (MemoryStream stream = new MemoryStream(Data))
-        //    {
-        //        using (BinaryReader reader = new BinaryReader(stream))
-        //        {
-        //            int itemCount = reader.ReadInt32();
-
-        //            for (int i = 0; i < itemCount; i++)
-        //            {
-        //                string name = reader.ReadString();
-        //                int changeId = reader.ReadInt32();
-        //                TokenAction action = (TokenAction)reader.ReadInt16();
-
-        //                Token t;
-        //                if (reader.ReadBoolean() == false) t = null;
-        //                else t = new Token(reader);
-
-        //                rVal.Add(new TokenChange(changeId, action, name, t));
-        //            }
-        //        }
-        //    }
-        //    return rVal;
-        //}
 
 
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 
@@ -14,26 +15,15 @@ namespace SocketMeister.Messages
         {
             public ChangeIdentifier(string TokenName, int ChangeId)
             {
-                this.TokenName = TokenName;
+                this.TokenNameUppercase = TokenName.ToUpper(CultureInfo.InvariantCulture);
                 this.ChangeId = ChangeId;
             }
 
             public int ChangeId { get; }
-            public string TokenName { get; }
+            public string TokenNameUppercase { get; }
         }
 
         private readonly List<ChangeIdentifier> _changes = new List<ChangeIdentifier>();
-
-        //public TokenChangesResponseV1(List<int> ChangeIdentifiers) : base(MessageTypes.SubscriptionChangesResponseV1) 
-        //{
-        //    _changeIdentifiers = new List<int>(ChangeIdentifiers.Count);
-
-        //    //  CREATE A LOCAL COPY OF THE LIST
-        //    foreach (int i in ChangeIdentifiers)
-        //    {
-        //        _changeIdentifiers.Add(i);
-        //    }
-        //}
 
         public TokenChangesResponseV1(List<TokenChange> Changes) : base(MessageTypes.SubscriptionChangesResponseV1)
         {
@@ -42,7 +32,7 @@ namespace SocketMeister.Messages
             //  CREATE A LOCAL COPY OF THE LIST
             foreach (TokenChange i in Changes)
             {
-                _changes.Add(new ChangeIdentifier(i.TokenName, i.ChangeId));
+                _changes.Add(new ChangeIdentifier(i.TokenNameUppercase, i.ChangeId));
             }
         }
 
@@ -68,7 +58,7 @@ namespace SocketMeister.Messages
             Writer.Write(_changes.Count);
             foreach(ChangeIdentifier i in _changes)
             {
-                Writer.Write(i.TokenName);
+                Writer.Write(i.TokenNameUppercase);
                 Writer.Write(i.ChangeId);
             }
         }
