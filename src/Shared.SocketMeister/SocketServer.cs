@@ -235,7 +235,7 @@ namespace SocketMeister
         /// <param name="SubscriptionName">The name of the scription (Case insensitive)</param>
         /// <param name="Parameters">Parameters to send with the message</param>
         /// <param name="TimeoutMilliseconds">Number of milliseconds to wait before timing out</param>
-        public void BroadcastMessage(string SubscriptionName, object[] Parameters, int TimeoutMilliseconds = 60000)
+        public void BroadcastMessageToSubscribers(string SubscriptionName, object[] Parameters, int TimeoutMilliseconds = 60000)
         {
             if (string.IsNullOrEmpty(SubscriptionName) == true) throw new ArgumentNullException(nameof(SubscriptionName));
 

@@ -1280,7 +1280,7 @@
             <param name="Parameters">Parameters to send with the message</param>
             <param name="TimeoutMilliseconds">Number of milliseconds to wait before timing out</param>
         </member>
-        <member name="M:SocketMeister.SocketServer.BroadcastMessage(System.String,System.Object[],System.Int32)">
+        <member name="M:SocketMeister.SocketServer.BroadcastMessageToSubscribers(System.String,System.Object[],System.Int32)">
             <summary>
             Send a message to all clients subscribing to a subscription name. Exceptions will not halt this process, but generate 'ExceptionRaised' events. 
             </summary>
@@ -1388,6 +1388,11 @@
         <member name="T:SocketMeister.TokenChangeCollection">
             <summary>
             Used internally to track token changes to publish
+            </summary>
+        </member>
+        <member name="M:SocketMeister.TokenChangeCollection.FlagAllAfterSocketConnect">
+            <summary>
+            After a socket connects, all tokens are sent to the other side.
             </summary>
         </member>
         <member name="M:SocketMeister.TokenChangeCollection.Serialize">
@@ -1530,6 +1535,11 @@
         <member name="M:SocketMeister.TokenCollection.Clear">
             <summary>
             Clears all tokens
+            </summary>
+        </member>
+        <member name="M:SocketMeister.TokenCollection.FlagAllAfterSocketConnect">
+            <summary>
+            After a socket connects, all tokens are sent to the other side.
             </summary>
         </member>
         <member name="M:SocketMeister.TokenCollection.Remove(System.String)">

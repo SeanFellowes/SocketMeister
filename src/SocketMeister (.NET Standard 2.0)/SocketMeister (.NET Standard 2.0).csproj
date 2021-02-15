@@ -10,8 +10,8 @@
     <PackageProjectUrl>https://github.com/SeanFellowes/SocketMeister</PackageProjectUrl>
     <RepositoryUrl>https://github.com/SeanFellowes/SocketMeister</RepositoryUrl>
     <PackageTags>tcp socket</PackageTags>
-    <Company />
-    <PackageReleaseNotes>Miscellaneous bug fixes and stability issues, included fix broken message sending from server to client.</PackageReleaseNotes>
+    <Company>Sean Fellowes</Company>
+    <PackageReleaseNotes>Miscellaneous bug fixes and stability issues. New subscription functionality allows subscription names to be added to socket clients. A new SocketServer function, BroadcastMessageToSubscribers() sends a message to all clients which have registered the subscription name. SocketMeister automatically synchronizes subscription name changes/additions/deletions with the SocketServer.</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseUrl></PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
@@ -20,9 +20,9 @@
     <DocumentationFile>C:\Users\sfell\Source\Repos\SeanFellowes\SocketMeister\src\SocketMeister (.NET Standard 2.0)\SocketMeister.xml</DocumentationFile>
     <PackageIcon>icon_128.png</PackageIcon>
     <SelfContained>true</SelfContained>
-    <Version>2.0.7</Version>
-    <AssemblyVersion>2.0.7.0</AssemblyVersion>
-    <FileVersion>2.0.7.0</FileVersion>
+    <Version>2.1.0</Version>
+    <AssemblyVersion>2.1.0.0</AssemblyVersion>
+    <FileVersion>2.1.0.0</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net35|AnyCPU'">

@@ -44,6 +44,23 @@ namespace SocketMeister
             _tokenCollection.TokenDeleted += _tokenCollection_TokenDeleted;
         }
 
+        /// <summary>
+        /// After a socket connects, all tokens are sent to the other side.
+        /// </summary>
+        internal void FlagAllAfterSocketConnect()
+        {
+            List<Token> tokens = _tokenCollection.ToList();
+            lock (_lock)
+            {
+                _dictName.Clear();
+                foreach (Token token in tokens)
+                {
+                    string uname = token.Name.ToUpper(CultureInfo.InvariantCulture);
+                    _dictName.Add(uname, new TokenChange(TokenAction.Add, uname, token));
+                }
+            }
+        }
+
 
         internal void ImportTokenChangesResponseV1(TokenChangesResponseV1 Response)
         {
@@ -58,7 +75,6 @@ namespace SocketMeister
                 }
             }
         }
-
 
 
         /// <summary>

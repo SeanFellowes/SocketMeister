@@ -313,7 +313,7 @@ namespace SocketMeister
             object[] parms = new object[1];
             parms[0] = toSend;
 
-            _server.BroadcastMessage("My Test Subscription 1", parms);
+            _server.BroadcastMessageToSubscribers("My Test Subscription 1", parms);
         }
 
         private void btnSendMessage_Click(object sender, EventArgs e)

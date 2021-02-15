@@ -440,6 +440,7 @@ namespace SocketMeister
         {
             Thread bgPolling = new Thread(new ThreadStart(delegate
             {
+                //  INITIALIZE
                 lock (_lock)
                 {
                     if (_isBackgroundPollingRunning == true) return;
@@ -449,6 +450,9 @@ namespace SocketMeister
                     _nextPollRequest = DateTime.Now;
                     _nextSendSubscriptions = DateTime.Now;
                 }
+
+                //  FLAG ALL SUBSCRIPTIONS (Tokens) FOR SENDING TO THE SERVER
+                _subscriptions.FlagAllAfterSocketConnect();
 
                 while (IsStopBackgroundOperationsRequested == false)
                 {
@@ -568,7 +572,9 @@ namespace SocketMeister
 
             //  ENSURE BACKGROUND CONNECT HAS STOPPED
             _autoResetConnectEvent.Set();
-            while (IsBackgroundConnectRunning == true) { Thread.Sleep(5); }
+
+            DateTime maxWait = DateTime.Now.AddSeconds(45);
+            while (IsBackgroundConnectRunning == true && DateTime.Now < maxWait) { Thread.Sleep(50); }
 
             //  SHUTDOWN SOCKET
             DisconnectSocket();
@@ -721,7 +727,7 @@ namespace SocketMeister
                                 //  WAIT FOR RESPONSE
                                 while (Request.WaitForResponse)
                                 {
-                                    Thread.Sleep(5);
+                                    Thread.Sleep(10);
                                 }
                             }
                         }
@@ -853,15 +859,26 @@ namespace SocketMeister
                         }
                         else if (_receiveEngine.MessageType == MessageTypes.RequestMessageV1)
                         {
-                            RequestMessage request = _receiveEngine.GetRequestMessage(1);
-                            lock (_lock) { _requestsInProgress += 1; }
-                            ThreadPool.QueueUserWorkItem(BgProcessRequestMessage, request);
+                            Thread bgThread = new Thread(new ThreadStart(delegate
+                            {
+                                RequestMessage request = _receiveEngine.GetRequestMessage(1);
+                                lock (_lock) { _requestsInProgress += 1; }
+                                ThreadPool.QueueUserWorkItem(BgProcessRequestMessage, request);
+                            }));
+                            bgThread.IsBackground = true;
+                            bgThread.Start();
                         }
                         else if (_receiveEngine.MessageType == MessageTypes.RequestMessageV2)
                         {
-                            RequestMessage request = _receiveEngine.GetRequestMessage(2);
-                            lock (_lock) { _requestsInProgress += 1; }
-                            ThreadPool.QueueUserWorkItem(BgProcessRequestMessage, request);
+                            Thread bgThread = new Thread(new ThreadStart(delegate
+                            {
+                                RequestMessage request = _receiveEngine.GetRequestMessage(2);
+                                lock (_lock) { _requestsInProgress += 1; }
+                                ThreadPool.QueueUserWorkItem(BgProcessRequestMessage, request);
+                            }));
+                            bgThread.IsBackground = true;
+                            bgThread.Start();
+
                         }
                         else if (_receiveEngine.MessageType == MessageTypes.ServerStoppingMessage)
                         {
@@ -877,9 +894,8 @@ namespace SocketMeister
                         {
                             TokenChangesResponseV1 response = _receiveEngine.GetSubscriptionResponseV1();
                             _subscriptions.ImportTokenChangesResponseV1(response);
+                            NextSendSubscriptions = DateTime.Now; 
                         }
-
-
                     }
                 }
 
@@ -979,21 +995,18 @@ namespace SocketMeister
 
         private void NotifyExceptionRaised(Exception ex)
         {
-            if (ExceptionRaised != null)
+            Thread bgThread = new Thread(new ThreadStart(delegate
             {
-                //  RAISE EVENT IN THE BACKGROUND
-                new Thread(new ThreadStart(delegate
+                try
                 {
-                    try
-                    {
-                        ExceptionRaised(this, new ExceptionEventArgs(ex, 1234));
-                    }
-                    catch
-                    {
-                    }
+                    ExceptionRaised(this, new ExceptionEventArgs(ex, 1234));
                 }
-                )).Start();
-            }
+                catch
+                {
+                }
+            }));
+            bgThread.IsBackground = true;
+            bgThread.Start();
         }
 
 
@@ -1001,40 +1014,45 @@ namespace SocketMeister
         {
             if (MessageReceived != null)
             {
-                //  RAISE EVENT IN THE BACKGROUND
-                new Thread(new ThreadStart(delegate
-                {
-                    try 
-                    { 
-                        MessageReceived(this, new MessageReceivedEventArgs(Message.Parameters)); 
-                    }
-                    catch (Exception ex) 
-                    { 
-                        NotifyExceptionRaised(ex); 
-                    }
-                }
-                )).Start();
-
-            }
-        }
-
-        private void NotifyServerStopping()
-        {
-            if (ServerStopping != null)
-            {
-                //  RAISE EVENT IN THE BACKGROUND
-                new Thread(new ThreadStart(delegate
+                Thread bgThread = new Thread(new ThreadStart(delegate
                 {
                     try
                     {
-                        ServerStopping(this, null);
+                        MessageReceived(this, new MessageReceivedEventArgs(Message.Parameters));
                     }
                     catch (Exception ex)
                     {
                         NotifyExceptionRaised(ex);
                     }
-                }
-                )).Start();
+                }));
+                bgThread.IsBackground = true;
+                bgThread.Start();
+            }
+        }
+
+
+        private void NotifyServerStopping()
+        {
+            if (ServerStopping != null)
+            {
+                Thread bgThread = new Thread(new ThreadStart(delegate
+                {
+                    //  RAISE EVENT IN THE BACKGROUND
+                    new Thread(new ThreadStart(delegate
+                    {
+                        try
+                        {
+                            ServerStopping(this, null);
+                        }
+                        catch (Exception ex)
+                        {
+                            NotifyExceptionRaised(ex);
+                        }
+                    }
+                    )).Start();
+                }));
+                bgThread.IsBackground = true;
+                bgThread.Start();
             }
         }
 

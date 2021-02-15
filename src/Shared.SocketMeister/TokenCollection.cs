@@ -62,10 +62,6 @@ namespace SocketMeister
             }
         }
 
-        ///// <summary>
-        ///// Token Changes. Used to syncronize changes between CLIENT <-> SERVER
-        ///// </summary>
-        //internal TokenChangeCollection Changes {  get { return _changes; } }
 
         /// <summary>
         /// Number of tokens in the token collection
@@ -107,6 +103,14 @@ namespace SocketMeister
             {
                 TokenDeleted?.Invoke(t, new EventArgs());
             }
+        }
+
+        /// <summary>
+        /// After a socket connects, all tokens are sent to the other side.
+        /// </summary>
+        internal void FlagAllAfterSocketConnect()
+        {
+            _changes.FlagAllAfterSocketConnect();
         }
 
         internal byte[] GetChangeBytes()
