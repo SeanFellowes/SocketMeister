@@ -234,18 +234,17 @@ namespace SocketMeister
         /// </summary>
         /// <param name="SubscriptionName">The name of the scription (Case insensitive)</param>
         /// <param name="Parameters">Parameters to send with the message</param>
-        /// <param name="TimeoutMilliseconds">Number of milliseconds to wait before timing out</param>
-        public void BroadcastMessageToSubscribers(string SubscriptionName, object[] Parameters, int TimeoutMilliseconds = 60000)
+        public void BroadcastMessageToSubscribers(string SubscriptionName, object[] Parameters)
         {
             if (string.IsNullOrEmpty(SubscriptionName) == true) throw new ArgumentNullException(nameof(SubscriptionName));
 
-            Message message = null;
+            SubscriptionMessageV1 message = null;
             List<Client> clients = _connectedClients.ToList();
             foreach (Client client in clients)
             {
                 if (client.DoesSubscriptionExist(SubscriptionName) == false) continue;
 
-                if (message == null) message = new Message(Parameters, TimeoutMilliseconds);
+                if (message == null) message = new SubscriptionMessageV1(SubscriptionName, Parameters);
                 try
                 {
                     SendMessage(client, message, true);
@@ -267,6 +266,22 @@ namespace SocketMeister
             {
                 return _connectedClients.Count; 
             } 
+        }
+
+        /// <summary>
+        /// Are there any sclients connected which are subscribing to a specific subscription name
+        /// </summary>
+        /// <param name="SubscriptionName">Name of the subscription (Case insensitive)</param>
+        /// <returns>true if there is at least one client subscribing to the SubscriptionName</returns>
+        public bool DoSubscribersExist(string SubscriptionName)
+        {
+            if (string.IsNullOrEmpty(SubscriptionName) == true) throw new ArgumentNullException(nameof(SubscriptionName));
+            List<Client> clients = _connectedClients.ToList();
+            foreach (Client client in clients)
+            {
+                if (client.DoesSubscriptionExist(SubscriptionName) == true) return true;
+            }
+            return false;
         }
 
         /// <summary>

@@ -23,7 +23,7 @@ namespace SocketMeister
         {
             private string _iPAddress = "";
             private readonly object _lock = new object();
-            private ushort _port = 0;
+            private ushort _port;
             private ConnectionStatuses _status = ConnectionStatuses.Disconnected;
 
             /// <summary>
@@ -114,7 +114,9 @@ namespace SocketMeister
             /// <summary>
             /// The parameters provided with the message.
             /// </summary>
+#pragma warning disable CA1819 // Properties should not return arrays
             public object[] Parameters { get { return _parameters; } }
+#pragma warning restore CA1819 // Properties should not return arrays
         }
 
 
@@ -130,11 +132,41 @@ namespace SocketMeister
             /// <summary>
             /// The byte array which is to be returned to the client. Null is returned if a 'Response' value is not provided when processing the 'RequestReceived' event.
             /// </summary>
+#pragma warning disable CA1819 // Properties should not return arrays
             public byte[] Response { get; set; } = null;
+#pragma warning restore CA1819 // Properties should not return arrays
         }
 
 
 
+        /// <summary>
+        /// Values provided when a message is received from the socket server. 
+        /// </summary>
+#pragma warning disable CA1034 // Nested types should not be visible
+        public class SubscriptionMessageReceivedEventArgs : EventArgs
+#pragma warning restore CA1034 // Nested types should not be visible
+        {
+            private readonly string _subscriptionName;
+            private readonly object[] _parameters;
+
+            internal SubscriptionMessageReceivedEventArgs(string SubscriptionName, object[] Parameters)
+            {
+                _subscriptionName = SubscriptionName;
+                _parameters = Parameters;
+            }
+
+            /// <summary>
+            /// The parameters provided with the message.
+            /// </summary>
+#pragma warning disable CA1819 // Properties should not return arrays
+            public object[] Parameters { get { return _parameters; } }
+#pragma warning restore CA1819 // Properties should not return arrays
+
+            /// <summary>
+            /// The name of the subscription 
+            /// </summary>
+            public string SubscriptionName {  get { return _subscriptionName; } }
+        }
 
 
     }

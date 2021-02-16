@@ -93,6 +93,12 @@ namespace SocketMeister
         /// </summary>
         public event EventHandler<EventArgs> ServerStopping;
 
+        /// <summary>
+        /// Event raised whenever a message is received from the server for a specific subscription.
+        /// </summary>
+        public event EventHandler<SubscriptionMessageReceivedEventArgs> SubscriptionMessageReceived;
+
+
 
         /// <summary>
         /// Constructor
@@ -896,6 +902,11 @@ namespace SocketMeister
                             _subscriptions.ImportTokenChangesResponseV1(response);
                             NextSendSubscriptions = DateTime.Now; 
                         }
+
+                        else if (_receiveEngine.MessageType == MessageTypes.SubscriptionMessageV1)
+                        {
+                            NotifySubscriptionMessageV1Received(_receiveEngine.GetSubscriptionMessageV1());
+                        }
                     }
                 }
 
@@ -1029,6 +1040,27 @@ namespace SocketMeister
                 bgThread.Start();
             }
         }
+
+        private void NotifySubscriptionMessageV1Received(Messages.SubscriptionMessageV1 Message)
+        {
+            if (SubscriptionMessageReceived != null)
+            {
+                Thread bgThread = new Thread(new ThreadStart(delegate
+                {
+                    try
+                    {
+                        SubscriptionMessageReceived(this, new SubscriptionMessageReceivedEventArgs(Message.SubscriptionName, Message.Parameters));
+                    }
+                    catch (Exception ex)
+                    {
+                        NotifyExceptionRaised(ex);
+                    }
+                }));
+                bgThread.IsBackground = true;
+                bgThread.Start();
+            }
+        }
+
 
 
         private void NotifyServerStopping()

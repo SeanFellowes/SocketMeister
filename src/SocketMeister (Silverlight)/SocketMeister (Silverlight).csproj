@@ -104,6 +104,9 @@
     <Compile Include="..\Shared.SocketMeister\Messages\ServerStoppingMessage.cs">
       <Link>Shared.SocketMeister\Messages\ServerStoppingMessage.cs</Link>
     </Compile>
+    <Compile Include="..\Shared.SocketMeister\Messages\SubscriptionMessageV1.cs">
+      <Link>Shared.SocketMeister\Messages\SubscriptionMessageV1.cs</Link>
+    </Compile>
     <Compile Include="..\Shared.SocketMeister\Messages\TokenChangesRequestV1.cs">
       <Link>Shared.SocketMeister\Messages\TokenChangesRequestV1.cs</Link>
     </Compile>

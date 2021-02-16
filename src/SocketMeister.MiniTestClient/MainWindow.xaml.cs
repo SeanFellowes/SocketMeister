@@ -81,6 +81,7 @@ namespace SocketMeister.MiniTestClient
                     Client.MessageReceived += Client_MessageReceived;
                     Client.SendRequestButtonPressed += Client_SendRequestButtonPressed;
                     Client.ServerStopping += Client_ServerStopping;
+                    Client.SubscriptionMessageReceived += Client_SubscriptionMessageReceived;
                     Client.Start();
                 }
 
@@ -132,6 +133,18 @@ namespace SocketMeister.MiniTestClient
             ClientControl client = (ClientControl)sender;
             client.SendRequest(tbTextToSend.Text);
         }
+
+        private void Client_SubscriptionMessageReceived(object sender, SocketClient.SubscriptionMessageReceivedEventArgs e)
+        {
+            ClientControl ct = (ClientControl)sender;
+
+            byte[] receivedBytes = (byte[])e.Parameters[0];
+            string msgRec = Encoding.UTF8.GetString(receivedBytes, 0, receivedBytes.Length);
+
+            Log(LogItem.SeverityType.Information, "Client " + ct.ClientId, "SubscriptionMessageReceived: " + e.SubscriptionName + ", " + msgRec);
+        }
+
+
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {

@@ -12,6 +12,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Constants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\Enums.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Messages\SubscriptionMessageV1.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\TokenChangesRequestV1.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\TokenChangesResponseV1.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)OpenRequestMessageCollection.cs" />

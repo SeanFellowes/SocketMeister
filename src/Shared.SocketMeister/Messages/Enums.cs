@@ -50,7 +50,12 @@ namespace SocketMeister.Messages
         /// <summary>
         /// Server sends a subscription response when a subscription request is received from a client
         /// </summary>
-        SubscriptionChangesResponseV1 = 31,
+        SubscriptionChangesResponseV1 = 30,
+
+        /// <summary>
+        /// Server sends a message which is applicable to a specific subscription name
+        /// </summary>
+        SubscriptionMessageV1 = 40,
 
         /// <summary>
         /// Request (expecting a response). Version 2 (From SocketMeister 2.x.x.x)

@@ -367,6 +367,26 @@ namespace SocketMeister.Messages
             }
         }
 
+        internal SubscriptionMessageV1 GetSubscriptionMessageV1()
+        {
+            MemoryStream stream = null;
+            try
+            {
+                stream = new MemoryStream(GetBuffer());
+                using (BinaryReader reader = new BinaryReader(stream))
+                {
+                    stream = null;
+                    return new SubscriptionMessageV1(reader);
+                }
+            }
+            finally
+            {
+                if (stream != null) stream.Dispose();
+            }
+        }
+
+
+
         internal TokenChangesRequestV1 GetSubscriptionRequestV1()
         {
             MemoryStream stream = null;

@@ -43,6 +43,11 @@ namespace SocketMeister.MiniTestClient
         public event EventHandler<SocketClient.MessageReceivedEventArgs> MessageReceived;
 
         /// <summary>
+        /// Event raised whenever a subscription message is received from the server.
+        /// </summary>
+        public event EventHandler<SocketClient.SubscriptionMessageReceivedEventArgs> SubscriptionMessageReceived;
+
+        /// <summary>
         /// Raised when a request message is received from the server. A response can be provided which will be returned to the server.
         /// </summary>
         public event EventHandler<SocketClient.RequestReceivedEventArgs> RequestReceived;
@@ -174,6 +179,7 @@ namespace SocketMeister.MiniTestClient
             _client.MessageReceived += Client_MessageReceived;
             _client.RequestReceived += Client_RequestReceived;
             _client.ServerStopping += Client_ServerStopping;
+            _client.SubscriptionMessageReceived += Client_SubscriptionMessageReceived;
         }
 
         public void Stop()
@@ -186,6 +192,7 @@ namespace SocketMeister.MiniTestClient
             _client.MessageReceived -= Client_MessageReceived;
             _client.RequestReceived -= Client_RequestReceived;
             _client.ServerStopping -= Client_ServerStopping;
+            _client.SubscriptionMessageReceived -= Client_SubscriptionMessageReceived;
             _client.Dispose();
         }
 
@@ -217,6 +224,18 @@ namespace SocketMeister.MiniTestClient
             });
             MessageReceived?.Invoke(this, e);
         }
+
+        private void Client_SubscriptionMessageReceived(object sender, SocketClient.SubscriptionMessageReceivedEventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                _messagesReceived++;
+                tbMessagesReceived.Text = _messagesReceived.ToString();
+            });
+            SubscriptionMessageReceived?.Invoke(this, e);
+        }
+
+
 
         private void Client_RequestReceived(object sender, SocketClient.RequestReceivedEventArgs e)
         {
