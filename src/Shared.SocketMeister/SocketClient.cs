@@ -22,14 +22,15 @@ namespace SocketMeister
 #endif
     {
         /// <summary>
-        /// If a poll response has not been received from the server after a number of seconds, the socketet client will be disconnected.
+        /// If a poll response has not been received from the server after a number of seconds, the socket client will be disconnected.
         /// </summary>
-        private const int DISCONNECT_AFTER_NO_POLL_RESPONSE_SECONDS = 45;
+        private const int DISCONNECT_AFTER_NO_POLL_RESPONSE_SECONDS = 120;
 
         /// <summary>
         /// When a shutdown occurs, particularly because of network failure or server shutdown, delay attempting to reconnect to that server, giving the server some time to complete it's shutdown process.
+        /// When a shutdown occurs, particularly because of network failure or serveDisconnectr shutdown, delay attempting to reconnect to that server, giving the server some time to complete it's shutdown process.
         /// </summary>
-        private const int DONT_RECONNECT_DELAY_AFTER_SHUTDOWN = 15;
+        private const int DONT_RECONNECT_DELAY_AFTER_SHUTDOWN = 30;
 
         /// <summary>
         /// The frequency, in seconds, that this client will poll the server, to ensure the socket is alive.
@@ -41,8 +42,6 @@ namespace SocketMeister
         private SocketAsyncEventArgs _asyncEventArgsReceive = null;
         private SocketAsyncEventArgs _asyncEventArgsSendSubscriptionChanges = null;
         private readonly ManualResetEvent _autoResetConnectEvent = new ManualResetEvent(false);
-        //private readonly ManualResetEvent _autoResetPollEvent = new ManualResetEvent(false);
-        //private readonly ManualResetEvent _autoResetSendSubscriptionChangesEvent = new ManualResetEvent(false);
         private readonly TokenCollection _subscriptions;
         private ConnectionStatuses _connectionStatus = ConnectionStatuses.Disconnected;
 #pragma warning disable CA2213 // Disposable fields should be disposed
@@ -55,9 +54,9 @@ namespace SocketMeister
 #pragma warning restore IDE0044 // Add readonly modifier
         private readonly List<SocketEndPoint> _endPoints = null;
         private bool _isBackgroundConnectRunning;
-        private bool _isBackgroundPollingRunning;
-        private bool _isStopAllRequested = false;
-        private bool _isStopBackgroundOperationsRequested = false;
+        private bool _isBackgroundOperationsRunning;
+        private bool _isStopAllRequested;
+        private bool _isStopBackgroundOperationsRequested;
         private DateTime _lastPollResponse = DateTime.Now;
         private readonly object _lock = new object();
         private DateTime _nextPollRequest;
@@ -174,8 +173,6 @@ namespace SocketMeister
             if (disposing)
             {
                 _autoResetConnectEvent.Close();
-                //_autoResetPollEvent.Close();
-                //_autoResetSendSubscriptionChangesEvent.Close();
 
                 if (_asyncEventArgsConnect != null) _asyncEventArgsConnect.Dispose();
                 _asyncEventArgsConnect = null;
@@ -251,7 +248,7 @@ namespace SocketMeister
 
         private bool IsBackgroundConnectRunning { get { lock (_lock) { return _isBackgroundConnectRunning; } } set { lock (_lock) { _isBackgroundConnectRunning = value; } } }
 
-        private bool IsBackgroundPollingRunning { get { lock (_lock) { return _isBackgroundPollingRunning; } } set { lock (_lock) { _isBackgroundPollingRunning = value; } } }
+        private bool IsBackgroundOperationsRunning { get { lock (_lock) { return _isBackgroundOperationsRunning; } } set { lock (_lock) { _isBackgroundOperationsRunning = value; } } }
 
         private bool IsStopAllRequested { get { lock (_lock) { return _isStopAllRequested; } } set { lock (_lock) { _isStopAllRequested = value; } } }
 
@@ -327,8 +324,6 @@ namespace SocketMeister
             {
                 //  STOP BACKGROUND OPERATIONS
                 IsStopBackgroundOperationsRequested = true;
-                //_autoResetPollEvent.Set();
-                //_autoResetSendSubscriptionChangesEvent.Set();
 
                 //  CLOSE OPEN REQUESTS
                 _openRequests.ResetToUnsent();
@@ -353,10 +348,15 @@ namespace SocketMeister
                 }
 
                 //  ENSURE BACKGROUND POLLING HAS STOPPED
-                while (IsBackgroundPollingRunning == true) { Thread.Sleep(5); }
+                DateTime maxWait = DateTime.Now.AddSeconds(10);
+                while (IsBackgroundOperationsRunning == true && DateTime.Now < maxWait) { Thread.Sleep(100); }
 
                 //  SHUTDOWN THE ENDPOINT
-                disconnectingEndPoint.CloseSocket();
+                try
+                {
+                    disconnectingEndPoint.CloseSocket();
+                }
+                catch { }
 
                 //  CLEANUP
                 try
@@ -444,13 +444,13 @@ namespace SocketMeister
         /// </summary>
         private void ExecuteBackgroundOperations()
         {
-            Thread bgPolling = new Thread(new ThreadStart(delegate
+            Thread backgroundOperationsThread = new Thread(new ThreadStart(delegate
             {
                 //  INITIALIZE
                 lock (_lock)
                 {
-                    if (_isBackgroundPollingRunning == true) return;
-                    _isBackgroundPollingRunning = true;
+                    if (_isBackgroundOperationsRunning == true) return;
+                    _isBackgroundOperationsRunning = true;
                     _isStopBackgroundOperationsRequested = false;
                     _lastPollResponse = DateTime.Now;
                     _nextPollRequest = DateTime.Now;
@@ -472,17 +472,16 @@ namespace SocketMeister
                             _asyncEventArgsPolling.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
                             _asyncEventArgsPolling.SetBuffer(sendBytes, 0, sendBytes.Length);
                             if (!CurrentEndPoint.Socket.SendAsync(_asyncEventArgsPolling)) ProcessSendPollRequest(null, _asyncEventArgsPolling);
-                            //_autoResetPollEvent.Reset();
-                            //_autoResetPollEvent.WaitOne();
                         }
                         catch { }
                     }
 
                     if (CanExecuteBackgroundOperation() && LastPollResponse < (DateTime.Now.AddSeconds(-DISCONNECT_AFTER_NO_POLL_RESPONSE_SECONDS)))
                     {
+                        IsBackgroundOperationsRunning = false;
                         NotifyExceptionRaised(new Exception("Disconnecting: Server failed to reply to polling after " + DISCONNECT_AFTER_NO_POLL_RESPONSE_SECONDS + " seconds."));
                         DisconnectSocket();
-                        break;
+                        return;
                     }
 
                     //  SEND SUBSCRIPTION CHANGES
@@ -498,8 +497,6 @@ namespace SocketMeister
                                 _asyncEventArgsSendSubscriptionChanges.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
                                 _asyncEventArgsSendSubscriptionChanges.SetBuffer(sendBytes, 0, sendBytes.Length);
                                 if (!CurrentEndPoint.Socket.SendAsync(_asyncEventArgsSendSubscriptionChanges)) ProcessSendSubscriptionChanges(null, _asyncEventArgsSendSubscriptionChanges);
-                                //_autoResetSendSubscriptionChangesEvent.Reset();
-                                //_autoResetSendSubscriptionChangesEvent.WaitOne();
                             }
                         }
                         catch 
@@ -508,13 +505,12 @@ namespace SocketMeister
                         }
                     }
 
-
                     Thread.Sleep(200);
                 }
-                IsBackgroundPollingRunning = false;
+                IsBackgroundOperationsRunning = false;
             }));
-            bgPolling.IsBackground = true;
-            bgPolling.Start();
+            backgroundOperationsThread.IsBackground = true;
+            backgroundOperationsThread.Start();
         }
 
 
@@ -759,12 +755,10 @@ namespace SocketMeister
 
         private void ProcessSendPollRequest(object sender, SocketAsyncEventArgs e)
         {
-            //_autoResetPollEvent.Set();
         }
 
         private void ProcessSendSubscriptionChanges(object sender, SocketAsyncEventArgs e)
         {
-            //_autoResetSendSubscriptionChangesEvent.Set();
         }
 
 
@@ -986,9 +980,17 @@ namespace SocketMeister
         {
             lock (_lock)
             {
-                if (_isStopAllRequested == true || _isStopBackgroundOperationsRequested == true) return false;
-                if (_connectionStatus != ConnectionStatuses.Connected) return false;
-                return _currentEndPoint.Socket.Connected;
+                try
+                {
+                    if (_isStopAllRequested == true || _isStopBackgroundOperationsRequested == true) return false;
+                    if (_connectionStatus != ConnectionStatuses.Connected) return false;
+                    if (_currentEndPoint == null || _currentEndPoint.Socket == null) return false;
+                    return _currentEndPoint.Socket.Connected;
+                }
+                catch
+                {
+                    return false;
+                }
             }
         }
 

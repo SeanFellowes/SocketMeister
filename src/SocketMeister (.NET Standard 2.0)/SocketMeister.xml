@@ -838,12 +838,13 @@
         </member>
         <member name="F:SocketMeister.SocketClient.DISCONNECT_AFTER_NO_POLL_RESPONSE_SECONDS">
             <summary>
-            If a poll response has not been received from the server after a number of seconds, the socketet client will be disconnected.
+            If a poll response has not been received from the server after a number of seconds, the socket client will be disconnected.
             </summary>
         </member>
         <member name="F:SocketMeister.SocketClient.DONT_RECONNECT_DELAY_AFTER_SHUTDOWN">
             <summary>
             When a shutdown occurs, particularly because of network failure or server shutdown, delay attempting to reconnect to that server, giving the server some time to complete it's shutdown process.
+            When a shutdown occurs, particularly because of network failure or serveDisconnectr shutdown, delay attempting to reconnect to that server, giving the server some time to complete it's shutdown process.
             </summary>
         </member>
         <member name="F:SocketMeister.SocketClient.POLLING_FREQUENCY">
