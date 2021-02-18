@@ -24,7 +24,7 @@ namespace SocketMeister
         /// <summary>
         /// If a poll response has not been received from the server after a number of seconds, the socket client will be disconnected.
         /// </summary>
-        private const int DISCONNECT_AFTER_NO_POLL_RESPONSE_SECONDS = 120;
+        private const int DISCONNECT_AFTER_NO_POLL_RESPONSE_SECONDS = 300;
 
         /// <summary>
         /// When a shutdown occurs, particularly because of network failure or server shutdown, delay attempting to reconnect to that server, giving the server some time to complete it's shutdown process.
@@ -59,6 +59,7 @@ namespace SocketMeister
         private bool _isStopBackgroundOperationsRequested;
         private DateTime _lastPollResponse = DateTime.Now;
         private readonly object _lock = new object();
+        private DateTime? _lastMessageFromServer = null;
         private DateTime _nextPollRequest;
         private DateTime _nextSendSubscriptions;
         private readonly OpenRequestMessageCollection _openRequests = new OpenRequestMessageCollection();
@@ -150,7 +151,6 @@ namespace SocketMeister
             _asyncEventArgsSendSubscriptionChanges.SetBuffer(new byte[Constants.SEND_RECEIVE_BUFFER_SIZE], 0, Constants.SEND_RECEIVE_BUFFER_SIZE);
             _asyncEventArgsSendSubscriptionChanges.Completed += ProcessSendSubscriptionChanges;
 
-
             BgConnectToServer();
         }
 
@@ -204,6 +204,15 @@ namespace SocketMeister
         {
             Token newSubs = new Token(SubscriptionName);
             _subscriptions.Add(newSubs);
+        }
+
+        /// <summary>
+        /// The last time any contact was received from the server. This includes polling request/responses, instigated intermittently from the client.
+        /// </summary>
+        public DateTime? LastMessageFromServer 
+        { 
+            get { lock(_lock) { return _lastMessageFromServer; } } 
+            private set {  lock(_lock) { _lastMessageFromServer = value; } }
         }
 
         /// <summary>
@@ -316,7 +325,7 @@ namespace SocketMeister
 
             //  INITIATE SHUTDOWN
             SocketEndPoint disconnectingEndPoint = CurrentEndPoint;
-            disconnectingEndPoint.DontReconnectUntil = DateTime.Now.AddSeconds(DONT_RECONNECT_DELAY_AFTER_SHUTDOWN);
+
             ConnectionStatus = ConnectionStatuses.Disconnecting;
 
             Thread bgDisconnect = new Thread(
@@ -342,9 +351,6 @@ namespace SocketMeister
                         }
                         catch { }
                     }
-
-                    //  DON'T RECONNECT TO THIS SERVER FOR SOME NUMBER OF SECONDS
-                    disconnectingEndPoint.DontReconnectUntil = DateTime.Now.AddSeconds(DONT_RECONNECT_DELAY_AFTER_SHUTDOWN);
                 }
 
                 //  ENSURE BACKGROUND POLLING HAS STOPPED
@@ -375,6 +381,7 @@ namespace SocketMeister
 
                 //  FINALIZE AND RE-ATTEMPT CONNECTION IS WE ARE NOT STOPPING
                 ConnectionStatus = ConnectionStatuses.Disconnected;
+
                 if (IsStopAllRequested == false) BgConnectToServer();
 
             }));
@@ -414,7 +421,7 @@ namespace SocketMeister
                             CurrentEndPoint = bestEP;
                         }
 
-                        if (CurrentEndPoint.DontReconnectUntil < DateTime.Now)
+                        if (DateTime.Now > CurrentEndPoint.DontReconnectUntil)
                         {
                             //  TRY TO CONNECT
                             _asyncEventArgsConnect.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
@@ -433,6 +440,7 @@ namespace SocketMeister
                     Thread.Sleep(500);
                 }
                 IsBackgroundConnectRunning = false;
+                Console.WriteLine("Exiting BgConnectToServer for client");
             }));
             bgConnect.IsBackground = true;
             bgConnect.Start();
@@ -508,6 +516,7 @@ namespace SocketMeister
                     Thread.Sleep(200);
                 }
                 IsBackgroundOperationsRunning = false;
+                Console.WriteLine("Exiting ExecuteBackgroundOperations for client");
             }));
             backgroundOperationsThread.IsBackground = true;
             backgroundOperationsThread.Start();
@@ -832,6 +841,8 @@ namespace SocketMeister
                     bool haveEntireMessage = _receiveEngine.AddBytesFromSocketReceiveBuffer(e.BytesTransferred, e.Buffer, ref socketReceiveBufferPtr);
                     if (haveEntireMessage == true)
                     {
+                        LastMessageFromServer = DateTime.Now;
+
                         if (_receiveEngine.MessageType == MessageTypes.ResponseMessage)
                         {
                             //  SyncEndPointSubscriptionsWithServer() IS WAITING. COMPLETE THE SYNCRONOUS OPERATION SO IT CAN CONTINUE
@@ -882,6 +893,9 @@ namespace SocketMeister
                         }
                         else if (_receiveEngine.MessageType == MessageTypes.ServerStoppingMessage)
                         {
+                            //  DON'T RECONNECT TO THIS SERVER FOR SOME NUMBER OF SECONDS
+                            CurrentEndPoint.DontReconnectUntil = DateTime.Now.AddSeconds(DONT_RECONNECT_DELAY_AFTER_SHUTDOWN);
+
                             NotifyServerStopping();
                             DisconnectSocket();
                         }

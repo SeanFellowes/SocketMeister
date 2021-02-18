@@ -163,15 +163,18 @@ namespace SocketMeister.MiniTestClient
         }
 
 
-        public void Start()
+        public void Start(int NumberOfEndpoints)
         {
             List<SocketEndPoint> eps = new List<SocketEndPoint>();
 
             SocketEndPoint ep1 = new SocketEndPoint("127.0.0.1", 4505);
-            SocketEndPoint ep2 = new SocketEndPoint("127.0.0.1", 4506);
-
             eps.Add(ep1);
-            eps.Add(ep2);
+
+            if (NumberOfEndpoints == 2)
+            {
+                SocketEndPoint ep2 = new SocketEndPoint("127.0.0.1", 4506);
+                eps.Add(ep2);
+            }
 
             _client = new SocketClient(eps, true);
             _client.ConnectionStatusChanged += Client_ConnectionStatusChanged;

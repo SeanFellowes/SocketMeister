@@ -119,8 +119,6 @@ namespace SocketMeister
             {
                 IsBackground = true
             };
-
-
         }
 
 
@@ -355,12 +353,14 @@ namespace SocketMeister
             //  STOP BACKGROUND THREADS
             IsStopRequested = true;
 
+
             //  STOP RECEIVING
             try { _listener.Shutdown(SocketShutdown.Receive); }
             catch { }
 
             //  CLOSE CONNECTED CLIENTS
             _connectedClients.DisconnectAll();
+
 
             //  CLOSE LISTENER
             try { _listener.Shutdown(SocketShutdown.Send); }

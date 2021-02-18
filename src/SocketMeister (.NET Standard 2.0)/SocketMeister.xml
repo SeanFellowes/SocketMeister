@@ -906,6 +906,11 @@
             </summary>
             <param name="SubscriptionName"></param>
         </member>
+        <member name="P:SocketMeister.SocketClient.LastMessageFromServer">
+            <summary>
+            The last time any contact was received from the server. This includes polling request/responses, instigated intermittently from the client.
+            </summary>
+        </member>
         <member name="M:SocketMeister.SocketClient.RemoveSubscription(System.String)">
             <summary>
             Removes a subscription name from the list of subscriptions

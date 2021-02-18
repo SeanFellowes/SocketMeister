@@ -89,10 +89,10 @@ namespace SocketMeister
 
             public void DisconnectAll()
             {
-                List<Client> items = ToList();
-                foreach (Client item in items)
+                List<Client> clients = ToList();
+                foreach (Client client in clients)
                 {
-                    Disconnect(item);
+                    Disconnect(client);
                 }
             }
 

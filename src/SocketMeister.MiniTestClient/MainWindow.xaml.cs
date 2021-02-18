@@ -64,30 +64,9 @@ namespace SocketMeister.MiniTestClient
                 InitializeComponent();
 
                 this.Top = 0;
-                this.Left = 1000;
+                this.Left = 950;
 
                 lvLog.ItemsSource = _log;
-
-                _clients.Add(Client1);
-                _clients.Add(Client2);
-                _clients.Add(Client3);
-                _clients.Add(Client4);
-                _clients.Add(Client5);
-                _clients.Add(Client6);
-
-                foreach (ClientControl Client in _clients)
-                {
-                    Client.ExceptionRaised += Client_ExceptionRaised;
-                    Client.MessageReceived += Client_MessageReceived;
-                    Client.SendRequestButtonPressed += Client_SendRequestButtonPressed;
-                    Client.ServerStopping += Client_ServerStopping;
-                    Client.SubscriptionMessageReceived += Client_SubscriptionMessageReceived;
-                    Client.Start();
-                }
-
-                _dispatcherTimer.Tick += _dispatcherTimer_Tick;
-                _dispatcherTimer.Interval = new TimeSpan(0, 0, 5);
-                _dispatcherTimer.Start();
             }
             catch (Exception ex)
             {
@@ -165,6 +144,68 @@ namespace SocketMeister.MiniTestClient
 
                 _log.Insert(0, i);
             });
+
+        }
+
+        private void StartBtn_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                _clients.Add(Client1);
+                if (ClientsSlider.Value > 1) _clients.Add(Client2);
+                if (ClientsSlider.Value > 2) _clients.Add(Client3);
+                if (ClientsSlider.Value > 3) _clients.Add(Client4);
+                if (ClientsSlider.Value > 4) _clients.Add(Client5);
+                if (ClientsSlider.Value > 5) _clients.Add(Client6);
+
+                foreach (ClientControl Client in _clients)
+                {
+                    Client.ExceptionRaised += Client_ExceptionRaised;
+                    Client.MessageReceived += Client_MessageReceived;
+                    Client.SendRequestButtonPressed += Client_SendRequestButtonPressed;
+                    Client.ServerStopping += Client_ServerStopping;
+                    Client.SubscriptionMessageReceived += Client_SubscriptionMessageReceived;
+
+                    if (EndpointRB1.IsChecked == true) Client.Start(1);
+                    else Client.Start(2);
+                }
+
+                _dispatcherTimer.Tick += _dispatcherTimer_Tick;
+                _dispatcherTimer.Interval = new TimeSpan(0, 0, 5);
+                _dispatcherTimer.Start();
+
+                EndpointRB1.IsEnabled = false;
+                EndpointRB2.IsEnabled = false;
+                StartBtn.IsEnabled = false;
+                ClientsSlider.IsEnabled = false;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+        }
+
+        private void ClientsSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (ClientsText == null) return;
+
+            ClientsText.Text = ClientsSlider.Value.ToString();
+
+            if (ClientsSlider.Value > 1) Client2.IsEnabled = true;
+            else Client2.IsEnabled = false;
+
+            if (ClientsSlider.Value > 2) Client3.IsEnabled = true;
+            else Client3.IsEnabled = false;
+
+            if (ClientsSlider.Value > 3) Client4.IsEnabled = true;
+            else Client4.IsEnabled = false;
+
+            if (ClientsSlider.Value > 4) Client5.IsEnabled = true;
+            else Client5.IsEnabled = false;
+
+            if (ClientsSlider.Value > 5) Client6.IsEnabled = true;
+            else Client6.IsEnabled = false;
 
         }
     }
