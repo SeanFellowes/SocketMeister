@@ -27,7 +27,7 @@ namespace SocketMeister
         /// <summary>
         /// The maximum number of milliseconds to wait for clients to disconnect whien stopping the socket server
         /// </summary>
-        private const int MAX_WAIT_FOR_CLIENT_DISCONNECT_WHEN_STOPPING = 20000;
+        private const int MAX_WAIT_FOR_CLIENT_DISCONNECT_WHEN_STOPPING = 30000;
 
         private readonly ManualResetEvent _allDone = new ManualResetEvent(false);
         private readonly Clients _connectedClients = new Clients();
@@ -320,10 +320,10 @@ namespace SocketMeister
 
             List<Client> toProcess = _connectedClients.ToList();
 
-            //  SEND SYNCRONOUS DISCONNECT MESSAGE TO CLIENTS
+            //  SEND ServerStoppingMessage TO CLIENTS
             foreach (Client remoteClient in toProcess)
             {
-                SendDisconnectMessage(remoteClient);
+                SendServerStoppingMessage(remoteClient);
             }
 
             //  WAIT FOR CLIENTS TO DISCONNECT
@@ -353,22 +353,22 @@ namespace SocketMeister
             //  STOP BACKGROUND THREADS
             IsStopRequested = true;
 
-
-            //  STOP RECEIVING
-            try { _listener.Shutdown(SocketShutdown.Receive); }
-            catch { }
+            //  WAIT 5 SECONDS FOR CLIENTS TO 
 
             //  CLOSE CONNECTED CLIENTS
-            _connectedClients.DisconnectAll();
-
+            //_connectedClients.DisconnectAll();
 
             //  CLOSE LISTENER
-            try { _listener.Shutdown(SocketShutdown.Send); }
-            catch { }
-            try { _listener.Close(); }
-            catch { }
-
             ListenerState = SocketServerStatus.Stopped;
+            //try { _listener.Shutdown(SocketShutdown.Send); }
+            //catch { }
+
+            try { _listener.Close(); }
+            catch (Exception ex)
+            {
+                ExceptionRaised?.Invoke(this, new ExceptionEventArgs(ex, 5013));
+            }
+
         }
 
         #endregion
@@ -383,7 +383,11 @@ namespace SocketMeister
             // Signal the main thread to continue.  
             _allDone.Set();
 
-            if (ListenerState == SocketServerStatus.Stopped || ListenerState == SocketServerStatus.Stopping)
+            if (ListenerState == SocketServerStatus.Stopped)
+            {
+                return;
+            }
+            else if (ListenerState == SocketServerStatus.Stopping)
             {
                 //  ACCEPT THE CONNECTION BUT DISCONNECT THE CLIENT
                 Thread bgReceive = new Thread(
@@ -449,6 +453,19 @@ namespace SocketMeister
                 if (remoteClient.ClientSocket.Connected == false) return;
                 int receivedBytesCount = remoteClient.ClientSocket.EndReceive(ar);
                 int receiveBufferPtr = 0;
+
+                //  IF WE RECEIVED 0 BYTES, THE CLIENT IS SHUTTING DOWN
+                if (receivedBytesCount == 0)
+                {
+                    //  A GRACEFUL CLOSE SHOULD OCCUR LIKE THIS (* IS THIS STEP/S)
+                    //  1.   The client socket calls Shutdown(SocketShutdown.Send)) but should keep receiving
+                    //  2. * On the server, EndReceive returns 0 bytes read(the client signals there is no more data from its side)
+                    //  3. * The server A) sends its last data B) calls Shutdown(SocketShutdown.Send)) C) calls Close on the socket, optionally with a timeout to allow the data to be read from the client
+                    //  4.   The client A) reads the remaining data from the server and then receives 0 bytes(the server signals there is no more data from its side) B) calls Close on the socket
+                    _connectedClients.Remove(remoteClient);
+                    remoteClient.ClientSocket.Shutdown(SocketShutdown.Send);
+                    remoteClient.ClientSocket.Close(15);
+                }
 
                 while (receiveBufferPtr < receivedBytesCount)
                 {
@@ -765,7 +782,7 @@ namespace SocketMeister
             }
         }
 
-        private void SendDisconnectMessage(Client RemoteClient)
+        private void SendServerStoppingMessage(Client RemoteClient)
         {
             try
             {

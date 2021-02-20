@@ -87,6 +87,25 @@ namespace SocketMeister
                 NotifyClientDisconnected(Client, clientCount);
             }
 
+            /// <summary>
+            /// Remove a client from the list
+            /// </summary>
+            /// <param name="Client">Client to remove</param>
+            public void Remove(Client Client)
+            {
+                if (Client == null) return;
+                int clientCount = 0;
+
+                lock (_lock)
+                {
+                    _list.Remove(Client);
+                    clientCount = _list.Count;
+                }
+
+                NotifyClientDisconnected(Client, clientCount);
+            }
+
+
             public void DisconnectAll()
             {
                 List<Client> clients = ToList();

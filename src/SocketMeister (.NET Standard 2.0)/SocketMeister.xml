@@ -951,6 +951,11 @@
             </summary>
             <returns>List of subscription names</returns>
         </member>
+        <member name="M:SocketMeister.SocketClient.DisconnectSocketGracefully">
+            <summary>
+            Disconnect the socket gracefully. 
+            </summary>
+        </member>
         <member name="M:SocketMeister.SocketClient.DisconnectSocket">
             <summary>
             Disconnect the socket. Note: This is performed in the background.
@@ -1227,6 +1232,12 @@
             <summary>
             Total number of syschronous and asynchronous clients connected
             </summary>
+        </member>
+        <member name="M:SocketMeister.SocketServer.Clients.Remove(SocketMeister.SocketServer.Client)">
+            <summary>
+            Remove a client from the list
+            </summary>
+            <param name="Client">Client to remove</param>
         </member>
         <member name="M:SocketMeister.SocketServer.Clients.ToList">
             <summary>

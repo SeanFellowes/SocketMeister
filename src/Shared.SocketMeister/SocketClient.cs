@@ -316,6 +316,32 @@ namespace SocketMeister
         #region Socket async connect
 
 
+
+        /// <summary>
+        /// Disconnect the socket gracefully. 
+        /// </summary>
+        private void DisconnectSocketGracefully()
+        {
+            //  INITIATE SHUTDOWN
+            ConnectionStatus = ConnectionStatuses.Disconnecting;
+            IsStopBackgroundOperationsRequested = true;
+
+            //  CLOSE OPEN REQUESTS
+            _openRequests.ResetToUnsent();
+
+            //  ENSURE BACKGROUND POLLING HAS STOPPED
+            DateTime maxWait = DateTime.Now.AddSeconds(10);
+            while (IsBackgroundOperationsRunning == true && DateTime.Now < maxWait) { Thread.Sleep(100); }
+
+            //  A GRACEFUL CLOSE SHOULD OCCUR LIKE THIS (* IS THIS STEP/S)
+            //  1. * The client socket calls Shutdown(SocketShutdown.Send)) but should keep receiving
+            //  2.   On the server, EndReceive returns 0 bytes read(the client signals there is no more data from its side)
+            //  3.   The server A) sends its last data B) calls Shutdown(SocketShutdown.Send)) C) calls Close on the socket, optionally with a timeout to allow the data to be read from the client
+            //  4.   The client A) reads the remaining data from the server and then receives 0 bytes(the server signals there is no more data from its side) B) calls Close on the socket
+            CurrentEndPoint.Socket.Shutdown(SocketShutdown.Send);
+        }
+
+
         /// <summary>
         /// Disconnect the socket. Note: This is performed in the background.
         /// </summary>
@@ -588,7 +614,7 @@ namespace SocketMeister
             while (IsBackgroundConnectRunning == true && DateTime.Now < maxWait) { Thread.Sleep(50); }
 
             //  SHUTDOWN SOCKET
-            DisconnectSocket();
+            DisconnectSocketGracefully();
 
             //  WAIT UNTIL DISCONNECT HAS FINISHED
             while (ConnectionStatus != ConnectionStatuses.Disconnected) { Thread.Sleep(50); }
@@ -824,9 +850,46 @@ namespace SocketMeister
         /// <param name="e">Socket Arguments</param>
         private void ProcessReceive(object sender, SocketAsyncEventArgs e)
         {
-            if (ConnectionStatus == ConnectionStatuses.Disconnecting || ConnectionStatus == ConnectionStatuses.Disconnected)  return;
+            if (ConnectionStatus == ConnectionStatuses.Disconnected)  return;
 
-            if (e.BytesTransferred == 0 || e.SocketError != SocketError.Success)
+            if (e.BytesTransferred == 0)
+            {
+                //  A GRACEFUL CLOSE SHOULD OCCUR LIKE THIS (* IS THIS STEP/S)
+                //  1.   The client socket calls Shutdown(SocketShutdown.Send)) but should keep receiving
+                //  2.   On the server, EndReceive returns 0 bytes read(the client signals there is no more data from its side)
+                //  3.   The server A) sends its last data B) calls Shutdown(SocketShutdown.Send)) C) calls Close on the socket, optionally with a timeout to allow the data to be read from the client
+                //  4. * The client A) reads the remaining data from the server and then receives 0 bytes(the server signals there is no more data from its side) B) calls Close on the socket
+
+                //  CLEANUP
+                if (_asyncEventArgsReceive != null)
+                {
+                    _asyncEventArgsReceive.Completed -= new EventHandler<SocketAsyncEventArgs>(ProcessSend);
+                    _asyncEventArgsReceive.Dispose();
+                    _asyncEventArgsReceive = null;
+                }
+
+                //  CLOSE OPEN REQUESTS AGAIN!!! UNDER LOAD THE CLIENT CAN SUBMIT A REQUEST (BECAUSE OF CROSS THREADING)
+                _openRequests.ResetToUnsent();
+
+                //  FINALIZE AND RE-ATTEMPT CONNECTION IS WE ARE NOT STOPPING
+                ConnectionStatus = ConnectionStatuses.Disconnected;
+
+                try
+                {
+#if SILVERLIGHT
+                socket.Close(); 
+#else
+                    CurrentEndPoint.Socket.Disconnect(true);
+#endif
+                }
+                catch { }
+
+                if (IsStopAllRequested == false) BgConnectToServer();
+
+                return;
+            }
+
+            if (e.SocketError != SocketError.Success)
             {
                 NotifyExceptionRaised(new Exception("Disconnecting: ProcessReceive received socket error code " + (int)e.SocketError));
                 DisconnectSocket();
@@ -897,7 +960,7 @@ namespace SocketMeister
                             CurrentEndPoint.DontReconnectUntil = DateTime.Now.AddSeconds(DONT_RECONNECT_DELAY_AFTER_SHUTDOWN);
 
                             NotifyServerStopping();
-                            DisconnectSocket();
+                            DisconnectSocketGracefully();
                         }
                         else if (_receiveEngine.MessageType == MessageTypes.PollResponse)
                         {
@@ -919,10 +982,8 @@ namespace SocketMeister
                 }
 
                 //  KEEP RECEIVING
-                if (CanSendReceive() == true && !CurrentEndPoint.Socket.ReceiveAsync(e))
-                {
-                    ProcessReceive(null, e);
-                }
+                if (ConnectionStatus == ConnectionStatuses.Disconnecting && !CurrentEndPoint.Socket.ReceiveAsync(e)) ProcessReceive(null, e);
+                else if (IsStopAllRequested == false && ConnectionStatus == ConnectionStatuses.Connected && !CurrentEndPoint.Socket.ReceiveAsync(e)) ProcessReceive(null, e);
             }
             catch (ObjectDisposedException ee)
             {
@@ -1018,6 +1079,17 @@ namespace SocketMeister
                 return _currentEndPoint.Socket.Connected;
             }
         }
+
+        //private bool CanReceive()
+        //{
+        //    lock (_lock)
+        //    {
+        //        if (_connectionStatus == ConnectionStatuses.Disconnecting) return true;
+        //        else if (_connectionStatus != ConnectionStatuses.Connected) return false;
+        //        else if (!CurrentEndPoint.Socket.ReceiveAsync(e) return _currentEndPoint.Socket.Connected;
+        //    }
+        //}
+
 
 
         private void NotifyExceptionRaised(Exception ex)
