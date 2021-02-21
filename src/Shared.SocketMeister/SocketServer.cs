@@ -107,6 +107,7 @@ namespace SocketMeister
             // Create a TCP/IP socket.  
             _listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             _listener.Bind(_localEndPoint);
+            _listener.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
 
             //  REGISTER FOR EVENTS
             _connectedClients.ClientDisconnected += ConnectedClients_ClientDisconnected;
@@ -318,9 +319,8 @@ namespace SocketMeister
             ListenerState = SocketServerStatus.Stopping;
             _allDone.Set();
 
-            List<Client> toProcess = _connectedClients.ToList();
-
             //  SEND ServerStoppingMessage TO CLIENTS
+            List<Client> toProcess = _connectedClients.ToList();
             foreach (Client remoteClient in toProcess)
             {
                 SendServerStoppingMessage(remoteClient);
@@ -353,22 +353,21 @@ namespace SocketMeister
             //  STOP BACKGROUND THREADS
             IsStopRequested = true;
 
-            //  WAIT 5 SECONDS FOR CLIENTS TO 
+            //  CLOSE AND REMAINING CONNECTED CLIENTS (THERE SHOULD NORMALLY BE NONE)
+            _connectedClients.DisconnectAll();
 
-            //  CLOSE CONNECTED CLIENTS
-            //_connectedClients.DisconnectAll();
 
-            //  CLOSE LISTENER
-            ListenerState = SocketServerStatus.Stopped;
-            //try { _listener.Shutdown(SocketShutdown.Send); }
-            //catch { }
 
-            try { _listener.Close(); }
+            try { _listener.Close(10); }
             catch (Exception ex)
             {
                 ExceptionRaised?.Invoke(this, new ExceptionEventArgs(ex, 5013));
             }
 
+            _listener.Dispose();
+
+        
+             ListenerState = SocketServerStatus.Stopped;
         }
 
         #endregion
@@ -398,10 +397,7 @@ namespace SocketMeister
                     try { handler = listener.EndAccept(ar); }
                     catch { return; }
 
-                    ////  SEND DISCONNECT MESSAGE
-                    //SendDisconnectMessage(handler);
-
-                    //  SHUTDOWN THE SOCKET
+                    //  SHUTDOWN THE CLIENT'S SOCKET
                     try { handler.Shutdown(SocketShutdown.Both); }
                     catch { }
                     try { handler.Close(); }
@@ -626,7 +622,7 @@ namespace SocketMeister
                 _listener.Listen(500);
                 ListenerState = SocketServerStatus.Started;
 
-                while (ListenerState != SocketServerStatus.Stopped)
+                while (ListenerState != SocketServerStatus.Stopped && ListenerState != SocketServerStatus.Stopping)
                 {
                     // Set the event to nonsignaled state.  
                     _allDone.Reset();

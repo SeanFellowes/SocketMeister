@@ -26,11 +26,11 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net35|AnyCPU'">
-    <DefineConstants>SMISPUBLIC</DefineConstants>
+    <DefineConstants>SMNOSERVER;SMISPUBLIC</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net35|AnyCPU'">
-    <DefineConstants>DEBUG;SMISPUBLIC</DefineConstants>
+    <DefineConstants>DEBUG;SMNOSERVER;SMISPUBLIC</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net40|AnyCPU'">

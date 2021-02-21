@@ -460,6 +460,11 @@ namespace SocketMeister
                                 ExecuteBackgroundOperations();
                                 break;
                             }
+                            else
+                            {
+                                //  IMPORTANT!!! DON'T TRY THIS CONNECTION FOR AT LEAST 3 SECONDS
+                                CurrentEndPoint.DontReconnectUntil = DateTime.Now.AddMilliseconds(3000);
+                            }
                         }
                     }
                     catch { }
@@ -573,6 +578,7 @@ namespace SocketMeister
                 }
                 catch (Exception ex)
                 {
+                    CurrentEndPoint.DontReconnectUntil = DateTime.Now.AddMilliseconds(2000 + _randomizer.Next(4000));
                     _autoResetConnectEvent.Set();
                     NotifyExceptionRaised(ex);
                 }
@@ -581,6 +587,11 @@ namespace SocketMeister
             {
                 //  NOTE: WHEN FAILING OVER UNDER HIGH LOAD, SocketError.TimedOut OCCURS FOR UP TO 120 SECONDS (WORSE CASE)
                 //  BEFORE CONNECTION SUCCESSFULLY COMPLETES. IT'S A BIT ANNOYING BUT I HAVE FOUND NO WORK AROUND.
+                CurrentEndPoint.DontReconnectUntil = DateTime.Now.AddMilliseconds(2000 + _randomizer.Next(4000));
+                _autoResetConnectEvent.Set();
+            }
+            else if (e.SocketError == SocketError.AddressAlreadyInUse)
+            {
                 CurrentEndPoint.DontReconnectUntil = DateTime.Now.AddMilliseconds(2000 + _randomizer.Next(4000));
                 _autoResetConnectEvent.Set();
             }
@@ -1079,17 +1090,6 @@ namespace SocketMeister
                 return _currentEndPoint.Socket.Connected;
             }
         }
-
-        //private bool CanReceive()
-        //{
-        //    lock (_lock)
-        //    {
-        //        if (_connectionStatus == ConnectionStatuses.Disconnecting) return true;
-        //        else if (_connectionStatus != ConnectionStatuses.Connected) return false;
-        //        else if (!CurrentEndPoint.Socket.ReceiveAsync(e) return _currentEndPoint.Socket.Connected;
-        //    }
-        //}
-
 
 
         private void NotifyExceptionRaised(Exception ex)
