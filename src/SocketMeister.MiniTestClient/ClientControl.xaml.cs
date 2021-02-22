@@ -178,11 +178,14 @@ namespace SocketMeister.MiniTestClient
 
             _client = new SocketClient(eps, true);
             _client.ConnectionStatusChanged += Client_ConnectionStatusChanged;
+            _client.CurrentEndPointChanged += Client_CurrentEndPointChanged;
             _client.ExceptionRaised += Client_ExceptionRaised;
             _client.MessageReceived += Client_MessageReceived;
             _client.RequestReceived += Client_RequestReceived;
             _client.ServerStopping += Client_ServerStopping;
             _client.SubscriptionMessageReceived += Client_SubscriptionMessageReceived;
+
+            tbPort.Text = _client.CurrentEndPoint.Port.ToString();
         }
 
         public void Stop()
@@ -191,6 +194,7 @@ namespace SocketMeister.MiniTestClient
 
             _client.Stop();
             _client.ConnectionStatusChanged -= Client_ConnectionStatusChanged;
+            _client.CurrentEndPointChanged -= Client_CurrentEndPointChanged;
             _client.ExceptionRaised -= Client_ExceptionRaised;
             _client.MessageReceived -= Client_MessageReceived;
             _client.RequestReceived -= Client_RequestReceived;
@@ -206,12 +210,19 @@ namespace SocketMeister.MiniTestClient
                 if (e.Status == SocketClient.ConnectionStatuses.Connected) bdStatus.Background = new SolidColorBrush(Colors.Green);
                 else if (e.Status == SocketClient.ConnectionStatuses.Disconnected) bdStatus.Background = new SolidColorBrush(Colors.Red);
                 else bdStatus.Background = new SolidColorBrush(Colors.Orange);
-
-                if (e.Status == SocketClient.ConnectionStatuses.Connected) tbPort.Text = e.Port.ToString();
-                else tbPort.Text = "-";
             });
             StatusChanged?.Invoke(this, new EventArgs());
         }
+
+        private void Client_CurrentEndPointChanged(object sender, EventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                tbPort.Text = _client.CurrentEndPoint.Port.ToString();
+            });
+        }
+
+
 
         private void Client_ExceptionRaised(object sender, ExceptionEventArgs e)
         {

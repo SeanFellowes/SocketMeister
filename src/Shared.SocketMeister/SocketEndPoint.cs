@@ -24,6 +24,7 @@ namespace SocketMeister
         private DateTime _dontReconnectUntil = DateTime.Now;
         private readonly IPEndPoint _ipEndPoint = null;
         private readonly string _iPAddress = null;
+        private bool _isDisposed = false;
         private readonly object _lock = new object();
         private readonly ushort _port = 0;
         private readonly Socket _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -79,7 +80,7 @@ namespace SocketMeister
         /// <param name="disposing"></param>
         protected virtual void Dispose(bool disposing)
         {
-            if (disposing)
+            if (disposing && IsDisposed == false)
             {
                 //  NOTE: You may need to define NET20 or NET35 as a conditional compilation symbol in your project's Build properties
 #if !NET35 && !NET20
@@ -89,6 +90,8 @@ namespace SocketMeister
                 try { _socket.Close(); }
                 catch { }
 #endif
+
+                IsDisposed = true;
             }
         }
 
@@ -112,6 +115,9 @@ namespace SocketMeister
         /// </summary>
         internal IPEndPoint IPEndPoint { get { return _ipEndPoint; } }
 
+
+        private bool IsDisposed { get { lock (_lock) { return _isDisposed; } } set { lock (_lock) { _isDisposed = value; } } }
+
         /// <summary>
         /// Port number of the socket listener to connect to
         /// </summary>
@@ -122,26 +128,21 @@ namespace SocketMeister
         /// </summary>
         internal Socket Socket
         {
-            get { lock (_lock) { return _socket; } }
+            get { return _socket; } 
         }
 
         /// <summary>
-        /// Closes the socket
+        /// Closes the socket forcefully. Not the ideal way to terminate a socket by needed when an error occurs and the state of the socket is 
         /// </summary>
         public void CloseSocket()
         {
-            lock (_lock)
-            {
-                try { _socket.Shutdown(SocketShutdown.Both); }
-                catch { }
 #if SILVERLIGHT
-                try { _socket.Close(); }
-                catch { }
+            try { _socket.Close(); }
+            catch { }
 #else
-                try { _socket.Disconnect(true); }
-                catch { }
+            try { _socket.Disconnect(true); }
+            catch { }
 #endif
-            }
         }
 
 

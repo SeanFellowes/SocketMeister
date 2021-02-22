@@ -857,6 +857,11 @@
             Event raised when a status of a socket connection has changed
             </summary>
         </member>
+        <member name="E:SocketMeister.SocketClient.CurrentEndPointChanged">
+            <summary>
+            Event raised when the current EndPoint channges
+            </summary>
+        </member>
         <member name="E:SocketMeister.SocketClient.ExceptionRaised">
             <summary>
             Event raised when an exception occurs
@@ -923,6 +928,11 @@
             The connection status of the socket client
             </summary>
         </member>
+        <member name="P:SocketMeister.SocketClient.CurrentEndPoint">
+            <summary>
+            The current socket endpoint which the client is using
+            </summary>
+        </member>
         <member name="P:SocketMeister.SocketClient.LastPollResponse">
             <summary>
             The last time a polling response was received from the socket server.
@@ -956,7 +966,7 @@
             Disconnect the socket gracefully. 
             </summary>
         </member>
-        <member name="M:SocketMeister.SocketClient.DisconnectSocket">
+        <member name="M:SocketMeister.SocketClient.CloseSocketWithForce">
             <summary>
             Disconnect the socket. Note: This is performed in the background.
             </summary>
@@ -1071,7 +1081,7 @@
         </member>
         <member name="M:SocketMeister.SocketEndPoint.CloseSocket">
             <summary>
-            Closes the socket
+            Closes the socket forcefully. Not the ideal way to terminate a socket by needed when an error occurs and the state of the socket is 
             </summary>
         </member>
         <member name="T:SocketMeister.PolicyServer">

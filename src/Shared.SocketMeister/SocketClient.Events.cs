@@ -17,9 +17,7 @@ namespace SocketMeister
         /// <summary>
         /// Information provided when a SocketClient connection to a socket server changes status
         /// </summary>
-#pragma warning disable CA1034 // Nested types should not be visible
         public class ConnectionStatusChangedEventArgs : EventArgs
-#pragma warning restore CA1034 // Nested types should not be visible
         {
             private string _iPAddress = "";
             private readonly object _lock = new object();
@@ -96,13 +94,10 @@ namespace SocketMeister
 
 
 
-
         /// <summary>
         /// Values provided when a message is received from the socket server. 
         /// </summary>
-#pragma warning disable CA1034 // Nested types should not be visible
         public class MessageReceivedEventArgs : EventArgs
-#pragma warning restore CA1034 // Nested types should not be visible
         {
             private readonly object[] _parameters;
 
@@ -114,27 +109,21 @@ namespace SocketMeister
             /// <summary>
             /// The parameters provided with the message.
             /// </summary>
-#pragma warning disable CA1819 // Properties should not return arrays
             public object[] Parameters { get { return _parameters; } }
-#pragma warning restore CA1819 // Properties should not return arrays
         }
 
 
         /// <summary>
         /// Values provided when a request is received from a server. 
         /// </summary>
-#pragma warning disable CA1034 // Nested types should not be visible
         public class RequestReceivedEventArgs : MessageReceivedEventArgs
-#pragma warning restore CA1034 // Nested types should not be visible
         {
             internal RequestReceivedEventArgs(object[] Parameters) : base(Parameters) { }
 
             /// <summary>
             /// The byte array which is to be returned to the client. Null is returned if a 'Response' value is not provided when processing the 'RequestReceived' event.
             /// </summary>
-#pragma warning disable CA1819 // Properties should not return arrays
             public byte[] Response { get; set; } = null;
-#pragma warning restore CA1819 // Properties should not return arrays
         }
 
 
@@ -142,9 +131,7 @@ namespace SocketMeister
         /// <summary>
         /// Values provided when a message is received from the socket server. 
         /// </summary>
-#pragma warning disable CA1034 // Nested types should not be visible
         public class SubscriptionMessageReceivedEventArgs : EventArgs
-#pragma warning restore CA1034 // Nested types should not be visible
         {
             private readonly string _subscriptionName;
             private readonly object[] _parameters;
@@ -158,9 +145,7 @@ namespace SocketMeister
             /// <summary>
             /// The parameters provided with the message.
             /// </summary>
-#pragma warning disable CA1819 // Properties should not return arrays
             public object[] Parameters { get { return _parameters; } }
-#pragma warning restore CA1819 // Properties should not return arrays
 
             /// <summary>
             /// The name of the subscription 

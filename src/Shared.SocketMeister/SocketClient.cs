@@ -74,6 +74,11 @@ namespace SocketMeister
         public event EventHandler<ConnectionStatusChangedEventArgs> ConnectionStatusChanged;
 
         /// <summary>
+        /// Event raised when the current EndPoint channges
+        /// </summary>
+        public event EventHandler<EventArgs> CurrentEndPointChanged;
+
+        /// <summary>
         /// Event raised when an exception occurs
         /// </summary>
         public event EventHandler<ExceptionEventArgs> ExceptionRaised;
@@ -189,8 +194,7 @@ namespace SocketMeister
                 _receiveEngine = null; ;
                 foreach (SocketEndPoint ep in _endPoints)
                 {
-                    try { ep.CloseSocket(); }
-                    catch { }
+                    ep.Dispose();
                 }
                 _endPoints.Clear();
             }
@@ -248,10 +252,21 @@ namespace SocketMeister
             }
         }
 
-        private SocketEndPoint CurrentEndPoint
+        /// <summary>
+        /// The current socket endpoint which the client is using
+        /// </summary>
+        public SocketEndPoint CurrentEndPoint
         {
             get { lock (_lock) { return _currentEndPoint; } }
-            set { lock (_lock) { _currentEndPoint = value; } }
+            private set 
+            { 
+                lock (_lock) 
+                {
+                    if (_currentEndPoint == value) return;
+                    _currentEndPoint = value; 
+                }
+                CurrentEndPointChanged?.Invoke(this, new EventArgs());
+            }
         }
 
 
@@ -345,7 +360,7 @@ namespace SocketMeister
         /// <summary>
         /// Disconnect the socket. Note: This is performed in the background.
         /// </summary>
-        private void DisconnectSocket()
+        private void CloseSocketWithForce()
         {
             if (ConnectionStatus == ConnectionStatuses.Disconnecting || ConnectionStatus == ConnectionStatuses.Disconnected) return;
 
@@ -383,12 +398,8 @@ namespace SocketMeister
                 DateTime maxWait = DateTime.Now.AddSeconds(10);
                 while (IsBackgroundOperationsRunning == true && DateTime.Now < maxWait) { Thread.Sleep(100); }
 
-                //  SHUTDOWN THE ENDPOINT
-                try
-                {
-                    disconnectingEndPoint.CloseSocket();
-                }
-                catch { }
+                //  SHUTDOWN/CLOSE THE ENDPOINT SOCKET
+                disconnectingEndPoint.CloseSocket();
 
                 //  CLEANUP
                 try
@@ -519,7 +530,7 @@ namespace SocketMeister
                     {
                         IsBackgroundOperationsRunning = false;
                         NotifyExceptionRaised(new Exception("Disconnecting: Server failed to reply to polling after " + DISCONNECT_AFTER_NO_POLL_RESPONSE_SECONDS + " seconds."));
-                        DisconnectSocket();
+                        CloseSocketWithForce();
                         return;
                     }
 
@@ -695,7 +706,7 @@ namespace SocketMeister
         {
             byte[] sendBytes = MessageEngine.GenerateSendBytes(Message, false);
 
-            if (_connectionStatus != ConnectionStatuses.Connected || !_currentEndPoint.Socket.Connected) return;
+            if (_connectionStatus != ConnectionStatuses.Connected || !CurrentEndPoint.Socket.Connected) return;
 
             SocketAsyncEventArgs sendEventArgs = _sendEventArgsPool.Pop();
             if (sendEventArgs == null) return;
@@ -822,13 +833,13 @@ namespace SocketMeister
                 {
                     message.Status = MessageStatus.Unsent;
                     NotifyExceptionRaised(new Exception("Disconnecting: Connection was reset."));
-                    DisconnectSocket();
+                    CloseSocketWithForce();
                 }
                 else if (result != SocketError.Success)
                 {
                     message.Status = MessageStatus.Unsent;
                     NotifyExceptionRaised(new Exception("Disconnecting: Send did not generate a success. Socket operation returned error code " + (int)e.SocketError));
-                    DisconnectSocket();
+                    CloseSocketWithForce();
                 }
             }
             catch (Exception ex)
@@ -884,16 +895,7 @@ namespace SocketMeister
 
                 //  FINALIZE AND RE-ATTEMPT CONNECTION IS WE ARE NOT STOPPING
                 ConnectionStatus = ConnectionStatuses.Disconnected;
-
-                try
-                {
-#if SILVERLIGHT
-                socket.Close(); 
-#else
-                    CurrentEndPoint.Socket.Disconnect(true);
-#endif
-                }
-                catch { }
+                CurrentEndPoint.CloseSocket();
 
                 if (IsStopAllRequested == false) BgConnectToServer();
 
@@ -903,7 +905,7 @@ namespace SocketMeister
             if (e.SocketError != SocketError.Success)
             {
                 NotifyExceptionRaised(new Exception("Disconnecting: ProcessReceive received socket error code " + (int)e.SocketError));
-                DisconnectSocket();
+                CloseSocketWithForce();
                 return;
             }
 
@@ -1001,12 +1003,12 @@ namespace SocketMeister
                 //  IF A LARGE CHUNK OF DATA WAS BEING RECEIVED WHEN THE CONNECTION WAS LOST, THE Disconnect() ROUTINE
                 //  MAY ALREADY HAVE BEEN RUN (WHICH DISPOSES OBJECTS). IF THIS IS THE CASE, SIMPLY EXIT
                 NotifyExceptionRaised(new Exception("Disconnecting: ObjectDisposedException running ProcessReceive: " + ee.Message));
-                DisconnectSocket();
+                CloseSocketWithForce();
             }
             catch (Exception ex)
             {
                 NotifyExceptionRaised(new Exception("Disconnecting: Error running ProcessReceive: " + ex.Message));
-                DisconnectSocket();
+                CloseSocketWithForce();
             }
         }
 
