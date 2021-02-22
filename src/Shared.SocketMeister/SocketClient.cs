@@ -353,7 +353,8 @@ namespace SocketMeister
             //  2.   On the server, EndReceive returns 0 bytes read(the client signals there is no more data from its side)
             //  3.   The server A) sends its last data B) calls Shutdown(SocketShutdown.Send)) C) calls Close on the socket, optionally with a timeout to allow the data to be read from the client
             //  4.   The client A) reads the remaining data from the server and then receives 0 bytes(the server signals there is no more data from its side) B) calls Close on the socket
-            CurrentEndPoint.Socket.Shutdown(SocketShutdown.Send);
+            try { CurrentEndPoint.Socket.Shutdown(SocketShutdown.Send); }
+            catch { }
         }
 
 

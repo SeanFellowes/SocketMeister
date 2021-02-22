@@ -108,6 +108,9 @@ namespace SocketMeister
             _listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             _listener.Bind(_localEndPoint);
             _listener.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
+            _listener.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, 0);
+            _listener.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, 500);
+            _listener.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.SendTimeout, 500);
 
             //  REGISTER FOR EVENTS
             _connectedClients.ClientDisconnected += ConnectedClients_ClientDisconnected;
@@ -355,8 +358,6 @@ namespace SocketMeister
 
             //  CLOSE AND REMAINING CONNECTED CLIENTS (THERE SHOULD NORMALLY BE NONE)
             _connectedClients.DisconnectAll();
-
-
 
             try { _listener.Close(10); }
             catch (Exception ex)

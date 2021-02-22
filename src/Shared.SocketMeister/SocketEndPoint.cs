@@ -116,7 +116,11 @@ namespace SocketMeister
         internal IPEndPoint IPEndPoint { get { return _ipEndPoint; } }
 
 
-        private bool IsDisposed { get { lock (_lock) { return _isDisposed; } } set { lock (_lock) { _isDisposed = value; } } }
+        private bool IsDisposed 
+        { 
+            get { lock (_lock) { return _isDisposed; } } 
+            set { lock (_lock) { _isDisposed = value; } } 
+        }
 
         /// <summary>
         /// Port number of the socket listener to connect to
