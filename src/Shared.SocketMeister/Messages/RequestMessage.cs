@@ -6,7 +6,7 @@ using System.Threading;
 
 namespace SocketMeister.Messages
 {
-#if !SILVERLIGHT && !SMNOSERVER
+#if !SILVERLIGHT && !SMNOSERVER && !NET35 && !NET20
     internal partial class RequestMessage : MessageBase
     {
         private SocketServer.Client _remoteClient = null;

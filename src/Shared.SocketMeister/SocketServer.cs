@@ -1,7 +1,7 @@
 ﻿#pragma warning disable CA1031 // Do not catch general exception types
 #pragma warning disable CA1303 // Do not pass literals as localized parameters
 
-#if !SILVERLIGHT && !SMNOSERVER
+#if !SILVERLIGHT && !SMNOSERVER && !NET35 && !NET20
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -107,10 +107,9 @@ namespace SocketMeister
             // Create a TCP/IP socket.  
             _listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             _listener.Bind(_localEndPoint);
+            //  WARNING - DO NOT USE SocketOptionName.ReceiveTimeout OR SocketOptionName.SendTimeout. TRIED THIS AND IT COMPLETELY BROKE THIS FOR BIG DATA TRANSFERS
             _listener.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
             _listener.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, 0);
-            _listener.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, 500);
-            _listener.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.SendTimeout, 500);
 
             //  REGISTER FOR EVENTS
             _connectedClients.ClientDisconnected += ConnectedClients_ClientDisconnected;
@@ -207,7 +206,7 @@ namespace SocketMeister
 
 
 
-        #region Public Methods
+#region Public Methods
 
         /// <summary>
         /// Send a message to all connected clients. Exceptions will not halt this process, but generate 'ExceptionRaised' events. 
@@ -371,7 +370,7 @@ namespace SocketMeister
              ListenerState = SocketServerStatus.Stopped;
         }
 
-        #endregion
+#endregion
 
 
 

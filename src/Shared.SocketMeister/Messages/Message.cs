@@ -5,7 +5,7 @@ using System.Net.Sockets;
 
 namespace SocketMeister.Messages
 {
-#if !SILVERLIGHT && !SMNOSERVER
+#if !SILVERLIGHT && !SMNOSERVER && !NET35 && !NET20
     internal partial class Message
     {
         private SocketServer.Client _remoteClient = null;

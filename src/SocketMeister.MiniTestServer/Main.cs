@@ -35,6 +35,7 @@ namespace SocketMeister
             {
                 this.Top = 0;
                 this.Left = 0;
+                this.Width = 850;
                 lblStatus.Text = "";
 
                 dGrid.AutoGenerateColumns = false;

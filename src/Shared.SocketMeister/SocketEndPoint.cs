@@ -26,8 +26,9 @@ namespace SocketMeister
         private readonly string _iPAddress = null;
         private bool _isDisposed = false;
         private readonly object _lock = new object();
+        private readonly object _lockSocket = new object();
         private readonly ushort _port = 0;
-        private readonly Socket _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        private Socket _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
         /// <summary>
         /// Default constructor
@@ -132,21 +133,32 @@ namespace SocketMeister
         /// </summary>
         internal Socket Socket
         {
-            get { return _socket; } 
+            get { lock (_lockSocket) { return _socket; } }
+            private set {  lock (_lockSocket) { _socket = value; } }
         }
 
         /// <summary>
-        /// Closes the socket forcefully. Not the ideal way to terminate a socket by needed when an error occurs and the state of the socket is 
+        /// Closes the socket forcefully. 
         /// </summary>
-        public void CloseSocket()
+        /// <param name="CreateNewSocket">Use this on a clean disconnect from a server. It eliminates Windows 2 minute wait before a connection can occur again</param>
+        public void CloseSocket(bool CreateNewSocket = false)
         {
 #if SILVERLIGHT
-            try { _socket.Close(); }
+            try { Socket.Close(); }
             catch { }
 #else
-            try { _socket.Disconnect(true); }
+            try { Socket.Disconnect(true); }
             catch { }
 #endif
+            if (CreateNewSocket == true)
+            {
+#if !NET35 && !NET20
+                try { _socket.Dispose(); }
+                catch { }
+#endif
+
+                Socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            }
         }
 
 

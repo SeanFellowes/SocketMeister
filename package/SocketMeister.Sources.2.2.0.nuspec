@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>SocketMeister.Sources</id>
+    <version>2.2.0</version>
+    <title>SocketMeister C# Source Code</title>
+    <authors>Sean Fellowes</authors>
+    <owners>Sean Fellowes</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+    <icon>icon_128.png</icon>
+    <projectUrl>https://github.com/SeanFellowes/SocketMeister</projectUrl>
+    <description>C# source code for SocketMeister, which can be compiled  directly into your own projects. This eliminates the need to distribute SocketMeister.dll with your software.</description>
+    <summary>Performant TCP socket server and client for .NET</summary>
+    <releaseNotes>Fixed bug where timeout occurred during large data transfer. Reduced client reconnection time significantly where server is stopped then restarted. Code refactoring. SocketServer is no longer supported in .NET versions 3.5 or earlier due to differences between base socket.</releaseNotes>
+    <copyright>©2021 Sean Fellowes.</copyright>
+    <tags>TCP sockets source</tags>
+  </metadata>
+  <files>
+    <file src="content\App_Packages\SocketMeister.Sources.2.2.0\Messages\ClientDisconnectMessage.cs" target="content\App_Packages\SocketMeister.Sources.2.2.0\Messages\ClientDisconnectMessage.cs" />
+    <file src="content\App_Packages\SocketMeister.Sources.2.2.0\Messages\Enums.cs" target="content\App_Packages\SocketMeister.Sources.2.2.0\Messages\Enums.cs" />
+    <file src="content\App_Packages\SocketMeister.Sources.2.2.0\Messages\IMessage.cs" target="content\App_Packages\SocketMeister.Sources.2.2.0\Messages\IMessage.cs" />
+    <file src="content\App_Packages\SocketMeister.Sources.2.2.0\Messages\Message.cs" target="content\App_Packages\SocketMeister.Sources.2.2.0\Messages\Message.cs" />
+    <file src="content\App_Packages\SocketMeister.Sources.2.2.0\Messages\MessageBase.cs" target="content\App_Packages\SocketMeister.Sources.2.2.0\Messages\MessageBase.cs" />
+    <file src="content\App_Packages\SocketMeister.Sources.2.2.0\Messages\MessageEngine.CLZF2.cs" target="content\App_Packages\SocketMeister.Sources.2.2.0\Messages\MessageEngine.CLZF2.cs" />
+    <file src="content\App_Packages\SocketMeister.Sources.2.2.0\Messages\MessageEngine.cs" target="content\App_Packages\SocketMeister.Sources.2.2.0\Messages\MessageEngine.cs" />
+    <file src="content\App_Packages\SocketMeister.Sources.2.2.0\Messages\PollRequest.cs" target="content\App_Packages\SocketMeister.Sources.2.2.0\Messages\PollRequest.cs" />
+    <file src="content\App_Packages\SocketMeister.Sources.2.2.0\Messages\PollResponse.cs" target="content\App_Packages\SocketMeister.Sources.2.2.0\Messages\PollResponse.cs" />
+    <file src="content\App_Packages\SocketMeister.Sources.2.2.0\Messages\RequestMessage.cs" target="content\App_Packages\SocketMeister.Sources.2.2.0\Messages\RequestMessage.cs" />
+    <file src="content\App_Packages\SocketMeister.Sources.2.2.0\Messages\ResponseMessage.cs" target="content\App_Packages\SocketMeister.Sources.2.2.0\Messages\ResponseMessage.cs" />
+    <file src="content\App_Packages\SocketMeister.Sources.2.2.0\Messages\ServerStoppingMessage.cs" target="content\App_Packages\SocketMeister.Sources.2.2.0\Messages\ServerStoppingMessage.cs" />
+    <file src="content\App_Packages\SocketMeister.Sources.2.2.0\Messages\SubscriptionMessageV1.cs" target="content\App_Packages\SocketMeister.Sources.2.2.0\Messages\SubscriptionMessageV1.cs" />
+    <file src="content\App_Packages\SocketMeister.Sources.2.2.0\Messages\TokenChangesRequestV1.cs" target="content\App_Packages\SocketMeister.Sources.2.2.0\Messages\TokenChangesRequestV1.cs" />
+    <file src="content\App_Packages\SocketMeister.Sources.2.2.0\Messages\TokenChangesResponseV1.cs" target="content\App_Packages\SocketMeister.Sources.2.2.0\Messages\TokenChangesResponseV1.cs" />
+    <file src="content\App_Packages\SocketMeister.Sources.2.2.0\Constants.cs" target="content\App_Packages\SocketMeister.Sources.2.2.0\Constants.cs" />
+    <file src="content\App_Packages\SocketMeister.Sources.2.2.0\CrossDomainPolicy.xml" target="content\App_Packages\SocketMeister.Sources.2.2.0\CrossDomainPolicy.xml" />
+    <file src="content\App_Packages\SocketMeister.Sources.2.2.0\Enums.cs" target="content\App_Packages\SocketMeister.Sources.2.2.0\Enums.cs" />
+    <file src="content\App_Packages\SocketMeister.Sources.2.2.0\Exceptions.cs" target="content\App_Packages\SocketMeister.Sources.2.2.0\Exceptions.cs" />
+    <file src="content\App_Packages\SocketMeister.Sources.2.2.0\OpenRequestMessageCollection.cs" target="content\App_Packages\SocketMeister.Sources.2.2.0\OpenRequestMessageCollection.cs" />
+    <file src="content\App_Packages\SocketMeister.Sources.2.2.0\PolicyServer.cs" target="content\App_Packages\SocketMeister.Sources.2.2.0\PolicyServer.cs" />
+    <file src="content\App_Packages\SocketMeister.Sources.2.2.0\PolicyServer.Events.cs" target="content\App_Packages\SocketMeister.Sources.2.2.0\PolicyServer.Events.cs" />
+    <file src="content\App_Packages\SocketMeister.Sources.2.2.0\PolicyServer.Listener.cs" target="content\App_Packages\SocketMeister.Sources.2.2.0\PolicyServer.Listener.cs" />
+    <file src="content\App_Packages\SocketMeister.Sources.2.2.0\Serializer.cs" target="content\App_Packages\SocketMeister.Sources.2.2.0\Serializer.cs" />
+    <file src="content\App_Packages\SocketMeister.Sources.2.2.0\SocketAsyncEventArgsPool.cs" target="content\App_Packages\SocketMeister.Sources.2.2.0\SocketAsyncEventArgsPool.cs" />
+    <file src="content\App_Packages\SocketMeister.Sources.2.2.0\SocketClient.cs" target="content\App_Packages\SocketMeister.Sources.2.2.0\SocketClient.cs" />
+    <file src="content\App_Packages\SocketMeister.Sources.2.2.0\SocketClient.Enums.cs" target="content\App_Packages\SocketMeister.Sources.2.2.0\SocketClient.Enums.cs" />
+    <file src="content\App_Packages\SocketMeister.Sources.2.2.0\SocketClient.Events.cs" target="content\App_Packages\SocketMeister.Sources.2.2.0\SocketClient.Events.cs" />
+    <file src="content\App_Packages\SocketMeister.Sources.2.2.0\SocketEndPoint.cs" target="content\App_Packages\SocketMeister.Sources.2.2.0\SocketEndPoint.cs" />
+    <file src="content\App_Packages\SocketMeister.Sources.2.2.0\SocketServer.Client.cs" target="content\App_Packages\SocketMeister.Sources.2.2.0\SocketServer.Client.cs" />
+    <file src="content\App_Packages\SocketMeister.Sources.2.2.0\SocketServer.Clients.cs" target="content\App_Packages\SocketMeister.Sources.2.2.0\SocketServer.Clients.cs" />
+    <file src="content\App_Packages\SocketMeister.Sources.2.2.0\SocketServer.cs" target="content\App_Packages\SocketMeister.Sources.2.2.0\SocketServer.cs" />
+    <file src="content\App_Packages\SocketMeister.Sources.2.2.0\SocketServer.Events.cs" target="content\App_Packages\SocketMeister.Sources.2.2.0\SocketServer.Events.cs" />
+    <file src="content\App_Packages\SocketMeister.Sources.2.2.0\Token.cs" target="content\App_Packages\SocketMeister.Sources.2.2.0\Token.cs" />
+    <file src="content\App_Packages\SocketMeister.Sources.2.2.0\TokenChange.cs" target="content\App_Packages\SocketMeister.Sources.2.2.0\TokenChange.cs" />
+    <file src="content\App_Packages\SocketMeister.Sources.2.2.0\TokenChangeCollection.cs" target="content\App_Packages\SocketMeister.Sources.2.2.0\TokenChangeCollection.cs" />
+    <file src="content\App_Packages\SocketMeister.Sources.2.2.0\TokenCollection.cs" target="content\App_Packages\SocketMeister.Sources.2.2.0\TokenCollection.cs" />
+    <file src="content\App_Packages\SocketMeister.Sources.2.2.0\TokenCollectionReadOnly.cs" target="content\App_Packages\SocketMeister.Sources.2.2.0\TokenCollectionReadOnly.cs" />
+    <file src="icon_128.png" target="icon_128.png" />
+  </files>
+</package>

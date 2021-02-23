@@ -1,4 +1,4 @@
-﻿#if !SILVERLIGHT && !SMNOSERVER
+﻿#if !SILVERLIGHT && !SMNOSERVER && !NET35 && !NET20
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;

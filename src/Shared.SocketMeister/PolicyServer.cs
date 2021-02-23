@@ -1,7 +1,7 @@
 ﻿#pragma warning disable CA1031 // Do not catch general exception types
 #pragma warning disable CA1303 // Do not pass literals as localized parameters
 
-#if !SILVERLIGHT && !SMNOSERVER
+#if !SILVERLIGHT && !SMNOSERVER && !NET35 && !NET20
 using System;
 using System.Collections.Generic;
 using System.IO;

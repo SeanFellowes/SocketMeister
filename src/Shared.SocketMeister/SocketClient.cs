@@ -370,12 +370,12 @@ namespace SocketMeister
 
             ConnectionStatus = ConnectionStatuses.Disconnecting;
 
+            //  STOP BACKGROUND OPERATIONS
+            IsStopBackgroundOperationsRequested = true;
+
             Thread bgDisconnect = new Thread(
             new ThreadStart(delegate
             {
-                //  STOP BACKGROUND OPERATIONS
-                IsStopBackgroundOperationsRequested = true;
-
                 //  CLOSE OPEN REQUESTS
                 _openRequests.ResetToUnsent();
 
@@ -399,34 +399,39 @@ namespace SocketMeister
                 DateTime maxWait = DateTime.Now.AddSeconds(10);
                 while (IsBackgroundOperationsRunning == true && DateTime.Now < maxWait) { Thread.Sleep(100); }
 
-                //  SHUTDOWN/CLOSE THE ENDPOINT SOCKET
-                disconnectingEndPoint.CloseSocket();
-
-                //  CLEANUP
-                try
-                {
-                    if (_asyncEventArgsReceive != null)
-                    {
-                        _asyncEventArgsReceive.Completed -= new EventHandler<SocketAsyncEventArgs>(ProcessSend);
-                        _asyncEventArgsReceive.Dispose();
-                        _asyncEventArgsReceive = null;
-                    }
-                }
-                catch { }
-
-                //  CLOSE OPEN REQUESTS AGAIN!!! UNDER LOAD THE CLIENT CAN SUBMIT A REQUEST (BECAUSE OF CROSS THREADING)
-                _openRequests.ResetToUnsent();
-
-                //  FINALIZE AND RE-ATTEMPT CONNECTION IS WE ARE NOT STOPPING
-                ConnectionStatus = ConnectionStatuses.Disconnected;
-
-                if (IsStopAllRequested == false) BgConnectToServer();
-
+                //  COMPLETE CLOSING ACTIVITIES AND START RECONNECTING IF REQUIRED
+                CompleteSocketClosure(disconnectingEndPoint, false);
             }));
             bgDisconnect.IsBackground = true;
             bgDisconnect.Start();
         }
 
+
+        private void CompleteSocketClosure(SocketEndPoint EndPoint, bool CreateNewSocket)
+        {
+            //  CLEANUP _asyncEventArgsReceive
+            try
+            {
+                if (_asyncEventArgsReceive != null)
+                {
+                    _asyncEventArgsReceive.Completed -= new EventHandler<SocketAsyncEventArgs>(ProcessSend);
+                    _asyncEventArgsReceive.Dispose();
+                    _asyncEventArgsReceive = null;
+                }
+            }
+            catch { }
+
+            EndPoint.CloseSocket(CreateNewSocket);
+
+            //  CLOSE OPEN REQUESTS (AGAIN IN SOME CASES). UNDER LOAD THE CLIENT CAN SUBMIT A REQUEST (BECAUSE OF CROSS THREADING)
+            _openRequests.ResetToUnsent();
+
+            //  FINALIZE AND RE-ATTEMPT CONNECTION IS WE ARE NOT STOPPING
+            ConnectionStatus = ConnectionStatuses.Disconnected;
+
+            //  RECONNECT
+            if (IsStopAllRequested == false) BgConnectToServer();
+        }
 
 
 
@@ -883,22 +888,8 @@ namespace SocketMeister
                 //  3.   The server A) sends its last data B) calls Shutdown(SocketShutdown.Send)) C) calls Close on the socket, optionally with a timeout to allow the data to be read from the client
                 //  4. * The client A) reads the remaining data from the server and then receives 0 bytes(the server signals there is no more data from its side) B) calls Close on the socket
 
-                //  CLEANUP
-                if (_asyncEventArgsReceive != null)
-                {
-                    _asyncEventArgsReceive.Completed -= new EventHandler<SocketAsyncEventArgs>(ProcessSend);
-                    _asyncEventArgsReceive.Dispose();
-                    _asyncEventArgsReceive = null;
-                }
-
-                //  CLOSE OPEN REQUESTS AGAIN!!! UNDER LOAD THE CLIENT CAN SUBMIT A REQUEST (BECAUSE OF CROSS THREADING)
-                _openRequests.ResetToUnsent();
-
-                //  FINALIZE AND RE-ATTEMPT CONNECTION IS WE ARE NOT STOPPING
-                ConnectionStatus = ConnectionStatuses.Disconnected;
-                CurrentEndPoint.CloseSocket();
-
-                if (IsStopAllRequested == false) BgConnectToServer();
+                //  COMPLETE CLOSING ACTIVITIES AND START RECONNECTING IF REQUIRED
+                CompleteSocketClosure(CurrentEndPoint, true);
 
                 return;
             }

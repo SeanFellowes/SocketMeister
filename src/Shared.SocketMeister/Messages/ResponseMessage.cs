@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SocketMeister.Messages
 {
-#if !SILVERLIGHT && !SMNOSERVER
+#if !SILVERLIGHT && !SMNOSERVER && !NET35 && !NET20
     internal partial class ResponseMessage : MessageBase
     {
         private SocketServer.Client _remoteClient = null;

@@ -1,6 +1,6 @@
 ﻿using System;
 
-#if !SILVERLIGHT && !SMNOSERVER
+#if !SILVERLIGHT && !SMNOSERVER && !NET35 && !NET20
 
 namespace SocketMeister
 {

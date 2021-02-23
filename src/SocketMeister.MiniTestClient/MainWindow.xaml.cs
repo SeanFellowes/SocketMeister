@@ -64,7 +64,9 @@ namespace SocketMeister.MiniTestClient
                 InitializeComponent();
 
                 this.Top = 0;
-                this.Left = 950;
+                this.Left = 850;
+                this.Height = 900;
+                this.Visibility = Visibility.Visible;
 
                 lvLog.ItemsSource = _log;
             }
@@ -157,6 +159,20 @@ namespace SocketMeister.MiniTestClient
                 if (ClientsSlider.Value > 3) _clients.Add(Client4);
                 if (ClientsSlider.Value > 4) _clients.Add(Client5);
                 if (ClientsSlider.Value > 5) _clients.Add(Client6);
+                if (ClientsSlider.Value > 6) _clients.Add(Client7);
+                if (ClientsSlider.Value > 7) _clients.Add(Client8);
+                if (ClientsSlider.Value > 8) _clients.Add(Client9);
+                if (ClientsSlider.Value > 9) _clients.Add(Client10);
+                if (ClientsSlider.Value > 10) _clients.Add(Client11);
+                if (ClientsSlider.Value > 11) _clients.Add(Client12);
+                if (ClientsSlider.Value > 12) _clients.Add(Client13);
+                if (ClientsSlider.Value > 13) _clients.Add(Client14);
+                if (ClientsSlider.Value > 14) _clients.Add(Client15);
+                if (ClientsSlider.Value > 15) _clients.Add(Client16);
+                if (ClientsSlider.Value > 16) _clients.Add(Client17);
+                if (ClientsSlider.Value > 17) _clients.Add(Client18);
+                if (ClientsSlider.Value > 18) _clients.Add(Client19);
+                if (ClientsSlider.Value > 19) _clients.Add(Client20);
 
                 foreach (ClientControl Client in _clients)
                 {

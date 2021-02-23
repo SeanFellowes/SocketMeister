@@ -1079,10 +1079,11 @@
             TCP Socket in use for the current destination.
             </summary>
         </member>
-        <member name="M:SocketMeister.SocketEndPoint.CloseSocket">
+        <member name="M:SocketMeister.SocketEndPoint.CloseSocket(System.Boolean)">
             <summary>
-            Closes the socket forcefully. Not the ideal way to terminate a socket by needed when an error occurs and the state of the socket is 
+            Closes the socket forcefully. 
             </summary>
+            <param name="CreateNewSocket">Use this on a clean disconnect from a server. It eliminates Windows 2 minute wait before a connection can occur again</param>
         </member>
         <member name="T:SocketMeister.PolicyServer">
             <summary>
