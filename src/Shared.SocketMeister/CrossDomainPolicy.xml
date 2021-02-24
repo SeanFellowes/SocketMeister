@@ -6,11 +6,11 @@
         <domain uri="*"/>
       </allow-from>
       <grant-to>
-       <!-- Silverlight only support a port range from 4502 to 4532
+       <!-- Silverlight only support a port range from 4502 to 4534
             port="4505" - Allows Silverlight to access only the single port 4505 
             port="4503-4512" - Allows Silverlight to access ports 4503 to 4512 
-            port="4502-4532" - Allows Silverlight to access all supported Silverlight ports /> -->
-       <socket-resource port="4502-4532" protocol="tcp" />
+            port="4502-4534" - Allows Silverlight to access all supported Silverlight ports /> -->
+       <socket-resource port="4502-4534" protocol="tcp" />
       </grant-to>
     </policy>
   </cross-domain-access>
