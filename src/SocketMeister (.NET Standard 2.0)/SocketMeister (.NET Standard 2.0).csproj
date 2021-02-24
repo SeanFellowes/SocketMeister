@@ -11,7 +11,7 @@
     <RepositoryUrl>https://github.com/SeanFellowes/SocketMeister</RepositoryUrl>
     <PackageTags>tcp socket</PackageTags>
     <Company>Sean Fellowes</Company>
-    <PackageReleaseNotes>Fixed bug where timeout occurred during large data transfer. Reduced client reconnection time significantly where server is stopped then restarted. Code refactoring. SocketServer is no longer supported in .NET versions 3.5 or earlier due to differences between base socket.</PackageReleaseNotes>
+    <PackageReleaseNotes>Fixed serious bug where SocketServer and SocketClient were not accessible in .Net Core 3.1 DLLs. Minor fix whereby socket was closed for reuse in circumstances it was not being reused. Improvements to SocketMeister test suite. Test components for Silverlight.</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseUrl></PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
@@ -20,9 +20,9 @@
     <DocumentationFile>C:\Users\sfell\Source\Repos\SeanFellowes\SocketMeister\src\SocketMeister (.NET Standard 2.0)\SocketMeister.xml</DocumentationFile>
     <PackageIcon>icon_128.png</PackageIcon>
     <SelfContained>true</SelfContained>
-    <Version>2.2.0</Version>
-    <AssemblyVersion>2.2.0.0</AssemblyVersion>
-    <FileVersion>2.2.0.0</FileVersion>
+    <Version>2.2.1</Version>
+    <AssemblyVersion>2.2.1.0</AssemblyVersion>
+    <FileVersion>2.2.1.0</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net35|AnyCPU'">
