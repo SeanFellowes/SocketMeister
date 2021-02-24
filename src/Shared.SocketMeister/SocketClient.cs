@@ -422,7 +422,7 @@ namespace SocketMeister
             catch { }
 
 #if SILVERLIGHT
-            try { Socket.Close(); }
+            try { EndPoint.Socket.Close(); }
             catch { }
 #else
             try 
