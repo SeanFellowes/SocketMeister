@@ -194,8 +194,8 @@ namespace SocketMeister
         {
             Dispatcher.BeginInvoke(() =>
             {
-                if (e.Status == SocketClient.ConnectionStatuses.Connected) bdStatus.Background = new SolidColorBrush(Colors.Green);
-                else if (e.Status == SocketClient.ConnectionStatuses.Disconnected) bdStatus.Background = new SolidColorBrush(Colors.Red);
+                if (_client.ConnectionStatus == SocketClient.ConnectionStatuses.Connected) bdStatus.Background = new SolidColorBrush(Colors.Green);
+                else if (_client.ConnectionStatus == SocketClient.ConnectionStatuses.Disconnected) bdStatus.Background = new SolidColorBrush(Colors.Red);
                 else bdStatus.Background = new SolidColorBrush(Colors.Orange);
             });
             StatusChanged?.Invoke(this, new EventArgs());
