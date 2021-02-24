@@ -38,15 +38,14 @@
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.tbMessageText = new System.Windows.Forms.TextBox();
             this.pnlDiagnostics = new System.Windows.Forms.Panel();
-            this.ucSocketServer2 = new SocketMeister.ucSocketServer();
-            this.ucSocketServer1 = new SocketMeister.ucSocketServer();
             this.dGrid = new System.Windows.Forms.DataGridView();
             this.TimeStamp = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Type = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Server = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.MessageID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Message = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
+            this.ucSocketServer2 = new SocketMeister.ucSocketServer();
+            this.ucSocketServer1 = new SocketMeister.ucSocketServer();
             this.pnlFooter.SuspendLayout();
             this.panelOuter.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -138,28 +137,6 @@
             this.pnlDiagnostics.Size = new System.Drawing.Size(403, 404);
             this.pnlDiagnostics.TabIndex = 42;
             // 
-            // ucSocketServer2
-            // 
-            this.ucSocketServer2.Location = new System.Drawing.Point(9, 206);
-            this.ucSocketServer2.MessageText = null;
-            this.ucSocketServer2.Name = "ucSocketServer2";
-            this.ucSocketServer2.NextAutomatedSend = new System.DateTime(2021, 1, 20, 11, 33, 38, 463);
-            this.ucSocketServer2.Port = 4506;
-            this.ucSocketServer2.ServerId = 2;
-            this.ucSocketServer2.Size = new System.Drawing.Size(384, 193);
-            this.ucSocketServer2.TabIndex = 1;
-            // 
-            // ucSocketServer1
-            // 
-            this.ucSocketServer1.Location = new System.Drawing.Point(10, 6);
-            this.ucSocketServer1.MessageText = null;
-            this.ucSocketServer1.Name = "ucSocketServer1";
-            this.ucSocketServer1.NextAutomatedSend = new System.DateTime(2021, 1, 20, 11, 33, 38, 467);
-            this.ucSocketServer1.Port = 4505;
-            this.ucSocketServer1.ServerId = 1;
-            this.ucSocketServer1.Size = new System.Drawing.Size(384, 196);
-            this.ucSocketServer1.TabIndex = 0;
-            // 
             // dGrid
             // 
             this.dGrid.AllowUserToAddRows = false;
@@ -214,6 +191,28 @@
             this.Message.Name = "Message";
             this.Message.Width = 74;
             // 
+            // ucSocketServer2
+            // 
+            this.ucSocketServer2.Location = new System.Drawing.Point(9, 206);
+            this.ucSocketServer2.MessageText = null;
+            this.ucSocketServer2.Name = "ucSocketServer2";
+            this.ucSocketServer2.NextAutomatedSend = new System.DateTime(2021, 1, 20, 11, 33, 38, 463);
+            this.ucSocketServer2.Port = 4506;
+            this.ucSocketServer2.ServerId = 2;
+            this.ucSocketServer2.Size = new System.Drawing.Size(384, 193);
+            this.ucSocketServer2.TabIndex = 1;
+            // 
+            // ucSocketServer1
+            // 
+            this.ucSocketServer1.Location = new System.Drawing.Point(10, 6);
+            this.ucSocketServer1.MessageText = null;
+            this.ucSocketServer1.Name = "ucSocketServer1";
+            this.ucSocketServer1.NextAutomatedSend = new System.DateTime(2021, 1, 20, 11, 33, 38, 467);
+            this.ucSocketServer1.Port = 4505;
+            this.ucSocketServer1.ServerId = 1;
+            this.ucSocketServer1.Size = new System.Drawing.Size(384, 196);
+            this.ucSocketServer1.TabIndex = 0;
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -227,7 +226,7 @@
             this.Name = "Main";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
-            this.Text = "SocketMeister Mini Test Server 2.0.7";
+            this.Text = "SocketMeister Mini Test Server 2.2.1";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Main_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Main_FormClosed);
             this.pnlFooter.ResumeLayout(false);
@@ -248,7 +247,6 @@
         private System.Windows.Forms.Label lblStatus;
         private System.Windows.Forms.Panel panelOuter;
         private System.Windows.Forms.Panel pnlDiagnostics;
-        private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.TextBox tbMessageText;

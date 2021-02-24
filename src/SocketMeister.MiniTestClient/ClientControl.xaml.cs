@@ -163,19 +163,8 @@ namespace SocketMeister.MiniTestClient
         }
 
 
-        public void Start(int NumberOfEndpoints)
+        public void Start(List<SocketEndPoint> eps)
         {
-            List<SocketEndPoint> eps = new List<SocketEndPoint>();
-
-            SocketEndPoint ep1 = new SocketEndPoint("127.0.0.1", 4505);
-            eps.Add(ep1);
-
-            if (NumberOfEndpoints == 2)
-            {
-                SocketEndPoint ep2 = new SocketEndPoint("127.0.0.1", 4506);
-                eps.Add(ep2);
-            }
-
             _client = new SocketClient(eps, true);
             _client.ConnectionStatusChanged += Client_ConnectionStatusChanged;
             _client.CurrentEndPointChanged += Client_CurrentEndPointChanged;
@@ -192,15 +181,19 @@ namespace SocketMeister.MiniTestClient
         {
             if (_client == null) throw new Exception("Client has not been started");
 
+            //bdStatus.Background = new SolidColorBrush(Colors.Orange);
+
             _client.Stop();
-            _client.ConnectionStatusChanged -= Client_ConnectionStatusChanged;
-            _client.CurrentEndPointChanged -= Client_CurrentEndPointChanged;
-            _client.ExceptionRaised -= Client_ExceptionRaised;
-            _client.MessageReceived -= Client_MessageReceived;
-            _client.RequestReceived -= Client_RequestReceived;
-            _client.ServerStopping -= Client_ServerStopping;
-            _client.SubscriptionMessageReceived -= Client_SubscriptionMessageReceived;
+            ////_client.ConnectionStatusChanged -= Client_ConnectionStatusChanged;
+            //_client.CurrentEndPointChanged -= Client_CurrentEndPointChanged;
+            //_client.ExceptionRaised -= Client_ExceptionRaised;
+            //_client.MessageReceived -= Client_MessageReceived;
+            //_client.RequestReceived -= Client_RequestReceived;
+            //_client.ServerStopping -= Client_ServerStopping;
+            //_client.SubscriptionMessageReceived -= Client_SubscriptionMessageReceived;
             _client.Dispose();
+
+            //bdStatus.Background = new SolidColorBrush(Colors.Red);
         }
 
         private void Client_ConnectionStatusChanged(object sender, SocketClient.ConnectionStatusChangedEventArgs e)

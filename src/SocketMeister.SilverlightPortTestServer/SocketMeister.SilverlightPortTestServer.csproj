@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <RootNamespace>SocketMeister</RootNamespace>
+    <ApplicationIcon>Test01.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SocketMeister (.NET Standard 2.0)\SocketMeister (.NET Standard 2.0).csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="ucSocketServer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="ucSocketServer.Designer.cs">
+      <DependentUpon>ucSocketServer.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="ucSocketServer.resx">
+      <DependentUpon>ucSocketServer.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>

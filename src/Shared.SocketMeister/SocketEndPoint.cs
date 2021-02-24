@@ -134,33 +134,18 @@ namespace SocketMeister
         internal Socket Socket
         {
             get { lock (_lockSocket) { return _socket; } }
-            private set {  lock (_lockSocket) { _socket = value; } }
         }
 
         /// <summary>
-        /// Closes the socket forcefully. 
+        /// Creates a new socket.
         /// </summary>
-        /// <param name="CreateNewSocket">Use this on a clean disconnect from a server. It eliminates Windows 2 minute wait before a connection can occur again</param>
-        public void CloseSocket(bool CreateNewSocket = false)
+        internal void RecreateSocket()
         {
-#if SILVERLIGHT
-            try { Socket.Close(); }
-            catch { }
-#else
-            try { Socket.Disconnect(true); }
-            catch { }
-#endif
-            if (CreateNewSocket == true)
+            lock (_lockSocket)
             {
-#if !NET35 && !NET20
-                try { _socket.Dispose(); }
-                catch { }
-#endif
-
-                Socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             }
         }
-
 
     }
 }

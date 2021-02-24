@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -56,6 +57,7 @@ namespace SocketMeister.MiniTestClient
         DispatcherTimer _dispatcherTimer = new DispatcherTimer(); 
         List<ClientControl> _clients = new List<ClientControl>();
         ObservableCollection<LogItem> _log = new ObservableCollection<LogItem>();
+        bool _windowClosingProcessed = false;
 
         public MainWindow()
         {
@@ -67,6 +69,7 @@ namespace SocketMeister.MiniTestClient
                 this.Left = 850;
                 this.Height = 900;
                 this.Visibility = Visibility.Visible;
+                IPAddress.Text = "127.0.0.1";
 
                 lvLog.ItemsSource = _log;
             }
@@ -129,10 +132,53 @@ namespace SocketMeister.MiniTestClient
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            _dispatcherTimer.Stop();
-            foreach (ClientControl c in _clients)
+            if (_windowClosingProcessed == false)
             {
-                c.Stop();
+                _windowClosingProcessed = true;
+                _dispatcherTimer.Stop();
+                foreach (ClientControl c in _clients)
+                {
+                    Thread bgClose = new Thread(
+                    new ThreadStart(delegate
+                    {
+                        c.Stop();
+                    }));
+                    bgClose.IsBackground = true;
+                    bgClose.Start();
+                }
+
+                Thread bgWaitForClose = new Thread(
+                new ThreadStart(delegate
+                {
+                    DateTime maxWait = DateTime.Now.AddSeconds(15);
+                    while (DateTime.Now < maxWait && true == true)
+                    {
+                        bool allClosed = true;
+
+                        foreach (ClientControl c in _clients)
+                        {
+                            if (c.Status != SocketClient.ConnectionStatuses.Disconnected)
+                            {
+                                allClosed = false;
+                                break;
+                            }
+                        }
+
+                        if (allClosed == true) break;
+
+                        Thread.Sleep(250);
+                    }
+
+                    Dispatcher.Invoke(() =>
+                    {
+                        App.Current.Shutdown();
+                    });
+                }));
+                bgWaitForClose.IsBackground = true;
+                bgWaitForClose.Start();
+
+
+                e.Cancel = true;
             }
         }
 
@@ -182,8 +228,18 @@ namespace SocketMeister.MiniTestClient
                     Client.ServerStopping += Client_ServerStopping;
                     Client.SubscriptionMessageReceived += Client_SubscriptionMessageReceived;
 
-                    if (EndpointRB1.IsChecked == true) Client.Start(1);
-                    else Client.Start(2);
+                    List<SocketEndPoint> eps = new List<SocketEndPoint>();
+
+                    SocketEndPoint ep1 = new SocketEndPoint(IPAddress.Text, 4505);
+                    eps.Add(ep1);
+
+                    if (EndpointRB2.IsChecked == true)
+                    {
+                        SocketEndPoint ep2 = new SocketEndPoint(IPAddress.Text, 4506);
+                        eps.Add(ep2);
+                    }
+
+                    Client.Start(eps);
                 }
 
                 _dispatcherTimer.Tick += _dispatcherTimer_Tick;
@@ -194,6 +250,7 @@ namespace SocketMeister.MiniTestClient
                 EndpointRB2.IsEnabled = false;
                 StartBtn.IsEnabled = false;
                 ClientsSlider.IsEnabled = false;
+                IPAddress.IsEnabled = false;
             }
             catch (Exception ex)
             {

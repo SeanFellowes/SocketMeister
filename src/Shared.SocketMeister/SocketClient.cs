@@ -421,7 +421,26 @@ namespace SocketMeister
             }
             catch { }
 
-            EndPoint.CloseSocket(CreateNewSocket);
+#if SILVERLIGHT
+            try { Socket.Close(); }
+            catch { }
+#else
+            try 
+            { 
+                if (IsStopAllRequested == true) EndPoint.Socket.Disconnect(false);
+                else if (CreateNewSocket == true) EndPoint.Socket.Disconnect(false); 
+                else EndPoint.Socket.Disconnect(true);
+            }
+            catch { }
+#endif
+            if (CreateNewSocket == true)
+            {
+#if !NET35 && !NET20
+                try { EndPoint.Socket.Dispose(); }
+                catch { }
+#endif
+                EndPoint.RecreateSocket();
+            }
 
             //  CLOSE OPEN REQUESTS (AGAIN IN SOME CASES). UNDER LOAD THE CLIENT CAN SUBMIT A REQUEST (BECAUSE OF CROSS THREADING)
             _openRequests.ResetToUnsent();

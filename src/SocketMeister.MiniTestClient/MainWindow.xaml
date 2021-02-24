@@ -24,11 +24,20 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
             <Border Grid.Row="2" Grid.Column="0" Margin="3" Background="Beige" BorderBrush="Black" BorderThickness="1" >
+                <StackPanel Name="IPAddressStackPanel" Orientation="Horizontal" Margin="3" VerticalAlignment="Center">
+                    <TextBlock VerticalAlignment="Center" TextAlignment="Left" HorizontalAlignment="Center">Server IP Address:</TextBlock>
+                    <TextBox x:Name="IPAddress" Margin="6,0" Width="100">127.127.127.127</TextBox>
+                </StackPanel>
+            </Border>
+
+
+            <Border Grid.Row="2" Grid.Column="1" Margin="3" Background="Beige" BorderBrush="Black" BorderThickness="1" >
                 <StackPanel Name="EndPointStackPanal" Orientation="Horizontal" Margin="3" VerticalAlignment="Center">
                     <TextBlock VerticalAlignment="Center" TextAlignment="Left" HorizontalAlignment="Center"># of endpoints to use:</TextBlock>
                     <RadioButton x:Name="EndpointRB1" Margin="6,0,0,0" VerticalContentAlignment="Center" VerticalAlignment="Center">1</RadioButton>
@@ -36,7 +45,7 @@
                 </StackPanel>
             </Border>
 
-            <Border Grid.Row="2" Grid.Column="1" Margin="3" Background="Beige" BorderBrush="Black" BorderThickness="1" >
+            <Border Grid.Row="2" Grid.Column="2" Margin="3" Background="Beige" BorderBrush="Black" BorderThickness="1" >
                 <StackPanel Name="ClientsStackPanal" Orientation="Horizontal" Margin="3" VerticalAlignment="Center">
                     <TextBlock VerticalAlignment="Center" TextAlignment="Left" HorizontalAlignment="Center"># of clients:</TextBlock>
                     <Slider x:Name="ClientsSlider" Margin="6,0,6,0" Width="60" Minimum="1" Maximum="20" Value="20" SmallChange="1" LargeChange="2" ValueChanged="ClientsSlider_ValueChanged" Interval="1" TickPlacement="BottomRight" Delay="503" IsSnapToTickEnabled="True" />
@@ -44,7 +53,7 @@
                 </StackPanel>
             </Border>
 
-            <Button Grid.Row="4" Grid.Column="3" Name="StartBtn" Margin="3,3" Width="60" Click="StartBtn_Click">Start</Button>
+            <Button Grid.Row="4" Grid.Column="4" Name="StartBtn" Margin="3,3" Width="60" Click="StartBtn_Click">Start</Button>
         </Grid>
 
         <!-- ROW 0 - CLIENT STATS + FUTURE USE-->
