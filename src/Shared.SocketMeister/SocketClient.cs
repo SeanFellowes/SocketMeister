@@ -53,10 +53,8 @@ namespace SocketMeister
 #pragma warning restore IDE0052 // Remove unread private members
 #pragma warning restore IDE0044 // Add readonly modifier
         private readonly List<SocketEndPoint> _endPoints = null;
-        private bool _isBackgroundConnectRunning;
-        private bool _isBackgroundOperationsRunning;
-        private bool _isStopAllRequested;
-        private bool _isStopBackgroundOperationsRequested;
+        private bool _isBackgroundConnectThreadRunning;
+        private bool _isBackgroundOperationsThreadRunning;
         private DateTime _lastPollResponse = DateTime.Now;
         private readonly object _lock = new object();
         private DateTime? _lastMessageFromServer = null;
@@ -67,6 +65,8 @@ namespace SocketMeister
         private readonly Random _randomizer = new Random();
         private MessageEngine _receiveEngine;
         private readonly SocketAsyncEventArgsPool _sendEventArgsPool;
+        private bool _stopAllBackgroundThreads;
+        private bool _stopClientPermanently;
 
         /// <summary>
         /// Event raised when a status of a socket connection has changed
@@ -213,10 +213,10 @@ namespace SocketMeister
         /// <summary>
         /// The last time any contact was received from the server. This includes polling request/responses, instigated intermittently from the client.
         /// </summary>
-        public DateTime? LastMessageFromServer 
-        { 
-            get { lock(_lock) { return _lastMessageFromServer; } } 
-            private set {  lock(_lock) { _lastMessageFromServer = value; } }
+        public DateTime? LastMessageFromServer
+        {
+            get { lock (_lock) { return _lastMessageFromServer; } }
+            private set { lock (_lock) { _lastMessageFromServer = value; } }
         }
 
         /// <summary>
@@ -258,25 +258,21 @@ namespace SocketMeister
         public SocketEndPoint CurrentEndPoint
         {
             get { lock (_lock) { return _currentEndPoint; } }
-            private set 
-            { 
-                lock (_lock) 
+            private set
+            {
+                lock (_lock)
                 {
                     if (_currentEndPoint == value) return;
-                    _currentEndPoint = value; 
+                    _currentEndPoint = value;
                 }
                 CurrentEndPointChanged?.Invoke(this, new EventArgs());
             }
         }
 
 
-        private bool IsBackgroundConnectRunning { get { lock (_lock) { return _isBackgroundConnectRunning; } } set { lock (_lock) { _isBackgroundConnectRunning = value; } } }
+        private bool IsBackgroundConnectRunning { get { lock (_lock) { return _isBackgroundConnectThreadRunning; } } set { lock (_lock) { _isBackgroundConnectThreadRunning = value; } } }
 
-        private bool IsBackgroundOperationsRunning { get { lock (_lock) { return _isBackgroundOperationsRunning; } } set { lock (_lock) { _isBackgroundOperationsRunning = value; } } }
-
-        private bool IsStopAllRequested { get { lock (_lock) { return _isStopAllRequested; } } set { lock (_lock) { _isStopAllRequested = value; } } }
-
-        private bool IsStopBackgroundOperationsRequested { get { lock (_lock) { return _isStopBackgroundOperationsRequested; } } set { lock (_lock) { _isStopBackgroundOperationsRequested = value; } } }
+        private bool IsBackgroundOperationsRunning { get { lock (_lock) { return _isBackgroundOperationsThreadRunning; } } set { lock (_lock) { _isBackgroundOperationsThreadRunning = value; } } }
 
         /// <summary>
         /// The last time a polling response was received from the socket server.
@@ -290,11 +286,14 @@ namespace SocketMeister
 
         private DateTime NextSendSubscriptions { get { lock (_lock) { return _nextSendSubscriptions; } } set { lock (_lock) { _nextSendSubscriptions = value; } } }
 
+        private bool StopAllBackgroundThreads { get { lock (_lock) { return _stopAllBackgroundThreads; } } set { lock (_lock) { _stopAllBackgroundThreads = value; } } }
+
+        private bool StopClientPermanently { get { lock (_lock) { return _stopClientPermanently; } } set { lock (_lock) { _stopClientPermanently = value; } } }
+
         /// <summary>
         /// The number of subscriptions for this client
         /// </summary>
         public int SubscriptionCount { get { return _subscriptions.Count; } }
-
 
         /// <summary>
         /// Whether a subscription exists. 
@@ -339,14 +338,13 @@ namespace SocketMeister
         {
             //  INITIATE SHUTDOWN
             ConnectionStatus = ConnectionStatuses.Disconnecting;
-            IsStopBackgroundOperationsRequested = true;
+            StopAllBackgroundThreads = true;
 
             //  CLOSE OPEN REQUESTS
             _openRequests.ResetToUnsent();
 
-            //  ENSURE BACKGROUND POLLING HAS STOPPED
-            DateTime maxWait = DateTime.Now.AddSeconds(10);
-            while (IsBackgroundOperationsRunning == true && DateTime.Now < maxWait) { Thread.Sleep(100); }
+            //  ENSURE BACKGROUND THREADS HAVE STOPPED
+            EnsureBackgroundThreadsHaveStopped();
 
             //  A GRACEFUL CLOSE SHOULD OCCUR LIKE THIS (* IS THIS STEP/S)
             //  1. * The client socket calls Shutdown(SocketShutdown.Send)) but should keep receiving
@@ -370,8 +368,8 @@ namespace SocketMeister
 
             ConnectionStatus = ConnectionStatuses.Disconnecting;
 
-            //  STOP BACKGROUND OPERATIONS
-            IsStopBackgroundOperationsRequested = true;
+            //  SET BACKGROUND THREADS TO STOP
+            StopAllBackgroundThreads = true;
 
             Thread bgDisconnect = new Thread(
             new ThreadStart(delegate
@@ -395,15 +393,26 @@ namespace SocketMeister
                     }
                 }
 
-                //  ENSURE BACKGROUND POLLING HAS STOPPED
-                DateTime maxWait = DateTime.Now.AddSeconds(10);
-                while (IsBackgroundOperationsRunning == true && DateTime.Now < maxWait) { Thread.Sleep(100); }
-
                 //  COMPLETE CLOSING ACTIVITIES AND START RECONNECTING IF REQUIRED
+                EnsureBackgroundThreadsHaveStopped();
                 CompleteSocketClosure(disconnectingEndPoint, false);
             }));
+
             bgDisconnect.IsBackground = true;
             bgDisconnect.Start();
+
+            EnsureBackgroundThreadsHaveStopped();
+        }
+
+
+        private void EnsureBackgroundThreadsHaveStopped()
+        {
+            //  SHOULD NOT HAPPEN BUT JUST TO MAKE SURE
+            if (StopAllBackgroundThreads == false) StopAllBackgroundThreads = true;
+
+            //  WAIT UP TO 15 SECONDS FOR BACKGROUND THREADS TO STOP
+            DateTime maxWait = DateTime.Now.AddSeconds(15);
+            while ((IsBackgroundOperationsRunning == true || IsBackgroundConnectRunning == true) && DateTime.Now < maxWait) { Thread.Sleep(100); }
         }
 
 
@@ -425,10 +434,10 @@ namespace SocketMeister
             try { EndPoint.Socket.Close(); }
             catch { }
 #else
-            try 
-            { 
-                if (IsStopAllRequested == true) EndPoint.Socket.Disconnect(false);
-                else if (CreateNewSocket == true) EndPoint.Socket.Disconnect(false); 
+            try
+            {
+                if (StopClientPermanently == true) EndPoint.Socket.Disconnect(false);
+                else if (CreateNewSocket == true) EndPoint.Socket.Disconnect(false);
                 else EndPoint.Socket.Disconnect(true);
             }
             catch { }
@@ -449,7 +458,7 @@ namespace SocketMeister
             ConnectionStatus = ConnectionStatuses.Disconnected;
 
             //  RECONNECT
-            if (IsStopAllRequested == false) BgConnectToServer();
+            if (StopClientPermanently == false) BgConnectToServer();
         }
 
 
@@ -461,14 +470,14 @@ namespace SocketMeister
         {
             lock (_lock)
             {
-                if (_isBackgroundConnectRunning == true) return;
-                _isBackgroundConnectRunning = true;
+                if (_isBackgroundConnectThreadRunning == true) return;
+                _isBackgroundConnectThreadRunning = true;
             }
             ConnectionStatus = ConnectionStatuses.Connecting;
 
             Thread bgConnect = new Thread(new ThreadStart(delegate
             {
-                while (IsStopAllRequested == false)
+                while (StopClientPermanently == false)
                 {
                     try
                     {
@@ -507,7 +516,9 @@ namespace SocketMeister
                     Thread.Sleep(500);
                 }
                 IsBackgroundConnectRunning = false;
+#if DEBUG
                 Console.WriteLine("Exiting BgConnectToServer for client");
+#endif
             }));
             bgConnect.IsBackground = true;
             bgConnect.Start();
@@ -524,9 +535,9 @@ namespace SocketMeister
                 //  INITIALIZE
                 lock (_lock)
                 {
-                    if (_isBackgroundOperationsRunning == true) return;
-                    _isBackgroundOperationsRunning = true;
-                    _isStopBackgroundOperationsRequested = false;
+                    if (_isBackgroundOperationsThreadRunning == true) return;
+                    _isBackgroundOperationsThreadRunning = true;
+                    _stopAllBackgroundThreads = false;
                     _lastPollResponse = DateTime.Now;
                     _nextPollRequest = DateTime.Now;
                     _nextSendSubscriptions = DateTime.Now;
@@ -535,7 +546,7 @@ namespace SocketMeister
                 //  FLAG ALL SUBSCRIPTIONS (Tokens) FOR SENDING TO THE SERVER
                 _subscriptions.FlagAllAfterSocketConnect();
 
-                while (IsStopBackgroundOperationsRequested == false)
+                while (StopAllBackgroundThreads == false)
                 {
                     //  POLLING
                     if (DateTime.Now > NextPollRequest && CanExecuteBackgroundOperation())
@@ -574,7 +585,7 @@ namespace SocketMeister
                                 if (!CurrentEndPoint.Socket.SendAsync(_asyncEventArgsSendSubscriptionChanges)) ProcessSendSubscriptionChanges(null, _asyncEventArgsSendSubscriptionChanges);
                             }
                         }
-                        catch 
+                        catch
                         {
                             NextSendSubscriptions = DateTime.Now.AddSeconds(15);
                         }
@@ -652,19 +663,32 @@ namespace SocketMeister
         /// </summary>
         public void Stop()
         {
-            IsStopAllRequested = true;
+            StopClientPermanently = true;
 
             //  ENSURE BACKGROUND CONNECT HAS STOPPED
             _autoResetConnectEvent.Set();
 
-            DateTime maxWait = DateTime.Now.AddSeconds(45);
-            while (IsBackgroundConnectRunning == true && DateTime.Now < maxWait) { Thread.Sleep(50); }
-
             //  SHUTDOWN SOCKET
-            DisconnectSocketGracefully();
+            if (ConnectionStatus == ConnectionStatuses.Connected)
+            {
+                DisconnectSocketGracefully();
+            }
+            else
+            {
+                EnsureBackgroundThreadsHaveStopped();
+            }
 
-            //  WAIT UNTIL DISCONNECT HAS FINISHED
-            while (ConnectionStatus != ConnectionStatuses.Disconnected) { Thread.Sleep(50); }
+            if (ConnectionStatus == ConnectionStatuses.Disconnecting)
+            {
+                //  WAIT UNTIL DISCONNECT HAS FINISHED
+                DateTime maxWait = DateTime.Now.AddSeconds(15);
+                while (ConnectionStatus != ConnectionStatuses.Disconnected && DateTime.Now < maxWait) { Thread.Sleep(50); }
+            }
+
+            if (ConnectionStatus != ConnectionStatuses.Disconnected)
+            {
+                ConnectionStatus = ConnectionStatuses.Disconnected;
+            }
         }
 
 
@@ -694,7 +718,7 @@ namespace SocketMeister
                     NotifyExceptionRaised(new TimeoutException("Request " + Request.RequestId + ", timed out after " + Request.TimeoutMilliseconds + " milliseconds."));
                     return;
                 }
-                else if (IsStopAllRequested)
+                else if (StopClientPermanently)
                 {
                     //  SHUTDOWN: CLIENT IS SHUTTING DOWN. A SHUTDOWN MESSAGE SHOULD HAVE ALREADY BEEN SENT SO EXIT
                     SendResponseQuickly(new ResponseMessage(Request.RequestId, RequestResult.Stopping));
@@ -760,15 +784,15 @@ namespace SocketMeister
         /// <returns>Nullable array of bytes which was returned from the socket server</returns>
         public byte[] SendRequest(object[] Parameters, int TimeoutMilliseconds = 60000, bool IsLongPolling = false)
         {
-            if (IsStopAllRequested) throw new Exception("Request cannot be sent. The socket client is stopped or stopping");
+            if (StopClientPermanently) throw new Exception("Request cannot be sent. The socket client is stopped or stopping");
             if (Parameters == null) throw new ArgumentException("Request parameters cannot be null.", nameof(Parameters));
             if (Parameters.Length == 0) throw new ArgumentException("At least 1 request parameter is required.", nameof(Parameters));
             DateTime startTime = DateTime.Now;
             DateTime maxWait = startTime.AddMilliseconds(TimeoutMilliseconds);
-            while (ConnectionStatus != ConnectionStatuses.Connected && IsStopAllRequested == false)
+            while (ConnectionStatus != ConnectionStatuses.Connected && StopClientPermanently == false)
             {
                 Thread.Sleep(200);
-                if (IsStopAllRequested) throw new Exception("Request cannot be sent. The socket client is stopped or stopping");
+                if (StopClientPermanently) throw new Exception("Request cannot be sent. The socket client is stopped or stopping");
                 if (DateTime.Now > maxWait) throw new TimeoutException();
             }
             //DelaySending();
@@ -779,7 +803,7 @@ namespace SocketMeister
 
         private byte[] SendReceive(RequestMessage Request)
         {
-            if (IsStopAllRequested == true) return null;
+            if (StopClientPermanently == true) return null;
 
             DateTime startTime = DateTime.Now;
             _openRequests.Add(Request);
@@ -788,7 +812,7 @@ namespace SocketMeister
 
             SocketAsyncEventArgs sendEventArgs;
 
-            while (Request.TrySendReceive == true && IsStopAllRequested == false)
+            while (Request.TrySendReceive == true && StopClientPermanently == false)
             {
                 try
                 {
@@ -897,7 +921,7 @@ namespace SocketMeister
         /// <param name="e">Socket Arguments</param>
         private void ProcessReceive(object sender, SocketAsyncEventArgs e)
         {
-            if (ConnectionStatus == ConnectionStatuses.Disconnected)  return;
+            if (ConnectionStatus == ConnectionStatuses.Disconnected) return;
 
             if (e.BytesTransferred == 0)
             {
@@ -995,7 +1019,7 @@ namespace SocketMeister
                         {
                             TokenChangesResponseV1 response = _receiveEngine.GetSubscriptionResponseV1();
                             _subscriptions.ImportTokenChangesResponseV1(response);
-                            NextSendSubscriptions = DateTime.Now; 
+                            NextSendSubscriptions = DateTime.Now;
                         }
 
                         else if (_receiveEngine.MessageType == MessageTypes.SubscriptionMessageV1)
@@ -1007,7 +1031,7 @@ namespace SocketMeister
 
                 //  KEEP RECEIVING
                 if (ConnectionStatus == ConnectionStatuses.Disconnecting && !CurrentEndPoint.Socket.ReceiveAsync(e)) ProcessReceive(null, e);
-                else if (IsStopAllRequested == false && ConnectionStatus == ConnectionStatuses.Connected && !CurrentEndPoint.Socket.ReceiveAsync(e)) ProcessReceive(null, e);
+                else if (StopClientPermanently == false && ConnectionStatus == ConnectionStatuses.Connected && !CurrentEndPoint.Socket.ReceiveAsync(e)) ProcessReceive(null, e);
             }
             catch (ObjectDisposedException ee)
             {
@@ -1034,7 +1058,7 @@ namespace SocketMeister
                     //  THERE IS NO CODE LISTENING TO RequestReceive EVENTS. CANNOT PROCESS THIS REQUEST
                     SendResponseQuickly(new ResponseMessage(request.RequestId, RequestResult.NoRequestProcessor));
                 }
-                else if (IsStopAllRequested)
+                else if (StopClientPermanently)
                 {
                     //  SHUTDOWN: CLIENT IS SHUTTING DOWN. A SHUTDOWN MESSAGE SHOULD HAVE ALREADY BEEN SENT SO EXIT
                     SendResponseQuickly(new ResponseMessage(request.RequestId, RequestResult.Stopping));
@@ -1081,7 +1105,7 @@ namespace SocketMeister
             {
                 try
                 {
-                    if (_isStopAllRequested == true || _isStopBackgroundOperationsRequested == true) return false;
+                    if (_stopClientPermanently == true || _stopAllBackgroundThreads == true) return false;
                     if (_connectionStatus != ConnectionStatuses.Connected) return false;
                     if (_currentEndPoint == null || _currentEndPoint.Socket == null) return false;
                     return _currentEndPoint.Socket.Connected;
@@ -1098,7 +1122,7 @@ namespace SocketMeister
         {
             lock (_lock)
             {
-                if (_isStopAllRequested == true) return false;
+                if (_stopClientPermanently == true) return false;
                 if (_connectionStatus != ConnectionStatuses.Connected) return false;
                 return _currentEndPoint.Socket.Connected;
             }
