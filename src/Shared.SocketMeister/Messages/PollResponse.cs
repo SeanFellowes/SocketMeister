@@ -1,4 +1,8 @@
-﻿using System;
+﻿#pragma warning disable IDE0079 // Remove unnecessary suppression
+#pragma warning disable CA1062 // Validate arguments of public methods
+#pragma warning disable CA1812 // Validate arguments of public methods
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -25,3 +29,8 @@ namespace SocketMeister.Messages
         }
     }
 }
+
+#pragma warning restore CA1812 // Validate arguments of public methods
+#pragma warning restore CA1062 // Validate arguments of public methods
+#pragma warning restore IDE0079 // Remove unnecessary suppression
+

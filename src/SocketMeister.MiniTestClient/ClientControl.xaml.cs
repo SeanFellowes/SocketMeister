@@ -23,10 +23,9 @@ namespace SocketMeister.MiniTestClient
         private int _clientId = 1;
         private int _requestsReceived = 0;
         private int _requestsSent = 0;
-        private Random _rnd = new Random();
+        private readonly Random _rnd = new();
         private int _messagesReceived = 0;
-        private int _subscriptionCount = 0;
-        private SocketClient _client = null;
+        private SocketClient _client;
 
         /// <summary>
         /// Event raised when an exception occurs
@@ -139,7 +138,9 @@ namespace SocketMeister.MiniTestClient
         {
             try
             {
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly
                 if (string.IsNullOrEmpty(Message)) throw new ArgumentNullException("Message cannot be null or empty");
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
                 if (_client == null) throw new Exception("Client is null");
 
                 byte[] toSend = new byte[Message.Length];
@@ -259,7 +260,7 @@ namespace SocketMeister.MiniTestClient
             ServerStopping?.Invoke(this, e);
         }
 
-        private void btnSendRequest_Click(object sender, RoutedEventArgs e)
+        private void BtnSendRequest_Click(object sender, RoutedEventArgs e)
         {
             SendRequestButtonPressed?.Invoke(this, new EventArgs());
         }

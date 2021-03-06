@@ -1,4 +1,11 @@
-﻿#pragma warning disable CA1303 // Do not pass literals as localized parameters
+﻿#pragma warning disable IDE0079 // Remove unnecessary suppression
+#pragma warning disable IDE0090 // Use 'new(...)'
+#pragma warning disable IDE0052 // Remove unread private members
+#pragma warning disable IDE0063 // Use simple 'using' statement
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
+#pragma warning disable CA1805 // Do not initialize unnecessarily
+#pragma warning disable CA1031 // Do not catch general exception types
+#pragma warning disable CA1825 // Avoid zero-length array allocations.
 
 using System;
 using System.Collections.Generic;
@@ -67,9 +74,7 @@ namespace SocketMeister.Messages
 
         public const int HEADERLENGTH = 11;
 
-#pragma warning disable IDE0052 // Remove unread private members
         private readonly bool _enableCompression;
-#pragma warning restore IDE0052 // Remove unread private members
         private readonly ParseHistory _history = new ParseHistory();
         private bool _messageIsCompressed = false;
         private int _messageLength = 0;
@@ -78,17 +83,13 @@ namespace SocketMeister.Messages
         private readonly byte[] _headerBuffer = new byte[11];
         private int _headerBufferPtr = 0;
         private bool _headerReceived = false;
-#pragma warning disable CA1825 // Avoid zero-length array allocations.
         private byte[] _receiveBuffer = new byte[0];
-#pragma warning restore CA1825 // Avoid zero-length array allocations.
         private int _receiveBufferPtr = 0;
         private long _statMessageNumber = 1;
         private bool _statMessageReceived;
         private int _statSocketBufferLength;
         private int _statSocketBytesRead;
-#pragma warning disable CA1825 // Avoid zero-length array allocations.
         private byte[] _uncompressedBuffer = new byte[0];
-#pragma warning restore CA1825 // Avoid zero-length array allocations.
 
         internal MessageEngine(bool EnableCompression)
         {
@@ -143,7 +144,6 @@ namespace SocketMeister.Messages
                         //_sendBytes[3] = (byte)_uncompressedLength;
                     }
                 }
-#pragma warning disable CA1031 // Do not catch general exception types
                 catch (Exception ex)
                 {
                     string msg = "Error processing Message Body. _messageLength: " + _messageLength + "(" + _messageLengthUncompressed + " uncompressed), ReceivedByesCount: " + SocketBytesRead + ", SocketReceiveBuffer.Length: " + SocketReceiveBuffer.Length;
@@ -157,7 +157,6 @@ namespace SocketMeister.Messages
                     msg += ex.Message;
                     throw new Exception(msg);
                 }
-#pragma warning restore CA1031 // Do not catch general exception types
             }
             if (_headerReceived == true && (SocketReceiveBufferPtr < SocketBytesRead || _messageLength == 0))
             {
@@ -181,7 +180,6 @@ namespace SocketMeister.Messages
                         return true;
                     }
                 }
-#pragma warning disable CA1031 // Do not catch general exception types
                 catch (Exception ex)
                 {
                     string msg = "Error processing Message Body. _messageLength: " + _messageLength + "(" + _messageLengthUncompressed + " uncompressed), ReceivedByesCount: " + SocketBytesRead + ", SocketReceiveBuffer.Length: " + SocketReceiveBuffer.Length;
@@ -195,7 +193,6 @@ namespace SocketMeister.Messages
                     msg += ex.Message;
                     throw new Exception(msg);
                 }
-#pragma warning restore CA1031 // Do not catch general exception types
 
             }
             AddParseAttemptDetails();
@@ -467,6 +464,12 @@ namespace SocketMeister.Messages
     }
 }
 
-
+#pragma warning restore CA1825 // Avoid zero-length array allocations.
+#pragma warning restore CA1031 // Do not catch general exception types
+#pragma warning restore CA1805 // Do not initialize unnecessarily
 #pragma warning restore CA1303 // Do not pass literals as localized parameters
+#pragma warning restore IDE0063 // Use simple 'using' statement
+#pragma warning restore IDE0052 // Remove unread private members
+#pragma warning restore IDE0090 // Use 'new(...)'
+#pragma warning restore IDE0079 // Remove unnecessary suppression
 

@@ -58,7 +58,7 @@ namespace SocketMeister
             this.btnStop.TabIndex = 62;
             this.btnStop.Text = "Stop";
             this.btnStop.UseVisualStyleBackColor = true;
-            this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
+            this.btnStop.Click += new System.EventHandler(this.BtnStop_Click);
             // 
             // btnStart
             // 
@@ -69,7 +69,7 @@ namespace SocketMeister
             this.btnStart.TabIndex = 61;
             this.btnStart.Text = "Start";
             this.btnStart.UseVisualStyleBackColor = true;
-            this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
+            this.btnStart.Click += new System.EventHandler(this.BtnStart_Click);
             // 
             // serviceStatusIndicator
             // 
@@ -104,7 +104,7 @@ namespace SocketMeister
             this.btnSendMessage.TabIndex = 87;
             this.btnSendMessage.Text = "Send Message";
             this.btnSendMessage.UseVisualStyleBackColor = true;
-            this.btnSendMessage.Click += new System.EventHandler(this.btnSendMessage_Click);
+            this.btnSendMessage.Click += new System.EventHandler(this.BtnSendMessage_Click);
             // 
             // ucSocketServer
             // 

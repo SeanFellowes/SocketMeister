@@ -13,8 +13,8 @@ namespace SocketMeister.Testing
     internal class ServerController : IDisposable
     {
         private readonly ControlBusClient _controlBusClient;
-        private bool _disposed = false;
-        private bool _disposeCalled = false;
+        private bool _disposed;
+        private bool _disposeCalled;
         private readonly object _lock = new object();
         private readonly static OpenTransactions _openTransactions = new OpenTransactions();
         private int _port;
@@ -71,9 +71,6 @@ namespace SocketMeister.Testing
         public object Lock { get { return _lock; } }
 
 
-
-
-
         public void Dispose()
         {
             Dispose(true);
@@ -83,7 +80,7 @@ namespace SocketMeister.Testing
 
         protected virtual void Dispose(bool disposing)
         {
-            if (_disposed == true) return;
+            if (_disposed == true || _disposeCalled == true) return;
             if (disposing)
             {
                 _disposeCalled = true;
@@ -101,7 +98,7 @@ namespace SocketMeister.Testing
 
         private void ControlBusClient_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
         {
-            int r = Convert.ToInt32(e.Parameters[0]);
+            //int r = Convert.ToInt32(e.Parameters[0]);
 
             //if (r == ControlBus.ControlMessage.SocketServerStart)
             //{

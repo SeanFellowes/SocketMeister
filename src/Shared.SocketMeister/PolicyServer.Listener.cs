@@ -1,4 +1,9 @@
-﻿#if !SILVERLIGHT && !SMNOSERVER && !NET35 && !NET20
+﻿#pragma warning disable IDE0079 // Remove unnecessary suppression
+#pragma warning disable IDE0090 // Use 'new(...)'
+#pragma warning disable CA1805 // Do not initialize unnecessarily
+#pragma warning disable CA1031 // Do not catch general exception types
+
+#if !SILVERLIGHT && !SMNOSERVER && !NET35 && !NET20
 using System;
 using System.Net;
 using System.Threading;
@@ -68,9 +73,7 @@ namespace SocketMeister
 #endif
                     listener = null;
                 }
-#pragma warning disable CA1031 // Do not catch general exception types
                 catch { }
-#pragma warning restore CA1031 // Do not catch general exception types
             }
 
             private void Listen(IPAddress address, int port, GetSocketCallBack callback, int maximumConnections)
@@ -114,18 +117,14 @@ namespace SocketMeister
                     IsRunningChanged?.Invoke(this, new PolicyServerIsRunningChangedArgs { IsRunning = false });
                     if (sex.ErrorCode != 10004 && TraceEventRaised != null) IsRunningChanged(this, new PolicyServerIsRunningChangedArgs { IsRunning = false });
                 }
-#pragma warning disable CA1031 // Do not catch general exception types
                 catch (Exception ex)
                 {
                     IsRunning = false;
                     IsRunningChanged?.Invoke(this, new PolicyServerIsRunningChangedArgs { IsRunning = false });
                     TraceEventRaised?.Invoke(this, new TraceEventArgs(ex, 1234));
                 }
-#pragma warning restore CA1031 // Do not catch general exception types
                 try { if (listener != null) listener.Close(); }
-#pragma warning disable CA1031 // Do not catch general exception types
                 catch { IsRunning = false; }
-#pragma warning restore CA1031 // Do not catch general exception types
             }
 
 
@@ -133,3 +132,9 @@ namespace SocketMeister
     }
 }
 #endif
+
+
+#pragma warning restore CA1031 // Do not catch general exception types
+#pragma warning restore CA1805 // Do not initialize unnecessarily
+#pragma warning restore IDE0090 // Use 'new(...)'
+#pragma warning restore IDE0079 // Remove unnecessary suppression

@@ -44,8 +44,8 @@
             this.Server = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.MessageID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Message = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ucSocketServer2 = new SocketMeister.ucSocketServer();
-            this.ucSocketServer1 = new SocketMeister.ucSocketServer();
+            this.ucSocketServer2 = new SocketMeister.UcSocketServer();
+            this.ucSocketServer1 = new SocketMeister.UcSocketServer();
             this.pnlFooter.SuspendLayout();
             this.panelOuter.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -123,7 +123,7 @@
             this.tbMessageText.Size = new System.Drawing.Size(391, 372);
             this.tbMessageText.TabIndex = 45;
             this.tbMessageText.Text = resources.GetString("tbMessageText.Text");
-            this.tbMessageText.TextChanged += new System.EventHandler(this.tbMessage_TextChanged);
+            this.tbMessageText.TextChanged += new System.EventHandler(this.TbMessage_TextChanged);
             // 
             // pnlDiagnostics
             // 
@@ -251,8 +251,8 @@
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.TextBox tbMessageText;
         private System.Windows.Forms.DataGridView dGrid;
-        private ucSocketServer ucSocketServer2;
-        private ucSocketServer ucSocketServer1;
+        private UcSocketServer ucSocketServer2;
+        private UcSocketServer ucSocketServer1;
         private System.Windows.Forms.DataGridViewTextBoxColumn TimeStamp;
         private System.Windows.Forms.DataGridViewTextBoxColumn Type;
         private System.Windows.Forms.DataGridViewTextBoxColumn Server;

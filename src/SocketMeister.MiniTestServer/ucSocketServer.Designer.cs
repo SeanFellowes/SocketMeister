@@ -1,7 +1,7 @@
 ﻿
 namespace SocketMeister
 {
-    partial class ucSocketServer
+    partial class UcSocketServer
     {
         /// <summary> 
         /// Required designer variable.
@@ -98,7 +98,7 @@ namespace SocketMeister
             this.btnStop.TabIndex = 62;
             this.btnStop.Text = "Stop Service";
             this.btnStop.UseVisualStyleBackColor = true;
-            this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
+            this.btnStop.Click += new System.EventHandler(this.BtnStop_Click);
             // 
             // btnStart
             // 
@@ -108,7 +108,7 @@ namespace SocketMeister
             this.btnStart.TabIndex = 61;
             this.btnStart.Text = "Start Service";
             this.btnStart.UseVisualStyleBackColor = true;
-            this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
+            this.btnStart.Click += new System.EventHandler(this.BtnStart_Click);
             // 
             // cbLogInfo
             // 
@@ -319,7 +319,7 @@ namespace SocketMeister
             this.btnSendMessage.TabIndex = 87;
             this.btnSendMessage.Text = "Send Message";
             this.btnSendMessage.UseVisualStyleBackColor = true;
-            this.btnSendMessage.Click += new System.EventHandler(this.btnSendMessage_Click);
+            this.btnSendMessage.Click += new System.EventHandler(this.BtnSendMessage_Click);
             // 
             // label5
             // 
@@ -340,7 +340,7 @@ namespace SocketMeister
             this.btnBroadcastToSubscribers.TabIndex = 88;
             this.btnBroadcastToSubscribers.Text = "Broadcast to Subscribers";
             this.btnBroadcastToSubscribers.UseVisualStyleBackColor = true;
-            this.btnBroadcastToSubscribers.Click += new System.EventHandler(this.btnBroadcastToSubscribers_Click);
+            this.btnBroadcastToSubscribers.Click += new System.EventHandler(this.BtnBroadcastToSubscribers_Click);
             // 
             // ucSocketServer
             // 

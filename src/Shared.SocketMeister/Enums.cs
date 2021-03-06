@@ -1,4 +1,5 @@
-﻿
+﻿#pragma warning disable IDE0079 // Remove unnecessary suppression
+#pragma warning disable CA1062 // Validate arguments of public methods
 
 
 using System;
@@ -247,4 +248,8 @@ internal enum TokenAction
     Modify = 20,
     Delete = 30
 }
+
+
+#pragma warning restore CA1062 // Validate arguments of public methods
+#pragma warning restore IDE0079 // Remove unnecessary suppression
 

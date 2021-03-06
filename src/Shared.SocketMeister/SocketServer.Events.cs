@@ -1,4 +1,9 @@
-﻿#if !SILVERLIGHT && !SMNOSERVER && !NET35 && !NET20
+﻿#pragma warning disable IDE0079 // Remove unnecessary suppression
+#pragma warning disable CA1805 // Do not initialize unnecessarily
+#pragma warning disable CA1819 // Properties should not return arrays
+#pragma warning disable CA1001 // Types that own disposable fields should be disposable
+
+#if !SILVERLIGHT && !SMNOSERVER && !NET35 && !NET20
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -6,9 +11,7 @@ using System.Text;
 namespace SocketMeister
 {
 #if SMISPUBLIC
-#pragma warning disable CA1001 // Types that own disposable fields should be disposable
     public partial class SocketServer
-#pragma warning restore CA1001 // Types that own disposable fields should be disposable
 #else
     internal partial class SocketServer
 #endif
@@ -16,6 +19,7 @@ namespace SocketMeister
         /// <summary>
         /// TO BE DEPRICATED. Use ClientsChangedEventArgs. Event raised when a client connects to the socket server.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Will be resolved in future version")]
         public class ClientConnectedEventArgs : EventArgs
         {
             internal ClientConnectedEventArgs(Client Client)
@@ -29,9 +33,11 @@ namespace SocketMeister
             public Client Client { get; }
         }
 
+
         /// <summary>
         /// TO BE DEPRICATED. Use ClientsChangedEventArgs. Event raised when a client disconnects from the socket server.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Will be resolved in future version")]
         public class ClientDisconnectedEventArgs : EventArgs
         {
             internal ClientDisconnectedEventArgs(Client Client)
@@ -49,6 +55,7 @@ namespace SocketMeister
         /// <summary>
         /// Event raised when there is a change to the clients connected to the socket server.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Will be resolved in future version")]
         public class ClientsChangedEventArgs : EventArgs
         {
             internal ClientsChangedEventArgs(int Count)
@@ -68,6 +75,7 @@ namespace SocketMeister
         /// <summary>
         /// Values provided when a message is received from a client. 
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Will be resolved in future version")]
         public class MessageReceivedEventArgs : EventArgs
         {
             internal MessageReceivedEventArgs(Client Client, object[] Parameters)
@@ -90,6 +98,7 @@ namespace SocketMeister
         /// <summary>
         /// Values provided when a request is received from a client. 
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Will be resolved in future version")]
         public class RequestReceivedEventArgs : MessageReceivedEventArgs
         {
             internal RequestReceivedEventArgs(Client Client, object[] Parameters) : base(Client, Parameters) { }
@@ -103,6 +112,7 @@ namespace SocketMeister
         /// <summary>
         /// Execution status of a service changed. Includes the new status
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Will be resolved in future version")]
         public class SocketServerStatusChangedEventArgs : EventArgs
         {
 
@@ -128,4 +138,10 @@ namespace SocketMeister
 
     }
 }
+
 #endif
+
+#pragma warning restore CA1001 // Types that own disposable fields should be disposable
+#pragma warning restore CA1819 // Properties should not return arrays
+#pragma warning restore CA1805 // Do not initialize unnecessarily
+#pragma warning restore IDE0079 // Remove unnecessary suppression

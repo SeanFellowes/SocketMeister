@@ -1,5 +1,9 @@
-﻿#pragma warning disable CA1031 // Do not catch general exception types
+﻿#pragma warning disable IDE0079 // Remove unnecessary suppression
+#pragma warning disable IDE0090 // Use 'new(...)'
+#pragma warning disable CA1031 // Do not catch general exception types
 #pragma warning disable CA1303 // Do not pass literals as localized parameters
+#pragma warning disable CA1805 // Do not initialize unnecessarily
+#pragma warning disable CA1822 // Mark members as static
 
 #if !SILVERLIGHT && !SMNOSERVER && !NET35 && !NET20
 using System;
@@ -66,11 +70,19 @@ namespace SocketMeister
             IPAddress = IPAddress.Parse("0.0.0.0");
         }
 
+        /// <summary>
+        /// Dispose
+        /// </summary>
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
+
+        /// <summary>
+        /// Dispose
+        /// </summary>
+        /// <param name="disposing">Disposing</param>
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
@@ -94,6 +106,9 @@ namespace SocketMeister
         /// </summary>
         public IPAddress IPAddress { get; private set; }
 
+        /// <summary>
+        /// Port that the policy serer is using
+        /// </summary>
         public int Port { get { return ServicePort; } }
 
         /// <summary>
@@ -121,20 +136,11 @@ namespace SocketMeister
         //  *********************
         //  ** PUBLIC METHODS ***
         //  *********************
-        //private static IPAddress GetLocalIPAddress()
-        //{
-        //    var host = Dns.GetHostEntry(Dns.GetHostName());
-        //    foreach (IPAddress ip in host.AddressList)
-        //    {
-        //        if (ip.AddressFamily == AddressFamily.InterNetwork)
-        //        {
-        //            return ip;
-        //        }
-        //    }
-        //    throw new Exception("No network adapters with an IPv4 address in the system!");
-        //}
-
-
+        /// <summary>
+        /// Gets the IPV4 address of the network adapter
+        /// </summary>
+        /// <param name="type">Type of network interface</param>
+        /// <returns></returns>
         public static string GetLocalIPv4(NetworkInterfaceType type)
         {
             string output = "";
@@ -318,6 +324,11 @@ namespace SocketMeister
     }
 }
 #endif
+
+#pragma warning restore CA1822 // Mark members as static
+#pragma warning restore CA1805 // Do not initialize unnecessarily
 #pragma warning restore CA1031 // Do not catch general exception types
 #pragma warning restore CA1303 // Do not pass literals as localized parameters
+#pragma warning restore IDE0090 // Use 'new(...)'
+#pragma warning restore IDE0079 // Remove unnecessary suppression
 

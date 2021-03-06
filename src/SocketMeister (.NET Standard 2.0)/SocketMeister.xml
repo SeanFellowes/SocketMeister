@@ -714,12 +714,6 @@
             </summary>
             <returns>SocketAsyncEventArgs removed from the pool.</returns>
         </member>
-        <member name="M:SocketMeister.SocketAsyncEventArgsPool.Pop(System.Int32)">
-            <summary>
-            Removes a SocketAsyncEventArgs instance from the pool.
-            </summary>
-            <returns>SocketAsyncEventArgs removed from the pool.</returns>
-        </member>
         <member name="M:SocketMeister.SocketAsyncEventArgsPool.Push(System.Net.Sockets.SocketAsyncEventArgs)">
             <summary>
             Add a SocketAsyncEventArg instance to the pool. 
@@ -1129,15 +1123,38 @@
             PolicyServer Constructor. The policy server will connect to all network interfaces on port 943
             </summary>
         </member>
+        <member name="M:SocketMeister.PolicyServer.Dispose">
+            <summary>
+            Dispose
+            </summary>
+        </member>
+        <member name="M:SocketMeister.PolicyServer.Dispose(System.Boolean)">
+            <summary>
+            Dispose
+            </summary>
+            <param name="disposing">Disposing</param>
+        </member>
         <member name="P:SocketMeister.PolicyServer.IPAddress">
             <summary>
             The IP address being used.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.PolicyServer.Port">
+            <summary>
+            Port that the policy serer is using
             </summary>
         </member>
         <member name="P:SocketMeister.PolicyServer.ListenerState">
             <summary>
             The current status of the listener socket. Statuses include Stopped, Starting, Started and Stopping
             </summary>
+        </member>
+        <member name="M:SocketMeister.PolicyServer.GetLocalIPv4(System.Net.NetworkInformation.NetworkInterfaceType)">
+            <summary>
+            Gets the IPV4 address of the network adapter
+            </summary>
+            <param name="type">Type of network interface</param>
+            <returns></returns>
         </member>
         <member name="M:SocketMeister.PolicyServer.Start">
             <summary>
@@ -1315,6 +1332,11 @@
         <member name="P:SocketMeister.SocketServer.ListenerState">
             <summary>
             To be depricated. Replace with "Status". Status of the socket listener
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketServer.Status">
+            <summary>
+            Current status of the SocketServer
             </summary>
         </member>
         <member name="P:SocketMeister.SocketServer.TotalBytesReceived">

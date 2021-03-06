@@ -1,4 +1,7 @@
-﻿using System;
+﻿#pragma warning disable IDE0079 // Remove unnecessary suppression
+#pragma warning disable IDE0090 // Use 'new(...)'
+
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -8,7 +11,7 @@ namespace SocketMeister
 {
     internal class TokenChange
     {
-        private static int _maxTokenChangeId = 0;
+        private static int _maxTokenChangeId;
         private static readonly object _lockMaxTokenChangeId = new object();
 
         public int ChangeId { get; }
@@ -46,3 +49,6 @@ namespace SocketMeister
     }
 
 }
+
+#pragma warning restore IDE0090 // Use 'new(...)'
+#pragma warning restore IDE0079 // Remove unnecessary suppression

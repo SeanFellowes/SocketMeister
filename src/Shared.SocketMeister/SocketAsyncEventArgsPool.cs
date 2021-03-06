@@ -1,4 +1,8 @@
-﻿using System;
+﻿#pragma warning disable IDE0079 // Remove unnecessary suppression
+#pragma warning disable IDE0090 // Use 'new(...)'
+#pragma warning disable CA2000 // Dispose objects before losing scope
+
+using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
 
@@ -29,9 +33,7 @@ namespace SocketMeister
             _pool = new Stack<SocketAsyncEventArgs>(Capacity);
             for (int i = 0; i < Capacity; i++)
             {
-#pragma warning disable CA2000 // Dispose objects before losing scope
                 SocketAsyncEventArgs EventArgs = new SocketAsyncEventArgs();
-#pragma warning restore CA2000 // Dispose objects before losing scope
                 EventArgs.SetBuffer(new byte[Constants.SEND_RECEIVE_BUFFER_SIZE], 0, Constants.SEND_RECEIVE_BUFFER_SIZE);
                 EventArgs.Completed += EventArgs_Completed; ;
                 _pool.Push(EventArgs);
@@ -61,22 +63,6 @@ namespace SocketMeister
 
 
         /// <summary>
-        /// Removes a SocketAsyncEventArgs instance from the pool.
-        /// </summary>
-        /// <returns>SocketAsyncEventArgs removed from the pool.</returns>
-        internal SocketAsyncEventArgs Pop(int MaxTryMilliseconds)
-        {
-            while (true == true)
-                lock (_pool)
-                {
-                    //  ENSURE THERE IS ALWAYS AT LEAST ONE ITEM
-                    if (_pool.Count > 0) return _pool.Pop();
-                    return null;
-                }
-        }
-
-
-        /// <summary>
         /// Add a SocketAsyncEventArg instance to the pool. 
         /// </summary>
         /// <param name="item">SocketAsyncEventArgs instance to add to the pool.</param>
@@ -91,3 +77,8 @@ namespace SocketMeister
 
     }
 }
+
+#pragma warning restore CA2000 // Dispose objects before losing scope
+#pragma warning restore IDE0090 // Use 'new(...)'
+#pragma warning restore IDE0079 // Remove unnecessary suppression
+

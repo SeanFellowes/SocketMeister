@@ -9,7 +9,9 @@ namespace SocketMeister.Testing.Tests
 {
     internal class TestOnHarnessBase : TestBase<ITestOnHarness>, ITestOnHarness
     {
+#pragma warning disable IDE0052 // Remove unread private members
         private readonly HarnessController _harnessController;
+#pragma warning restore IDE0052 // Remove unread private members
         private bool _isExecuting = false;
         private int _percentComplete = 0;
         private TestStatus _status = TestStatus.NotStarted;
@@ -20,16 +22,6 @@ namespace SocketMeister.Testing.Tests
         public event EventHandler<HarnessTestStatusChangedEventArgs> StatusChanged;
         public event EventHandler<TraceEventArgs> TraceEventRaised;
 
-
-        /// <summary>
-        /// Raised when a test creates a client
-        /// </summary>
-        public event EventHandler<HarnessClientEventArgs> ClientCreated;
-
-        /// <summary>
-        /// Raised when an an attempt to establish a socket for control messages between a client and server failed.   
-        /// </summary>
-        public event EventHandler<HarnessClientEventArgs> ClientConnectFailed;
 
         public TestOnHarnessBase(HarnessController HarnessController, int Id, string Description) : base(Id, Description)
         {

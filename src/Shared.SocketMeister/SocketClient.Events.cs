@@ -1,4 +1,10 @@
-﻿using System;
+﻿#pragma warning disable IDE0079 // Remove unnecessary suppression
+#pragma warning disable IDE0090 // Use 'new(...)'
+#pragma warning disable CA1805 // Do not initialize unnecessarily
+#pragma warning disable CA1819 // Properties should not return arrays
+#pragma warning disable CA1034 // Nested types should not be visible
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -156,6 +162,11 @@ namespace SocketMeister
 
     }
 
-
-
 }
+
+#pragma warning restore CA1034 // Nested types should not be visible
+#pragma warning restore CA1819 // Properties should not return arrays
+#pragma warning restore CA1805 // Do not initialize unnecessarily
+#pragma warning restore IDE0090 // Use 'new(...)'
+#pragma warning restore IDE0079 // Remove unnecessary suppression
+

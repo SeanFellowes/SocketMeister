@@ -20,8 +20,6 @@ namespace SocketMeister
     public partial class Form1 : Form
     {
         private readonly List<ucSocketServer> _servers = new List<ucSocketServer>();
-        private readonly BindingList<LogEventArgs> _gridItems = new BindingList<LogEventArgs>();
-        private readonly object _lock = new object();
 
         public Form1()
         {

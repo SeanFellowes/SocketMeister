@@ -1,5 +1,9 @@
-﻿#pragma warning disable CA1031 // Do not catch general exception types
+﻿#pragma warning disable IDE0079 // Remove unnecessary suppression
+#pragma warning disable IDE0090 // Use 'new(...)'
+#pragma warning disable CA1031 // Do not catch general exception types
 #pragma warning disable CA1303 // Do not pass literals as localized parameters
+#pragma warning disable CA1805 // Do not initialize unnecessarily
+#pragma warning disable CA1001 // Types that own disposable fields should be disposable
 
 #if !SILVERLIGHT && !SMNOSERVER && !NET35 && !NET20
 using System;
@@ -16,13 +20,11 @@ namespace SocketMeister
     /// <summary>
     /// TCP/IP socket server which listens for client connections and raises events when messages are received
     /// </summary>
-#pragma warning disable CA1001 // Types that own disposable fields should be disposable
 #if SMISPUBLIC
     public partial class SocketServer
 #else
     internal partial class SocketServer
 #endif
-#pragma warning restore CA1001 // Types that own disposable fields should be disposable
     {
         /// <summary>
         /// The maximum number of milliseconds to wait for clients to disconnect whien stopping the socket server
@@ -148,6 +150,9 @@ namespace SocketMeister
             }
         }
 
+        /// <summary>
+        /// Current status of the SocketServer
+        /// </summary>
         public SocketServerStatus Status
         {
             get { lock (_lock) { return _listenerState; } }
@@ -854,5 +859,10 @@ namespace SocketMeister
     }
 }
 #endif
+
+#pragma warning restore CA1001 // Types that own disposable fields should be disposable
+#pragma warning restore CA1805 // Do not initialize unnecessarily
 #pragma warning restore CA1031 // Do not catch general exception types
 #pragma warning restore CA1303 // Do not pass literals as localized parameters
+#pragma warning restore IDE0090 // Use 'new(...)'
+#pragma warning restore IDE0079 // Remove unnecessary suppression

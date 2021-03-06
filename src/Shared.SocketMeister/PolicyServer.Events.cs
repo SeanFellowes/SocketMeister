@@ -1,4 +1,7 @@
-﻿using System;
+﻿#pragma warning disable IDE0079 // Remove unnecessary suppression
+#pragma warning disable CA1034 // Nested types should not be visible
+
+using System;
 
 #if !SILVERLIGHT && !SMNOSERVER && !NET35 && !NET20
 
@@ -13,9 +16,7 @@ namespace SocketMeister
         /// <summary>
         /// Raised whenever a policy request is received
         /// </summary>
-#pragma warning disable CA1034 // Nested types should not be visible
         public class PolicyRequestReceivedEventArgs : EventArgs
-#pragma warning restore CA1034 // Nested types should not be visible
         {
             /// <summary>
             /// The end point (client) requesting the policy file
@@ -54,3 +55,7 @@ namespace SocketMeister
 
 }
 #endif
+
+#pragma warning restore CA1034 // Nested types should not be visible
+#pragma warning restore IDE0079 // Remove unnecessary suppression
+

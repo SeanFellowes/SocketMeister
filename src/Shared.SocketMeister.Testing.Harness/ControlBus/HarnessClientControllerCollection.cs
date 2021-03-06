@@ -23,8 +23,7 @@ namespace SocketMeister.Testing.ControlBus
         {
             get
             {
-                HarnessClientController client;
-                if (_dictClientId.TryGetValue(ClientId, out client) == true) return client;
+                if (_dictClientId.TryGetValue(ClientId, out HarnessClientController client) == true) return client;
                 else return null;
             }
         }

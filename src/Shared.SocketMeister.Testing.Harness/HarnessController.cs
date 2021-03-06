@@ -20,9 +20,9 @@ namespace SocketMeister.Testing
 
     internal class HarnessController : IDisposable
     {
-        private bool _disposed = false;
-        private bool _disposeCalled = false;
-        private int _currentTestPtr = 0;
+        private bool _disposed;
+        private bool _disposeCalled;
+        private int _currentTestPtr;
         private ITestOnHarness _currentTest = null;
         private ExecuteModes _executeMode = ExecuteModes.Stopped;
         private static readonly object _lock = new object();
@@ -106,7 +106,7 @@ namespace SocketMeister.Testing
 
         protected virtual void Dispose(bool disposing)
         {
-            if (_disposed == true) return;
+            if (_disposed == true || _disposeCalled == true) return;
             if (disposing)
             {
                 _disposeCalled = true;

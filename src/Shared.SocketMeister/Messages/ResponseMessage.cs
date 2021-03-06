@@ -1,5 +1,9 @@
-﻿using System;
+﻿#pragma warning disable IDE0079 // Remove unnecessary suppression
+#pragma warning disable CA1805 // Do not initialize unnecessarily
+
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 
@@ -106,7 +110,10 @@ namespace SocketMeister.Messages
                 Writer.Write(true);
                 Writer.Write(_error);
             }
-            Writer.Write(Convert.ToInt16(_requestResultCode));
+            Writer.Write(Convert.ToInt16(_requestResultCode, CultureInfo.InvariantCulture));
         }
     }
 }
+
+#pragma warning restore CA1805 // Do not initialize unnecessarily
+#pragma warning restore IDE0079 // Remove unnecessary suppression

@@ -1,4 +1,6 @@
-﻿using System;
+﻿#pragma warning disable IDE0090 // Use 'new(...)'
+
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -54,9 +56,9 @@ namespace SocketMeister.MiniTestClient
             }
         }
 
-        DispatcherTimer _dispatcherTimer = new DispatcherTimer(); 
-        List<ClientControl> _clients = new List<ClientControl>();
-        ObservableCollection<LogItem> _log = new ObservableCollection<LogItem>();
+        readonly DispatcherTimer _dispatcherTimer = new DispatcherTimer();
+        readonly List<ClientControl> _clients = new List<ClientControl>();
+        readonly ObservableCollection<LogItem> _log = new ObservableCollection<LogItem>();
         bool _windowClosingProcessed = false;
 
         public MainWindow()
@@ -79,7 +81,7 @@ namespace SocketMeister.MiniTestClient
             }
         }
 
-        private void _dispatcherTimer_Tick(object sender, EventArgs e)
+        private void DispatcherTimer_Tick(object sender, EventArgs e)
         {
             foreach(ClientControl clientControl in _clients)
             {
@@ -142,8 +144,10 @@ namespace SocketMeister.MiniTestClient
                     new ThreadStart(delegate
                     {
                         c.Stop();
-                    }));
-                    bgClose.IsBackground = true;
+                    }))
+                    {
+                        IsBackground = true
+                    };
                     bgClose.Start();
                 }
 
@@ -173,8 +177,10 @@ namespace SocketMeister.MiniTestClient
                     {
                         App.Current.Shutdown();
                     });
-                }));
-                bgWaitForClose.IsBackground = true;
+                }))
+                {
+                    IsBackground = true
+                };
                 bgWaitForClose.Start();
 
 
@@ -242,7 +248,7 @@ namespace SocketMeister.MiniTestClient
                     Client.Start(eps);
                 }
 
-                _dispatcherTimer.Tick += _dispatcherTimer_Tick;
+                _dispatcherTimer.Tick += DispatcherTimer_Tick;
                 _dispatcherTimer.Interval = new TimeSpan(0, 0, 5);
                 _dispatcherTimer.Start();
 
@@ -283,3 +289,6 @@ namespace SocketMeister.MiniTestClient
         }
     }
 }
+
+#pragma warning restore IDE0090 // Use 'new(...)'
+

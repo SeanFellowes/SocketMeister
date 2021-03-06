@@ -1,4 +1,10 @@
-﻿#if !SILVERLIGHT && !SMNOSERVER && !NET35 && !NET20
+﻿#pragma warning disable IDE0079 // Remove unnecessary suppression
+#pragma warning disable IDE0059 // Unnecessary assignment of a value
+#pragma warning disable IDE0090 // Use 'new(...)'
+#pragma warning disable CA1001 // Types that own disposable fields should be disposable
+#pragma warning disable CA1034 // Nested types should not be visible
+
+#if !SILVERLIGHT && !SMNOSERVER && !NET35 && !NET20
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
@@ -9,9 +15,7 @@ using SocketMeister.Messages;
 namespace SocketMeister
 {
 #if SMISPUBLIC
-#pragma warning disable CA1001 // Types that own disposable fields should be disposable
     public partial class SocketServer
-#pragma warning restore CA1001 // Types that own disposable fields should be disposable
 #else
     internal partial class SocketServer
 #endif
@@ -19,9 +23,7 @@ namespace SocketMeister
         /// <summary>
         /// Remote client which has connected to the socket server
         /// </summary>
-#pragma warning disable CA1034 // Nested types should not be visible
         public class Client
-#pragma warning restore CA1034 // Nested types should not be visible
         {
             private readonly Guid _clientId = Guid.NewGuid();
             private readonly Socket _clientSocket;
@@ -190,3 +192,9 @@ namespace SocketMeister
     }
 }
 #endif
+
+#pragma warning restore CA1034 // Nested types should not be visible
+#pragma warning restore CA1001 // Types that own disposable fields should be disposable
+#pragma warning restore IDE0059 // Unnecessary assignment of a value
+#pragma warning restore IDE0090 // Use 'new(...)'
+#pragma warning restore IDE0079 // Remove unnecessary suppression

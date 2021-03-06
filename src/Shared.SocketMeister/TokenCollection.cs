@@ -1,4 +1,9 @@
-﻿using SocketMeister.Messages;
+﻿#pragma warning disable IDE0079 // Remove unnecessary suppression
+#pragma warning disable IDE0018 // Inline variable declaration
+#pragma warning disable IDE0090 // Use 'new(...)'
+
+
+using SocketMeister.Messages;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -176,3 +181,8 @@ namespace SocketMeister
         }
     }
 }
+
+#pragma warning restore IDE0090 // Use 'new(...)'
+#pragma warning restore IDE0018 // Inline variable declaration
+#pragma warning restore IDE0079 // Remove unnecessary suppression
+

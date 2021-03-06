@@ -13,8 +13,6 @@ namespace SocketMeister
 {
     public partial class ucSocketServer : UserControl
     {
-        private readonly Random _rng = new Random();
-        private const string _chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         private DateTime _nextAutomatedSend = DateTime.Now;
         private string _messageText = "I had planned on using drones early on—not too much because I think drones can be so overused. But I wanted to also shoot from the hornet's POV. Hornets articulate themselves in a totally different way than just the normal drone beauty shot. That's when I got tipped off about racing drones, which I had not used before. They're smaller, and the way they can articulate through the forest on a dime is very different from the regular drone.";
         private int _port = 4502;
@@ -210,19 +208,6 @@ namespace SocketMeister
 
 
 
-        private string GenerateRandomString(int size)
-        {
-            char[] buffer = new char[size];
-
-            for (int i = 0; i < size; i++)
-            {
-                buffer[i] = _chars[_rng.Next(_chars.Length)];
-            }
-            return new string(buffer);
-        }
-
-
-
         private int SendMessageToClients(byte[] Bytes)
         {
             object[] parms = new object[1];
@@ -237,7 +222,7 @@ namespace SocketMeister
             return items.Count;
         }
 
-        private void btnBroadcastToSubscribers_Click(object sender, EventArgs e)
+        private void BtnBroadcastToSubscribers_Click(object sender, EventArgs e)
         {
             string msg = "Message to clients subscribing to \"My Test Subscription 1\"";
             byte[] toSend = new byte[msg.Length];
@@ -249,7 +234,7 @@ namespace SocketMeister
             _server.BroadcastMessageToSubscribers("My Test Subscription 1", parms);
         }
 
-        private void btnSendMessage_Click(object sender, EventArgs e)
+        private void BtnSendMessage_Click(object sender, EventArgs e)
         {
             if (MessageText.Length == 0) { MessageBox.Show("Message Text must not be empty"); return; }
 
@@ -258,13 +243,13 @@ namespace SocketMeister
             SendMessageToClients(toSend);
         }
 
-        private void btnStart_Click(object sender, EventArgs e)
+        private void BtnStart_Click(object sender, EventArgs e)
         {
             Start();
         }
 
 
-        private void btnStop_Click(object sender, EventArgs e)
+        private void BtnStop_Click(object sender, EventArgs e)
         {
             Stop(false);
         }

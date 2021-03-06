@@ -38,7 +38,7 @@
         <TextBlock Grid.Row="2" Grid.Column="2" x:Name="tbMessagesReceived" HorizontalAlignment="Center" TextAlignment="Center">0</TextBlock>
         <TextBlock Grid.Row="2" Grid.Column="3" x:Name="tbRequestsReceived" HorizontalAlignment="Center" TextAlignment="Center">0</TextBlock>
         <TextBlock Grid.Row="2" Grid.Column="4" x:Name="tbRequestsSent" HorizontalAlignment="Center" TextAlignment="Center">0</TextBlock>
-        <Button Grid.Row="2" Grid.Column="5" x:Name="btnSendRequest" Width="90" Padding="1" FontSize="10" VerticalAlignment="Center" HorizontalAlignment="Center" Click="btnSendRequest_Click">Send Request</Button>
+        <Button Grid.Row="2" Grid.Column="5" x:Name="btnSendRequest" Width="90" Padding="1" FontSize="10" VerticalAlignment="Center" HorizontalAlignment="Center" Click="BtnSendRequest_Click">Send Request</Button>
         
         <!-- TEST SUBSCRIPTIONS -->
         <Grid Grid.Row="2" Grid.Column="6" >

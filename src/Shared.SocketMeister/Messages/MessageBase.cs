@@ -1,4 +1,7 @@
-﻿using System;
+﻿#pragma warning disable IDE0079 // Remove unnecessary suppression
+#pragma warning disable IDE0090 // Use 'new(...)'
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -8,7 +11,7 @@ namespace SocketMeister.Messages
 {
     internal partial class MessageBase
     {
-        private bool _isAborted = false;
+        private bool _isAborted;
         private readonly object _lock = new object();
         private readonly MessageTypes _messageType;
         private MessageStatus _messageStatus = MessageStatus.Unsent;
@@ -36,6 +39,8 @@ namespace SocketMeister.Messages
             set { lock (_lock) { _messageStatus = value; } }
         }
 
-
     }
 }
+
+#pragma warning restore IDE0090 // Use 'new(...)'
+#pragma warning restore IDE0079 // Remove unnecessary suppression

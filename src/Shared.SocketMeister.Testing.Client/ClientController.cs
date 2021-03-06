@@ -170,10 +170,8 @@ namespace SocketMeister.Testing
 
         internal byte[] ExecuteMethod(string ClassName, string StaticMethodName, object[] Parameters = null)
         {
-            Type thisObjectType;
-
             //  GET THE CLASS TYPE
-            assemblyTypeDictionary.TryGetValue(ClassName, out thisObjectType);
+            assemblyTypeDictionary.TryGetValue(ClassName, out Type thisObjectType);
             if (thisObjectType == null) throw new ArgumentOutOfRangeException(nameof(ClassName), "Class '" + ClassName + "' does not exist in the assembly '" + Assembly.GetExecutingAssembly().FullName + "'");
 
             //  GET THE METHOD. IT MUST BE STATIC

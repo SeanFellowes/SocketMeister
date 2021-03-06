@@ -1,4 +1,10 @@
-﻿using SocketMeister.Messages;
+﻿#pragma warning disable IDE0079 // Remove unnecessary suppression
+#pragma warning disable IDE0090 // Use 'new(...)'
+#pragma warning disable IDE0018 // Inline variable declaration
+#pragma warning disable IDE0063 // Use simple 'using' statement
+#pragma warning disable CA1805 // Do not initialize unnecessarily
+
+using SocketMeister.Messages;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -12,7 +18,7 @@ namespace SocketMeister
     /// </summary>
     internal class TokenChangeCollection
     {
-        private Dictionary<string, TokenChange> _dictName = new Dictionary<string, TokenChange>();
+        private readonly Dictionary<string, TokenChange> _dictName = new Dictionary<string, TokenChange>();
         private readonly object _lock = new object();
         private readonly TokenCollection _tokenCollection = null;
 
@@ -39,9 +45,9 @@ namespace SocketMeister
         public TokenChangeCollection(TokenCollection tokenCollection)
         {
             _tokenCollection = tokenCollection;
-            _tokenCollection.TokenAdded += _tokenCollection_TokenAdded;
-            _tokenCollection.TokenChanged += _tokenCollection_TokenChanged;
-            _tokenCollection.TokenDeleted += _tokenCollection_TokenDeleted;
+            _tokenCollection.TokenAdded += TokenCollection_TokenAdded;
+            _tokenCollection.TokenChanged += TokenCollection_TokenChanged;
+            _tokenCollection.TokenDeleted += TokenCollection_TokenDeleted;
         }
 
         /// <summary>
@@ -113,19 +119,19 @@ namespace SocketMeister
             }
         }
 
-        private void _tokenCollection_TokenAdded(object sender, EventArgs e)
+        private void TokenCollection_TokenAdded(object sender, EventArgs e)
         {
             Token t = (Token)sender;
             AddChange(TokenAction.Add, t);
         }
 
-        private void _tokenCollection_TokenChanged(object sender, EventArgs e)
+        private void TokenCollection_TokenChanged(object sender, EventArgs e)
         {
             Token t = (Token)sender;
             AddChange(TokenAction.Modify, t);
         }
 
-        private void _tokenCollection_TokenDeleted(object sender, EventArgs e)
+        private void TokenCollection_TokenDeleted(object sender, EventArgs e)
         {
             Token t = (Token)sender;
             AddChange(TokenAction.Delete, t);
@@ -135,3 +141,9 @@ namespace SocketMeister
     }
 
 }
+
+#pragma warning restore CA1805 // Do not initialize unnecessarily
+#pragma warning restore IDE0063 // Use simple 'using' statement
+#pragma warning restore IDE0018 // Inline variable declaration
+#pragma warning restore IDE0090 // Use 'new(...)'
+#pragma warning restore IDE0079 // Remove unnecessary suppression

@@ -20,7 +20,6 @@ namespace SocketMeister
         private int _requestsSent = 0;
         private Random _rnd = new Random();
         private int _messagesReceived = 0;
-        private int _subscriptionCount = 0;
         private SocketClient _client = null;
 
         /// <summary>

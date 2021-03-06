@@ -1,4 +1,9 @@
-﻿using System;
+﻿#pragma warning disable IDE0079 // Remove unnecessary suppression
+#pragma warning disable IDE0090 // Use 'new(...)'
+#pragma warning disable IDE0063 // Use simple 'using' statement
+#pragma warning disable CA1805 // Do not initialize unnecessarily
+
+using System;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -198,3 +203,9 @@ namespace SocketMeister.Messages
 
     }
 }
+
+
+#pragma warning restore CA1805 // Do not initialize unnecessarily
+#pragma warning restore IDE0063 // Use simple 'using' statement
+#pragma warning restore IDE0090 // Use 'new(...)'
+#pragma warning restore IDE0079 // Remove unnecessary suppression

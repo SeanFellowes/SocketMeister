@@ -18,7 +18,7 @@ namespace SocketMeister
 
     public partial class Main : Form
     {
-        private readonly List<ucSocketServer> _servers = new List<ucSocketServer>();
+        private readonly List<UcSocketServer> _servers = new List<UcSocketServer>();
         private readonly BindingList<LogEventArgs> _gridItems = new BindingList<LogEventArgs>();
         private readonly object _lock = new object();
         private bool _stopAutomaticMessageGenerator;
@@ -45,9 +45,9 @@ namespace SocketMeister
                 _gridItems.AllowEdit = false;
                 dGrid.DataSource = _gridItems;
 
-                tbMessage_TextChanged(null, null);
+                TbMessage_TextChanged(null, null);
 
-                foreach (ucSocketServer uc in _servers)
+                foreach (UcSocketServer uc in _servers)
                 {
                     uc.LogEventRaised += ServerUserControl_LogEventRaised;
                     uc.Start();
@@ -65,7 +65,7 @@ namespace SocketMeister
         private void Main_FormClosing(object sender, FormClosingEventArgs e)
         {
             lock (_lock) { _stopAutomaticMessageGenerator = true; }
-            foreach (ucSocketServer uc in _servers)
+            foreach (UcSocketServer uc in _servers)
             {
                 uc.Stop(true);
             }
@@ -108,7 +108,7 @@ namespace SocketMeister
             {
                 lock(_lock) { if (_stopAutomaticMessageGenerator == true) return; }
 
-                foreach (ucSocketServer uc in _servers)
+                foreach (UcSocketServer uc in _servers)
                 {
                     if (uc.NextAutomatedSend > DateTime.Now) continue;
                     try
@@ -138,9 +138,9 @@ namespace SocketMeister
             MessageBox.Show(e, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
-        private void tbMessage_TextChanged(object sender, EventArgs e)
+        private void TbMessage_TextChanged(object sender, EventArgs e)
         {
-            foreach (ucSocketServer uc in _servers)
+            foreach (UcSocketServer uc in _servers)
             {
                 uc.MessageText = tbMessageText.Text;
             }

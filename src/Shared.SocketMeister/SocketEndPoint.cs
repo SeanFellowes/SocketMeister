@@ -1,5 +1,10 @@
-﻿#pragma warning disable CA1031 // Do not catch general exception types
+﻿#pragma warning disable IDE0079 // Remove unnecessary suppression
+#pragma warning disable IDE0018 // Inline variable declaration
+#pragma warning disable IDE0090 // Use 'new(...)'
+#pragma warning disable CA1031 // Do not catch general exception types
 #pragma warning disable CA1303 // Do not pass literals as localized parameters
+#pragma warning disable CA1805 // Do not initialize unnecessarily
+#pragma warning disable CA1812 // Avoid uninstantiated internal classes
 
 using System;
 using System.Collections.Generic;
@@ -13,13 +18,11 @@ namespace SocketMeister
     /// <summary>
     /// Client Socket to a SocketServer end point
     /// </summary>
-#pragma warning disable CA1812 // Avoid uninstantiated internal classes
 #if SMISPUBLIC
     public class SocketEndPoint : IDisposable
 #else
     internal class SocketEndPoint : IDisposable
 #endif
-#pragma warning restore CA1812 // Avoid uninstantiated internal classes
     {
         private DateTime _dontReconnectUntil = DateTime.Now;
         private readonly IPEndPoint _ipEndPoint = null;
@@ -45,9 +48,7 @@ namespace SocketMeister
             _port = Convert.ToUInt16(Port);
 
             //  TRY TO CREATE IpAddress
-#pragma warning disable IDE0018 // Inline variable declaration
             System.Net.IPAddress IPAddr;
-#pragma warning restore IDE0018 // Inline variable declaration
             if (System.Net.IPAddress.TryParse(_iPAddress, out IPAddr))
             {
                 switch (IPAddr.AddressFamily)
@@ -150,6 +151,11 @@ namespace SocketMeister
     }
 }
 
+#pragma warning restore CA1812 // Avoid uninstantiated internal classes
+#pragma warning restore CA1805 // Do not initialize unnecessarily
 #pragma warning restore CA1031 // Do not catch general exception types
 #pragma warning restore CA1303 // Do not pass literals as localized parameters
+#pragma warning restore IDE0090 // Use 'new(...)'
+#pragma warning restore IDE0018 // Inline variable declaration
+#pragma warning restore IDE0079 // Remove unnecessary suppression
 

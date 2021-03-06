@@ -1,6 +1,12 @@
-﻿#pragma warning disable CA1303 // Do not pass literals as localized parameters
-#pragma warning disable CA1031 // Do not catch general exception types
+﻿#pragma warning disable IDE0079 // Remove unnecessary suppression
+#pragma warning disable IDE0090 // Use 'new(...)'
 #pragma warning disable IDE0017 // Simplify object initialization
+#pragma warning disable IDE0052 // Remove unread private members
+#pragma warning disable IDE0063 // Use simple 'using' statement
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
+#pragma warning disable CA1031 // Do not catch general exception types
+#pragma warning disable CA1805 // Do not initialize unnecessarily
+#pragma warning disable CA2213 // Disposable fields should be disposed
 
 using System;
 using System.Collections.Generic;
@@ -44,14 +50,8 @@ namespace SocketMeister
         private readonly ManualResetEvent _autoResetConnectEvent = new ManualResetEvent(false);
         private readonly TokenCollection _subscriptions;
         private ConnectionStatuses _connectionStatus = ConnectionStatuses.Disconnected;
-#pragma warning disable CA2213 // Disposable fields should be disposed
         private SocketEndPoint _currentEndPoint = null;
-#pragma warning restore CA2213 // Disposable fields should be disposed
-#pragma warning disable IDE0044 // Add readonly modifier
-#pragma warning disable IDE0052 // Remove unread private members
-        private bool _enableCompression;
-#pragma warning restore IDE0052 // Remove unread private members
-#pragma warning restore IDE0044 // Add readonly modifier
+        private readonly bool _enableCompression;
         private readonly List<SocketEndPoint> _endPoints = null;
         private bool _isBackgroundConnectThreadRunning;
         private bool _isBackgroundOperationsThreadRunning;
@@ -692,18 +692,6 @@ namespace SocketMeister
         }
 
 
-#pragma warning disable IDE0051 // Remove unused private members
-        private void DelaySending()
-#pragma warning restore IDE0051 // Remove unused private members
-        {
-            int inProgress = 0;
-            lock (_lock) { inProgress = _openRequests.Count; }
-            if (inProgress > 1)
-            {
-                Thread.Sleep(inProgress * 250);
-            }
-        }
-
 
         private void SendResponse(ResponseMessage Message, RequestMessage Request)
         {
@@ -1218,8 +1206,14 @@ namespace SocketMeister
         #endregion
     }
 
-#pragma warning restore IDE0017 // Simplify object initialization
+}
+
+#pragma warning restore CA2213 // Disposable fields should be disposed
+#pragma warning restore CA1805 // Do not initialize unnecessarily
 #pragma warning restore CA1031 // Do not catch general exception types
 #pragma warning restore CA1303 // Do not pass literals as localized parameters
-
-}
+#pragma warning restore IDE0052 // Remove unread private members
+#pragma warning restore IDE0063 // Use simple 'using' statement
+#pragma warning restore IDE0017 // Simplify object initialization
+#pragma warning restore IDE0090 // Use 'new(...)'
+#pragma warning restore IDE0079 // Remove unnecessary suppression

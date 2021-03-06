@@ -29,11 +29,15 @@ namespace SocketMeister.Testing.Tests
 
                 //  CONNECT FixedClient1 TO FixedServer1
                 RaiseTraceEventRaised("Starting SocketClient on port " + Constants.HarnessFixedServer1Port, SeverityType.Information, 1);
-                List<SocketEndPoint> endPoints = new List<SocketEndPoint>();
-                endPoints.Add(new SocketEndPoint("127.0.0.1", Constants.HarnessFixedServer1Port));
+                List<SocketEndPoint> endPoints = new List<SocketEndPoint>
+                {
+                    new SocketEndPoint("127.0.0.1", Constants.HarnessFixedServer1Port)
+                };
                 _harnessController.FixedClient1.Commands.SocketClientStart(endPoints, false);
 
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 Test001Step001();
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
 
                 //ClientController ClientId01 = base.AddClient();

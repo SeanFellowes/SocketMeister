@@ -11,7 +11,7 @@ using System.Windows.Forms;
 
 namespace SocketMeister
 {
-    public partial class ucSocketServer : UserControl
+    public partial class UcSocketServer : UserControl
     {
         private readonly Random _rng = new Random();
         private const string _chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -25,7 +25,7 @@ namespace SocketMeister
 
         public event EventHandler<LogEventArgs> LogEventRaised;
 
-        public ucSocketServer()
+        public UcSocketServer()
         {
             InitializeComponent();
         }
@@ -304,7 +304,7 @@ namespace SocketMeister
             return items.Count;
         }
 
-        private void btnBroadcastToSubscribers_Click(object sender, EventArgs e)
+        private void BtnBroadcastToSubscribers_Click(object sender, EventArgs e)
         {
             string msg = "Message to clients subscribing to \"My Test Subscription 1\"";
             byte[] toSend = new byte[msg.Length];
@@ -316,7 +316,7 @@ namespace SocketMeister
             _server.BroadcastMessageToSubscribers("My Test Subscription 1", parms);
         }
 
-        private void btnSendMessage_Click(object sender, EventArgs e)
+        private void BtnSendMessage_Click(object sender, EventArgs e)
         {
             if (MessageText.Length == 0) { MessageBox.Show("Message Text must not be empty"); return; }
 
@@ -325,13 +325,13 @@ namespace SocketMeister
             SendMessageToClients(toSend);
         }
 
-        private void btnStart_Click(object sender, EventArgs e)
+        private void BtnStart_Click(object sender, EventArgs e)
         {
             Start();
         }
 
 
-        private void btnStop_Click(object sender, EventArgs e)
+        private void BtnStop_Click(object sender, EventArgs e)
         {
             Stop(false);
         }
