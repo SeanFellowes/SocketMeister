@@ -11,7 +11,7 @@
     <RepositoryUrl>https://github.com/SeanFellowes/SocketMeister</RepositoryUrl>
     <PackageTags>tcp socket</PackageTags>
     <Company>Sean Fellowes</Company>
-    <PackageReleaseNotes>Added compiler suppression codes for compiler warnings. SocketMeister runs on many versions of .NET and Visual Studio has different coding suggestions depending on the version. These suppressions aim to eliminate coding suggestions when you embed SocketMesiter source code in your own application (SocketMeister.Sources). There are several small fixes where fields should have been defined as read only. This release is code cosmetic. There are no logic changes or bug fixes.</PackageReleaseNotes>
+    <PackageReleaseNotes>Fixed bug where serializer caused warnings when SocketMeister.Source is incorporated into multiple projects or included in a DLL from another project. Serializer was public but should be internal. Could cause problems where multiple versions of SocketMeister are used in the same project.</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseUrl></PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
@@ -20,9 +20,9 @@
     <DocumentationFile>C:\Users\sfell\Source\Repos\SeanFellowes\SocketMeister\src\SocketMeister (.NET Standard 2.0)\SocketMeister.xml</DocumentationFile>
     <PackageIcon>icon_128.png</PackageIcon>
     <SelfContained>true</SelfContained>
-    <Version>2.2.3</Version>
-    <AssemblyVersion>2.2.3.0</AssemblyVersion>
-    <FileVersion>2.2.3.0</FileVersion>
+    <Version>2.2.4</Version>
+    <AssemblyVersion>2.2.4.0</AssemblyVersion>
+    <FileVersion>2.2.4.0</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net35|AnyCPU'">

@@ -13,7 +13,11 @@ namespace SocketMeister
     /// <summary>
     /// Serialization routines for SocketMeister
     /// </summary>
+#if SMISPUBLIC
     public static class Serializer
+#else
+    internal static class Serializer
+#endif
     {
         /// <summary>
         /// Data types which are supported for parameters sent with messages.
