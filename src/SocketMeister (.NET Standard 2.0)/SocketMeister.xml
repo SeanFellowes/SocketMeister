@@ -888,6 +888,24 @@
             <param name="EndPoints">Collection of endpoints that are available to connect to</param>
             <param name="EnableCompression">Whether compression will be applied to data.</param>
         </member>
+        <member name="M:SocketMeister.SocketClient.#ctor(System.String,System.Int32,System.Boolean)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="IPAddress1">IP Address to of the SocketMeister server to connect to</param>
+            <param name="Port1">TCP port the server is listening on</param>
+            <param name="EnableCompression">Whether compression will be applied to data.</param>
+        </member>
+        <member name="M:SocketMeister.SocketClient.#ctor(System.String,System.Int32,System.String,System.Int32,System.Boolean)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="IPAddress1">IP Address to of the first SocketMeister server to connect to</param>
+            <param name="Port1">TCP port the first server is listening on</param>
+            <param name="IPAddress2">IP Address to of the second SocketMeister server to connect to</param>
+            <param name="Port2">TCP port the second server is listening on</param>
+            <param name="EnableCompression">Whether compression will be applied to data.</param>
+        </member>
         <member name="M:SocketMeister.SocketClient.Dispose">
             <summary>
             Dispose of the class

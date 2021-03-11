@@ -163,6 +163,20 @@ namespace SocketMeister.MiniTestClient
             }
         }
 
+        public void Start(string IPAddress, int Port)
+        {
+            _client = new SocketClient(IPAddress, Port, true);
+            _client.ConnectionStatusChanged += Client_ConnectionStatusChanged;
+            _client.CurrentEndPointChanged += Client_CurrentEndPointChanged;
+            _client.ExceptionRaised += Client_ExceptionRaised;
+            _client.MessageReceived += Client_MessageReceived;
+            _client.RequestReceived += Client_RequestReceived;
+            _client.ServerStopping += Client_ServerStopping;
+            _client.SubscriptionMessageReceived += Client_SubscriptionMessageReceived;
+
+            tbPort.Text = _client.CurrentEndPoint.Port.ToString();
+        }
+
 
         public void Start(List<SocketEndPoint> eps)
         {

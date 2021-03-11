@@ -3,6 +3,7 @@
 #pragma warning disable IDE0017 // Simplify object initialization
 #pragma warning disable IDE0052 // Remove unread private members
 #pragma warning disable IDE0063 // Use simple 'using' statement
+#pragma warning disable IDE0028 // Simplify collection initialization
 #pragma warning disable CA1303 // Do not pass literals as localized parameters
 #pragma warning disable CA1031 // Do not catch general exception types
 #pragma warning disable CA1805 // Do not initialize unnecessarily
@@ -158,6 +159,121 @@ namespace SocketMeister
 
             BgConnectToServer();
         }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="IPAddress1">IP Address to of the SocketMeister server to connect to</param>
+        /// <param name="Port1">TCP port the server is listening on</param>
+        /// <param name="EnableCompression">Whether compression will be applied to data.</param>
+        public SocketClient(string IPAddress1, int Port1, bool EnableCompression)
+        {
+            List<SocketEndPoint> EndPoints = new List<SocketEndPoint>();
+            EndPoints.Add(new SocketEndPoint(IPAddress1, Port1));
+
+            _enableCompression = EnableCompression;
+            _receiveEngine = new MessageEngine(EnableCompression);
+
+            //  CREATE SUBSCRIPTION AND SUBSCRIPTION CHANGES
+            _subscriptions = new TokenCollection();
+
+            //  SETUP ENDPOINTS AND CHOOSE THE ENDPOINT TO START WITH
+            _endPoints = EndPoints;
+            if (_endPoints.Count == 1)
+            {
+                CurrentEndPoint = _endPoints[0];
+            }
+            else
+            {
+                int loopCnt = _randomizer.Next(20);
+                int pointer = 0;
+                for (int a = 0; a < loopCnt; a++)
+                {
+                    pointer = _randomizer.Next(_endPoints.Count);
+                }
+                pointer = _randomizer.Next(_endPoints.Count);
+                CurrentEndPoint = _endPoints[pointer];
+                //  ENSURE THIS ENDPOINT IS SELECTED FIRST (Must have the lowest DontReconnectUntil)
+                CurrentEndPoint.DontReconnectUntil = DateTime.Now.AddYears(-1);
+            }
+
+            //  PREALLOCATE A POOL OF SocketAsyncEventArgs FOR SENDING
+            _sendEventArgsPool = new SocketAsyncEventArgsPool(Constants.SocketAsyncEventArgsPoolSize);
+            _sendEventArgsPool.Completed += ProcessSend;
+
+            _asyncEventArgsConnect = new SocketAsyncEventArgs();
+            _asyncEventArgsConnect.Completed += new EventHandler<SocketAsyncEventArgs>(ProcessConnect);
+
+            _asyncEventArgsPolling = new SocketAsyncEventArgs();
+            _asyncEventArgsPolling.SetBuffer(new byte[Constants.SEND_RECEIVE_BUFFER_SIZE], 0, Constants.SEND_RECEIVE_BUFFER_SIZE);
+            _asyncEventArgsPolling.Completed += ProcessSendPollRequest;
+
+            _asyncEventArgsSendSubscriptionChanges = new SocketAsyncEventArgs();
+            _asyncEventArgsSendSubscriptionChanges.SetBuffer(new byte[Constants.SEND_RECEIVE_BUFFER_SIZE], 0, Constants.SEND_RECEIVE_BUFFER_SIZE);
+            _asyncEventArgsSendSubscriptionChanges.Completed += ProcessSendSubscriptionChanges;
+
+            BgConnectToServer();
+        }
+
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="IPAddress1">IP Address to of the first SocketMeister server to connect to</param>
+        /// <param name="Port1">TCP port the first server is listening on</param>
+        /// <param name="IPAddress2">IP Address to of the second SocketMeister server to connect to</param>
+        /// <param name="Port2">TCP port the second server is listening on</param>
+        /// <param name="EnableCompression">Whether compression will be applied to data.</param>
+        public SocketClient(string IPAddress1, int Port1, string IPAddress2, int Port2, bool EnableCompression)
+        {
+            List<SocketEndPoint> EndPoints = new List<SocketEndPoint>();
+            EndPoints.Add(new SocketEndPoint(IPAddress1, Port1));
+            EndPoints.Add(new SocketEndPoint(IPAddress2, Port2));
+
+            _enableCompression = EnableCompression;
+            _receiveEngine = new MessageEngine(EnableCompression);
+
+            //  CREATE SUBSCRIPTION AND SUBSCRIPTION CHANGES
+            _subscriptions = new TokenCollection();
+
+            //  SETUP ENDPOINTS AND CHOOSE THE ENDPOINT TO START WITH
+            _endPoints = EndPoints;
+            if (_endPoints.Count == 1)
+            {
+                CurrentEndPoint = _endPoints[0];
+            }
+            else
+            {
+                int loopCnt = _randomizer.Next(20);
+                int pointer = 0;
+                for (int a = 0; a < loopCnt; a++)
+                {
+                    pointer = _randomizer.Next(_endPoints.Count);
+                }
+                pointer = _randomizer.Next(_endPoints.Count);
+                CurrentEndPoint = _endPoints[pointer];
+                //  ENSURE THIS ENDPOINT IS SELECTED FIRST (Must have the lowest DontReconnectUntil)
+                CurrentEndPoint.DontReconnectUntil = DateTime.Now.AddYears(-1);
+            }
+
+            //  PREALLOCATE A POOL OF SocketAsyncEventArgs FOR SENDING
+            _sendEventArgsPool = new SocketAsyncEventArgsPool(Constants.SocketAsyncEventArgsPoolSize);
+            _sendEventArgsPool.Completed += ProcessSend;
+
+            _asyncEventArgsConnect = new SocketAsyncEventArgs();
+            _asyncEventArgsConnect.Completed += new EventHandler<SocketAsyncEventArgs>(ProcessConnect);
+
+            _asyncEventArgsPolling = new SocketAsyncEventArgs();
+            _asyncEventArgsPolling.SetBuffer(new byte[Constants.SEND_RECEIVE_BUFFER_SIZE], 0, Constants.SEND_RECEIVE_BUFFER_SIZE);
+            _asyncEventArgsPolling.Completed += ProcessSendPollRequest;
+
+            _asyncEventArgsSendSubscriptionChanges = new SocketAsyncEventArgs();
+            _asyncEventArgsSendSubscriptionChanges.SetBuffer(new byte[Constants.SEND_RECEIVE_BUFFER_SIZE], 0, Constants.SEND_RECEIVE_BUFFER_SIZE);
+            _asyncEventArgsSendSubscriptionChanges.Completed += ProcessSendSubscriptionChanges;
+
+            BgConnectToServer();
+        }
+
 
 
         /// <summary>
@@ -1212,6 +1328,7 @@ namespace SocketMeister
 #pragma warning restore CA1805 // Do not initialize unnecessarily
 #pragma warning restore CA1031 // Do not catch general exception types
 #pragma warning restore CA1303 // Do not pass literals as localized parameters
+#pragma warning restore IDE0028 // Simplify collection initialization
 #pragma warning restore IDE0052 // Remove unread private members
 #pragma warning restore IDE0063 // Use simple 'using' statement
 #pragma warning restore IDE0017 // Simplify object initialization

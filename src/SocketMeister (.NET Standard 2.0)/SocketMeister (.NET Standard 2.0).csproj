@@ -11,7 +11,7 @@
     <RepositoryUrl>https://github.com/SeanFellowes/SocketMeister</RepositoryUrl>
     <PackageTags>tcp socket</PackageTags>
     <Company>Sean Fellowes</Company>
-    <PackageReleaseNotes>Fixed bug where serializer caused warnings when SocketMeister.Source is incorporated into multiple projects or included in a DLL from another project. Serializer was public but should be internal. Could cause problems where multiple versions of SocketMeister are used in the same project.</PackageReleaseNotes>
+    <PackageReleaseNotes>Added new constructors to SocketClient to simplify instantiating with 1 or 2 SocketServer end points.</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseUrl></PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
@@ -20,9 +20,9 @@
     <DocumentationFile>C:\Users\sfell\Source\Repos\SeanFellowes\SocketMeister\src\SocketMeister (.NET Standard 2.0)\SocketMeister.xml</DocumentationFile>
     <PackageIcon>icon_128.png</PackageIcon>
     <SelfContained>true</SelfContained>
-    <Version>2.2.4</Version>
-    <AssemblyVersion>2.2.4.0</AssemblyVersion>
-    <FileVersion>2.2.4.0</FileVersion>
+    <Version>2.2.5</Version>
+    <AssemblyVersion>2.2.5.0</AssemblyVersion>
+    <FileVersion>2.2.5.0</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net35|AnyCPU'">

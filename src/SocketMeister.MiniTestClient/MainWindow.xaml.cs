@@ -234,18 +234,23 @@ namespace SocketMeister.MiniTestClient
                     Client.ServerStopping += Client_ServerStopping;
                     Client.SubscriptionMessageReceived += Client_SubscriptionMessageReceived;
 
-                    List<SocketEndPoint> eps = new List<SocketEndPoint>();
-
-                    SocketEndPoint ep1 = new SocketEndPoint(IPAddress.Text, 4505);
-                    eps.Add(ep1);
-
-                    if (EndpointRB2.IsChecked == true)
+                    if (EndpointRB2.IsChecked == false)
                     {
+                        Client.Start(IPAddress.Text, 4505);
+                    }
+                    else
+                    {
+                        List<SocketEndPoint> eps = new List<SocketEndPoint>();
+
+                        SocketEndPoint ep1 = new SocketEndPoint(IPAddress.Text, 4505);
+                        eps.Add(ep1);
+
                         SocketEndPoint ep2 = new SocketEndPoint(IPAddress.Text, 4506);
                         eps.Add(ep2);
+
+                        Client.Start(eps);
                     }
 
-                    Client.Start(eps);
                 }
 
                 _dispatcherTimer.Tick += DispatcherTimer_Tick;
