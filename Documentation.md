@@ -17,7 +17,7 @@ SocketMeister Client works with most .NET framework versions, from .NET 3.5 and 
 
 ## SocketServer Class.
 
-Making a start with SocketServer requires only a few lines of code. The following will start the socket server on port 4505 and process messages and requests from clients. 
+Making a start with SocketServer requires only a few lines of code. The following will start the socket server on port 4505 and process requests from clients. 
 
 ```
 using System;
@@ -32,8 +32,7 @@ namespace MyApplication
 
 		public Server()
 		{
-			//  Listen to MessageReceived and RequestReceived events
-			_socketServer.MessageReceived += SocketServer_MessageReceived;
+			//  Register to RequestReceived events
 			_socketServer.RequestReceived += SocketServer_RequestReceived;
 
 			//  Start the socket server
@@ -50,15 +49,6 @@ namespace MyApplication
 			}
 		}
 
-		private void SocketServer_MessageReceived(object sender, SocketServer.MessageReceivedEventArgs e)
-		{
-			//  Example message
-			if (Convert.ToString(e.Parameters[0]) == "DoSomething")
-			{
-				//  Do something here
-			}
-		}
-		
 		public void Stop()
 		{
 			//  Stop the socket server before exiting the application
