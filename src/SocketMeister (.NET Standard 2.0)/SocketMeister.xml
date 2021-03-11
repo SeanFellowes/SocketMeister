@@ -1320,11 +1320,6 @@
             Raised when the status of the socket listener changes.
             </summary>
         </member>
-        <member name="E:SocketMeister.SocketServer.MessageReceived">
-            <summary>
-            Raised when a message is received from a client.
-            </summary>
-        </member>
         <member name="E:SocketMeister.SocketServer.RequestReceived">
             <summary>
             Raised when a request message is received from a client. A response can be provided which will be returned to the client.

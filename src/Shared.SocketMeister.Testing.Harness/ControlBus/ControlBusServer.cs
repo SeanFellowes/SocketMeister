@@ -44,7 +44,6 @@ namespace SocketMeister.Testing.ControlBus
             _listener.ClientsChanged += Listener_ClientsChanged;
             _listener.ListenerStateChanged += Listener_ListenerStateChanged;
             _listener.TraceEventRaised += Listener_TraceEventRaised;
-            _listener.MessageReceived += Listener_MessageReceived;
             _listener.RequestReceived += Listener_RequestReceived;
         }
 
@@ -84,7 +83,6 @@ namespace SocketMeister.Testing.ControlBus
             _listener.ClientsChanged -= Listener_ClientsChanged;
             _listener.ListenerStateChanged -= Listener_ListenerStateChanged;
             _listener.TraceEventRaised -= Listener_TraceEventRaised;
-            _listener.MessageReceived -= Listener_MessageReceived;
             _listener.RequestReceived -= Listener_RequestReceived;
 
             //  STOP SOCKET SERVER

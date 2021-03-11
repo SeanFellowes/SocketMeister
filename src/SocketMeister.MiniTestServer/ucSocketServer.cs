@@ -106,7 +106,6 @@ namespace SocketMeister
                 Server.ClientConnected += Server_ClientConnected;
                 Server.ClientDisconnected += Server_ClientDisconnected;
                 Server.ExceptionRaised += Server_ExceptionRaised;
-                Server.MessageReceived += Server_MessageReceived;
                 Server.RequestReceived += Server_RequestReceived;
                 Server.ListenerStateChanged += Server_ListenerStateChanged;
                 Server.Start();
@@ -130,7 +129,6 @@ namespace SocketMeister
                     Server.ClientConnected -= Server_ClientConnected;
                     Server.ClientDisconnected -= Server_ClientDisconnected;
                     Server.ExceptionRaised -= Server_ExceptionRaised;
-                    Server.MessageReceived -= Server_MessageReceived;
                     Server.RequestReceived -= Server_RequestReceived;
                     Server.ListenerStateChanged -= Server_ListenerStateChanged;
                     Server.Stop();
@@ -141,7 +139,6 @@ namespace SocketMeister
                     Server.ClientConnected -= Server_ClientConnected;
                     Server.ClientDisconnected -= Server_ClientDisconnected;
                     Server.ExceptionRaised -= Server_ExceptionRaised;
-                    Server.MessageReceived -= Server_MessageReceived;
                     Server.RequestReceived -= Server_RequestReceived;
                     Server.ListenerStateChanged -= Server_ListenerStateChanged;
                     SetButtonEnabled(btnStop, false);
@@ -179,20 +176,6 @@ namespace SocketMeister
         private void Server_ListenerStateChanged(object sender, SocketServer.SocketServerStatusChangedEventArgs e)
         {
             SetUI(e.Status);
-        }
-
-
-        void Server_MessageReceived(object sender, SocketServer.MessageReceivedEventArgs e)
-        {
-            SetLabelText(lblTotalRequestsReceived, Server.TotalRequestsReceived.ToString("N0"));
-            SetLabelText(lblBytesReceived, Server.TotalBytesReceived.ToString("N0"));
-
-            //MESSAGE RECEIVED. SEND IT BACK IF LOGGING IS ON
-            int clientId = (int)e.Parameters[0];
-            byte[] receivedBytes = (byte[])e.Parameters[1];
-            string msgRec = Encoding.UTF8.GetString(receivedBytes, 0, receivedBytes.Length);
-
-            LogEventRaised?.Invoke(this, new LogEventArgs(SeverityType.Information, "Server #" + ServerId.ToString(), "Client " + clientId, "MessageReceived: " + msgRec));
         }
 
 

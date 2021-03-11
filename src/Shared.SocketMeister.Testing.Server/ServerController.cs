@@ -191,7 +191,6 @@ namespace SocketMeister.Testing
             _socketServer.ClientsChanged += SocketServer_ClientsChanged;
             _socketServer.ListenerStateChanged += SocketServer_ListenerStateChanged;
             _socketServer.TraceEventRaised += SocketServer_TraceEventRaised;
-            _socketServer.MessageReceived += SocketServer_MessageReceived;
             _socketServer.RequestReceived += SocketServer_RequestReceived;
             _socketServer.Start();
             //}));
@@ -207,7 +206,6 @@ namespace SocketMeister.Testing
             _socketServer.ClientsChanged -= SocketServer_ClientsChanged;
             _socketServer.ListenerStateChanged -= SocketServer_ListenerStateChanged;
             _socketServer.TraceEventRaised -= SocketServer_TraceEventRaised;
-            _socketServer.MessageReceived -= SocketServer_MessageReceived;
             _socketServer.RequestReceived -= SocketServer_RequestReceived;
 
             //  STOP SOCKET SERVER
@@ -216,11 +214,6 @@ namespace SocketMeister.Testing
                 _socketServer.Stop();
             }
             _openTransactions.Clear();
-        }
-
-        private void SocketServer_MessageReceived(object sender, SocketServer.MessageReceivedEventArgs e)
-        {
-            MessageReceived?.Invoke(sender, e);
         }
 
         private void SocketServer_RequestReceived(object sender, SocketServer.RequestReceivedEventArgs e)

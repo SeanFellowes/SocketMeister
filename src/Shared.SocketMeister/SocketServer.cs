@@ -74,7 +74,7 @@ namespace SocketMeister
         public event EventHandler<SocketServerStatusChangedEventArgs> ListenerStateChanged;
 
         /// <summary>
-        /// Raised when a message is received from a client.
+        /// TO BE DEPRICATED. CLient has no function to send a message. Client only has SendRequest().
         /// </summary>
         public event EventHandler<MessageReceivedEventArgs> MessageReceived;
 
@@ -536,26 +536,6 @@ namespace SocketMeister
                             {
                                 //  PROCESS ResponseMessage. NOTE: METHOD IS EXECUTED IN A ThreadPool THREAD
                                 remoteClient.ProcessResponseMessage(receiveEnvelope.GetResponseMessage());
-                            }
-                        }
-                        else if (receiveEnvelope.MessageType == MessageTypes.Message)
-                        {
-                            if (ListenerState == SocketServerStatus.Started)
-                            {
-                                Message message = receiveEnvelope.GetMessage();
-                                message.RemoteClient = remoteClient;
-                                new Thread(new ThreadStart(delegate
-                                {
-                                    try
-                                    {
-                                        MessageReceived?.Invoke(this, new MessageReceivedEventArgs(message.RemoteClient, message.Parameters));
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        NotifyTraceEventRaised(ex, 5008);
-                                    }
-                                }
-                                )).Start();
                             }
                         }
                         else if (receiveEnvelope.MessageType == MessageTypes.ClientDisconnectMessage)
