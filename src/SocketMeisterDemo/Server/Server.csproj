@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{192A2425-E3AD-467E-95AF-988033AA6E8D}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>SocketMeister</RootNamespace>
+    <RootNamespace>SocketMeisterDemo</RootNamespace>
     <AssemblyName>Server</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

@@ -2,14 +2,14 @@
 using System.Windows.Forms;
 using SocketMeister;
 
-namespace SocketMeister
+namespace SocketMeisterDemo
 {
-    public partial class ClientForm : Form
+    public partial class DemoClient : Form
     {
         //  Start socket client, pointed at 127.0.0.1:4505 with compression enabled (127.0.0.1 is localhost)
         SocketClient _socketClient = new SocketClient("127.0.0.1", 4505, true);
 
-        public ClientForm()
+        public DemoClient()
         {
             InitializeComponent();
         }
@@ -17,12 +17,15 @@ namespace SocketMeister
         private void BtnGetTimezoneDisplayName_Click(object sender, EventArgs e)
         {
             object[] parms = new object[] { "GetTimezoneDisplayName" };
-            byte[] result =_socketClient.SendRequest(parms);
-            MessageBox.Show(System.Text.Encoding.ASCII.GetString(result));
+            byte[] response =_socketClient.SendRequest(parms);
+
+            //  Response is a binary array. Convert it to a string and display the message.
+            MessageBox.Show(System.Text.Encoding.ASCII.GetString(response));
         }
 
         private void ClientForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            //  Disconnect from the socket server
             _socketClient.Stop();
         }
     }

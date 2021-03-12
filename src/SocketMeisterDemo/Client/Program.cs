@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace SocketMeister
+namespace SocketMeisterDemo
 {
     static class Program
     {
@@ -17,7 +17,7 @@ namespace SocketMeister
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new ClientForm());
+            Application.Run(new DemoClient());
         }
     }
 }

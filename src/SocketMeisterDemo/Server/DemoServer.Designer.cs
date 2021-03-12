@@ -1,5 +1,5 @@
 ﻿
-namespace SocketMeister
+namespace SocketMeisterDemo
 {
     partial class DemoServer
     {

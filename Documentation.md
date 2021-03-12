@@ -15,46 +15,87 @@ SocketMeister Client works with most .NET framework versions, from .NET 3.5 and 
 3. The [SocketMeister.Sources](https://www.nuget.org/packages/SocketMeister.Sources/) NuGet package contains the C# source files for SocketMeister, enabling you to embed SocketMeister in your own project EXE or DLL. This eliminates the need to ship the SocketMeister DLL with your product. Simply add the [SocketMeister.Sources](https://www.nuget.org/packages/SocketMeister.Sources/) NuGet package to your Visual Studio project and a folder containing the code will be added to the project.
 
 
-## SocketServer Class.
+## SocketServer.
 
-Making a start with SocketServer requires only a few lines of code. The following will start the socket server on port 4505 and process requests from clients. 
+Making a start with SocketServer requires only a few lines of code. The following will start the socket server on port 4505 and process an example request from clients. 
 
 ```
 using System;
+using System.Windows.Forms;
 using SocketMeister;
 
-namespace MyApplication
+namespace SocketMeisterDemo
 {
-	public class Server
-	{
-		//  Instatiate SocketServer on port 4505 with compression enabled
-		private readonly SocketServer _socketServer = new SocketServer(4505, true);
+    public partial class DemoServer : Form
+    {
+        //  Instatiate SocketServer on port 4505 with compression enabled
+        private readonly SocketServer _socketServer = new SocketServer(4505, true);
 
-		public Server()
-		{
-			//  Register to RequestReceived events
-			_socketServer.RequestReceived += SocketServer_RequestReceived;
+        public DemoServer()
+        {
+            InitializeComponent();
 
-			//  Start the socket server
-			_socketServer.Start();
-		}
+            //  Listen to RequestReceived events
+            _socketServer.RequestReceived += SocketServer_RequestReceived;
 
+            //  Start the socket server
+            _socketServer.Start();
+        }
 		private void SocketServer_RequestReceived(object sender, SocketServer.RequestReceivedEventArgs e)
 		{
 			//  Example request
 			if (Convert.ToString(e.Parameters[0]) == "GetTimezoneDisplayName")
 			{
-				//  Response is a binary array
-				e.Response = System.Text.Encoding.ASCII.GetBytes(TimeZoneInfo.Local.DisplayName); 
+				//  Response is a binary array. Convert string to binary array.
+				e.Response = System.Text.Encoding.ASCII.GetBytes(TimeZoneInfo.Local.DisplayName);
 			}
 		}
 
-		public void Stop()
-		{
+        private void ServerForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
 			//  Stop the socket server before exiting the application
 			_socketServer.Stop();
 		}
 	}
+}
+```
+
+## SocketClient 
+
+The following code is from a WinForm containing one button called BtnGetTimezoneDisplayName. It automatically connects to the SocketServer running on the local machine. Pressing the button sends a request to the server, then displays a string response. On exiting the form th
+
+```
+using System;
+using System.Windows.Forms;
+using SocketMeister;
+
+namespace SocketMeisterDemo
+{
+    public partial class DemoClient : Form
+    {
+        //  Start socket client, pointed at 127.0.0.1:4505 with compression enabled (127.0.0.1 is localhost)
+        SocketClient _socketClient = new SocketClient("127.0.0.1", 4505, true);
+
+        public DemoClient()
+        {
+            InitializeComponent();
+        }
+
+        private void BtnGetTimezoneDisplayName_Click(object sender, EventArgs e)
+        {
+            object[] parms = new object[] { "GetTimezoneDisplayName" };
+            byte[] response =_socketClient.SendRequest(parms);
+
+            //  Response is a binary array. Convert it to a string and display the message.
+            MessageBox.Show(System.Text.Encoding.ASCII.GetString(response));
+        }
+
+        private void ClientForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            //  Disconnect from the socket server
+            _socketClient.Stop();
+        }
+    }
 }
 ```
 

@@ -1,7 +1,7 @@
 ﻿
-namespace SocketMeister
+namespace SocketMeisterDemo
 {
-    partial class ClientForm
+    partial class DemoClient
     {
         /// <summary>
         ///  Required designer variable.
