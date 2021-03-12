@@ -2,14 +2,14 @@
 using System.Windows.Forms;
 using SocketMeister;
 
-namespace SocketMeisterDemo
+namespace SocketMeister
 {
-    public partial class FormServer : Form
+    public partial class DemoServer : Form
     {
         //  Instatiate SocketServer on port 4505 with compression enabled
         private readonly SocketServer _socketServer = new SocketServer(4505, true);
 
-        public FormServer()
+        public DemoServer()
         {
             InitializeComponent();
 

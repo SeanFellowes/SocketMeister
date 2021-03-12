@@ -49,16 +49,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FormServer.cs">
+    <Compile Include="DemoServer.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FormServer.Designer.cs">
-      <DependentUpon>FormServer.cs</DependentUpon>
+    <Compile Include="DemoServer.Designer.cs">
+      <DependentUpon>DemoServer.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="FormServer.resx">
-      <DependentUpon>FormServer.cs</DependentUpon>
+    <EmbeddedResource Include="DemoServer.resx">
+      <DependentUpon>DemoServer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

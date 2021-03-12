@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace SocketMeisterDemo
+namespace SocketMeister
 {
     static class Program
     {
@@ -16,7 +16,7 @@ namespace SocketMeisterDemo
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new FormServer());
+            Application.Run(new DemoServer());
         }
     }
 }
