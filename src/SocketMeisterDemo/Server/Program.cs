@@ -16,7 +16,7 @@ namespace SocketMeisterDemo
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new DemoServer());
+            Application.Run(new SimpleServer());
         }
     }
 }

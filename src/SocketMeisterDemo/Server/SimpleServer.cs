@@ -4,12 +4,12 @@ using SocketMeister;
 
 namespace SocketMeisterDemo
 {
-    public partial class DemoServer : Form
+    public partial class SimpleServer : Form
     {
         //  Instatiate SocketServer on port 4505 with compression enabled
         private readonly SocketServer _socketServer = new SocketServer(4505, true);
 
-        public DemoServer()
+        public SimpleServer()
         {
             InitializeComponent();
 

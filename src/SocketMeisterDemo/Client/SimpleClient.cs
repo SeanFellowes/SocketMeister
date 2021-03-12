@@ -4,12 +4,12 @@ using SocketMeister;
 
 namespace SocketMeisterDemo
 {
-    public partial class DemoClient : Form
+    public partial class SimpleClient : Form
     {
         //  Start socket client, pointed at 127.0.0.1:4505 with compression enabled (127.0.0.1 is localhost)
         SocketClient _socketClient = new SocketClient("127.0.0.1", 4505, true);
 
-        public DemoClient()
+        public SimpleClient()
         {
             InitializeComponent();
         }

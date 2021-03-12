@@ -1,7 +1,7 @@
 ﻿
 namespace SocketMeisterDemo
 {
-    partial class DemoServer
+    partial class SimpleServer
     {
         /// <summary>
         /// Required designer variable.

@@ -41,6 +41,7 @@ namespace SocketMeisterDemo
             //  Start the socket server
             _socketServer.Start();
         }
+        
 		private void SocketServer_RequestReceived(object sender, SocketServer.RequestReceivedEventArgs e)
 		{
 			//  Example request
