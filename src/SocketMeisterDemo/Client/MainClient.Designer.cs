@@ -1,5 +1,5 @@
 ﻿
-namespace Client
+namespace SocketMeister
 {
     partial class ClientForm
     {

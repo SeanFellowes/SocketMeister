@@ -139,12 +139,12 @@ namespace SocketMeister
                 if (Parameters.Length == 0) throw new ArgumentException("At least 1 request parameter is required.", nameof(Parameters));
                 DateTime startTime = DateTime.Now;
                 DateTime maxWait = startTime.AddMilliseconds(TimeoutMilliseconds);
-                while (_socketServer.ListenerState == SocketServerStatus.Starting)
+                while (_socketServer.Status == SocketServerStatus.Starting)
                 {
                     Thread.Sleep(200);
                     if (DateTime.Now > maxWait) throw new TimeoutException();
                 }
-                if (_socketServer.ListenerState != SocketServerStatus.Started) throw new Exception("Request cannot be sent. The socket server is not running");
+                if (_socketServer.Status != SocketServerStatus.Started) throw new Exception("Request cannot be sent. The socket server is not running");
                 int remainingMilliseconds = TimeoutMilliseconds - Convert.ToInt32((DateTime.Now - startTime).TotalMilliseconds);
                 return SendReceive(new RequestMessage(Parameters, remainingMilliseconds, IsLongPolling));
             }
@@ -152,7 +152,7 @@ namespace SocketMeister
 
             private byte[] SendReceive(RequestMessage Request)
             {
-                if (_socketServer.ListenerState != SocketServerStatus.Started) return null;
+                if (_socketServer.Status != SocketServerStatus.Started) return null;
 
                 DateTime nowTs = DateTime.Now;
                 _openRequests.Add(Request);
@@ -161,7 +161,7 @@ namespace SocketMeister
 
                 while (Request.TrySendReceive == true)
                 {
-                    if (_socketServer.ListenerState != SocketServerStatus.Started) return null;
+                    if (_socketServer.Status != SocketServerStatus.Started) return null;
 
                     if (Request.Status == MessageStatus.Unsent)
                     {

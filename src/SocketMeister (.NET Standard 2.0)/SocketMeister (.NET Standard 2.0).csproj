@@ -11,7 +11,15 @@
     <RepositoryUrl>https://github.com/SeanFellowes/SocketMeister</RepositoryUrl>
     <PackageTags>tcp socket</PackageTags>
     <Company>Sean Fellowes</Company>
-    <PackageReleaseNotes>Added new constructors to SocketClient to simplify instantiating with 1 or 2 SocketServer end points.</PackageReleaseNotes>
+    <PackageReleaseNotes>New major version 3.0.0.0
+1.	Removed Silverlight Policy Server. Silverlight client continues to be supported but you must implement your own policy server.
+2.	SocketServer. Removed event ExceptionRaised. Use TraceEventRaised instead. If you are only interested in errors, ignore all trace events except where Severity = SeverityType.Error.
+3.	SocketServer. Removed event MessageReceived. It was never functional in any version of SocketMeister. All messages are presented via the RequestReceived event.
+4.	SocketServer. Property ListenerState is deprecated. Property Status has been available for many versions.
+5.	SocketServer. Changed event ListenerStateChanged to StatusChanged. The new event no longer provides the status with the event. On receiving the StatusChanged event, check the property SocketServer.Status. The removal of data in the event was necessary because these events are raised in separate threads so as to not affect performance. Very vast changes during start up and shutdown would cause incorrect results when showing the status on a user interface. 
+6.	SocketServer.ClientsChanged event deprecated. Use existing SocketServer.ClientConnected and SocketServer.ClientDisconnected events.
+7.	EventArgs type MessageReceivedEventArgs is deprecated as it is no longer used.
+8.	Fixed object disposed bug when stopping client under high load and a connect event completes</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseUrl></PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
@@ -20,9 +28,9 @@
     <DocumentationFile>C:\Users\sfell\Source\Repos\SeanFellowes\SocketMeister\src\SocketMeister (.NET Standard 2.0)\SocketMeister.xml</DocumentationFile>
     <PackageIcon>icon_128.png</PackageIcon>
     <SelfContained>true</SelfContained>
-    <Version>2.3.0</Version>
-    <AssemblyVersion>2.3.0.0</AssemblyVersion>
-    <FileVersion>2.3.0.0</FileVersion>
+    <Version>3.0.0</Version>
+    <AssemblyVersion>3.0.0.0</AssemblyVersion>
+    <FileVersion>3.0.0.0</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net35|AnyCPU'">

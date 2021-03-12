@@ -34,9 +34,7 @@ namespace SocketMeister.Test
             HarnessController.ExecuteModeChanged += HarnessController_ExecuteModeChanged;
             HarnessController.TraceEventRaised += ProcessTraceEventRaised;
 
-            HarnessController.PolicyServer.ListenerStateChanged += ControlPolicyServer.SetListenerState;
-
-            HarnessController.ControlBusServer.ListenerStateChanged += ControlServer.SetListenerState;
+            HarnessController.ControlBusServer.StatusChanged += ControlServer.SetListenerState;
             HarnessController.ControlBusServer.ClientsChanged += ControlBusServer_ClientsChanged;
 
             //  REGISTER FOR EVENTS FROM TESTS
@@ -91,8 +89,7 @@ namespace SocketMeister.Test
             {
                 //  UNREGISTER 
                 HarnessController.ExecuteModeChanged -= HarnessController_ExecuteModeChanged;
-                HarnessController.PolicyServer.ListenerStateChanged -= ControlPolicyServer.SetListenerState;
-                HarnessController.ControlBusServer.ListenerStateChanged -= ControlServer.SetListenerState;
+                HarnessController.ControlBusServer.StatusChanged -= ControlServer.SetListenerState;
                 HarnessController.ControlBusServer.ClientsChanged -= ControlBusServer_ClientsChanged;
 
                 HarnessController.Dispose();
@@ -110,7 +107,7 @@ namespace SocketMeister.Test
         }
 
 
-        private void ControlBusServer_ClientsChanged(object sender, SocketServer.ClientsChangedEventArgs e)
+        private void ControlBusServer_ClientsChanged(object sender, SocketServer.ClientEventArgs e)
         {
             ControlServer.SetClientCount(HarnessController.ControlBusServer.Listener.ClientCount);
         }

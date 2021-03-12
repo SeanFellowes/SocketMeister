@@ -60,10 +60,6 @@ namespace SocketMeister.Testing
             ControlBusServer = new ControlBusServer();
             ControlBusServer.RequestReceived += ControlBusServer_RequestReceived;
 
-            //  SETUP POLICY SERVER
-            PolicyServer = new PolicyServer();
-            PolicyServer.TraceEventRaised += PolicyServer_TraceEventRaised;
-
             //  SETUP FIXED SERVER
             FixedServer1 = new HarnessServerController(int.MaxValue - 1, Constants.ControlBusServerIPAddress);
             FixedServer1.ExceptionRaised += FixedServer1_ExceptionRaised;
@@ -126,20 +122,6 @@ namespace SocketMeister.Testing
                         ControlBusServer.RequestReceived -= ControlBusServer_RequestReceived;
                         ControlBusServer.Stop();
                         ControlBusServer.Dispose();
-                    }
-                    catch { }
-                }
-
-                if (PolicyServer != null)
-                {
-                    try
-                    {
-                        if (PolicyServer.ListenerState == SocketServerStatus.Started)
-                        {
-                            PolicyServer.Stop();
-                        }
-                        PolicyServer.TraceEventRaised -= PolicyServer_TraceEventRaised;
-                        PolicyServer.Dispose();
                     }
                     catch { }
                 }
@@ -266,16 +248,10 @@ namespace SocketMeister.Testing
         public void Start()
         {
             ControlBusServer.Start();
-            PolicyServer.Start();
             FixedServer1.Start();
             FixedClient1.Start();
         }
 
-
-        /// <summary>
-        /// Policy Server for Silverlight Clients
-        /// </summary>
-        public PolicyServer PolicyServer { get; }
 
         /// <summary>
         /// Suite of tests which are available;

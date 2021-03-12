@@ -105,9 +105,9 @@ namespace SocketMeister
                 Server = new SocketServer(_port, cbCompressMessage.Checked);
                 Server.ClientConnected += Server_ClientConnected;
                 Server.ClientDisconnected += Server_ClientDisconnected;
-                Server.ExceptionRaised += Server_ExceptionRaised;
+                Server.TraceEventRaised += Server_TraceEventRaised;
                 Server.RequestReceived += Server_RequestReceived;
-                Server.ListenerStateChanged += Server_ListenerStateChanged;
+                Server.StatusChanged += Server_StatusChanged;
                 Server.Start();
 
                 SetButtonEnabled(btnStart, false);       //  CHANGED WHEN EVENT IS RECEIVED
@@ -128,9 +128,9 @@ namespace SocketMeister
                 {
                     Server.ClientConnected -= Server_ClientConnected;
                     Server.ClientDisconnected -= Server_ClientDisconnected;
-                    Server.ExceptionRaised -= Server_ExceptionRaised;
+                    Server.TraceEventRaised -= Server_TraceEventRaised;
                     Server.RequestReceived -= Server_RequestReceived;
-                    Server.ListenerStateChanged -= Server_ListenerStateChanged;
+                    Server.StatusChanged -= Server_StatusChanged;
                     Server.Stop();
                 }
                 else
@@ -138,9 +138,9 @@ namespace SocketMeister
                     Server.Stop();
                     Server.ClientConnected -= Server_ClientConnected;
                     Server.ClientDisconnected -= Server_ClientDisconnected;
-                    Server.ExceptionRaised -= Server_ExceptionRaised;
+                    Server.TraceEventRaised -= Server_TraceEventRaised;
                     Server.RequestReceived -= Server_RequestReceived;
-                    Server.ListenerStateChanged -= Server_ListenerStateChanged;
+                    Server.StatusChanged -= Server_StatusChanged;
                     SetButtonEnabled(btnStop, false);
                     SetButtonEnabled(btnSendMessage, false);
                     SetButtonEnabled(btnBroadcastToSubscribers, false);
@@ -155,27 +155,27 @@ namespace SocketMeister
 
 
 
-        private void Server_ClientDisconnected(object sender, SocketServer.ClientDisconnectedEventArgs e)
+        private void Server_ClientDisconnected(object sender, SocketServer.ClientEventArgs e)
         {
             SetLabelText(lblTotalConnectedClients, Server.ClientCount.ToString("N0"));
         }
 
-        private void Server_ClientConnected(object sender, SocketServer.ClientConnectedEventArgs e)
+        private void Server_ClientConnected(object sender, SocketServer.ClientEventArgs e)
         {
             SetLabelText(lblTotalConnectedClients, Server.ClientCount.ToString("N0"));
         }
 
-        private void Server_ExceptionRaised(object sender, ExceptionEventArgs e)
+        private void Server_TraceEventRaised(object sender, TraceEventArgs e)
         {
-            if (e.Exception != null)
+            if (e.Severity == SeverityType.Error)
             {
-                LogEventRaised?.Invoke(this, new LogEventArgs(e.Exception, "Server #" + ServerId.ToString(), "-"));
+                LogEventRaised?.Invoke(this, new LogEventArgs(new Exception(e.Message), "Server #" + ServerId.ToString(), "-"));
             }
         }
 
-        private void Server_ListenerStateChanged(object sender, SocketServer.SocketServerStatusChangedEventArgs e)
+        private void Server_StatusChanged(object sender, EventArgs e)
         {
-            SetUI(e.Status);
+            SetUI(Server.Status);
         }
 
 

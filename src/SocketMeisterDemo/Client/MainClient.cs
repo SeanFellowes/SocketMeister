@@ -2,7 +2,7 @@
 using System.Windows.Forms;
 using SocketMeister;
 
-namespace Client
+namespace SocketMeister
 {
     public partial class ClientForm : Form
     {

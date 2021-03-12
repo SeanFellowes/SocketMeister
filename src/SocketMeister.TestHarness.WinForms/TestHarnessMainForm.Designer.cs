@@ -33,7 +33,6 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TestHarnessMainForm));
             this.pnlControl = new System.Windows.Forms.Panel();
-            this.ControlPolicyServer = new SocketMeister.Test.SocketServerOverview();
             this.ControlServer = new SocketMeister.Test.SocketServerOverview();
             this.panelControlHeader = new System.Windows.Forms.Panel();
             this.label2 = new System.Windows.Forms.Label();
@@ -86,7 +85,6 @@
             // 
             this.pnlControl.BackColor = System.Drawing.Color.Moccasin;
             this.pnlControl.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pnlControl.Controls.Add(this.ControlPolicyServer);
             this.pnlControl.Controls.Add(this.ControlServer);
             this.pnlControl.Controls.Add(this.panelControlHeader);
             this.pnlControl.Dock = System.Windows.Forms.DockStyle.Top;
@@ -96,17 +94,6 @@
             this.pnlControl.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.pnlControl.Size = new System.Drawing.Size(992, 85);
             this.pnlControl.TabIndex = 2;
-            // 
-            // ControlPolicyServer
-            // 
-            this.ControlPolicyServer.BackColor = System.Drawing.Color.FloralWhite;
-            this.ControlPolicyServer.Location = new System.Drawing.Point(406, 47);
-            this.ControlPolicyServer.Margin = new System.Windows.Forms.Padding(2);
-            this.ControlPolicyServer.Name = "ControlPolicyServer";
-            this.ControlPolicyServer.Port = 4502;
-            this.ControlPolicyServer.Size = new System.Drawing.Size(341, 33);
-            this.ControlPolicyServer.SocketServerType = SocketMeister.Test.SocketServerOverview.SocketServerTypes.PolicyServer;
-            this.ControlPolicyServer.TabIndex = 5;
             // 
             // ControlServer
             // 
