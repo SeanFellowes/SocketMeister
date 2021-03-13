@@ -725,6 +725,8 @@ namespace SocketMeister
         /// <param name="e">Socket Arguments</param>
         private void ProcessConnect(object sender, SocketAsyncEventArgs e)
         {
+            if (StopClientPermanently == true) return;
+
             if (e.SocketError == SocketError.Success)
             {
                 //  ATTEMPT TO START RECEIVING

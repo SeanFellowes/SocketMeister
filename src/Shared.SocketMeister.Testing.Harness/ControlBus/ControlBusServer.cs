@@ -15,17 +15,12 @@ namespace SocketMeister.Testing.ControlBus
         /// <summary>
         /// Raised when the status of the socket listener changes.
         /// </summary>
-        public event EventHandler<SocketServer.SocketServerStatusChangedEventArgs> ListenerStateChanged;
+        public event EventHandler<EventArgs> StatusChanged;
 
         /// <summary>
         /// Raised when an trace log event has been raised.
         /// </summary>
         internal event EventHandler<TraceEventArgs> TraceEventRaised;
-
-        /// <summary>
-        /// Raised when a message is received from a client.
-        /// </summary>
-        internal event EventHandler<SocketServer.MessageReceivedEventArgs> MessageReceived;
 
         /// <summary>
         /// Raised when a request message is received from a client. A response can be provided which will be returned to the client.
@@ -35,14 +30,15 @@ namespace SocketMeister.Testing.ControlBus
         /// <summary>
         /// Event raised when when there is a change to the clients connected to the socket server
         /// </summary>
-        internal event EventHandler<SocketServer.ClientsChangedEventArgs> ClientsChanged;
+        internal event EventHandler<SocketServer.ClientEventArgs> ClientsChanged;
 
 
         public ControlBusServer()
         {
             _listener = new SocketServer(Constants.ControlBusPort, true);
-            _listener.ClientsChanged += Listener_ClientsChanged;
-            _listener.ListenerStateChanged += Listener_ListenerStateChanged;
+            _listener.ClientConnected += Listener_ClientsChanged;
+            _listener.ClientDisconnected += Listener_ClientsChanged;
+            _listener.StatusChanged += Listener_StatusChanged;
             _listener.TraceEventRaised += Listener_TraceEventRaised;
             _listener.RequestReceived += Listener_RequestReceived;
         }
@@ -80,8 +76,9 @@ namespace SocketMeister.Testing.ControlBus
         internal void Stop()
         {
             //  UNREGISTER EVENTS
-            _listener.ClientsChanged -= Listener_ClientsChanged;
-            _listener.ListenerStateChanged -= Listener_ListenerStateChanged;
+            _listener.ClientConnected -= Listener_ClientsChanged;
+            _listener.ClientDisconnected -= Listener_ClientsChanged;
+            _listener.StatusChanged -= Listener_StatusChanged;
             _listener.TraceEventRaised -= Listener_TraceEventRaised;
             _listener.RequestReceived -= Listener_RequestReceived;
 
@@ -93,23 +90,18 @@ namespace SocketMeister.Testing.ControlBus
         }
 
 
-        private void Listener_ListenerStateChanged(object sender, SocketServer.SocketServerStatusChangedEventArgs e)
+        private void Listener_StatusChanged(object sender, EventArgs e)
         {
-            ListenerStateChanged?.Invoke(this, e);
+            StatusChanged?.Invoke(this, e);
         }
 
-
-        private void Listener_MessageReceived(object sender, SocketServer.MessageReceivedEventArgs e)
-        {
-            MessageReceived?.Invoke(sender, e);
-        }
 
         private void Listener_RequestReceived(object sender, SocketServer.RequestReceivedEventArgs e)
         {
             RequestReceived?.Invoke(sender, e);
         }
 
-        private void Listener_ClientsChanged(object sender, SocketServer.ClientsChangedEventArgs e)
+        private void Listener_ClientsChanged(object sender, SocketServer.ClientEventArgs e)
         {
             ClientsChanged?.Invoke(sender, e);
         }

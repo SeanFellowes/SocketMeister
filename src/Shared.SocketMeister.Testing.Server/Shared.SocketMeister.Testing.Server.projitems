@@ -9,10 +9,6 @@
     <Import_RootNamespace>SocketMeister.Testing</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)ControlBus\" />
-    <Folder Include="$(MSBuildThisFileDirectory)Tests\" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)ServerControllerCommands.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServerController.cs" />
   </ItemGroup>

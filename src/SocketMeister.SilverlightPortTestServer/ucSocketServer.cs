@@ -91,9 +91,9 @@ namespace SocketMeister
             try
             {
                 Server = new SocketServer(_port, false);
-                Server.ExceptionRaised += Server_ExceptionRaised;
+                Server.TraceEventRaised += Server_TraceEventRaised;
                 Server.RequestReceived += Server_RequestReceived;
-                Server.ListenerStateChanged += Server_ListenerStateChanged;
+                Server.StatusChanged += Server_StatusChanged;
                 Server.Start();
 
                 SetButtonEnabled(btnStart, false);       //  CHANGED WHEN EVENT IS RECEIVED
@@ -111,17 +111,17 @@ namespace SocketMeister
             {
                 if (AppExiting == true)
                 {
-                    Server.ExceptionRaised -= Server_ExceptionRaised;
+                    Server.TraceEventRaised -= Server_TraceEventRaised;
                     Server.RequestReceived -= Server_RequestReceived;
-                    Server.ListenerStateChanged -= Server_ListenerStateChanged;
+                    Server.StatusChanged -= Server_StatusChanged;
                     Server.Stop();
                 }
                 else
                 {
                     Server.Stop();
-                    Server.ExceptionRaised -= Server_ExceptionRaised;
+                    Server.TraceEventRaised -= Server_TraceEventRaised;
                     Server.RequestReceived -= Server_RequestReceived;
-                    Server.ListenerStateChanged -= Server_ListenerStateChanged;
+                    Server.StatusChanged -= Server_StatusChanged;
                     SetButtonEnabled(btnStop, false);
                     SetButtonEnabled(btnSendMessage, false);
                 }
@@ -136,17 +136,17 @@ namespace SocketMeister
 
 
 
-        private void Server_ExceptionRaised(object sender, ExceptionEventArgs e)
+        private void Server_TraceEventRaised(object sender, TraceEventArgs e)
         {
-            if (e.Exception != null)
+            if (e.Severity == SeverityType.Error)
             {
-                LogEventRaised?.Invoke(this, new LogEventArgs(e.Exception, "Port #" + Port.ToString(), "-"));
+                LogEventRaised?.Invoke(this, new LogEventArgs(new Exception(e.Message), "Port #" + Port.ToString(), "-"));
             }
         }
 
-        private void Server_ListenerStateChanged(object sender, SocketServer.SocketServerStatusChangedEventArgs e)
+        private void Server_StatusChanged(object sender, EventArgs e)
         {
-            SetUI(e.Status);
+            SetUI(Server.Status);
         }
 
 

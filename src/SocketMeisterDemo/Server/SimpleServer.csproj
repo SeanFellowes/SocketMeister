@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{192A2425-E3AD-467E-95AF-988033AA6E8D}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>SocketMeister</RootNamespace>
+    <RootNamespace>SocketMeisterDemo</RootNamespace>
     <AssemblyName>Server</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -49,16 +49,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FormServer.cs">
+    <Compile Include="SimpleServer.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FormServer.Designer.cs">
-      <DependentUpon>FormServer.cs</DependentUpon>
+    <Compile Include="SimpleServer.Designer.cs">
+      <DependentUpon>SimpleServer.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="FormServer.resx">
-      <DependentUpon>FormServer.cs</DependentUpon>
+    <EmbeddedResource Include="SimpleServer.resx">
+      <DependentUpon>SimpleServer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

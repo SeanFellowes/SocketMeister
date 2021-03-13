@@ -19,6 +19,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Properties\**" />
+    <EmbeddedResource Remove="Properties\**" />
+    <None Remove="Properties\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="SocketServerOverview.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -40,10 +46,6 @@
     <EmbeddedResource Update="TestHarnessMainForm.resx">
       <DependentUpon>TestHarnessMainForm.cs</DependentUpon>
     </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Properties\" />
   </ItemGroup>
 
   <Import Project="..\Shared.SocketMeister\Shared.SocketMeister.projitems" Label="Shared" />

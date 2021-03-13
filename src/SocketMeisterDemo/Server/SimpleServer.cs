@@ -4,12 +4,12 @@ using SocketMeister;
 
 namespace SocketMeisterDemo
 {
-    public partial class FormServer : Form
+    public partial class SimpleServer : Form
     {
         //  Instatiate SocketServer on port 4505 with compression enabled
         private readonly SocketServer _socketServer = new SocketServer(4505, true);
 
-        public FormServer()
+        public SimpleServer()
         {
             InitializeComponent();
 
@@ -34,5 +34,21 @@ namespace SocketMeisterDemo
 			//  Stop the socket server before exiting the application
 			_socketServer.Stop();
 		}
-	}
+
+        private void btnSendMsgToAllClients_Click(object sender, EventArgs e)
+        {
+            //  Send a string to all connected clients
+            object[] parms = new object[] { "This is a broadcast message to all clients" };
+            _socketServer.BroadcastMessage(parms);
+        }
+
+        private void btnSendMsgToAllCustomerDataChangeSubscribers_Click(object sender, EventArgs e)
+        {
+            //  Send a string to all clients subscribing to 'Customer Master Data Changes'
+            object[] parms = new object[] { "This is a broadcast message to all clients subscribing to 'Customer Master Data Changes'" };
+            _socketServer.BroadcastMessageToSubscribers("Customer Master Data Changes", parms);
+        }
+
+
+    }
 }

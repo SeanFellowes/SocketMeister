@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Client
+namespace SocketMeisterDemo
 {
     static class Program
     {
@@ -17,7 +17,7 @@ namespace Client
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new ClientForm());
+            Application.Run(new SimpleClient());
         }
     }
 }

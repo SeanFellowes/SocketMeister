@@ -26,17 +26,12 @@ namespace SocketMeister
             /// <summary>
             /// TO BE DEPRICATED. Use ClientsChangedEventArgs. Event raised when a client connects to the socket server (Raised in a seperate thread)
             /// </summary>
-            public event EventHandler<ClientConnectedEventArgs> ClientConnected;
+            public event EventHandler<ClientEventArgs> ClientConnected;
 
             /// <summary>
             /// TO BE DEPRICATED. Use ClientsChangedEventArgs. Event raised when a client disconnects from the socket server (Raised in a seperate thread)
             /// </summary>
-            public event EventHandler<ClientDisconnectedEventArgs> ClientDisconnected;
-
-            /// <summary>
-            /// Event raised when a client connects or disconnects from the socket server (Raised in a seperate thread)
-            /// </summary>
-            public event EventHandler<ClientsChangedEventArgs> ClientsChanged;
+            public event EventHandler<ClientEventArgs> ClientDisconnected;
 
             /// <summary>
             /// Raised when an exception occurs.
@@ -54,25 +49,21 @@ namespace SocketMeister
             public void Add(Client Client)
             {
                 if (Client == null) return;
-                int clientCount = 0;
 
                 lock (_lock)
                 {
                     _list.Add(Client);
-                    clientCount = _list.Count;
                 }
-                NotifyClientConnected(Client, clientCount);
+                NotifyClientConnected(Client);
             }
 
             public void Disconnect(Client Client)
             {
                 if (Client == null) return;
-                int clientCount = 0;
 
                 lock (_lock)
                 {
                     _list.Remove(Client);
-                    clientCount = _list.Count;
                 }
 
                 try { Client.ClientSocket.Shutdown(SocketShutdown.Both); }
@@ -86,7 +77,7 @@ namespace SocketMeister
                     NotifyTraceEventRaised(ex);
                 }
 
-                NotifyClientDisconnected(Client, clientCount);
+                NotifyClientDisconnected(Client);
             }
 
             /// <summary>
@@ -96,15 +87,13 @@ namespace SocketMeister
             public void Remove(Client Client)
             {
                 if (Client == null) return;
-                int clientCount = 0;
 
                 lock (_lock)
                 {
                     _list.Remove(Client);
-                    clientCount = _list.Count;
                 }
 
-                NotifyClientDisconnected(Client, clientCount);
+                NotifyClientDisconnected(Client);
             }
 
 
@@ -117,29 +106,27 @@ namespace SocketMeister
                 }
             }
 
-            private void NotifyClientConnected(Client client, int ClientCount)
+            private void NotifyClientConnected(Client client)
             {
-                if (ClientConnected != null || ClientsChanged != null)
+                if (ClientConnected != null)
                 {
                     //  RAISE EVENT IN THE BACKGROUND AND ERRORS ARE IGNORED
                     new Thread(new ThreadStart(delegate
                     {
-                        ClientConnected?.Invoke(null, new ClientConnectedEventArgs(client));
-                        ClientsChanged?.Invoke(null, new ClientsChangedEventArgs(ClientCount));
+                        ClientConnected?.Invoke(null, new ClientEventArgs(client));
                     }
                     )).Start();
                 }
             }
 
-            private void NotifyClientDisconnected(Client client, int ClientCount)
+            private void NotifyClientDisconnected(Client client)
             {
-                if (ClientConnected != null || ClientsChanged != null)
+                if (ClientConnected != null)
                 {
                     //  RAISE EVENT IN THE BACKGROUND AND ERRORS ARE IGNORED
                     new Thread(new ThreadStart(delegate
                     {
-                        ClientDisconnected?.Invoke(null, new ClientDisconnectedEventArgs(client));
-                        ClientsChanged?.Invoke(null, new ClientsChangedEventArgs(ClientCount));
+                        ClientDisconnected?.Invoke(null, new ClientEventArgs(client));
                     }
                     )).Start();
                 }

@@ -32,17 +32,12 @@ namespace SocketMeister.Testing
         /// <summary>
         /// Raised when the status of the socket listener changes.
         /// </summary>
-        public event EventHandler<SocketServer.SocketServerStatusChangedEventArgs> ListenerStateChanged;
+        public event EventHandler<EventArgs> ListenerStateChanged;
 
         /// <summary>
         /// Raised when an trace log event has been raised.
         /// </summary>
         internal event EventHandler<TraceEventArgs> TraceEventRaised;
-
-        /// <summary>
-        /// Raised when a message is received from a client.
-        /// </summary>
-        internal event EventHandler<SocketServer.MessageReceivedEventArgs> MessageReceived;
 
         /// <summary>
         /// Raised when a request message is received from a client. A response can be provided which will be returned to the client.
@@ -52,7 +47,7 @@ namespace SocketMeister.Testing
         /// <summary>
         /// Event raised when when there is a change to the clients connected to the socket server
         /// </summary>
-        internal event EventHandler<SocketServer.ClientsChangedEventArgs> ClientsChanged;
+        internal event EventHandler<SocketServer.ClientEventArgs> ClientsChanged;
 
 
         public ServerController(int ControlBusClientId, string ControlBusServerIPAddress)
@@ -174,7 +169,7 @@ namespace SocketMeister.Testing
 
 
 
-        private void SocketServer_ListenerStateChanged(object sender, SocketServer.SocketServerStatusChangedEventArgs e)
+        private void SocketServer_StatusChanged(object sender, EventArgs e)
         {
             ListenerStateChanged?.Invoke(this, e);
         }
@@ -188,8 +183,9 @@ namespace SocketMeister.Testing
             this.Port = Port;
             _openTransactions.Clear();
             _socketServer = new SocketServer(Port, true);
-            _socketServer.ClientsChanged += SocketServer_ClientsChanged;
-            _socketServer.ListenerStateChanged += SocketServer_ListenerStateChanged;
+            _socketServer.ClientConnected += SocketServer_ClientsChanged;
+            _socketServer.ClientDisconnected += SocketServer_ClientsChanged;
+            _socketServer.StatusChanged += SocketServer_StatusChanged;
             _socketServer.TraceEventRaised += SocketServer_TraceEventRaised;
             _socketServer.RequestReceived += SocketServer_RequestReceived;
             _socketServer.Start();
@@ -203,8 +199,9 @@ namespace SocketMeister.Testing
             if (_socketServer == null) return;
 
             //  UNREGISTER EVENTS
-            _socketServer.ClientsChanged -= SocketServer_ClientsChanged;
-            _socketServer.ListenerStateChanged -= SocketServer_ListenerStateChanged;
+            _socketServer.ClientConnected -= SocketServer_ClientsChanged;
+            _socketServer.ClientDisconnected -= SocketServer_ClientsChanged;
+            _socketServer.StatusChanged -= SocketServer_StatusChanged;
             _socketServer.TraceEventRaised -= SocketServer_TraceEventRaised;
             _socketServer.RequestReceived -= SocketServer_RequestReceived;
 
@@ -231,7 +228,7 @@ namespace SocketMeister.Testing
             RequestReceived?.Invoke(sender, e);
         }
 
-        private void SocketServer_ClientsChanged(object sender, SocketServer.ClientsChangedEventArgs e)
+        private void SocketServer_ClientsChanged(object sender, SocketServer.ClientEventArgs e)
         {
             ClientsChanged?.Invoke(sender, e);
         }

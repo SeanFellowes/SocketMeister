@@ -17,12 +17,12 @@ namespace SocketMeister
 #endif
     {
         /// <summary>
-        /// TO BE DEPRICATED. Use ClientsChangedEventArgs. Event raised when a client connects to the socket server.
+        /// Provided for client specific events.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Will be resolved in future version")]
-        public class ClientConnectedEventArgs : EventArgs
+        public class ClientEventArgs : EventArgs
         {
-            internal ClientConnectedEventArgs(Client Client)
+            internal ClientEventArgs(Client Client)
             {
                 this.Client = Client;
             }
@@ -35,54 +35,21 @@ namespace SocketMeister
 
 
         /// <summary>
-        /// TO BE DEPRICATED. Use ClientsChangedEventArgs. Event raised when a client disconnects from the socket server.
+        /// Values provided when a request is received from a client. 
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Will be resolved in future version")]
-        public class ClientDisconnectedEventArgs : EventArgs
+        public class RequestReceivedEventArgs : EventArgs
         {
-            internal ClientDisconnectedEventArgs(Client Client)
-            {
-                this.Client = Client;
-            }
-
-            /// <summary>
-            /// The client which disconnected
-            /// </summary>
-            public Client Client { get; }
-        }
-
-
-        /// <summary>
-        /// Event raised when there is a change to the clients connected to the socket server.
-        /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Will be resolved in future version")]
-        public class ClientsChangedEventArgs : EventArgs
-        {
-            internal ClientsChangedEventArgs(int Count)
-            {
-                this.Count = Count;
-            }
-
-            /// <summary>
-            /// The numb er of clients connected to the socket server
-            /// </summary>
-            public int Count { get; }
-        }
-
-
-
-
-        /// <summary>
-        /// Values provided when a message is received from a client. 
-        /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Will be resolved in future version")]
-        public class MessageReceivedEventArgs : EventArgs
-        {
-            internal MessageReceivedEventArgs(Client Client, object[] Parameters)
+            internal RequestReceivedEventArgs(Client Client, object[] Parameters)
             {
                 this.Client = Client;
                 this.Parameters = Parameters;
             }
+
+            /// <summary>
+            /// The byte array which is to be returned to the client. Null is returned if a 'Response' value is not provided when processing the 'RequestReceived' event.
+            /// </summary>
+            public byte[] Response { get; set; } = null;
 
             /// <summary>
             /// The client which initiated the message.
@@ -93,49 +60,8 @@ namespace SocketMeister
             /// The parameters provided with the message.
             /// </summary>
             public object[] Parameters { get; private set; }
+
         }
-
-        /// <summary>
-        /// Values provided when a request is received from a client. 
-        /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Will be resolved in future version")]
-        public class RequestReceivedEventArgs : MessageReceivedEventArgs
-        {
-            internal RequestReceivedEventArgs(Client Client, object[] Parameters) : base(Client, Parameters) { }
-
-            /// <summary>
-            /// The byte array which is to be returned to the client. Null is returned if a 'Response' value is not provided when processing the 'RequestReceived' event.
-            /// </summary>
-            public byte[] Response { get; set; } = null;
-        }
-
-        /// <summary>
-        /// Execution status of a service changed. Includes the new status
-        /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Will be resolved in future version")]
-        public class SocketServerStatusChangedEventArgs : EventArgs
-        {
-
-            /// <summary>
-            /// Default constructor
-            /// </summary>
-            public SocketServerStatusChangedEventArgs() { }
-
-            /// <summary>
-            /// Constructor
-            /// </summary>
-            /// <param name="Status">Current status of the service</param>
-            public SocketServerStatusChangedEventArgs(SocketServerStatus Status)
-            {
-                this.Status = Status;
-            }
-
-            /// <summary>
-            /// Execution status of the service.
-            /// </summary>
-            public SocketServerStatus Status { get; set; } = SocketServerStatus.Stopped;
-        }
-
     }
 }
 

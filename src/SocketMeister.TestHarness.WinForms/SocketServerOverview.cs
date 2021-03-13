@@ -81,23 +81,24 @@ namespace SocketMeister.Test
         }
 
 
-        public void SetListenerState(object sender, SocketServer.SocketServerStatusChangedEventArgs e)
+        public void SetListenerState(object sender, EventArgs e)
         {
             if (InvokeRequired) Invoke(new MethodInvoker(delegate { SetListenerState(sender, e); }));
             else
             {
-                if (e.Status == SocketServerStatus.Started)
+                Testing.ControlBus.ControlBusServer serverCtl = (Testing.ControlBus.ControlBusServer)sender;
+                if (serverCtl.Listener.Status == SocketServerStatus.Started)
                 {
                     LabelStatus.Text = "Started";
                     StatusIndicator.BackColor = Color.DarkGreen;
                     this.Cursor = Cursors.Default;
                 }
-                else if (e.Status == SocketServerStatus.Starting)
+                else if (serverCtl.Listener.Status == SocketServerStatus.Starting)
                 {
                     LabelStatus.Text = "Starting...";
                     StatusIndicator.BackColor = Color.Yellow;
                 }
-                else if (e.Status == SocketServerStatus.Stopped)
+                else if (serverCtl.Listener.Status == SocketServerStatus.Stopped)
                 {
                     LabelStatus.Text = "Stopped";
                     StatusIndicator.BackColor = Color.Red;

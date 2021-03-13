@@ -1,7 +1,7 @@
 ﻿
-namespace Client
+namespace SocketMeisterDemo
 {
-    partial class ClientForm
+    partial class SimpleClient
     {
         /// <summary>
         ///  Required designer variable.
@@ -34,7 +34,7 @@ namespace Client
             // 
             // btnGetTimezoneDisplayName
             // 
-            this.btnGetTimezoneDisplayName.Location = new System.Drawing.Point(85, 62);
+            this.btnGetTimezoneDisplayName.Location = new System.Drawing.Point(84, 26);
             this.btnGetTimezoneDisplayName.Name = "btnGetTimezoneDisplayName";
             this.btnGetTimezoneDisplayName.Size = new System.Drawing.Size(191, 51);
             this.btnGetTimezoneDisplayName.TabIndex = 0;
@@ -42,14 +42,14 @@ namespace Client
             this.btnGetTimezoneDisplayName.UseVisualStyleBackColor = true;
             this.btnGetTimezoneDisplayName.Click += new System.EventHandler(this.BtnGetTimezoneDisplayName_Click);
             // 
-            // ClientForm
+            // SimpleClient
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(363, 328);
+            this.ClientSize = new System.Drawing.Size(363, 104);
             this.Controls.Add(this.btnGetTimezoneDisplayName);
-            this.Name = "ClientForm";
-            this.Text = "Client";
+            this.Name = "SimpleClient";
+            this.Text = "Simple Client";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ClientForm_FormClosing);
             this.ResumeLayout(false);
 
