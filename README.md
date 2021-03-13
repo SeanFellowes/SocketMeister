@@ -1,6 +1,6 @@
 # SocketMeister
 
-SocketMeister is a socket library for solutions requiring persistent, multiple endpoint TCP/IP connectivity. It is an easy to use, high throughput and multithreaded.
+SocketMeister is a socket library for solutions requiring persistent, multiple endpoint TCP/IP connectivity. It is easy to use, high throughput and multithreaded.
 
 SocketMeister **Client** provides fault tolerance by automatically reconnecting in the event of connection failure and in environment where multiple servers are deployed (i.e. for redundancy and/or high workload), SocketMeister **Client** will automatically round-robin until a server is found. 
 
