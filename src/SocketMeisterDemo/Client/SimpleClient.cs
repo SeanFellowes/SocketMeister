@@ -12,6 +12,18 @@ namespace SocketMeisterDemo
         public SimpleClient()
         {
             InitializeComponent();
+
+            //  Register to receive messages from the server.
+            _socketClient.MessageReceived += SocketClient_MessageReceived;
+
+            //  Subscribe to 'Customer Master Data Changes'. (Note: names are case insensitive)
+            _socketClient.AddSubscription("Customer Master Data Changes");
+        }
+
+        private void SocketClient_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
+        {
+            //  The message is a string contained in the first parameter sent. Display it.
+            MessageBox.Show(Convert.ToString(e.Parameters[0]));
         }
 
         private void BtnGetTimezoneDisplayName_Click(object sender, EventArgs e)
