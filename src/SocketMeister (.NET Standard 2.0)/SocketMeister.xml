@@ -168,7 +168,7 @@
         </member>
         <member name="F:SocketMeister.Messages.MessageTypes.SubscriptionChangesResponseV1">
             <summary>
-            Server sends a subscription response when a subscription request is received from a client
+            Server sends a subscription response when a subscription notification is received from a client
             </summary>
         </member>
         <member name="F:SocketMeister.Messages.MessageTypes.PollingRequestV1">
@@ -188,22 +188,22 @@
         </member>
         <member name="F:SocketMeister.Messages.MessageProcessingResult.Success">
             <summary>
-            The request executed successfully
+            The message was processed successfully
             </summary>
         </member>
         <member name="F:SocketMeister.Messages.MessageProcessingResult.Stopping">
             <summary>
-            The client or server is shutting down. The request could not be fulfilled.
+            The client or server is shutting down. The message was not processed.
             </summary>
         </member>
-        <member name="F:SocketMeister.Messages.MessageProcessingResult.NoMessageProcessor">
+        <member name="F:SocketMeister.Messages.MessageProcessingResult.NoMessageReceivedEventListener">
             <summary>
             There is no process listening for 'MessageReceived' events.
             </summary>
         </member>
         <member name="F:SocketMeister.Messages.MessageProcessingResult.Exception">
             <summary>
-            An exception occured while processing the request
+            An exception occured while processing the message
             </summary>
         </member>
         <member name="T:SocketMeister.Messages.MessageStatus">
@@ -233,14 +233,14 @@
         </member>
         <member name="M:SocketMeister.Messages.BroadcastV1.#ctor(System.String,System.Object[])">
             <summary>
-            RequestMessage constructor
+            Broadcast constructor
             </summary>
             <param name="Name">Optional Name/Tag/Identifier for the broadcast.</param>
-            <param name="Parameters">Array of parameters to send with the request. There must be at least 1 parameter.</param>
+            <param name="Parameters">Array of parameters to send with the broadcast. There must be at least 1 parameter.</param>
         </member>
         <member name="P:SocketMeister.Messages.BroadcastV1.Parameters">
             <summary>
-            Parameters provided with this request
+            Parameters provided with this broadcast
             </summary>
         </member>
         <member name="P:SocketMeister.Messages.BroadcastV1.Name">
@@ -427,7 +427,7 @@
         </member>
         <member name="P:SocketMeister.Messages.IMessage.Status">
             <summary>
-            Status of a 'SendRequest()' operation, used only on the SocketClient, to track: If messages have been sent, a response has been received, or an error/timeout.
+            Status of the message. 
             </summary>
         </member>
         <member name="M:SocketMeister.Messages.IMessage.AppendBytes(System.IO.BinaryWriter)">
@@ -523,7 +523,7 @@
         </member>
         <member name="P:SocketMeister.Messages.ServerStoppingNotificationV1.MaxWaitMilliseconds">
             <summary>
-            The maximum number of milliseconds the client should wait for open requests to be completed. The server will not send back responses for open requests after this time.
+            The maximum number of milliseconds the client should wait for unresponded messages to be completed. The server will not send back responses for unresponded messages after this time.
             </summary>
         </member>
         <member name="T:SocketMeister.UnrespondedMessageCollection">
@@ -1108,12 +1108,12 @@
         </member>
         <member name="E:SocketMeister.SocketServer.Clients.ClientConnected">
             <summary>
-            TO BE DEPRICATED. Use ClientsChangedEventArgs. Event raised when a client connects to the socket server (Raised in a seperate thread)
+            Event raised when a client connects to the socket server (Raised in a seperate thread)
             </summary>
         </member>
         <member name="E:SocketMeister.SocketServer.Clients.ClientDisconnected">
             <summary>
-            TO BE DEPRICATED. Use ClientsChangedEventArgs. Event raised when a client disconnects from the socket server (Raised in a seperate thread)
+            Event raised when a client disconnects from the socket server (Raised in a seperate thread)
             </summary>
         </member>
         <member name="E:SocketMeister.SocketServer.Clients.TraceEventRaised">

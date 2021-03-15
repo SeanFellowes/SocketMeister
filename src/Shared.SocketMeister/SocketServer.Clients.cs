@@ -24,12 +24,12 @@ namespace SocketMeister
             private readonly object _lock = new object();
 
             /// <summary>
-            /// TO BE DEPRICATED. Use ClientsChangedEventArgs. Event raised when a client connects to the socket server (Raised in a seperate thread)
+            /// Event raised when a client connects to the socket server (Raised in a seperate thread)
             /// </summary>
             public event EventHandler<ClientEventArgs> ClientConnected;
 
             /// <summary>
-            /// TO BE DEPRICATED. Use ClientsChangedEventArgs. Event raised when a client disconnects from the socket server (Raised in a seperate thread)
+            /// Event raised when a client disconnects from the socket server (Raised in a seperate thread)
             /// </summary>
             public event EventHandler<ClientEventArgs> ClientDisconnected;
 

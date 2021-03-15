@@ -34,7 +34,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Code", "Code", "{F79E4971-5
 		Code\GlobalAssemblyInfo.cs = Code\GlobalAssemblyInfo.cs
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocketMeister.SilverlightPortTestServer", "SocketMeister.SilverlightPortTestServer\SocketMeister.SilverlightPortTestServer.csproj", "{A615A986-96D7-47BE-A024-F64BB634D616}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SocketMeister.SilverlightPortTestServer", "SocketMeister.SilverlightPortTestServer\SocketMeister.SilverlightPortTestServer.csproj", "{A615A986-96D7-47BE-A024-F64BB634D616}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution

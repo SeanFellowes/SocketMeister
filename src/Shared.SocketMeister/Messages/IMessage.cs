@@ -17,14 +17,9 @@ namespace SocketMeister.Messages
         MessageTypes MessageType { get; }
 
         /// <summary>
-        /// Status of a 'SendRequest()' operation, used only on the SocketClient, to track: If messages have been sent, a response has been received, or an error/timeout.
+        /// Status of the message. 
         /// </summary>
         MessageStatus Status { get; set; }
-
-        ///// <summary>
-        ///// Number of milliseconds to wait before a timeout will occur.
-        ///// </summary>
-        //int TimeoutMilliseconds { get; }
 
         /// <summary>
         /// Mandatory method to append binary data to the IMessage object,

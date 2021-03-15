@@ -25,7 +25,7 @@ namespace SocketMeister.Messages
         }
 
         /// <summary>
-        /// The maximum number of milliseconds the client should wait for open requests to be completed. The server will not send back responses for open requests after this time.
+        /// The maximum number of milliseconds the client should wait for unresponded messages to be completed. The server will not send back responses for unresponded messages after this time.
         /// </summary>
         public int MaxWaitMilliseconds
         {

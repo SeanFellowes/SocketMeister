@@ -45,7 +45,7 @@ namespace SocketMeister.Messages
         SubscriptionChangesNotificationV1 = 200,
 
         /// <summary>
-        /// Server sends a subscription response when a subscription request is received from a client
+        /// Server sends a subscription response when a subscription notification is received from a client
         /// </summary>
         SubscriptionChangesResponseV1 = 210,
 
@@ -68,19 +68,19 @@ namespace SocketMeister.Messages
     internal enum MessageProcessingResult
     {
         /// <summary>
-        /// The request executed successfully
+        /// The message was processed successfully
         /// </summary>
         Success = 0,
         /// <summary>
-        /// The client or server is shutting down. The request could not be fulfilled.
+        /// The client or server is shutting down. The message was not processed.
         /// </summary>
         Stopping = 2,
         /// <summary>
         /// There is no process listening for 'MessageReceived' events.
         /// </summary>
-        NoMessageProcessor = 3,
+        NoMessageReceivedEventListener = 3,
         /// <summary>
-        /// An exception occured while processing the request
+        /// An exception occured while processing the message
         /// </summary>
         Exception = short.MaxValue
     }

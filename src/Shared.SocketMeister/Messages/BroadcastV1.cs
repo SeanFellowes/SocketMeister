@@ -16,22 +16,22 @@ namespace SocketMeister.Messages
     /// </summary>
     internal partial class BroadcastV1 : MessageBase, IMessage
     {
-        //  REQUEST VARIABLES
+        //  BROADCAST VARIABLES
         private readonly byte[] _parameterBytes = null;
         private readonly object[] _parameters = null;
         private readonly string _name;
 
         /// <summary>
-        /// RequestMessage constructor
+        /// Broadcast constructor
         /// </summary>
         /// <param name="Name">Optional Name/Tag/Identifier for the broadcast.</param>
-        /// <param name="Parameters">Array of parameters to send with the request. There must be at least 1 parameter.</param>
+        /// <param name="Parameters">Array of parameters to send with the broadcast. There must be at least 1 parameter.</param>
         public BroadcastV1(string Name, object[] Parameters) : base(MessageTypes.BroadcastV1)
         {
             _parameters = Parameters;
             _name = Name;
 
-            //  SERIALIZE REQUEST MESSAGE
+            //  SERIALIZE BROADCAST
             using (BinaryWriter writer = new BinaryWriter(new MemoryStream()))
             {
                 if (string.IsNullOrEmpty(_name))
@@ -63,7 +63,7 @@ namespace SocketMeister.Messages
 
 
         /// <summary>
-        /// Parameters provided with this request
+        /// Parameters provided with this broadcast
         /// </summary>
         public object[] Parameters
         {

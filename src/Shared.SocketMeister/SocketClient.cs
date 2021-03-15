@@ -1146,7 +1146,7 @@ namespace SocketMeister
                 if (MessageReceived == null)
                 {
                     //  THERE IS NO CODE LISTENING TO MessageReceived EVENTS. CANNOT PROCESS THIS MESSAGE
-                    SendResponseQuickly(new MessageResponsev1(message.MessageId, MessageProcessingResult.NoMessageProcessor));
+                    SendResponseQuickly(new MessageResponsev1(message.MessageId, MessageProcessingResult.NoMessageReceivedEventListener));
                 }
                 else if (StopClientPermanently)
                 {
