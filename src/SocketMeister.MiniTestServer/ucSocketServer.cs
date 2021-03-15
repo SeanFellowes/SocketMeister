@@ -90,12 +90,16 @@ namespace SocketMeister
 
         private void SetLabelText(Label label, string text)
         {
-            if (label.InvokeRequired)
+            try
             {
-                SetLabelTextDelegate d = new SetLabelTextDelegate(SetLabelText);
-                this.Invoke(d, new object[] { label, text });
+                if (label.InvokeRequired)
+                {
+                    SetLabelTextDelegate d = new SetLabelTextDelegate(SetLabelText);
+                    this.Invoke(d, new object[] { label, text });
+                }
+                else { label.Text = text; }
             }
-            else { label.Text = text; }
+            catch { }
         }
 
         public void Start()

@@ -54,7 +54,7 @@ namespace SocketMeister.Messages
         /// <param name="Parameters">Array of parameters to send with the request. There must be at least 1 parameter.</param>
         /// <param name="TimeoutMilliseconds">The maximum number of milliseconds to wait for a response before timing out.</param>
         /// <param name="IsLongPolling">The maximum number of milliseconds to wait for a response before timing out.</param>
-        public RequestMessage(object[] Parameters, int TimeoutMilliseconds, bool IsLongPolling = false) : base(MessageTypes.RequestMessageV2)
+        public RequestMessage(object[] Parameters, int TimeoutMilliseconds, bool IsLongPolling = false) : base(MessageTypes.RequestMessageV1)
         {
             _parameters = Parameters;
             _timeoutMilliseconds = TimeoutMilliseconds;
@@ -85,7 +85,7 @@ namespace SocketMeister.Messages
         }
 
 
-        internal RequestMessage(BinaryReader bR, int Version) : base(MessageTypes.RequestMessageV2)
+        internal RequestMessage(BinaryReader bR, int Version) : base(MessageTypes.RequestMessageV1)
         {
             if (Version == 1)
             {

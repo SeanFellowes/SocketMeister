@@ -27,17 +27,19 @@ namespace SocketMeister
         {
             private readonly Guid _clientId = Guid.NewGuid();
             private readonly Socket _clientSocket;
+            private readonly bool _compressSentData;
             private readonly DateTime _connectTimestamp = DateTime.Now;
             private readonly OpenRequestMessageCollection _openRequests = new OpenRequestMessageCollection();
             private readonly MessageEngine _receivedEnvelope;
             private readonly SocketServer _socketServer;
             private readonly TokenCollectionReadOnly _subscriptions = new TokenCollectionReadOnly();
 
-            internal Client(SocketServer Server, Socket ClientSocket, bool EnableCompression)
+            internal Client(SocketServer Server, Socket ClientSocket, bool CompressSentData)
             {
                 _socketServer = Server;
                 _clientSocket = ClientSocket;
-                _receivedEnvelope = new MessageEngine(EnableCompression);
+                _compressSentData = CompressSentData;
+                _receivedEnvelope = new MessageEngine(CompressSentData);
             }
 
             /// <summary>
@@ -97,17 +99,6 @@ namespace SocketMeister
                 return rVal;
             }
 
-            /// <summary>
-            /// Send a message to this client
-            /// </summary>
-            /// <param name="Parameters">Parameters to send to the client.</param>
-            /// <param name="TimeoutMilliseconds">Number of milliseconds to attempt to send the message before throwing a TimeoutException.</param>
-            public void SendMessage(object[] Parameters, int TimeoutMilliseconds = 60000)
-            {
-                Message message = new Message(Parameters, TimeoutMilliseconds);
-                _socketServer.SendMessage(this, message, true);
-            }
-
             internal void ProcessResponseMessage(ResponseMessage Message)
             {
                 RequestMessage request = _openRequests[Message.RequestId];
@@ -125,6 +116,68 @@ namespace SocketMeister
             {
                 return _subscriptions.ImportTokenChangesV1(request.ChangeBytes);
             }
+
+            /// <summary>
+            /// Send a message to this client
+            /// </summary>
+            /// <param name="Parameters">Parameters to send to the client.</param>
+            /// <param name="TimeoutMilliseconds">Number of milliseconds to attempt to send the message before throwing a TimeoutException.</param>
+            public void SendMessage(object[] Parameters, int TimeoutMilliseconds = 60000)
+            {
+                Message message = new Message(Parameters, TimeoutMilliseconds);
+                SendIMessage(message, true);
+            }
+
+            internal void SendIMessage(IMessage Message, bool Async = true)
+            {
+                if (ClientSocket == null ||
+                    ClientSocket.Connected == false || ClientSocket.Poll(200000, SelectMode.SelectWrite) == false) return;
+
+                try
+                {
+                    byte[] sendBytes = MessageEngine.GenerateSendBytes(Message, _compressSentData);
+                    _socketServer.IncrementSentTotals(sendBytes.Length);
+
+                    if (Async == true)
+                    {
+                        ClientSocket.BeginSend(sendBytes, 0, sendBytes.Length, 0, new AsyncCallback(SendCallback), this);
+                    }
+                    else
+                    {
+                        ClientSocket.Send(sendBytes, sendBytes.Length, SocketFlags.None);
+                    }
+                }
+                catch (ObjectDisposedException ex)
+                {
+                    _socketServer.ConnectedClients.Disconnect(this);
+                    _socketServer.NotifyTraceEventRaised(ex, 5008);
+                }
+                catch (Exception ex)
+                {
+                    _socketServer.ConnectedClients.Disconnect(this);
+                    _socketServer.NotifyTraceEventRaised(ex, 5008);
+                }
+            }
+
+            private void SendCallback(IAsyncResult ar)
+            {
+                try
+                {
+                    // Retrieve the socket from the state object.  
+                    Client remoteClient = (Client)ar.AsyncState;
+
+                    // Complete sending the data to the remote device.  
+                    int bytesSent = remoteClient.ClientSocket.EndSend(ar);
+                }
+                catch (Exception ex)
+                {
+                    _socketServer.ConnectedClients.Disconnect(this);
+                    _socketServer.NotifyTraceEventRaised(ex, 5008);
+                }
+            }
+
+
+
 
             /// <summary>
             /// Send a request to the server and wait for a response. 
@@ -165,7 +218,7 @@ namespace SocketMeister
 
                     if (Request.Status == MessageStatus.Unsent)
                     {
-                        _socketServer.SendMessage(this, Request, true);
+                        SendIMessage(Request, true);
                         Request.Status = MessageStatus.InProgress;
 
                         //  WAIT FOR RESPONSE

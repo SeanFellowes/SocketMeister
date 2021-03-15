@@ -33,7 +33,7 @@ namespace SocketMeister
 
         private readonly ManualResetEvent _allDone = new ManualResetEvent(false);
         private readonly Clients _connectedClients = new Clients();
-        private readonly bool _enableCompression;
+        private readonly bool _compressSentData;
         private readonly string _endPoint;
         private readonly Socket _listener = null;
         private SocketServerStatus _listenerStatus;
@@ -79,10 +79,10 @@ namespace SocketMeister
         /// Constructor
         /// </summary>
         /// <param name="Port">Port that this socket server will listen on</param>
-        /// <param name="EnableCompression">Enable compression on message data</param>
-        public SocketServer(int Port, bool EnableCompression)
+        /// <param name="CompressSentData">Enable compression on message data</param>
+        public SocketServer(int Port, bool CompressSentData)
         {
-            _enableCompression = EnableCompression;
+            _compressSentData = CompressSentData;
 
             //  CONNECT TO ALL INTERFACES (I.P. 0.0.0.0 IS ALL)
             IPAddress ipAddress = IPAddress.Parse("0.0.0.0");
@@ -111,6 +111,8 @@ namespace SocketMeister
             };
         }
 
+
+        internal Clients ConnectedClients {  get { return _connectedClients; } }
 
         /// <summary>
         /// The IP Address and Port that this socket server is using to communicate (e.g. 10.200.50.25:6000).
@@ -204,7 +206,7 @@ namespace SocketMeister
             {
                 try
                 {
-                    SendMessage(client, message, true);
+                    client.SendIMessage(message, true);
                 }
                 catch (Exception ex)
                 {
@@ -231,7 +233,7 @@ namespace SocketMeister
                 if (message == null) message = new SubscriptionMessageV1(SubscriptionName, Parameters);
                 try
                 {
-                    SendMessage(client, message, true);
+                    client.SendIMessage(message, true);
                 }
                 catch (Exception ex)
                 {
@@ -402,7 +404,7 @@ namespace SocketMeister
                     catch { return; }
                     handler.SendTimeout = 30000;
                     // Create the state object.  
-                    Client remoteClient = new Client(this, handler, _enableCompression);
+                    Client remoteClient = new Client(this, handler, _compressSentData);
                     _connectedClients.Add(remoteClient);
                     handler.BeginReceive(remoteClient.ReceiveBuffer, 0, Constants.SEND_RECEIVE_BUFFER_SIZE, 0, new AsyncCallback(ReadCallback), remoteClient);
                 }))
@@ -461,38 +463,13 @@ namespace SocketMeister
                                 _totalRequestsReceived++;
                             }
 
-                            RequestMessage request = receiveEnvelope.GetRequestMessage(1);
-                            request.RemoteClient = remoteClient;
-                            if (Status == SocketServerStatus.Stopping)
-                            {
-                                ResponseMessage response = new ResponseMessage(request.RequestId, RequestResult.Stopping);
-                                SendMessage(request.RemoteClient, response, false);
-                            }
-                            else
-                            {
-                                lock (_lock) { _requestsInProgress += 1; }
-                                new Thread(new ThreadStart(delegate
-                                {
-                                    BgProcessRequestMessage(request);
-                                }
-                                 )).Start();
-                            }
-                        }
-                        else if (receiveEnvelope.MessageType == MessageTypes.RequestMessageV2)
-                        {
-                            lock (_lockTotals)
-                            {
-                                if (_totalRequestsReceived == int.MaxValue) _totalRequestsReceived = 0;
-                                _totalRequestsReceived++;
-                            }
-
                             RequestMessage request = receiveEnvelope.GetRequestMessage(2);
                             request.RemoteClient = remoteClient;
 
                             if (Status == SocketServerStatus.Stopping)
                             {
                                 ResponseMessage response = new ResponseMessage(request.RequestId, RequestResult.Stopping);
-                                SendMessage(request.RemoteClient, response, false);
+                                request.RemoteClient.SendIMessage(response, false);
                             }
                             else
                             {
@@ -505,7 +482,7 @@ namespace SocketMeister
                                 )).Start();
                             }
                         }
-                        else if (receiveEnvelope.MessageType == MessageTypes.ResponseMessage)
+                        else if (receiveEnvelope.MessageType == MessageTypes.ResponseMessageV1)
                         {
                             if (Status == SocketServerStatus.Started)
                             {
@@ -607,7 +584,7 @@ namespace SocketMeister
             try
             {
                 //  SEND POLL RESPONSE
-                SendMessage(remoteClient, new PollResponse(), false);
+                remoteClient.SendIMessage(new PollResponse(), false);
             }
             catch (Exception ex)
             {
@@ -624,7 +601,7 @@ namespace SocketMeister
             try
             {
                 //  IMPORTS AND SEND SUBSCRIPTION RESPONSE
-                SendMessage(remoteClient, remoteClient.ImportSubscriptionChanges(request), false);
+                remoteClient.SendIMessage(remoteClient.ImportSubscriptionChanges(request), false);
             }
             catch (Exception ex)
             {
@@ -650,7 +627,7 @@ namespace SocketMeister
                 {
                     Exception ex = new Exception("There is no process on the server listening to 'RequestReceived' events from the socket server.");
                     ResponseMessage noListener = new ResponseMessage(request.RequestId, ex);
-                    SendMessage(request.RemoteClient, noListener, false);
+                    request.RemoteClient.SendIMessage(noListener, false);
                 }
                 else
                 {
@@ -658,14 +635,14 @@ namespace SocketMeister
 
                     //  SEND RESPONSE
                     ResponseMessage response = new ResponseMessage(request.RequestId, args.Response);
-                    SendMessage(request.RemoteClient, response, false);
+                    request.RemoteClient.SendIMessage(response, false);
                 }
             }
             catch (Exception ex)
             {
                 NotifyTraceEventRaised(ex, 5008);
                 ResponseMessage response = new ResponseMessage(request.RequestId, ex);
-                SendMessage(request.RemoteClient, response, false);
+                request.RemoteClient.SendIMessage(response, false);
             }
             finally
             {
@@ -688,7 +665,7 @@ namespace SocketMeister
         }
 
 
-        private void NotifyTraceEventRaised(Exception ex, int ErrorNumber)
+        internal void NotifyTraceEventRaised(Exception ex, int ErrorNumber)
         {
             NotifyTraceEventRaised(new TraceEventArgs(ex, ErrorNumber));
         }
@@ -704,30 +681,13 @@ namespace SocketMeister
 
 
 
-        private void SendCallback(IAsyncResult ar)
-        {
-            Client remoteClient = null;
-            try
-            {
-                // Retrieve the socket from the state object.  
-                remoteClient = (Client)ar.AsyncState;
-
-                // Complete sending the data to the remote device.  
-                int bytesSent = remoteClient.ClientSocket.EndSend(ar);
-            }
-            catch (Exception ex)
-            {
-                _connectedClients.Disconnect(remoteClient);
-                NotifyTraceEventRaised(ex, 5008);
-            }
-        }
 
         private void SendServerStoppingMessage(Client RemoteClient)
         {
             try
             {
                 if (RemoteClient.ClientSocket == null || RemoteClient.ClientSocket.Connected == false) return;
-                byte[] sendBytes = MessageEngine.GenerateSendBytes(new ServerStoppingMessage(MAX_WAIT_FOR_CLIENT_DISCONNECT_WHEN_STOPPING), _enableCompression);
+                byte[] sendBytes = MessageEngine.GenerateSendBytes(new ServerStoppingMessage(MAX_WAIT_FOR_CLIENT_DISCONNECT_WHEN_STOPPING), _compressSentData);
                 RemoteClient.ClientSocket.Send(sendBytes, sendBytes.Length, SocketFlags.None);
             }
             catch (Exception ex)
@@ -736,41 +696,17 @@ namespace SocketMeister
             }
         }
 
-        internal void SendMessage(Client RemoteClient, IMessage Message, bool Async = true)
+
+
+        internal void IncrementSentTotals(int BytesSent)
         {
-            if (RemoteClient == null || RemoteClient.ClientSocket == null ||
-                RemoteClient.ClientSocket.Connected == false || RemoteClient.ClientSocket.Poll(200000, SelectMode.SelectWrite) == false) return;
-
-            try
+            lock (_lockTotals)
             {
-                byte[] sendBytes = MessageEngine.GenerateSendBytes(Message, _enableCompression);
-                lock (_lockTotals)
-                {
-                    if (_totalBytesSent > (long.MaxValue * 0.9)) _totalBytesSent = 0;
-                    _totalBytesSent += sendBytes.Length;
+                if (_totalBytesSent > (long.MaxValue * 0.9)) _totalBytesSent = 0;
+                _totalBytesSent += BytesSent;
 
-                    if (_totalMessagesSent == int.MaxValue) _totalMessagesSent = 0;
-                    _totalMessagesSent++;
-                }
-
-                if (Async == true)
-                {
-                    RemoteClient.ClientSocket.BeginSend(sendBytes, 0, sendBytes.Length, 0, new AsyncCallback(SendCallback), RemoteClient);
-                }
-                else
-                {
-                    RemoteClient.ClientSocket.Send(sendBytes, sendBytes.Length, SocketFlags.None);
-                }
-            }
-            catch (ObjectDisposedException ex)
-            {
-                _connectedClients.Disconnect(RemoteClient);
-                NotifyTraceEventRaised(ex, 5008);
-            }
-            catch (Exception ex)
-            {
-                _connectedClients.Disconnect(RemoteClient);
-                NotifyTraceEventRaised(ex, 5008);
+                if (_totalMessagesSent == int.MaxValue) _totalMessagesSent = 0;
+                _totalMessagesSent++;
             }
         }
 

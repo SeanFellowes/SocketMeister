@@ -13,30 +13,27 @@ namespace SocketMeister.Messages
         /// Unknown message type, usually associated with an error
         /// </summary>
         Unknown = 0,
+
         /// <summary>
         /// Basic message.
         /// </summary>
         Message = 1,
-        /// <summary>
-        /// Request (expecting a response). Version 1 (From SocketMeister 1.x.x.x)
-        /// </summary>
-        RequestMessageV1 = 2,
-        /// <summary>
-        /// Response to a client request
-        /// </summary>
-        ResponseMessage = 3,
+
         /// <summary>
         /// Server is shutting down
         /// </summary>
         ServerStoppingMessage = 4,
+
         /// <summary>
         /// Client is disconnecting
         /// </summary>
         ClientDisconnectMessage = 5,
+
         /// <summary>
         /// Clients sent poll requests to determine if a connection is alive
         /// </summary>
         PollRequest = 6,
+
         /// <summary>
         /// Server sends a poll response when a poll request is received from a client
         /// </summary>
@@ -60,7 +57,13 @@ namespace SocketMeister.Messages
         /// <summary>
         /// Request (expecting a response). Version 2 (From SocketMeister 2.x.x.x)
         /// </summary>
-        RequestMessageV2 = 100
+        RequestMessageV1 = 100,
+
+        /// <summary>
+        /// Response to a client request
+        /// </summary>
+        ResponseMessageV1 = 110
+
 
     }
 

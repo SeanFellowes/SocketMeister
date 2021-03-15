@@ -34,20 +34,20 @@ namespace SocketMeister.Messages
         private readonly RequestResult _requestResultCode;
         private readonly Byte[] _responseData = null;
 
-        public ResponseMessage(long RequestId, byte[] ResponseData) : base(MessageTypes.ResponseMessage)
+        public ResponseMessage(long RequestId, byte[] ResponseData) : base(MessageTypes.ResponseMessageV1)
         {
             _requestId = RequestId;
             _responseData = ResponseData;
             _requestResultCode = RequestResult.Success;
         }
 
-        public ResponseMessage(long RequestId, RequestResult RequestResultCode) : base(MessageTypes.ResponseMessage)
+        public ResponseMessage(long RequestId, RequestResult RequestResultCode) : base(MessageTypes.ResponseMessageV1)
         {
             _requestId = RequestId;
             _requestResultCode = RequestResultCode;
         }
 
-        public ResponseMessage(long RequestId, Exception Exception) : base(MessageTypes.ResponseMessage)
+        public ResponseMessage(long RequestId, Exception Exception) : base(MessageTypes.ResponseMessageV1)
         {
             _requestId = RequestId;
             _requestResultCode = RequestResult.Exception;
@@ -59,7 +59,7 @@ namespace SocketMeister.Messages
         /// Fastest was to build this is to create it directly from the SocketEnvelope buffer.
         /// </summary>
         /// <param name="Reader">Binary Reader</param>
-        public ResponseMessage(BinaryReader Reader) : base(MessageTypes.ResponseMessage)
+        public ResponseMessage(BinaryReader Reader) : base(MessageTypes.ResponseMessageV1)
         {
             _requestId = Reader.ReadInt64();
             if (Reader.ReadBoolean() == true) _responseData = Reader.ReadBytes(Reader.ReadInt32());

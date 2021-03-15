@@ -141,16 +141,6 @@
             Basic message.
             </summary>
         </member>
-        <member name="F:SocketMeister.Messages.MessageTypes.RequestMessageV1">
-            <summary>
-            Request (expecting a response). Version 1 (From SocketMeister 1.x.x.x)
-            </summary>
-        </member>
-        <member name="F:SocketMeister.Messages.MessageTypes.ResponseMessage">
-            <summary>
-            Response to a client request
-            </summary>
-        </member>
         <member name="F:SocketMeister.Messages.MessageTypes.ServerStoppingMessage">
             <summary>
             Server is shutting down
@@ -186,9 +176,14 @@
             Server sends a message which is applicable to a specific subscription name
             </summary>
         </member>
-        <member name="F:SocketMeister.Messages.MessageTypes.RequestMessageV2">
+        <member name="F:SocketMeister.Messages.MessageTypes.RequestMessageV1">
             <summary>
             Request (expecting a response). Version 2 (From SocketMeister 2.x.x.x)
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Messages.MessageTypes.ResponseMessageV1">
+            <summary>
+            Response to a client request
             </summary>
         </member>
         <member name="T:SocketMeister.Messages.RequestResult">
@@ -1232,7 +1227,7 @@
             Constructor
             </summary>
             <param name="Port">Port that this socket server will listen on</param>
-            <param name="EnableCompression">Enable compression on message data</param>
+            <param name="CompressSentData">Enable compression on message data</param>
         </member>
         <member name="P:SocketMeister.SocketServer.EndPoint">
             <summary>

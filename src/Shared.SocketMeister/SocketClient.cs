@@ -1060,7 +1060,7 @@ namespace SocketMeister
                     {
                         LastMessageFromServer = DateTime.Now;
 
-                        if (_receiveEngine.MessageType == MessageTypes.ResponseMessage)
+                        if (_receiveEngine.MessageType == MessageTypes.ResponseMessageV1)
                         {
                             //  SyncEndPointSubscriptionsWithServer() IS WAITING. COMPLETE THE SYNCRONOUS OPERATION SO IT CAN CONTINUE
                             ResponseMessage response = _receiveEngine.GetResponseMessage();
@@ -1085,18 +1085,8 @@ namespace SocketMeister
                         {
                             NotifyMessageReceived(_receiveEngine.GetMessage());
                         }
+
                         else if (_receiveEngine.MessageType == MessageTypes.RequestMessageV1)
-                        {
-                            Thread bgThread = new Thread(new ThreadStart(delegate
-                            {
-                                RequestMessage request = _receiveEngine.GetRequestMessage(1);
-                                lock (_lock) { _requestsInProgress += 1; }
-                                ThreadPool.QueueUserWorkItem(BgProcessRequestMessage, request);
-                            }));
-                            bgThread.IsBackground = true;
-                            bgThread.Start();
-                        }
-                        else if (_receiveEngine.MessageType == MessageTypes.RequestMessageV2)
                         {
                             Thread bgThread = new Thread(new ThreadStart(delegate
                             {
@@ -1108,6 +1098,7 @@ namespace SocketMeister
                             bgThread.Start();
 
                         }
+
                         else if (_receiveEngine.MessageType == MessageTypes.ServerStoppingMessage)
                         {
                             //  DON'T RECONNECT TO THIS SERVER FOR SOME NUMBER OF SECONDS
