@@ -11,9 +11,9 @@ using SocketMeister.Messages;
 namespace SocketMeister
 {
     /// <summary>
-    /// Threadsafe list of open request messages, which we are waiting for a response.
+    /// Threadsafe list of open messages, which we are waiting for a response.
     /// </summary>
-    internal class OpenRequestMessageCollection
+    internal class UnrespondedMessageCollection
     {
         private readonly List<Message> _list = new List<Message>();
         private readonly object _lock = new object();

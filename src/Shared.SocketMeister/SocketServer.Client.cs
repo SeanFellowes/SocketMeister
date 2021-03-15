@@ -29,7 +29,7 @@ namespace SocketMeister
             private readonly Socket _clientSocket;
             private readonly bool _compressSentData;
             private readonly DateTime _connectTimestamp = DateTime.Now;
-            private readonly OpenRequestMessageCollection _openRequests = new OpenRequestMessageCollection();
+            private readonly UnrespondedMessageCollection _openRequests = new UnrespondedMessageCollection();
             private readonly MessageEngine _receivedEnvelope;
             private readonly SocketServer _socketServer;
             private readonly TokenCollectionReadOnly _subscriptions = new TokenCollectionReadOnly();

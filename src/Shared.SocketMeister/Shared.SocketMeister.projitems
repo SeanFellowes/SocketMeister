@@ -15,7 +15,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Messages\BroadcastV1.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\TokenChangesRequestV1.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\TokenChangesResponseV1.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)OpenRequestMessageCollection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UnrespondedMessageCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SocketAsyncEventArgsPool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\MessageEngine.CLZF2.cs" />

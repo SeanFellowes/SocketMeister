@@ -61,7 +61,7 @@ namespace SocketMeister
         private DateTime? _lastMessageFromServer = null;
         private DateTime _nextPollRequest;
         private DateTime _nextSendSubscriptions;
-        private readonly OpenRequestMessageCollection _openRequests = new OpenRequestMessageCollection();
+        private readonly UnrespondedMessageCollection _openRequests = new UnrespondedMessageCollection();
         private int _requestsInProgress = 0;
         private readonly Random _randomizer = new Random();
         private MessageEngine _receiveEngine;
