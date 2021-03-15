@@ -74,7 +74,6 @@ namespace SocketMeister
         public event EventHandler<TraceEventArgs> TraceEventRaised;
 
 
-
         /// <summary>
         /// Constructor
         /// </summary>

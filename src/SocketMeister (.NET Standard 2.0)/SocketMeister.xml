@@ -19,6 +19,231 @@
             The number of simultaneous send operations which can take place. Value should be between 2 and 20
             </summary>
         </member>
+        <member name="T:SocketMeister.MessageEngineDeliveryResult">
+            <summary>
+            Result of an attempt to process a message. This is included in the MessageResponse.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.MessageEngineDeliveryResult.Success">
+            <summary>
+            The message was processed successfully
+            </summary>
+        </member>
+        <member name="F:SocketMeister.MessageEngineDeliveryResult.Stopping">
+            <summary>
+            The client or server is shutting down. The message was not processed.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.MessageEngineDeliveryResult.NoMessageReceivedEventListener">
+            <summary>
+            There is no process listening for 'MessageReceived' events.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.MessageEngineDeliveryResult.Exception">
+            <summary>
+            An exception occured while processing the message
+            </summary>
+        </member>
+        <member name="T:SocketMeister.MessageEngineDeliveryStatus">
+            <summary>
+            The progress of a message from creation to receiving a response.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.MessageEngineDeliveryStatus.Unsent">
+            <summary>
+            Message has not been sent or is flagged to resent (because socket connection failed)
+            </summary>
+        </member>
+        <member name="F:SocketMeister.MessageEngineDeliveryStatus.InProgress">
+            <summary>
+            Message is in progress
+            </summary>
+        </member>
+        <member name="F:SocketMeister.MessageEngineDeliveryStatus.ResponseReceived">
+            <summary>
+            Send operation finished (Could be unsuccessful or successful)
+            </summary>
+        </member>
+        <member name="T:SocketMeister.MessageEngineMessageType">
+            <summary>
+            Internal message types
+            </summary>
+        </member>
+        <member name="F:SocketMeister.MessageEngineMessageType.Unknown">
+            <summary>
+            Unknown message type, usually associated with an error
+            </summary>
+        </member>
+        <member name="F:SocketMeister.MessageEngineMessageType.BroadcastV1">
+            <summary>
+            Server sends a broadcast
+            </summary>
+        </member>
+        <member name="F:SocketMeister.MessageEngineMessageType.MessageV1">
+            <summary>
+            Message (expecting a response, even a null response is valid). 
+            </summary>
+        </member>
+        <member name="F:SocketMeister.MessageEngineMessageType.MessageResponseV1">
+            <summary>
+            Response to a message
+            </summary>
+        </member>
+        <member name="F:SocketMeister.MessageEngineMessageType.ServerStoppingNotificationV1">
+            <summary>
+            Server is shutting down
+            </summary>
+        </member>
+        <member name="F:SocketMeister.MessageEngineMessageType.ClientDisconnectingNotificationV1">
+            <summary>
+            Client is disconnecting
+            </summary>
+        </member>
+        <member name="F:SocketMeister.MessageEngineMessageType.SubscriptionChangesNotificationV1">
+            <summary>
+            Clients send subscription information to the server. The server updates it's local client details
+            </summary>
+        </member>
+        <member name="F:SocketMeister.MessageEngineMessageType.SubscriptionChangesResponseV1">
+            <summary>
+            Server sends a subscription response when a subscription notification is received from a client
+            </summary>
+        </member>
+        <member name="F:SocketMeister.MessageEngineMessageType.PollingRequestV1">
+            <summary>
+            Clients sent poll requests to determine if a connection is alive
+            </summary>
+        </member>
+        <member name="F:SocketMeister.MessageEngineMessageType.PollingResponseV1">
+            <summary>
+            Server sends a poll response when a poll request is received from a client
+            </summary>
+        </member>
+        <member name="T:SocketMeister.SeverityType">
+            <summary>
+            Severity of a trace event
+            </summary>
+        </member>
+        <member name="F:SocketMeister.SeverityType.Information">
+            <summary>
+            Information
+            </summary>
+        </member>
+        <member name="F:SocketMeister.SeverityType.Warning">
+            <summary>
+            Warning
+            </summary>
+        </member>
+        <member name="F:SocketMeister.SeverityType.Error">
+            <summary>
+            Error
+            </summary>
+        </member>
+        <member name="T:SocketMeister.SocketServerStatus">
+            <summary>
+            Execution status of a service
+            </summary>
+        </member>
+        <member name="F:SocketMeister.SocketServerStatus.Stopped">
+            <summary>
+            Service is stopped
+            </summary>
+        </member>
+        <member name="F:SocketMeister.SocketServerStatus.Starting">
+            <summary>
+            Service is starting
+            </summary>
+        </member>
+        <member name="F:SocketMeister.SocketServerStatus.Started">
+            <summary>
+            Service is started
+            </summary>
+        </member>
+        <member name="F:SocketMeister.SocketServerStatus.Stopping">
+            <summary>
+            Service is stopping
+            </summary>
+        </member>
+        <member name="T:SocketMeister.TokenAction">
+            <summary>
+            Action taken with a token
+            </summary>
+        </member>
+        <member name="T:SocketMeister.ValueType">
+            <summary>
+            Type of value stored in a token
+            </summary>
+        </member>
+        <member name="F:SocketMeister.ValueType.Unknown">
+            <summary>
+            Unknown
+            </summary>
+        </member>
+        <member name="F:SocketMeister.ValueType.BoolValue">
+            <summary>
+            Boolean
+            </summary>
+        </member>
+        <member name="F:SocketMeister.ValueType.DateTimeValue">
+            <summary>
+            DateTime
+            </summary>
+        </member>
+        <member name="F:SocketMeister.ValueType.DoubleValue">
+            <summary>
+            Double Type
+            </summary>
+        </member>
+        <member name="F:SocketMeister.ValueType.Int16Value">
+            <summary>
+            Int16
+            </summary>
+        </member>
+        <member name="F:SocketMeister.ValueType.Int32Value">
+            <summary>
+            Int32
+            </summary>
+        </member>
+        <member name="F:SocketMeister.ValueType.Int64Value">
+            <summary>
+            Int64
+            </summary>
+        </member>
+        <member name="F:SocketMeister.ValueType.UInt16Value">
+            <summary>
+            Unsigned Int16
+            </summary>
+        </member>
+        <member name="F:SocketMeister.ValueType.UInt32Value">
+            <summary>
+            Unsigned Int32
+            </summary>
+        </member>
+        <member name="F:SocketMeister.ValueType.UInt64Value">
+            <summary>
+            Unsigned Int64
+            </summary>
+        </member>
+        <member name="F:SocketMeister.ValueType.StringValue">
+            <summary>
+            String
+            </summary>
+        </member>
+        <member name="F:SocketMeister.ValueType.ByteValue">
+            <summary>
+            Byte
+            </summary>
+        </member>
+        <member name="F:SocketMeister.ValueType.ByteArrayValue">
+            <summary>
+            Byte Array
+            </summary>
+        </member>
+        <member name="F:SocketMeister.ValueType.NullValue">
+            <summary>
+            Null
+            </summary>
+        </member>
         <member name="T:SocketMeister.TraceEventArgs">
             <summary>
             Events and Exceptions raised for analysis and logging purposes
@@ -81,51 +306,6 @@
             Optional stack trace information.
             </summary>
         </member>
-        <member name="T:SocketMeister.SeverityType">
-            <summary>
-            Severity of a trace event
-            </summary>
-        </member>
-        <member name="F:SocketMeister.SeverityType.Information">
-            <summary>
-            Information
-            </summary>
-        </member>
-        <member name="F:SocketMeister.SeverityType.Warning">
-            <summary>
-            Warning
-            </summary>
-        </member>
-        <member name="F:SocketMeister.SeverityType.Error">
-            <summary>
-            Error
-            </summary>
-        </member>
-        <member name="T:SocketMeister.SocketServerStatus">
-            <summary>
-            Execution status of a service
-            </summary>
-        </member>
-        <member name="F:SocketMeister.SocketServerStatus.Stopped">
-            <summary>
-            Service is stopped
-            </summary>
-        </member>
-        <member name="F:SocketMeister.SocketServerStatus.Starting">
-            <summary>
-            Service is starting
-            </summary>
-        </member>
-        <member name="F:SocketMeister.SocketServerStatus.Started">
-            <summary>
-            Service is started
-            </summary>
-        </member>
-        <member name="F:SocketMeister.SocketServerStatus.Stopping">
-            <summary>
-            Service is stopping
-            </summary>
-        </member>
         <member name="T:SocketMeister.Messages.BroadcastV1">
             <summary>
             SocketServer sends broadcasts to clients.
@@ -146,106 +326,6 @@
         <member name="P:SocketMeister.Messages.BroadcastV1.Name">
             <summary>
             Optional Name/Tag/Identifier given to the broadcast
-            </summary>
-        </member>
-        <member name="T:SocketMeister.Messages.InternalMessageType">
-            <summary>
-            Internal message types
-            </summary>
-        </member>
-        <member name="F:SocketMeister.Messages.InternalMessageType.Unknown">
-            <summary>
-            Unknown message type, usually associated with an error
-            </summary>
-        </member>
-        <member name="F:SocketMeister.Messages.InternalMessageType.BroadcastV1">
-            <summary>
-            Server sends a broadcast
-            </summary>
-        </member>
-        <member name="F:SocketMeister.Messages.InternalMessageType.MessageV1">
-            <summary>
-            Message (expecting a response, even a null response is valid). 
-            </summary>
-        </member>
-        <member name="F:SocketMeister.Messages.InternalMessageType.MessageResponseV1">
-            <summary>
-            Response to a message
-            </summary>
-        </member>
-        <member name="F:SocketMeister.Messages.InternalMessageType.ServerStoppingNotificationV1">
-            <summary>
-            Server is shutting down
-            </summary>
-        </member>
-        <member name="F:SocketMeister.Messages.InternalMessageType.ClientDisconnectingNotificationV1">
-            <summary>
-            Client is disconnecting
-            </summary>
-        </member>
-        <member name="F:SocketMeister.Messages.InternalMessageType.SubscriptionChangesNotificationV1">
-            <summary>
-            Clients send subscription information to the server. The server updates it's local client details
-            </summary>
-        </member>
-        <member name="F:SocketMeister.Messages.InternalMessageType.SubscriptionChangesResponseV1">
-            <summary>
-            Server sends a subscription response when a subscription notification is received from a client
-            </summary>
-        </member>
-        <member name="F:SocketMeister.Messages.InternalMessageType.PollingRequestV1">
-            <summary>
-            Clients sent poll requests to determine if a connection is alive
-            </summary>
-        </member>
-        <member name="F:SocketMeister.Messages.InternalMessageType.PollingResponseV1">
-            <summary>
-            Server sends a poll response when a poll request is received from a client
-            </summary>
-        </member>
-        <member name="T:SocketMeister.Messages.MessageResponseResult">
-            <summary>
-            Result of an attempt to process a message. This is included in the MessageResponse.
-            </summary>
-        </member>
-        <member name="F:SocketMeister.Messages.MessageResponseResult.Success">
-            <summary>
-            The message was processed successfully
-            </summary>
-        </member>
-        <member name="F:SocketMeister.Messages.MessageResponseResult.Stopping">
-            <summary>
-            The client or server is shutting down. The message was not processed.
-            </summary>
-        </member>
-        <member name="F:SocketMeister.Messages.MessageResponseResult.NoMessageReceivedEventListener">
-            <summary>
-            There is no process listening for 'MessageReceived' events.
-            </summary>
-        </member>
-        <member name="F:SocketMeister.Messages.MessageResponseResult.Exception">
-            <summary>
-            An exception occured while processing the message
-            </summary>
-        </member>
-        <member name="T:SocketMeister.Messages.MessageProgress">
-            <summary>
-            The progress of a message from creation to receiving a response.
-            </summary>
-        </member>
-        <member name="F:SocketMeister.Messages.MessageProgress.Unsent">
-            <summary>
-            Message has not been sent or is flagged to resent (because socket connection failed)
-            </summary>
-        </member>
-        <member name="F:SocketMeister.Messages.MessageProgress.InProgress">
-            <summary>
-            Message is in progress
-            </summary>
-        </member>
-        <member name="F:SocketMeister.Messages.MessageProgress.ResponseReceived">
-            <summary>
-            Send operation finished (Could be unsuccessful or successful)
             </summary>
         </member>
         <member name="T:SocketMeister.Messages.TokenChangesRequestV1">
@@ -1412,86 +1492,6 @@
             Returns a list of all the tokens in the collection
             </summary>
             <returns></returns>
-        </member>
-        <member name="T:ValueType">
-            <summary>
-            Type of value stored in a token
-            </summary>
-        </member>
-        <member name="F:ValueType.Unknown">
-            <summary>
-            Unknown
-            </summary>
-        </member>
-        <member name="F:ValueType.BoolValue">
-            <summary>
-            Boolean
-            </summary>
-        </member>
-        <member name="F:ValueType.DateTimeValue">
-            <summary>
-            DateTime
-            </summary>
-        </member>
-        <member name="F:ValueType.DoubleValue">
-            <summary>
-            Double Type
-            </summary>
-        </member>
-        <member name="F:ValueType.Int16Value">
-            <summary>
-            Int16
-            </summary>
-        </member>
-        <member name="F:ValueType.Int32Value">
-            <summary>
-            Int32
-            </summary>
-        </member>
-        <member name="F:ValueType.Int64Value">
-            <summary>
-            Int64
-            </summary>
-        </member>
-        <member name="F:ValueType.UInt16Value">
-            <summary>
-            Unsigned Int16
-            </summary>
-        </member>
-        <member name="F:ValueType.UInt32Value">
-            <summary>
-            Unsigned Int32
-            </summary>
-        </member>
-        <member name="F:ValueType.UInt64Value">
-            <summary>
-            Unsigned Int64
-            </summary>
-        </member>
-        <member name="F:ValueType.StringValue">
-            <summary>
-            String
-            </summary>
-        </member>
-        <member name="F:ValueType.ByteValue">
-            <summary>
-            Byte
-            </summary>
-        </member>
-        <member name="F:ValueType.ByteArrayValue">
-            <summary>
-            Byte Array
-            </summary>
-        </member>
-        <member name="F:ValueType.NullValue">
-            <summary>
-            Null
-            </summary>
-        </member>
-        <member name="T:TokenAction">
-            <summary>
-            Action taken with a token
-            </summary>
         </member>
     </members>
 </doc>

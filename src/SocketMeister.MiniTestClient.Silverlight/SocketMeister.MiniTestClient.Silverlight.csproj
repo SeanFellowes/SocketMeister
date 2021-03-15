@@ -80,26 +80,23 @@
     <Compile Include="..\Shared.SocketMeister\Exceptions.cs">
       <Link>Shared.SocketMeister\Exceptions.cs</Link>
     </Compile>
+    <Compile Include="..\Shared.SocketMeister\MessageEngine.CLZF2.cs">
+      <Link>Shared.SocketMeister\MessageEngine.CLZF2.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\MessageEngine.cs">
+      <Link>Shared.SocketMeister\MessageEngine.cs</Link>
+    </Compile>
     <Compile Include="..\Shared.SocketMeister\Messages\BroadcastV1.cs">
       <Link>Shared.SocketMeister\Messages\BroadcastV1.cs</Link>
     </Compile>
     <Compile Include="..\Shared.SocketMeister\Messages\ClientDisconnectingNotificationV1.cs">
       <Link>Shared.SocketMeister\Messages\ClientDisconnectingNotificationV1.cs</Link>
     </Compile>
-    <Compile Include="..\Shared.SocketMeister\Messages\Enums.cs">
-      <Link>Shared.SocketMeister\Messages\Enums.cs</Link>
-    </Compile>
     <Compile Include="..\Shared.SocketMeister\Messages\IMessage.cs">
       <Link>Shared.SocketMeister\Messages\IMessage.cs</Link>
     </Compile>
     <Compile Include="..\Shared.SocketMeister\Messages\MessageBase.cs">
       <Link>Shared.SocketMeister\Messages\MessageBase.cs</Link>
-    </Compile>
-    <Compile Include="..\Shared.SocketMeister\Messages\MessageEngine.CLZF2.cs">
-      <Link>Shared.SocketMeister\Messages\MessageEngine.CLZF2.cs</Link>
-    </Compile>
-    <Compile Include="..\Shared.SocketMeister\Messages\MessageEngine.cs">
-      <Link>Shared.SocketMeister\Messages\MessageEngine.cs</Link>
     </Compile>
     <Compile Include="..\Shared.SocketMeister\Messages\MessageResponseV1.cs">
       <Link>Shared.SocketMeister\Messages\MessageResponseV1.cs</Link>

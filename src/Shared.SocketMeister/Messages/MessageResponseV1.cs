@@ -32,7 +32,7 @@ namespace SocketMeister.Messages
         private readonly string _error = null;
         private readonly long _messageId;
         private readonly MessageEngineDeliveryResult _processingResult;
-        private readonly Byte[] _responseData = null;
+        private readonly byte[] _responseData = null;
 
         public MessageResponsev1(long MessageId, byte[] ResponseData) : base(MessageEngineMessageType.MessageResponseV1)
         {
