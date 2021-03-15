@@ -13,7 +13,7 @@ using System.Globalization;
 using System.IO;
 using SocketMeister.Messages;
 
-namespace SocketMeister
+namespace SocketMeister.Messages
 {
     /// <summary>
     /// This is the core engine for creating bytes to send down a socket and to receive bytes from a socket.
@@ -79,7 +79,7 @@ namespace SocketMeister
         private bool _messageIsCompressed = false;
         private int _messageLength = 0;
         private int _messageLengthUncompressed = 0;
-        private InternalMessageType _messageType = InternalMessageType.Unknown;
+        private MessageEngineMessageType _messageType = MessageEngineMessageType.Unknown;
         private readonly byte[] _headerBuffer = new byte[11];
         private int _headerBufferPtr = 0;
         private bool _headerReceived = false;
@@ -121,12 +121,12 @@ namespace SocketMeister
                         _headerReceived = true;
 
                         //  SETUP MESSAGE BODY BYTE ARRAY FOR THE EXPECTED BYTES
-                        _messageType = (InternalMessageType)Convert.ToInt16(_headerBuffer[0] | (_headerBuffer[1] << 8));
+                        _messageType = (MessageEngineMessageType)Convert.ToInt16(_headerBuffer[0] | (_headerBuffer[1] << 8));
                         _messageIsCompressed = Convert.ToBoolean(_headerBuffer[2]);
                         _messageLength = _headerBuffer[3] | (_headerBuffer[4] << 8) | (_headerBuffer[5] << 16) | (_headerBuffer[6] << 24);
                         _messageLengthUncompressed = _headerBuffer[7] | (_headerBuffer[8] << 8) | (_headerBuffer[9] << 16) | (_headerBuffer[10] << 24);
 
-                        if (Enum.IsDefined(typeof(InternalMessageType), _messageType) == false)
+                        if (Enum.IsDefined(typeof(MessageEngineMessageType), _messageType) == false)
                         {
                             throw new Exception("Invalid Message Type");
                         }
@@ -287,7 +287,7 @@ namespace SocketMeister
         /// <summary>
         /// The type of message. 
         /// </summary>
-        internal InternalMessageType MessageType
+        internal MessageEngineMessageType MessageType
         {
             get { return _messageType; }
         }

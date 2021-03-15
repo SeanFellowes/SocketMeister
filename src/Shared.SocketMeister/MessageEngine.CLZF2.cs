@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace SocketMeister
+namespace SocketMeister.Messages
 {
     /// <summary>
     /// This is the core engine for creating bytes to send down a socket and to receive bytes from a socket.
