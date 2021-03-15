@@ -10,7 +10,7 @@ namespace SocketMeister.Messages
     /// </summary>
     internal class PollRequest : MessageBase, IMessage
     {
-        public PollRequest() : base(MessageTypes.PollingV1) { }
+        public PollRequest() : base(MessageTypes.PollingRequestV1) { }
 
         ///// <summary>
         ///// Fastest was to build this is to create it directly from the SocketEnvelope buffer.

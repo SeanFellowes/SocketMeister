@@ -454,7 +454,7 @@ namespace SocketMeister
                                 _totalMessagesReceived++;
                             }
 
-                            Message message = receiveEnvelope.GetMessage(2);
+                            MessageV1 message = receiveEnvelope.GetMessage(2);
                             message.RemoteClient = remoteClient;
 
                             if (Status == SocketServerStatus.Stopping)
@@ -490,7 +490,7 @@ namespace SocketMeister
                                 NotifyTraceEventRaised(ex, 5008);
                             }
                         }
-                        else if (receiveEnvelope.MessageType == MessageTypes.PollingV1)
+                        else if (receiveEnvelope.MessageType == MessageTypes.PollingRequestV1)
                         {
                             if (Status == SocketServerStatus.Started)
                             {
@@ -593,7 +593,7 @@ namespace SocketMeister
 
 
 
-        private void BgProcessMessage(Message message)
+        private void BgProcessMessage(MessageV1 message)
         {
             try
             {

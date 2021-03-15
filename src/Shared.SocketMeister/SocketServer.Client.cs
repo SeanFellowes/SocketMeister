@@ -101,7 +101,7 @@ namespace SocketMeister
 
             internal void ProcessResponseMessage(MessageResponse Message)
             {
-                Message request = _openRequests[Message.MessageId];
+                MessageV1 request = _openRequests[Message.MessageId];
                 if (request == null) return;
                 request.Response = Message;
             }
@@ -197,7 +197,7 @@ namespace SocketMeister
             }
 
 
-            private byte[] SendReceive(Message Request)
+            private byte[] SendReceive(MessageV1 Request)
             {
                 if (_socketServer.Status != SocketServerStatus.Started) return null;
 

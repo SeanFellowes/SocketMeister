@@ -12,7 +12,7 @@ using System.Threading;
 namespace SocketMeister.Messages
 {
 #if !SILVERLIGHT && !SMNOSERVER && !NET35 && !NET20
-    internal partial class Message : MessageBase
+    internal partial class MessageV1 : MessageBase
     {
         private SocketServer.Client _remoteClient = null;
 
@@ -30,7 +30,7 @@ namespace SocketMeister.Messages
     /// <summary>
     /// A message, sent from socket client to socket server. A response is expected and will cause problems if it is not sent.
     /// </summary>
-    internal partial class Message : MessageBase, IMessage
+    internal partial class MessageV1 : MessageBase, IMessage
     {
         //  MESSAGE ID
         private static long _maxMessageId = 0;
@@ -54,7 +54,7 @@ namespace SocketMeister.Messages
         /// <param name="Parameters">Array of parameters to send with the message. There must be at least 1 parameter.</param>
         /// <param name="TimeoutMilliseconds">The maximum number of milliseconds to wait for a response before timing out.</param>
         /// <param name="IsLongPolling">The maximum number of milliseconds to wait for a response before timing out.</param>
-        public Message(object[] Parameters, int TimeoutMilliseconds, bool IsLongPolling = false) : base(MessageTypes.MessageV1)
+        public MessageV1(object[] Parameters, int TimeoutMilliseconds, bool IsLongPolling = false) : base(MessageTypes.MessageV1)
         {
             _parameters = Parameters;
             _timeoutMilliseconds = TimeoutMilliseconds;
@@ -85,7 +85,7 @@ namespace SocketMeister.Messages
         }
 
 
-        internal Message(BinaryReader bR, int Version) : base(MessageTypes.MessageV1)
+        internal MessageV1(BinaryReader bR, int Version) : base(MessageTypes.MessageV1)
         {
             if (Version == 1)
             {

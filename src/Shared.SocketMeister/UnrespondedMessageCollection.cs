@@ -15,16 +15,16 @@ namespace SocketMeister
     /// </summary>
     internal class UnrespondedMessageCollection
     {
-        private readonly List<Message> _list = new List<Message>();
+        private readonly List<MessageV1> _list = new List<MessageV1>();
         private readonly object _lock = new object();
 
-        public Message this[long RequestID]
+        public MessageV1 this[long RequestID]
         {
             get
             {
                 lock (_lock)
                 {
-                    foreach (Message message in _list)
+                    foreach (MessageV1 message in _list)
                     {
                         if (message.MessageId == RequestID) return message;
                     }
@@ -34,7 +34,7 @@ namespace SocketMeister
         }
 
 
-        internal void Add(Message AddItem)
+        internal void Add(MessageV1 AddItem)
         {
             lock (_lock) { _list.Add(AddItem); }
         }
@@ -49,7 +49,7 @@ namespace SocketMeister
         }
 
 
-        internal void Remove(Message RemoveItem)
+        internal void Remove(MessageV1 RemoveItem)
         {
             lock (_lock) { _list.Remove(RemoveItem); }
         }
@@ -59,12 +59,12 @@ namespace SocketMeister
         /// </summary>
         internal void ResetToUnsent()
         {
-            List<Message> messages;
+            List<MessageV1> messages;
             lock (_lock)
             {
                 messages = _list.ToList();
             }
-            foreach (Message message in messages)
+            foreach (MessageV1 message in messages)
             {
                 if (message.WaitForResponse) message.Status = MessageStatus.Unsent;
             }

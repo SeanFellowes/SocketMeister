@@ -490,7 +490,7 @@ namespace SocketMeister
                 if (disconnectingEndPoint.Socket.Connected == true)
                 {
                     //  ATTEMPT TO SEND A DISCONNECT MESSAGE TO THE SERVER.
-                    byte[] sendBytes = MessageEngine.GenerateSendBytes(new ClientDisconnectMessage(), false);
+                    byte[] sendBytes = MessageEngine.GenerateSendBytes(new ClientDisconnectingNotificationV1(), false);
                     using (SocketAsyncEventArgs sendDisconnectEventArgs = new SocketAsyncEventArgs())
                     {
                         try
@@ -805,7 +805,7 @@ namespace SocketMeister
 
 
 
-        private void SendResponse(MessageResponse messageResponse, Message message)
+        private void SendResponse(MessageResponse messageResponse, MessageV1 message)
         {
             byte[] sendBytes = MessageEngine.GenerateSendBytes(messageResponse, false);
 
@@ -897,11 +897,11 @@ namespace SocketMeister
             }
             //DelaySending();
             int remainingMilliseconds = TimeoutMilliseconds - Convert.ToInt32((DateTime.Now - startTime).TotalMilliseconds);
-            return SendReceive(new Message(Parameters, remainingMilliseconds, IsLongPolling));
+            return SendReceive(new MessageV1(Parameters, remainingMilliseconds, IsLongPolling));
         }
 
 
-        private byte[] SendReceive(Message message)
+        private byte[] SendReceive(MessageV1 message)
         {
             if (StopClientPermanently == true) return null;
 
@@ -1060,7 +1060,7 @@ namespace SocketMeister
                             MessageResponse response = _receiveEngine.GetResponseMessage();
 
                             //  CHECK TO SEE IS THE MESSAGE IS IN THE LIST OF OPEN SendReceive ITEMS.
-                            Message foundUnrespondedMessage = _unrespondedMessages[response.MessageId];
+                            MessageV1 foundUnrespondedMessage = _unrespondedMessages[response.MessageId];
                             if (foundUnrespondedMessage != null)
                             {
                                 if (response.ProcessingResult == MessageProcessingResult.Stopping)
@@ -1084,7 +1084,7 @@ namespace SocketMeister
                         {
                             Thread bgThread = new Thread(new ThreadStart(delegate
                             {
-                                Message message = _receiveEngine.GetMessage(2);
+                                MessageV1 message = _receiveEngine.GetMessage(2);
                                 ThreadPool.QueueUserWorkItem(BgProcessMessage, message);
                             }));
                             bgThread.IsBackground = true;
@@ -1140,7 +1140,7 @@ namespace SocketMeister
 
         private void BgProcessMessage(object state)
         {
-            Message message = (Message)state;
+            MessageV1 message = (MessageV1)state;
             try
             {
                 if (MessageReceived == null)

@@ -8,9 +8,9 @@ namespace SocketMeister.Messages
     /// <summary>
     /// Sent when a client is disconnecting
     /// </summary>
-    internal class ClientDisconnectMessage : MessageBase, IMessage
+    internal class ClientDisconnectingNotificationV1 : MessageBase, IMessage
     {
-        public ClientDisconnectMessage() : base(MessageTypes.ClientDisconnectingNotificationV1)
+        public ClientDisconnectingNotificationV1() : base(MessageTypes.ClientDisconnectingNotificationV1)
         {
         }
 

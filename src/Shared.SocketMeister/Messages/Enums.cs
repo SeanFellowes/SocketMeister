@@ -52,7 +52,7 @@ namespace SocketMeister.Messages
         /// <summary>
         /// Clients sent poll requests to determine if a connection is alive
         /// </summary>
-        PollingV1 = 300,
+        PollingRequestV1 = 300,
 
         /// <summary>
         /// Server sends a poll response when a poll request is received from a client
