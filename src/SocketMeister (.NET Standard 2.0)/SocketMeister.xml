@@ -136,32 +136,32 @@
             Unknown message type, usually associated with an error
             </summary>
         </member>
-        <member name="F:SocketMeister.Messages.MessageTypes.Message">
+        <member name="F:SocketMeister.Messages.MessageTypes.BroadcastV1">
             <summary>
-            Basic message.
+            Server sends a broadcast
             </summary>
         </member>
-        <member name="F:SocketMeister.Messages.MessageTypes.ServerStoppingMessage">
+        <member name="F:SocketMeister.Messages.MessageTypes.MessageV1">
+            <summary>
+            Message (expecting a response, even a null response is valid). 
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Messages.MessageTypes.MessageResponseV1">
+            <summary>
+            Response to a message
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Messages.MessageTypes.ServerStoppingNotificationV1">
             <summary>
             Server is shutting down
             </summary>
         </member>
-        <member name="F:SocketMeister.Messages.MessageTypes.ClientDisconnectMessage">
+        <member name="F:SocketMeister.Messages.MessageTypes.ClientDisconnectingNotificationV1">
             <summary>
             Client is disconnecting
             </summary>
         </member>
-        <member name="F:SocketMeister.Messages.MessageTypes.PollRequest">
-            <summary>
-            Clients sent poll requests to determine if a connection is alive
-            </summary>
-        </member>
-        <member name="F:SocketMeister.Messages.MessageTypes.PollResponse">
-            <summary>
-            Server sends a poll response when a poll request is received from a client
-            </summary>
-        </member>
-        <member name="F:SocketMeister.Messages.MessageTypes.SubscriptionChangesRequestV1">
+        <member name="F:SocketMeister.Messages.MessageTypes.SubscriptionChangesNotificationV1">
             <summary>
             Clients send subscription information to the server. The server updates it's local client details
             </summary>
@@ -171,42 +171,37 @@
             Server sends a subscription response when a subscription request is received from a client
             </summary>
         </member>
-        <member name="F:SocketMeister.Messages.MessageTypes.BroadcastV1">
+        <member name="F:SocketMeister.Messages.MessageTypes.PollingV1">
             <summary>
-            Server sends a broadcast
+            Clients sent poll requests to determine if a connection is alive
             </summary>
         </member>
-        <member name="F:SocketMeister.Messages.MessageTypes.RequestMessageV1">
+        <member name="F:SocketMeister.Messages.MessageTypes.PollingResponseV1">
             <summary>
-            Request (expecting a response). Version 2 (From SocketMeister 2.x.x.x)
+            Server sends a poll response when a poll request is received from a client
             </summary>
         </member>
-        <member name="F:SocketMeister.Messages.MessageTypes.ResponseMessageV1">
+        <member name="T:SocketMeister.Messages.MessageProcessingResult">
             <summary>
-            Response to a client request
+            Result of an attempt to process a message. This is included in the MessageResponse.
             </summary>
         </member>
-        <member name="T:SocketMeister.Messages.RequestResult">
-            <summary>
-            Result of an attempt to process a request. This is included in the ResponseMessage.
-            </summary>
-        </member>
-        <member name="F:SocketMeister.Messages.RequestResult.Success">
+        <member name="F:SocketMeister.Messages.MessageProcessingResult.Success">
             <summary>
             The request executed successfully
             </summary>
         </member>
-        <member name="F:SocketMeister.Messages.RequestResult.Stopping">
+        <member name="F:SocketMeister.Messages.MessageProcessingResult.Stopping">
             <summary>
             The client or server is shutting down. The request could not be fulfilled.
             </summary>
         </member>
-        <member name="F:SocketMeister.Messages.RequestResult.NoRequestProcessor">
+        <member name="F:SocketMeister.Messages.MessageProcessingResult.NoMessageProcessor">
             <summary>
-            There is no process listening for 'RequestReceived' events.
+            There is no process listening for 'MessageReceived' events.
             </summary>
         </member>
-        <member name="F:SocketMeister.Messages.RequestResult.Exception">
+        <member name="F:SocketMeister.Messages.MessageProcessingResult.Exception">
             <summary>
             An exception occured while processing the request
             </summary>
@@ -453,40 +448,40 @@
         </member>
         <member name="T:SocketMeister.Messages.Message">
             <summary>
-            A request, sent from socket client to socket server. A response is expected and will cause problems if it is not sent.
+            A message, sent from socket client to socket server. A response is expected and will cause problems if it is not sent.
             </summary>
         </member>
         <member name="P:SocketMeister.Messages.Message.RemoteClient">
             <summary>
-            The remote client which sent this RequestMessage (value null on SocketClient)
+            The remote client which sent this Message (value null on SocketClient)
             </summary>
         </member>
         <member name="M:SocketMeister.Messages.Message.#ctor(System.Object[],System.Int32,System.Boolean)">
             <summary>
-            RequestMessage constructor
+            Message constructor
             </summary>
-            <param name="Parameters">Array of parameters to send with the request. There must be at least 1 parameter.</param>
+            <param name="Parameters">Array of parameters to send with the message. There must be at least 1 parameter.</param>
             <param name="TimeoutMilliseconds">The maximum number of milliseconds to wait for a response before timing out.</param>
             <param name="IsLongPolling">The maximum number of milliseconds to wait for a response before timing out.</param>
         </member>
         <member name="P:SocketMeister.Messages.Message.Parameters">
             <summary>
-            Parameters provided with this request
+            Parameters provided with this message
             </summary>
         </member>
         <member name="P:SocketMeister.Messages.Message.IsLongPolling">
             <summary>
-            True is this request is long polling on the server side. Long polling requests will be closed immediately in the event of a close from either the client or server side.
+            True is this message is long polling on the server side. Long polling messages will be closed immediately in the event of a close from either the client or server side.
             </summary>
         </member>
         <member name="P:SocketMeister.Messages.Message.IsTimeout">
             <summary>
-            Whether the RequestMessage has timed out
+            Whether the Message has timed out
             </summary>
         </member>
-        <member name="P:SocketMeister.Messages.Message.RequestId">
+        <member name="P:SocketMeister.Messages.Message.MessageId">
             <summary>
-            Identifier assigned to this request when it was created (usually when created at the client)
+            Identifier assigned to this message when it was created
             </summary>
         </member>
         <member name="P:SocketMeister.Messages.Message.TimeoutMilliseconds">
@@ -496,7 +491,7 @@
         </member>
         <member name="P:SocketMeister.Messages.Message.TrySendReceive">
             <summary>
-            Whether the method SendReceive(RequestMessage Request) should continute trying
+            Whether the method SendReceive(Message Message) should continute trying
             </summary>
         </member>
         <member name="P:SocketMeister.Messages.Message.WaitForResponse">
@@ -506,7 +501,7 @@
         </member>
         <member name="P:SocketMeister.Messages.MessageResponse.RemoteClient">
             <summary>
-            The remote client which sent this RequestMessage (value null on SocketClient)
+            The remote client which sent this Message (value null on SocketClient)
             </summary>
         </member>
         <member name="M:SocketMeister.Messages.MessageResponse.#ctor(System.IO.BinaryReader)">
@@ -878,7 +873,7 @@
         </member>
         <member name="P:SocketMeister.SocketClient.LastMessageFromServer">
             <summary>
-            The last time any contact was received from the server. This includes polling request/responses, instigated intermittently from the client.
+            The last time any contact was received from the server. This includes polling message/responses, instigated intermittently from the client.
             </summary>
         </member>
         <member name="M:SocketMeister.SocketClient.RemoveSubscription(System.String)">
@@ -903,7 +898,7 @@
             The last time a polling response was received from the socket server.
             </summary>
         </member>
-        <member name="P:SocketMeister.SocketClient.NextPollRequest">
+        <member name="P:SocketMeister.SocketClient.NextPoll">
             <summary>
             The next time this socket client should attempt to poll the socket server.
             </summary>
@@ -958,13 +953,13 @@
             Stops the client.
             </summary>
         </member>
-        <member name="M:SocketMeister.SocketClient.SendRequest(System.Object[],System.Int32,System.Boolean)">
+        <member name="M:SocketMeister.SocketClient.SendMessage(System.Object[],System.Int32,System.Boolean)">
             <summary>
-            Send a request to the server and wait for a response. 
+            Send a message to the server and wait for a response. 
             </summary>
-            <param name="Parameters">Array of parameters to send with the request</param>
+            <param name="Parameters">Array of parameters to send with the message</param>
             <param name="TimeoutMilliseconds">Maximum number of milliseconds to wait for a response from the server</param>
-            <param name="IsLongPolling">If the request is long polling on the server mark this as true and the request will be cancelled instantly when a disconnect occurs</param>
+            <param name="IsLongPolling">If the message is long polling on the server mark this as true and the message will be cancelled instantly when a disconnect occurs</param>
             <returns>Nullable array of bytes which was returned from the socket server</returns>
         </member>
         <member name="M:SocketMeister.SocketClient.ProcessReceive(System.Object,System.Net.Sockets.SocketAsyncEventArgs)">
@@ -1163,9 +1158,9 @@
             Raised when the status of the socket listener changes. Raised in a seperate thread
             </summary>
         </member>
-        <member name="E:SocketMeister.SocketServer.RequestReceived">
+        <member name="E:SocketMeister.SocketServer.MessageReceived">
             <summary>
-            Raised when a request message is received from a client. A response can be provided which will be returned to the client. Raised in a seperate thread.
+            Raised when a  message is received from a client. An optional response can be provided which will be returned to the client. Raised in a seperate thread.
             </summary>
         </member>
         <member name="E:SocketMeister.SocketServer.TraceEventRaised">
@@ -1205,17 +1200,12 @@
             The total number of messages that have been sent through the socket server since it started;
             </summary>
         </member>
-        <member name="P:SocketMeister.SocketServer.TotalRequestsReceived">
+        <member name="P:SocketMeister.SocketServer.TotalMessagesReceived">
             <summary>
             The total number of messages that have been received through the socket server since it started;
             </summary>
         </member>
-        <member name="P:SocketMeister.SocketServer.RequestsInProgress">
-            <summary>
-            The number of client requests currently being executed.
-            </summary>
-        </member>
-        <member name="P:SocketMeister.SocketServer.IsStopRequested">
+        <member name="P:SocketMeister.SocketServer.StopSocketServer">
             <summary>
             Whether the socket service is in the process of stopping.
             </summary>
@@ -1259,7 +1249,7 @@
         </member>
         <member name="M:SocketMeister.SocketServer.Stop">
             <summary>
-            Sends a message to all clients to disconnect, waits for in progress requests to finish, then stops the socket server. 
+            Sends a message to all clients to disconnect, waits for in progress messages to finish, then stops the socket server. 
             </summary>
         </member>
         <member name="T:SocketMeister.SocketServer.ClientEventArgs">
@@ -1272,22 +1262,22 @@
             The client which connected
             </summary>
         </member>
-        <member name="T:SocketMeister.SocketServer.RequestReceivedEventArgs">
+        <member name="T:SocketMeister.SocketServer.MessageReceivedEventArgs">
             <summary>
             Values provided when a request is received from a client. 
             </summary>
         </member>
-        <member name="P:SocketMeister.SocketServer.RequestReceivedEventArgs.Response">
+        <member name="P:SocketMeister.SocketServer.MessageReceivedEventArgs.Response">
             <summary>
-            The byte array which is to be returned to the client. Null is returned if a 'Response' value is not provided when processing the 'RequestReceived' event.
+            The byte array which is to be returned to the client. Null is returned if a 'Response' value is not provided when processing the 'MessageReceived' event.
             </summary>
         </member>
-        <member name="P:SocketMeister.SocketServer.RequestReceivedEventArgs.Client">
+        <member name="P:SocketMeister.SocketServer.MessageReceivedEventArgs.Client">
             <summary>
             The client which initiated the message.
             </summary>
         </member>
-        <member name="P:SocketMeister.SocketServer.RequestReceivedEventArgs.Parameters">
+        <member name="P:SocketMeister.SocketServer.MessageReceivedEventArgs.Parameters">
             <summary>
             The parameters provided with the message.
             </summary>

@@ -37,7 +37,7 @@ namespace SocketMeister.Testing.ControlBus
         /// <summary>
         /// Raised when a request message is received from the server. A response can be provided which will be returned to the server.
         /// </summary>
-        public event EventHandler<SocketClient.MessageReceivedEventArgs> RequestReceived;
+        public event EventHandler<SocketClient.MessageReceivedEventArgs> MessageReceived;
 
 
 
@@ -101,7 +101,7 @@ namespace SocketMeister.Testing.ControlBus
             ControlBusSocketClient = new SocketClient(endPoints, true);
             ControlBusSocketClient.ConnectionStatusChanged += ControlBusSocketClient_ConnectionStatusChanged;
             ControlBusSocketClient.ExceptionRaised += ControlBusSocketClient_ExceptionRaised;
-            ControlBusSocketClient.MessageReceived += ControlBusSocketClient_RequestReceived;
+            ControlBusSocketClient.MessageReceived += ControlBusSocketClient_MessageReceived;
 
             //Thread bgFailIfDisconnected = new Thread(new ThreadStart(delegate
             //{
@@ -132,9 +132,9 @@ namespace SocketMeister.Testing.ControlBus
             //bgFailIfDisconnected.Start();
         }
 
-        private void ControlBusSocketClient_RequestReceived(object sender, SocketClient.MessageReceivedEventArgs e)
+        private void ControlBusSocketClient_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
         {
-            RequestReceived?.Invoke(this, e);
+            MessageReceived?.Invoke(this, e);
         }
 
         private void ControlBusSocketClient_ExceptionRaised(object sender, ExceptionEventArgs e)
@@ -153,7 +153,7 @@ namespace SocketMeister.Testing.ControlBus
                     object[] parms = new object[2];
                     parms[0] = ControlMessage.HarnessControlBusClientIsConnecting;
                     parms[1] = ControlBusClientId;
-                    ControlBusSocketClient.SendRequest(parms);
+                    ControlBusSocketClient.SendMessage(parms);
                 }
                 ConnectionStatusChanged?.Invoke(this, e);
             }

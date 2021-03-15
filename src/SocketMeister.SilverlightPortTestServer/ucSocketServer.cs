@@ -92,7 +92,7 @@ namespace SocketMeister
             {
                 Server = new SocketServer(_port, false);
                 Server.TraceEventRaised += Server_TraceEventRaised;
-                Server.RequestReceived += Server_RequestReceived;
+                Server.MessageReceived += Server_MessageReceived;
                 Server.StatusChanged += Server_StatusChanged;
                 Server.Start();
 
@@ -112,7 +112,7 @@ namespace SocketMeister
                 if (AppExiting == true)
                 {
                     Server.TraceEventRaised -= Server_TraceEventRaised;
-                    Server.RequestReceived -= Server_RequestReceived;
+                    Server.MessageReceived -= Server_MessageReceived;
                     Server.StatusChanged -= Server_StatusChanged;
                     Server.Stop();
                 }
@@ -120,7 +120,7 @@ namespace SocketMeister
                 {
                     Server.Stop();
                     Server.TraceEventRaised -= Server_TraceEventRaised;
-                    Server.RequestReceived -= Server_RequestReceived;
+                    Server.MessageReceived -= Server_MessageReceived;
                     Server.StatusChanged -= Server_StatusChanged;
                     SetButtonEnabled(btnStop, false);
                     SetButtonEnabled(btnSendMessage, false);
@@ -150,14 +150,14 @@ namespace SocketMeister
         }
 
 
-        private void Server_RequestReceived(object sender, SocketServer.RequestReceivedEventArgs e)
+        private void Server_MessageReceived(object sender, SocketServer.MessageReceivedEventArgs e)
         {
             //MESSAGE RECEIVED. SEND IT BACK IF LOGGING IS ON
             int clientId = (int)e.Parameters[0];
             byte[] receivedBytes = (byte[])e.Parameters[1];
             string msgRec = Encoding.UTF8.GetString(receivedBytes, 0, receivedBytes.Length);
 
-            LogEventRaised?.Invoke(this, new LogEventArgs(SeverityType.Information, "Port #" + Port.ToString(), "Client " + clientId, "RequestReceived: " + msgRec));
+            LogEventRaised?.Invoke(this, new LogEventArgs(SeverityType.Information, "Port #" + Port.ToString(), "Client " + clientId, "MessageReceived: " + msgRec));
 
             byte[] toSend = new byte[msgRec.Length];
             Buffer.BlockCopy(Encoding.UTF8.GetBytes(msgRec), 0, toSend, 0, toSend.Length);

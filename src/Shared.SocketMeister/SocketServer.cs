@@ -1,5 +1,6 @@
 ﻿#pragma warning disable IDE0079 // Remove unnecessary suppression
 #pragma warning disable IDE0090 // Use 'new(...)'
+#pragma warning disable IDE0052 // Remove unread private members
 #pragma warning disable CA1031 // Do not catch general exception types
 #pragma warning disable CA1303 // Do not pass literals as localized parameters
 #pragma warning disable CA1805 // Do not initialize unnecessarily
@@ -40,13 +41,12 @@ namespace SocketMeister
         private readonly IPEndPoint _localEndPoint = null;
         private readonly object _lock = new object();
         private readonly object _lockTotals = new object();
-        private int _requestsInProgress = 0;
-        private bool _isStopRequested;
+        private bool _stopSocketServer;
         private readonly Thread _threadListener = null;
         private long _totalBytesReceived;
         private long _totalBytesSent;
         private int _totalMessagesSent;
-        private int _totalRequestsReceived;
+        private int _totalMessagesReceived;
 
         /// <summary>
         /// Event raised when a client connects to the socket server. Raised in a seperate thread
@@ -64,9 +64,9 @@ namespace SocketMeister
         public event EventHandler<EventArgs> StatusChanged;
 
         /// <summary>
-        /// Raised when a request message is received from a client. A response can be provided which will be returned to the client. Raised in a seperate thread.
+        /// Raised when a  message is received from a client. An optional response can be provided which will be returned to the client. Raised in a seperate thread.
         /// </summary>
-        public event EventHandler<RequestReceivedEventArgs> RequestReceived;
+        public event EventHandler<MessageReceivedEventArgs> MessageReceived;
 
         /// <summary>
         /// Raised when an trace log event has been raised.
@@ -168,25 +168,16 @@ namespace SocketMeister
         /// <summary>
         /// The total number of messages that have been received through the socket server since it started;
         /// </summary>
-        public int TotalRequestsReceived
+        public int TotalMessagesReceived
         {
-            get { lock(_lockTotals) { return _totalRequestsReceived; } }
+            get { lock(_lockTotals) { return _totalMessagesReceived; } }
         }
 
-
-
-
-        /// <summary>
-        /// The number of client requests currently being executed.
-        /// </summary>
-        public int RequestsInProgress { get { lock (_lock) { return _requestsInProgress; } } }
 
         /// <summary>
         /// Whether the socket service is in the process of stopping.
         /// </summary>
-#pragma warning disable IDE0052 // Remove unread private members
-        private bool IsStopRequested { get { lock (_lock) { return _isStopRequested; } } set { lock (_lock) { _isStopRequested = value; } } }
-#pragma warning restore IDE0052 // Remove unread private members
+        private bool StopSocketServer { get { lock (_lock) { return _stopSocketServer; } } set { lock (_lock) { _stopSocketServer = value; } } }
 
 
 
@@ -284,20 +275,20 @@ namespace SocketMeister
         /// </summary>
         public void Start()
         {
-            IsStopRequested = false;
+            StopSocketServer = false;
             lock(_lockTotals) 
             { 
                 _totalBytesReceived = 0;
                 _totalBytesSent = 0;
                 _totalMessagesSent = 0;
-                _totalRequestsReceived = 0; 
+                _totalMessagesReceived = 0; 
             }
             _threadListener.Start();
         }
 
 
         /// <summary>
-        /// Sends a message to all clients to disconnect, waits for in progress requests to finish, then stops the socket server. 
+        /// Sends a message to all clients to disconnect, waits for in progress messages to finish, then stops the socket server. 
         /// </summary>
         public void Stop()
         {
@@ -335,7 +326,7 @@ namespace SocketMeister
             }
 
             //  STOP BACKGROUND THREADS
-            IsStopRequested = true;
+            StopSocketServer = true;
 
             //  CLOSE AND REMAINING CONNECTED CLIENTS (THERE SHOULD NORMALLY BE NONE)
             _connectedClients.DisconnectAll();
@@ -397,7 +388,7 @@ namespace SocketMeister
                 Thread bgReceive = new Thread(
                 new ThreadStart(delegate
                 {
-                    // Get the socket that handles the client request. 
+                    // Get the socket that handles the client. 
                     Socket listener = (Socket)ar.AsyncState;
                     Socket handler = null;
                     try { handler = listener.EndAccept(ar); }
@@ -455,34 +446,32 @@ namespace SocketMeister
                             _totalBytesReceived += receiveEnvelope.MessageLength;
                         }
 
-                        if (receiveEnvelope.MessageType == MessageTypes.RequestMessageV1)
+                        if (receiveEnvelope.MessageType == MessageTypes.MessageV1)
                         {
                             lock (_lockTotals)
                             {
-                                if (_totalRequestsReceived == int.MaxValue) _totalRequestsReceived = 0;
-                                _totalRequestsReceived++;
+                                if (_totalMessagesReceived == int.MaxValue) _totalMessagesReceived = 0;
+                                _totalMessagesReceived++;
                             }
 
-                            Message request = receiveEnvelope.GetRequestMessage(2);
-                            request.RemoteClient = remoteClient;
+                            Message message = receiveEnvelope.GetMessage(2);
+                            message.RemoteClient = remoteClient;
 
                             if (Status == SocketServerStatus.Stopping)
                             {
-                                MessageResponse response = new MessageResponse(request.RequestId, RequestResult.Stopping);
-                                request.RemoteClient.SendIMessage(response, false);
+                                MessageResponse response = new MessageResponse(message.MessageId, MessageProcessingResult.Stopping);
+                                message.RemoteClient.SendIMessage(response, false);
                             }
                             else
                             {
-                                lock (_lock) { _requestsInProgress += 1; }
-                                //ThreadPool.QueueUserWorkItem(BgProcessRequestMessage, request);
                                 new Thread(new ThreadStart(delegate
                                 {
-                                    BgProcessRequestMessage(request);
+                                    BgProcessMessage(message);
                                 }
                                 )).Start();
                             }
                         }
-                        else if (receiveEnvelope.MessageType == MessageTypes.ResponseMessageV1)
+                        else if (receiveEnvelope.MessageType == MessageTypes.MessageResponseV1)
                         {
                             if (Status == SocketServerStatus.Started)
                             {
@@ -490,7 +479,7 @@ namespace SocketMeister
                                 remoteClient.ProcessResponseMessage(receiveEnvelope.GetResponseMessage());
                             }
                         }
-                        else if (receiveEnvelope.MessageType == MessageTypes.ClientDisconnectMessage)
+                        else if (receiveEnvelope.MessageType == MessageTypes.ClientDisconnectingNotificationV1)
                         {
                             try
                             {
@@ -501,11 +490,10 @@ namespace SocketMeister
                                 NotifyTraceEventRaised(ex, 5008);
                             }
                         }
-                        else if (receiveEnvelope.MessageType == MessageTypes.PollRequest)
+                        else if (receiveEnvelope.MessageType == MessageTypes.PollingV1)
                         {
                             if (Status == SocketServerStatus.Started)
                             {
-                                lock (_lock) { _requestsInProgress += 1; }
                                 new Thread(new ThreadStart(delegate
                                 {
                                     BgProcessPollRequest(remoteClient);
@@ -514,12 +502,10 @@ namespace SocketMeister
                             }
                         }
 
-                        else if (receiveEnvelope.MessageType == MessageTypes.SubscriptionChangesRequestV1)
+                        else if (receiveEnvelope.MessageType == MessageTypes.SubscriptionChangesNotificationV1)
                         {
                             if (Status == SocketServerStatus.Started)
                             {
-                                lock (_lock) { _requestsInProgress += 1; }
-
                                 TokenChangesRequestV1 request = receiveEnvelope.GetSubscriptionRequestV1();
                                 new Thread(new ThreadStart(delegate
                                 {
@@ -590,10 +576,6 @@ namespace SocketMeister
             {
                 NotifyTraceEventRaised(ex, 5008);
             }
-            finally
-            {
-                lock (_lock) { _requestsInProgress -= 1; }
-            }
         }
 
         private void BgProcessSubscriptionRequest(Client remoteClient, TokenChangesRequestV1 request)
@@ -607,46 +589,38 @@ namespace SocketMeister
             {
                 NotifyTraceEventRaised(ex, 5008);
             }
-            finally
-            {
-                lock (_lock) { _requestsInProgress -= 1; }
-            }
         }
 
 
 
-        private void BgProcessRequestMessage(Message request)
+        private void BgProcessMessage(Message message)
         {
             try
             {
-                //  DESERIALIZE THE REQUEST FROM THE CLIENT
+                //  DESERIALIZE THE MESSAGE
                 //  WE HAVE A MESSAGE IN FULL. UNPACK, (RESETS COUNTERS) AND RAISE AN EVENT
-                RequestReceivedEventArgs args = new RequestReceivedEventArgs(request.RemoteClient, request.Parameters);
+                MessageReceivedEventArgs args = new MessageReceivedEventArgs(message.RemoteClient, message.Parameters);
 
-                if (RequestReceived == null)
+                if (MessageReceived == null)
                 {
-                    Exception ex = new Exception("There is no process on the server listening to 'RequestReceived' events from the socket server.");
-                    MessageResponse noListener = new MessageResponse(request.RequestId, ex);
-                    request.RemoteClient.SendIMessage(noListener, false);
+                    Exception ex = new Exception("There is no process on the server listening to 'MessageReceived' events from the socket server.");
+                    MessageResponse noListener = new MessageResponse(message.MessageId, ex);
+                    message.RemoteClient.SendIMessage(noListener, false);
                 }
                 else
                 {
-                    RequestReceived(this, args);
+                    MessageReceived(this, args);
 
                     //  SEND RESPONSE
-                    MessageResponse response = new MessageResponse(request.RequestId, args.Response);
-                    request.RemoteClient.SendIMessage(response, false);
+                    MessageResponse response = new MessageResponse(message.MessageId, args.Response);
+                    message.RemoteClient.SendIMessage(response, false);
                 }
             }
             catch (Exception ex)
             {
                 NotifyTraceEventRaised(ex, 5008);
-                MessageResponse response = new MessageResponse(request.RequestId, ex);
-                request.RemoteClient.SendIMessage(response, false);
-            }
-            finally
-            {
-                lock (_lock) { _requestsInProgress -= 1; }
+                MessageResponse response = new MessageResponse(message.MessageId, ex);
+                message.RemoteClient.SendIMessage(response, false);
             }
         }
 
@@ -734,5 +708,6 @@ namespace SocketMeister
 #pragma warning restore CA1805 // Do not initialize unnecessarily
 #pragma warning restore CA1031 // Do not catch general exception types
 #pragma warning restore CA1303 // Do not pass literals as localized parameters
+#pragma warning restore IDE0052 // Remove unread private members
 #pragma warning restore IDE0090 // Use 'new(...)'
 #pragma warning restore IDE0079 // Remove unnecessary suppression

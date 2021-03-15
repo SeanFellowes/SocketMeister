@@ -10,17 +10,9 @@ namespace SocketMeister.Messages
     /// </summary>
     internal class ClientDisconnectMessage : MessageBase, IMessage
     {
-        public ClientDisconnectMessage() : base(MessageTypes.ClientDisconnectMessage)
+        public ClientDisconnectMessage() : base(MessageTypes.ClientDisconnectingNotificationV1)
         {
         }
-
-        ///// <summary>
-        ///// Fastest was to build this is to create it directly from the SocketEnvelope buffer.
-        ///// </summary>
-        ///// <param name="Reader">Binary Reader</param>
-        //public ClientDisconnectMessage(BinaryReader Reader) : base(MessageTypes.ClientDisconnectMessage)
-        //{
-        //}
 
         public void AppendBytes(BinaryWriter Writer)
         {

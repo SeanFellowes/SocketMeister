@@ -17,7 +17,7 @@ namespace SocketMeister.Messages
         private SocketServer.Client _remoteClient = null;
 
         /// <summary>
-        /// The remote client which sent this RequestMessage (value null on SocketClient)
+        /// The remote client which sent this Message (value null on SocketClient)
         /// </summary>
         internal SocketServer.Client RemoteClient
         {
@@ -28,20 +28,20 @@ namespace SocketMeister.Messages
 #endif
 
     /// <summary>
-    /// A request, sent from socket client to socket server. A response is expected and will cause problems if it is not sent.
+    /// A message, sent from socket client to socket server. A response is expected and will cause problems if it is not sent.
     /// </summary>
     internal partial class Message : MessageBase, IMessage
     {
-        //  REQUEST ID
-        private static long _maxRequestId = 0;
-        private static readonly object _lockMaxRequestId = new object();
+        //  MESSAGE ID
+        private static long _maxMessageId = 0;
+        private static readonly object _lockMaxMessageId = new object();
 
-        //  REQUEST VARIABLES
+        //  MESSAGE VARIABLES
         private readonly bool _isLongPolling = false;
         private bool _isResponseReceived = false;
         private readonly byte[] _parameterBytes = null;
         private readonly object[] _parameters = null;
-        private readonly long _requestId;
+        private readonly long _messageId;
         private readonly DateTime _timeout;
         private readonly int _timeoutMilliseconds;
 
@@ -49,30 +49,30 @@ namespace SocketMeister.Messages
         private MessageResponse _response = null;
 
         /// <summary>
-        /// RequestMessage constructor
+        /// Message constructor
         /// </summary>
-        /// <param name="Parameters">Array of parameters to send with the request. There must be at least 1 parameter.</param>
+        /// <param name="Parameters">Array of parameters to send with the message. There must be at least 1 parameter.</param>
         /// <param name="TimeoutMilliseconds">The maximum number of milliseconds to wait for a response before timing out.</param>
         /// <param name="IsLongPolling">The maximum number of milliseconds to wait for a response before timing out.</param>
-        public Message(object[] Parameters, int TimeoutMilliseconds, bool IsLongPolling = false) : base(MessageTypes.RequestMessageV1)
+        public Message(object[] Parameters, int TimeoutMilliseconds, bool IsLongPolling = false) : base(MessageTypes.MessageV1)
         {
             _parameters = Parameters;
             _timeoutMilliseconds = TimeoutMilliseconds;
             _timeout = DateTime.Now.AddMilliseconds(TimeoutMilliseconds);
             _isLongPolling = IsLongPolling;
 
-            //  CREATE A REQUEST ID
-            lock (_lockMaxRequestId)
+            //  CREATE A MESSAGE ID
+            lock (_lockMaxMessageId)
             {
-                if (_maxRequestId + 1 > long.MaxValue) _maxRequestId = 1;
-                else _maxRequestId += 1;
-                _requestId = _maxRequestId;
+                if (_maxMessageId + 1 > long.MaxValue) _maxMessageId = 1;
+                else _maxMessageId += 1;
+                _messageId = _maxMessageId;
             }
 
-            //  SERIALIZE REQUEST MESSAGE
+            //  SERIALIZE MESSAGE
             using (BinaryWriter writer = new BinaryWriter(new MemoryStream()))
             {
-                writer.Write(_requestId);
+                writer.Write(_messageId);
                 writer.Write(_timeoutMilliseconds);
                 writer.Write(_isLongPolling);
                 Serializer.SerializeParameters(writer, Parameters);
@@ -85,18 +85,18 @@ namespace SocketMeister.Messages
         }
 
 
-        internal Message(BinaryReader bR, int Version) : base(MessageTypes.RequestMessageV1)
+        internal Message(BinaryReader bR, int Version) : base(MessageTypes.MessageV1)
         {
             if (Version == 1)
             {
-                _requestId = bR.ReadInt64();
+                _messageId = bR.ReadInt64();
                 _timeoutMilliseconds = 60000;       //  NOT IN VERSION 1
                 _isLongPolling = bR.ReadBoolean();
                 _parameters = Serializer.DeserializeParameters(bR);
             }
             else if (Version == 2)
             {
-                _requestId = bR.ReadInt64();
+                _messageId = bR.ReadInt64();
                 _timeoutMilliseconds = bR.ReadInt32();
                 _isLongPolling = bR.ReadBoolean();
                 _parameters = Serializer.DeserializeParameters(bR);
@@ -112,7 +112,7 @@ namespace SocketMeister.Messages
 
 
         /// <summary>
-        /// Parameters provided with this request
+        /// Parameters provided with this message
         /// </summary>
         public object[] Parameters
         {
@@ -120,7 +120,7 @@ namespace SocketMeister.Messages
         }
 
         /// <summary>
-        /// True is this request is long polling on the server side. Long polling requests will be closed immediately in the event of a close from either the client or server side.
+        /// True is this message is long polling on the server side. Long polling messages will be closed immediately in the event of a close from either the client or server side.
         /// </summary>
         public bool IsLongPolling
         {
@@ -135,7 +135,7 @@ namespace SocketMeister.Messages
 
 
         /// <summary>
-        /// Whether the RequestMessage has timed out
+        /// Whether the Message has timed out
         /// </summary>
         public bool IsTimeout
         {
@@ -148,11 +148,11 @@ namespace SocketMeister.Messages
 
 
         /// <summary>
-        /// Identifier assigned to this request when it was created (usually when created at the client)
+        /// Identifier assigned to this message when it was created
         /// </summary>
-        public long RequestId
+        public long MessageId
         {
-            get { return _requestId; }
+            get { return _messageId; }
         }
 
         public MessageResponse Response
@@ -168,7 +168,7 @@ namespace SocketMeister.Messages
         public int TimeoutMilliseconds { get { return _timeoutMilliseconds; } }
 
         /// <summary>
-        /// Whether the method SendReceive(RequestMessage Request) should continute trying
+        /// Whether the method SendReceive(Message Message) should continute trying
         /// </summary>
         public bool TrySendReceive
         {

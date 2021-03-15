@@ -40,9 +40,9 @@ namespace SocketMeister.Testing
         internal event EventHandler<TraceEventArgs> TraceEventRaised;
 
         /// <summary>
-        /// Raised when a request message is received from a client. A response can be provided which will be returned to the client.
+        /// Raised when a message is received from a client. A response can be provided which will be returned to the client.
         /// </summary>
-        internal event EventHandler<SocketServer.RequestReceivedEventArgs> RequestReceived;
+        internal event EventHandler<SocketServer.MessageReceivedEventArgs> MessageReceived;
 
         /// <summary>
         /// Event raised when when there is a change to the clients connected to the socket server
@@ -55,7 +55,7 @@ namespace SocketMeister.Testing
             //  CONNECT TO THE HarnessController
             _controlBusClient = new ControlBusClient(ControlBusClientType.ClientController, ControlBusClientId, ControlBusServerIPAddress, Constants.ControlBusPort);
             _controlBusClient.ConnectionFailed += ControlBusClient_ConnectionFailed;
-            _controlBusClient.RequestReceived += ControlBusClient_RequestReceived;
+            _controlBusClient.MessageReceived += ControlBusClient_MessageReceived;
             _controlBusClient.ExceptionRaised += ControlBusClient_ExceptionRaised;
         }
 
@@ -88,7 +88,7 @@ namespace SocketMeister.Testing
         internal OpenTransactions OpenMessages {  get { return _openTransactions; } }
 
 
-        private void ControlBusClient_RequestReceived(object sender, SocketClient.MessageReceivedEventArgs e)
+        private void ControlBusClient_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
         {
             short messageType = (short)e.Parameters[0];
             if (messageType == ControlMessage.SocketServerStart)
@@ -170,7 +170,7 @@ namespace SocketMeister.Testing
             _socketServer.ClientDisconnected += SocketServer_ClientsChanged;
             _socketServer.StatusChanged += SocketServer_StatusChanged;
             _socketServer.TraceEventRaised += SocketServer_TraceEventRaised;
-            _socketServer.RequestReceived += SocketServer_RequestReceived;
+            _socketServer.MessageReceived += SocketServer_MessageReceived;
             _socketServer.Start();
             //}));
             //bgStartSocketServer.IsBackground = true;
@@ -186,7 +186,7 @@ namespace SocketMeister.Testing
             _socketServer.ClientDisconnected -= SocketServer_ClientsChanged;
             _socketServer.StatusChanged -= SocketServer_StatusChanged;
             _socketServer.TraceEventRaised -= SocketServer_TraceEventRaised;
-            _socketServer.RequestReceived -= SocketServer_RequestReceived;
+            _socketServer.MessageReceived -= SocketServer_MessageReceived;
 
             //  STOP SOCKET SERVER
             if (_socketServer.Status == SocketServerStatus.Started)
@@ -196,7 +196,7 @@ namespace SocketMeister.Testing
             _openTransactions.Clear();
         }
 
-        private void SocketServer_RequestReceived(object sender, SocketServer.RequestReceivedEventArgs e)
+        private void SocketServer_MessageReceived(object sender, SocketServer.MessageReceivedEventArgs e)
         {
             int TransactionId = (int)e.Parameters[0];
             OpenTransaction trans = _openTransactions[TransactionId];
@@ -208,7 +208,7 @@ namespace SocketMeister.Testing
             }
 
             //  RAISE EVENT
-            RequestReceived?.Invoke(sender, e);
+            MessageReceived?.Invoke(sender, e);
         }
 
         private void SocketServer_ClientsChanged(object sender, SocketServer.ClientEventArgs e)

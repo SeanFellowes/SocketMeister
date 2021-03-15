@@ -59,10 +59,9 @@ namespace SocketMeister
         private DateTime _lastPollResponse = DateTime.Now;
         private readonly object _lock = new object();
         private DateTime? _lastMessageFromServer = null;
-        private DateTime _nextPollRequest;
+        private DateTime _nextPoll;
         private DateTime _nextSendSubscriptions;
-        private readonly UnrespondedMessageCollection _openRequests = new UnrespondedMessageCollection();
-        private int _requestsInProgress = 0;
+        private readonly UnrespondedMessageCollection _unrespondedMessages = new UnrespondedMessageCollection();
         private readonly Random _randomizer = new Random();
         private MessageEngine _receiveEngine;
         private readonly SocketAsyncEventArgsPool _sendEventArgsPool;
@@ -322,7 +321,7 @@ namespace SocketMeister
         }
 
         /// <summary>
-        /// The last time any contact was received from the server. This includes polling request/responses, instigated intermittently from the client.
+        /// The last time any contact was received from the server. This includes polling message/responses, instigated intermittently from the client.
         /// </summary>
         public DateTime? LastMessageFromServer
         {
@@ -393,7 +392,7 @@ namespace SocketMeister
         /// <summary>
         /// The next time this socket client should attempt to poll the socket server.
         /// </summary>
-        private DateTime NextPollRequest { get { lock (_lock) { return _nextPollRequest; } } set { lock (_lock) { _nextPollRequest = value; } } }
+        private DateTime NextPoll { get { lock (_lock) { return _nextPoll; } } set { lock (_lock) { _nextPoll = value; } } }
 
         private DateTime NextSendSubscriptions { get { lock (_lock) { return _nextSendSubscriptions; } } set { lock (_lock) { _nextSendSubscriptions = value; } } }
 
@@ -451,8 +450,8 @@ namespace SocketMeister
             ConnectionStatus = ConnectionStatuses.Disconnecting;
             StopAllBackgroundThreads = true;
 
-            //  CLOSE OPEN REQUESTS
-            _openRequests.ResetToUnsent();
+            //  CLOSE UNRESPONDED MESSAGES
+            _unrespondedMessages.ResetToUnsent();
 
             //  ENSURE BACKGROUND THREADS HAVE STOPPED
             EnsureBackgroundThreadsHaveStopped();
@@ -485,8 +484,8 @@ namespace SocketMeister
             Thread bgDisconnect = new Thread(
             new ThreadStart(delegate
             {
-                //  CLOSE OPEN REQUESTS
-                _openRequests.ResetToUnsent();
+                //  CLOSE UNRESPONDED MESSAGES
+                _unrespondedMessages.ResetToUnsent();
 
                 if (disconnectingEndPoint.Socket.Connected == true)
                 {
@@ -562,8 +561,8 @@ namespace SocketMeister
                 EndPoint.RecreateSocket();
             }
 
-            //  CLOSE OPEN REQUESTS (AGAIN IN SOME CASES). UNDER LOAD THE CLIENT CAN SUBMIT A REQUEST (BECAUSE OF CROSS THREADING)
-            _openRequests.ResetToUnsent();
+            //  CLOSE UNRESPONDED MESSAGES (AGAIN IN SOME CASES). UNDER LOAD THE CLIENT CAN SUBMIT A MESSAGE (BECAUSE OF CROSS THREADING)
+            _unrespondedMessages.ResetToUnsent();
 
             //  FINALIZE AND RE-ATTEMPT CONNECTION IS WE ARE NOT STOPPING
             ConnectionStatus = ConnectionStatuses.Disconnected;
@@ -650,7 +649,7 @@ namespace SocketMeister
                     _isBackgroundOperationsThreadRunning = true;
                     _stopAllBackgroundThreads = false;
                     _lastPollResponse = DateTime.Now;
-                    _nextPollRequest = DateTime.Now;
+                    _nextPoll = DateTime.Now;
                     _nextSendSubscriptions = DateTime.Now;
                 }
 
@@ -660,11 +659,11 @@ namespace SocketMeister
                 while (StopAllBackgroundThreads == false)
                 {
                     //  POLLING
-                    if (DateTime.Now > NextPollRequest && CanExecuteBackgroundOperation())
+                    if (DateTime.Now > NextPoll && CanExecuteBackgroundOperation())
                     {
                         try
                         {
-                            NextPollRequest = DateTime.Now.AddSeconds(POLLING_FREQUENCY);
+                            NextPoll = DateTime.Now.AddSeconds(POLLING_FREQUENCY);
                             byte[] sendBytes = MessageEngine.GenerateSendBytes(new PollRequest(), false);
                             _asyncEventArgsPolling.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
                             _asyncEventArgsPolling.SetBuffer(sendBytes, 0, sendBytes.Length);
@@ -806,33 +805,33 @@ namespace SocketMeister
 
 
 
-        private void SendResponse(MessageResponse Message, Message Request)
+        private void SendResponse(MessageResponse messageResponse, Message message)
         {
-            byte[] sendBytes = MessageEngine.GenerateSendBytes(Message, false);
+            byte[] sendBytes = MessageEngine.GenerateSendBytes(messageResponse, false);
 
             SocketAsyncEventArgs sendEventArgs;
             while (true == true)
             {
-                if (Request.IsTimeout)
+                if (message.IsTimeout)
                 {
                     //  TIMEOUT: NO POINT SENDING THE RESPONSE BECAUSE IT WILL HAVE ALSO TIMED OUT AT THE OTHER END
-                    NotifyExceptionRaised(new TimeoutException("Request " + Request.RequestId + ", timed out after " + Request.TimeoutMilliseconds + " milliseconds."));
+                    NotifyExceptionRaised(new TimeoutException("Message " + message.MessageId + ", timed out after " + message.TimeoutMilliseconds + " milliseconds."));
                     return;
                 }
                 else if (StopClientPermanently)
                 {
                     //  SHUTDOWN: CLIENT IS SHUTTING DOWN. A SHUTDOWN MESSAGE SHOULD HAVE ALREADY BEEN SENT SO EXIT
-                    SendResponseQuickly(new MessageResponse(Request.RequestId, RequestResult.Stopping));
+                    SendResponseQuickly(new MessageResponse(message.MessageId, MessageProcessingResult.Stopping));
                     return;
                 }
 
-                if (Message.Status == MessageStatus.Unsent && CanSendReceive() == true)
+                if (messageResponse.Status == MessageStatus.Unsent && CanSendReceive() == true)
                 {
                     sendEventArgs = _sendEventArgsPool.Pop();
                     if (sendEventArgs != null)
                     {
-                        Message.Status = MessageStatus.InProgress;
-                        sendEventArgs.UserToken = Message;
+                        messageResponse.Status = MessageStatus.InProgress;
+                        sendEventArgs.UserToken = messageResponse;
                         sendEventArgs.SetBuffer(sendBytes, 0, sendBytes.Length);
                         sendEventArgs.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
                         try
@@ -877,23 +876,23 @@ namespace SocketMeister
 
 
         /// <summary>
-        /// Send a request to the server and wait for a response. 
+        /// Send a message to the server and wait for a response. 
         /// </summary>
-        /// <param name="Parameters">Array of parameters to send with the request</param>
+        /// <param name="Parameters">Array of parameters to send with the message</param>
         /// <param name="TimeoutMilliseconds">Maximum number of milliseconds to wait for a response from the server</param>
-        /// <param name="IsLongPolling">If the request is long polling on the server mark this as true and the request will be cancelled instantly when a disconnect occurs</param>
+        /// <param name="IsLongPolling">If the message is long polling on the server mark this as true and the message will be cancelled instantly when a disconnect occurs</param>
         /// <returns>Nullable array of bytes which was returned from the socket server</returns>
-        public byte[] SendRequest(object[] Parameters, int TimeoutMilliseconds = 60000, bool IsLongPolling = false)
+        public byte[] SendMessage(object[] Parameters, int TimeoutMilliseconds = 60000, bool IsLongPolling = false)
         {
-            if (StopClientPermanently) throw new Exception("Request cannot be sent. The socket client is stopped or stopping");
-            if (Parameters == null) throw new ArgumentException("Request parameters cannot be null.", nameof(Parameters));
-            if (Parameters.Length == 0) throw new ArgumentException("At least 1 request parameter is required.", nameof(Parameters));
+            if (StopClientPermanently) throw new Exception("Message cannot be sent. The socket client is stopped or stopping");
+            if (Parameters == null) throw new ArgumentException("Message parameters cannot be null.", nameof(Parameters));
+            if (Parameters.Length == 0) throw new ArgumentException("At least 1 parameter is required because the message makes no sense.", nameof(Parameters));
             DateTime startTime = DateTime.Now;
             DateTime maxWait = startTime.AddMilliseconds(TimeoutMilliseconds);
             while (ConnectionStatus != ConnectionStatuses.Connected && StopClientPermanently == false)
             {
                 Thread.Sleep(200);
-                if (StopClientPermanently) throw new Exception("Request cannot be sent. The socket client is stopped or stopping");
+                if (StopClientPermanently) throw new Exception("Message cannot be sent. The socket client is stopped or stopping");
                 if (DateTime.Now > maxWait) throw new TimeoutException();
             }
             //DelaySending();
@@ -902,30 +901,30 @@ namespace SocketMeister
         }
 
 
-        private byte[] SendReceive(Message Request)
+        private byte[] SendReceive(Message message)
         {
             if (StopClientPermanently == true) return null;
 
             DateTime startTime = DateTime.Now;
-            _openRequests.Add(Request);
+            _unrespondedMessages.Add(message);
 
-            byte[] sendBytes = MessageEngine.GenerateSendBytes(Request, false);
+            byte[] sendBytes = MessageEngine.GenerateSendBytes(message, false);
 
             SocketAsyncEventArgs sendEventArgs;
 
-            while (Request.TrySendReceive == true && StopClientPermanently == false)
+            while (message.TrySendReceive == true && StopClientPermanently == false)
             {
                 try
                 {
-                    if (Request.Status == MessageStatus.Unsent && CanSendReceive() == true)
+                    if (message.Status == MessageStatus.Unsent && CanSendReceive() == true)
                     {
                         sendEventArgs = _sendEventArgsPool.Pop();
                         if (sendEventArgs != null)
                         {
-                            Request.Status = MessageStatus.InProgress;
-                            sendEventArgs.UserToken = Request;
+                            message.Status = MessageStatus.InProgress;
+                            sendEventArgs.UserToken = message;
                             sendEventArgs.SetBuffer(sendBytes, 0, sendBytes.Length);
-                            int remainingMilliseconds = Request.TimeoutMilliseconds - Convert.ToInt32((DateTime.Now - startTime).TotalMilliseconds);
+                            int remainingMilliseconds = message.TimeoutMilliseconds - Convert.ToInt32((DateTime.Now - startTime).TotalMilliseconds);
 
                             if (remainingMilliseconds > 0)
                             {
@@ -934,7 +933,7 @@ namespace SocketMeister
                                 if (!CurrentEndPoint.Socket.SendAsync(sendEventArgs)) ProcessSend(null, sendEventArgs);
 
                                 //  WAIT FOR RESPONSE
-                                while (Request.WaitForResponse)
+                                while (message.WaitForResponse)
                                 {
                                     Thread.Sleep(10);
                                 }
@@ -946,17 +945,17 @@ namespace SocketMeister
                 {
                     NotifyExceptionRaised(ex);
                 }
-                if (Request.TrySendReceive == true) Thread.Sleep(200);
+                if (message.TrySendReceive == true) Thread.Sleep(200);
             }
 
-            _openRequests.Remove(Request);
+            _unrespondedMessages.Remove(message);
 
-            if (Request.Response != null)
+            if (message.Response != null)
             {
-                if (Request.Response.Error != null) throw new Exception(Request.Response.Error);
-                else return Request.Response.ResponseData;
+                if (message.Response.Error != null) throw new Exception(message.Response.Error);
+                else return message.Response.ResponseData;
             }
-            else throw new TimeoutException("SendReceive() timed out after " + Request.TimeoutMilliseconds + " milliseconds");
+            else throw new TimeoutException("SendReceive() timed out after " + message.TimeoutMilliseconds + " milliseconds");
         }
 
 
@@ -1055,24 +1054,24 @@ namespace SocketMeister
                     {
                         LastMessageFromServer = DateTime.Now;
 
-                        if (_receiveEngine.MessageType == MessageTypes.ResponseMessageV1)
+                        if (_receiveEngine.MessageType == MessageTypes.MessageResponseV1)
                         {
                             //  SyncEndPointSubscriptionsWithServer() IS WAITING. COMPLETE THE SYNCRONOUS OPERATION SO IT CAN CONTINUE
                             MessageResponse response = _receiveEngine.GetResponseMessage();
 
                             //  CHECK TO SEE IS THE MESSAGE IS IN THE LIST OF OPEN SendReceive ITEMS.
-                            Message foundOpenRequest = _openRequests[response.MessageId];
-                            if (foundOpenRequest != null)
+                            Message foundUnrespondedMessage = _unrespondedMessages[response.MessageId];
+                            if (foundUnrespondedMessage != null)
                             {
-                                if (response.RequestResultCode == RequestResult.Stopping)
+                                if (response.ProcessingResult == MessageProcessingResult.Stopping)
                                 {
                                     //  SOCKET SERVER IS SHUTTING DOWN. WE WILL RETRY
-                                    foundOpenRequest.Status = MessageStatus.Unsent;
+                                    foundUnrespondedMessage.Status = MessageStatus.Unsent;
                                 }
                                 else
                                 {
-                                    foundOpenRequest.Response = response;
-                                    foundOpenRequest.Status = MessageStatus.Finished;
+                                    foundUnrespondedMessage.Response = response;
+                                    foundUnrespondedMessage.Status = MessageStatus.Finished;
                                 }
                             }
                         }
@@ -1081,20 +1080,19 @@ namespace SocketMeister
                         //    NotifyMessageReceived(_receiveEngine.GetMessage());
                         //}
 
-                        else if (_receiveEngine.MessageType == MessageTypes.RequestMessageV1)
+                        else if (_receiveEngine.MessageType == MessageTypes.MessageV1)
                         {
                             Thread bgThread = new Thread(new ThreadStart(delegate
                             {
-                                Message request = _receiveEngine.GetRequestMessage(2);
-                                lock (_lock) { _requestsInProgress += 1; }
-                                ThreadPool.QueueUserWorkItem(BgProcessRequestMessage, request);
+                                Message message = _receiveEngine.GetMessage(2);
+                                ThreadPool.QueueUserWorkItem(BgProcessMessage, message);
                             }));
                             bgThread.IsBackground = true;
                             bgThread.Start();
 
                         }
 
-                        else if (_receiveEngine.MessageType == MessageTypes.ServerStoppingMessage)
+                        else if (_receiveEngine.MessageType == MessageTypes.ServerStoppingNotificationV1)
                         {
                             //  DON'T RECONNECT TO THIS SERVER FOR SOME NUMBER OF SECONDS
                             CurrentEndPoint.DontReconnectUntil = DateTime.Now.AddSeconds(DONT_RECONNECT_DELAY_AFTER_SHUTDOWN);
@@ -1102,7 +1100,7 @@ namespace SocketMeister
                             NotifyServerStopping();
                             DisconnectSocketGracefully();
                         }
-                        else if (_receiveEngine.MessageType == MessageTypes.PollResponse)
+                        else if (_receiveEngine.MessageType == MessageTypes.PollingResponseV1)
                         {
                             LastPollResponse = DateTime.Now;
                         }
@@ -1140,46 +1138,42 @@ namespace SocketMeister
         }
 
 
-        private void BgProcessRequestMessage(object state)
+        private void BgProcessMessage(object state)
         {
-            Message request = (Message)state;
+            Message message = (Message)state;
             try
             {
                 if (MessageReceived == null)
                 {
-                    //  THERE IS NO CODE LISTENING TO RequestReceive EVENTS. CANNOT PROCESS THIS REQUEST
-                    SendResponseQuickly(new MessageResponse(request.RequestId, RequestResult.NoRequestProcessor));
+                    //  THERE IS NO CODE LISTENING TO MessageReceived EVENTS. CANNOT PROCESS THIS MESSAGE
+                    SendResponseQuickly(new MessageResponse(message.MessageId, MessageProcessingResult.NoMessageProcessor));
                 }
                 else if (StopClientPermanently)
                 {
                     //  SHUTDOWN: CLIENT IS SHUTTING DOWN. A SHUTDOWN MESSAGE SHOULD HAVE ALREADY BEEN SENT SO EXIT
-                    SendResponseQuickly(new MessageResponse(request.RequestId, RequestResult.Stopping));
+                    SendResponseQuickly(new MessageResponse(message.MessageId, MessageProcessingResult.Stopping));
                 }
-                else if (request.IsTimeout)
+                else if (message.IsTimeout)
                 {
                     //  IF TIMEOUT, NO POINT SENDING THE RESPONSE
-                    NotifyExceptionRaised(new TimeoutException("Request " + request.RequestId + ", timed out after " + request.TimeoutMilliseconds + " milliseconds."));
+                    NotifyExceptionRaised(new TimeoutException("Message " + message.MessageId + ", timed out after " + message.TimeoutMilliseconds + " milliseconds."));
                 }
                 else
                 {
-                    //  DESERIALIZE THE REQUEST FROM THE CLIENT
+                    //  DESERIALIZE THE MESSAGE FROM THE CLIENT
                     //  WE HAVE A MESSAGE IN FULL. UNPACK, (RESETS COUNTERS) AND RAISE AN EVENT
-                    MessageReceivedEventArgs args = new MessageReceivedEventArgs(request.Parameters);
+                    MessageReceivedEventArgs args = new MessageReceivedEventArgs(message.Parameters);
                     MessageReceived(this, args);
 
                     //  SEND RESPONSE
-                    MessageResponse response = new MessageResponse(request.RequestId, args.Response);
-                    SendResponse(response, request);
+                    MessageResponse response = new MessageResponse(message.MessageId, args.Response);
+                    SendResponse(response, message);
                 }
             }
             catch (Exception ex)
             {
                 NotifyExceptionRaised(ex);
-                SendResponseQuickly(new MessageResponse(request.RequestId, ex));
-            }
-            finally
-            {
-                lock (_lock) { _requestsInProgress -= 1; }
+                SendResponseQuickly(new MessageResponse(message.MessageId, ex));
             }
         }
 

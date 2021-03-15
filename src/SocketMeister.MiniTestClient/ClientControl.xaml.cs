@@ -21,10 +21,10 @@ namespace SocketMeister.MiniTestClient
     public partial class ClientControl : UserControl
     {
         private int _clientId = 1;
-        private int _requestsReceived = 0;
-        private int _requestsSent = 0;
-        private readonly Random _rnd = new();
         private int _messagesReceived = 0;
+        private int _messagesSent = 0;
+        private readonly Random _rnd = new();
+        private int _broadcastsReceived = 0;
         private SocketClient _client;
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace SocketMeister.MiniTestClient
         /// </summary>
         public event EventHandler<ExceptionEventArgs> ExceptionRaised;
 
-        public event EventHandler<EventArgs> SendRequestButtonPressed;
+        public event EventHandler<EventArgs> SendMessageButtonPressed;
 
         public event EventHandler<EventArgs> StatusChanged;
 
@@ -42,12 +42,12 @@ namespace SocketMeister.MiniTestClient
         public event EventHandler<SocketClient.BroadcastReceivedEventArgs> BroadcastReceived;
 
         /// <summary>
-        /// Raised when a request message is received from the server. A response can be provided which will be returned to the server.
+        /// Raised when a  message is received from the server. A response can be provided which will be returned to the server.
         /// </summary>
-        public event EventHandler<SocketClient.MessageReceivedEventArgs> RequestReceived;
+        public event EventHandler<SocketClient.MessageReceivedEventArgs> MessageReceived;
 
         /// <summary>
-        /// Raised when a request message is received from the server. A response can be provided which will be returned to the server.
+        /// Raised when the server service is stopping in a cleanly (Not a crash).
         /// </summary>
         public event EventHandler<EventArgs> ServerStopping;
 
@@ -129,7 +129,7 @@ namespace SocketMeister.MiniTestClient
             tbSubscriptions.Text = count.ToString();
         }
 
-        public void SendRequest(string Message)
+        public void SendMessage(string Message)
         {
             try
             {
@@ -143,12 +143,12 @@ namespace SocketMeister.MiniTestClient
                 object[] p = new object[2];
                 p[0] = _clientId;
                 p[1] = toSend;
-                byte[] result = _client.SendRequest(p);
+                byte[] result = _client.SendMessage(p);
 
                 Dispatcher.Invoke(() =>
                 {
-                    _requestsSent++;
-                    tbRequestsSent.Text = _requestsSent.ToString();
+                    _messagesSent++;
+                    tbRequestsSent.Text = _messagesSent.ToString();
 
                 });
             }
@@ -164,7 +164,7 @@ namespace SocketMeister.MiniTestClient
             _client.ConnectionStatusChanged += Client_ConnectionStatusChanged;
             _client.CurrentEndPointChanged += Client_CurrentEndPointChanged;
             _client.ExceptionRaised += Client_ExceptionRaised;
-            _client.MessageReceived += Client_RequestReceived;
+            _client.MessageReceived += Client_MessageReceived;
             _client.ServerStopping += Client_ServerStopping;
             _client.BroadcastReceived += Client_BroadcastReceived;
 
@@ -178,7 +178,7 @@ namespace SocketMeister.MiniTestClient
             _client.ConnectionStatusChanged += Client_ConnectionStatusChanged;
             _client.CurrentEndPointChanged += Client_CurrentEndPointChanged;
             _client.ExceptionRaised += Client_ExceptionRaised;
-            _client.MessageReceived += Client_RequestReceived;
+            _client.MessageReceived += Client_MessageReceived;
             _client.ServerStopping += Client_ServerStopping;
             _client.BroadcastReceived += Client_BroadcastReceived;
 
@@ -196,7 +196,6 @@ namespace SocketMeister.MiniTestClient
             //_client.CurrentEndPointChanged -= Client_CurrentEndPointChanged;
             //_client.ExceptionRaised -= Client_ExceptionRaised;
             //_client.MessageReceived -= Client_MessageReceived;
-            //_client.RequestReceived -= Client_RequestReceived;
             //_client.ServerStopping -= Client_ServerStopping;
             _client.Dispose();
 
@@ -233,22 +232,22 @@ namespace SocketMeister.MiniTestClient
         {
             Dispatcher.Invoke(() =>
             {
-                _messagesReceived++;
-                tbMessagesReceived.Text = _messagesReceived.ToString();
+                _broadcastsReceived++;
+                tbMessagesReceived.Text = _broadcastsReceived.ToString();
             });
             BroadcastReceived?.Invoke(this, e);
         }
 
 
 
-        private void Client_RequestReceived(object sender, SocketClient.MessageReceivedEventArgs e)
+        private void Client_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
         {
             Dispatcher.Invoke(() =>
             {
-                _requestsReceived++;
-                tbRequestsReceived.Text = _requestsReceived.ToString();
+                _messagesReceived++;
+                tbRequestsReceived.Text = _messagesReceived.ToString();
             });
-            RequestReceived?.Invoke(this, e);
+            MessageReceived?.Invoke(this, e);
         }
 
         private void Client_ServerStopping(object sender, EventArgs e)
@@ -256,9 +255,9 @@ namespace SocketMeister.MiniTestClient
             ServerStopping?.Invoke(this, e);
         }
 
-        private void BtnSendRequest_Click(object sender, RoutedEventArgs e)
+        private void BtnSendMessage_Click(object sender, RoutedEventArgs e)
         {
-            SendRequestButtonPressed?.Invoke(this, new EventArgs());
+            SendMessageButtonPressed?.Invoke(this, new EventArgs());
         }
     }
 

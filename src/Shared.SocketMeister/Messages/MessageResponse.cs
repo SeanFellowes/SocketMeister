@@ -15,7 +15,7 @@ namespace SocketMeister.Messages
         private SocketServer.Client _remoteClient = null;
 
         /// <summary>
-        /// The remote client which sent this RequestMessage (value null on SocketClient)
+        /// The remote client which sent this Message (value null on SocketClient)
         /// </summary>
         internal SocketServer.Client RemoteClient
         {
@@ -31,26 +31,26 @@ namespace SocketMeister.Messages
         //  RESPONSE VARIABLES
         private readonly string _error = null;
         private readonly long _messageId;
-        private readonly RequestResult _requestResultCode;
+        private readonly MessageProcessingResult _processingResult;
         private readonly Byte[] _responseData = null;
 
-        public MessageResponse(long MessageId, byte[] ResponseData) : base(MessageTypes.ResponseMessageV1)
+        public MessageResponse(long MessageId, byte[] ResponseData) : base(MessageTypes.MessageResponseV1)
         {
             _messageId = MessageId;
             _responseData = ResponseData;
-            _requestResultCode = RequestResult.Success;
+            _processingResult = MessageProcessingResult.Success;
         }
 
-        public MessageResponse(long MessageId, RequestResult RequestResultCode) : base(MessageTypes.ResponseMessageV1)
+        public MessageResponse(long MessageId, MessageProcessingResult ProcessingResult) : base(MessageTypes.MessageResponseV1)
         {
             _messageId = MessageId;
-            _requestResultCode = RequestResultCode;
+            _processingResult = ProcessingResult;
         }
 
-        public MessageResponse(long MessageId, Exception Exception) : base(MessageTypes.ResponseMessageV1)
+        public MessageResponse(long MessageId, Exception Exception) : base(MessageTypes.MessageResponseV1)
         {
             _messageId = MessageId;
-            _requestResultCode = RequestResult.Exception;
+            _processingResult = MessageProcessingResult.Exception;
             _error = Exception.Message;
             if (Exception.StackTrace != null) _error += Environment.NewLine + Environment.NewLine + Exception.StackTrace;
         }
@@ -59,12 +59,12 @@ namespace SocketMeister.Messages
         /// Fastest was to build this is to create it directly from the SocketEnvelope buffer.
         /// </summary>
         /// <param name="Reader">Binary Reader</param>
-        public MessageResponse(BinaryReader Reader) : base(MessageTypes.ResponseMessageV1)
+        public MessageResponse(BinaryReader Reader) : base(MessageTypes.MessageResponseV1)
         {
             _messageId = Reader.ReadInt64();
             if (Reader.ReadBoolean() == true) _responseData = Reader.ReadBytes(Reader.ReadInt32());
             if (Reader.ReadBoolean() == true) _error = Reader.ReadString();
-            _requestResultCode = (RequestResult)Reader.ReadInt16();
+            _processingResult = (MessageProcessingResult)Reader.ReadInt16();
         }
 
         /// <summary>
@@ -82,9 +82,9 @@ namespace SocketMeister.Messages
         }
 
 
-        public RequestResult RequestResultCode
+        public MessageProcessingResult ProcessingResult
         {
-            get { return _requestResultCode; }
+            get { return _processingResult; }
         }
 
 
@@ -110,7 +110,7 @@ namespace SocketMeister.Messages
                 Writer.Write(true);
                 Writer.Write(_error);
             }
-            Writer.Write(Convert.ToInt16(_requestResultCode, CultureInfo.InvariantCulture));
+            Writer.Write(Convert.ToInt16(_processingResult, CultureInfo.InvariantCulture));
         }
     }
 }

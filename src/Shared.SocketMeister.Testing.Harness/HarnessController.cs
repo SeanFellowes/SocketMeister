@@ -58,7 +58,7 @@ namespace SocketMeister.Testing
 
             //  START CONTROL BUS LISTENER
             ControlBusServer = new ControlBusServer();
-            ControlBusServer.RequestReceived += ControlBusServer_RequestReceived;
+            ControlBusServer.MessageReceived += ControlBusServer_MessageReceived;
 
             //  SETUP FIXED SERVER
             FixedServer1 = new HarnessServerController(int.MaxValue - 1, Constants.ControlBusServerIPAddress);
@@ -119,7 +119,7 @@ namespace SocketMeister.Testing
                 {
                     try
                     {
-                        ControlBusServer.RequestReceived -= ControlBusServer_RequestReceived;
+                        ControlBusServer.MessageReceived -= ControlBusServer_MessageReceived;
                         ControlBusServer.Stop();
                         ControlBusServer.Dispose();
                     }
@@ -142,7 +142,7 @@ namespace SocketMeister.Testing
 
 
 
-        private void ControlBusServer_RequestReceived(object sender, SocketServer.RequestReceivedEventArgs e)
+        private void ControlBusServer_MessageReceived(object sender, SocketServer.MessageReceivedEventArgs e)
         {
             short messageType = (short)e.Parameters[0];
             if (messageType == ControlMessage.HarnessControlBusClientIsConnecting)

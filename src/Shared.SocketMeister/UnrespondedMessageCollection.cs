@@ -26,7 +26,7 @@ namespace SocketMeister
                 {
                     foreach (Message message in _list)
                     {
-                        if (message.RequestId == RequestID) return message;
+                        if (message.MessageId == RequestID) return message;
                     }
                 }
                 return null;

@@ -25,7 +25,7 @@ namespace SocketMeister.Testing.ControlBus
         /// <summary>
         /// Raised when a request message is received from a client. A response can be provided which will be returned to the client.
         /// </summary>
-        internal event EventHandler<SocketServer.RequestReceivedEventArgs> RequestReceived;
+        internal event EventHandler<SocketServer.MessageReceivedEventArgs> MessageReceived;
 
         /// <summary>
         /// Event raised when when there is a change to the clients connected to the socket server
@@ -40,7 +40,7 @@ namespace SocketMeister.Testing.ControlBus
             _listener.ClientDisconnected += Listener_ClientsChanged;
             _listener.StatusChanged += Listener_StatusChanged;
             _listener.TraceEventRaised += Listener_TraceEventRaised;
-            _listener.RequestReceived += Listener_RequestReceived;
+            _listener.MessageReceived += Listener_MessageReceived;
         }
 
         public void Dispose()
@@ -80,7 +80,7 @@ namespace SocketMeister.Testing.ControlBus
             _listener.ClientDisconnected -= Listener_ClientsChanged;
             _listener.StatusChanged -= Listener_StatusChanged;
             _listener.TraceEventRaised -= Listener_TraceEventRaised;
-            _listener.RequestReceived -= Listener_RequestReceived;
+            _listener.MessageReceived -= Listener_MessageReceived;
 
             //  STOP SOCKET SERVER
             if (_listener.Status == SocketServerStatus.Started)
@@ -96,9 +96,9 @@ namespace SocketMeister.Testing.ControlBus
         }
 
 
-        private void Listener_RequestReceived(object sender, SocketServer.RequestReceivedEventArgs e)
+        private void Listener_MessageReceived(object sender, SocketServer.MessageReceivedEventArgs e)
         {
-            RequestReceived?.Invoke(sender, e);
+            MessageReceived?.Invoke(sender, e);
         }
 
         private void Listener_ClientsChanged(object sender, SocketServer.ClientEventArgs e)

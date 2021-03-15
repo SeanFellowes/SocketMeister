@@ -328,7 +328,7 @@ namespace SocketMeister.Messages
         }
 
 
-        internal Message GetRequestMessage(int Version)
+        internal Message GetMessage(int Version)
         {
             MemoryStream stream = null;
             try

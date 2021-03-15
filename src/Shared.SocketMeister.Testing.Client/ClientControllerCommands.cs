@@ -18,7 +18,7 @@ namespace SocketMeister.Testing
             //  SPECIFIC TO THIS
             p[2] = MessageLength;
             p[3] = new string('*', MessageLength);
-            byte[] rVal = Controller.SocketClient.SendRequest(p, TimeoutMilliseconds);
+            byte[] rVal = Controller.SocketClient.SendMessage(p, TimeoutMilliseconds);
         }
     }
 }

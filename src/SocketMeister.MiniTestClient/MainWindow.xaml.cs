@@ -98,7 +98,7 @@ namespace SocketMeister.MiniTestClient
             Log(LogItem.SeverityType.Error, "Client " + ct.ClientId, e.Exception.Message);
         }
 
-        private void Client_RequestReceived(object sender, SocketClient.MessageReceivedEventArgs e)
+        private void Client_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
         {
             ClientControl ct = (ClientControl)sender;
 
@@ -119,7 +119,7 @@ namespace SocketMeister.MiniTestClient
         private void Client_SendRequestButtonPressed(object sender, EventArgs e)
         {
             ClientControl client = (ClientControl)sender;
-            client.SendRequest(tbTextToSend.Text);
+            client.SendMessage(tbTextToSend.Text);
         }
 
         private void Client_BroadcastReceived(object sender, SocketClient.BroadcastReceivedEventArgs e)
@@ -231,8 +231,8 @@ namespace SocketMeister.MiniTestClient
                 foreach (ClientControl Client in _clients)
                 {
                     Client.ExceptionRaised += Client_ExceptionRaised;
-                    Client.RequestReceived += Client_RequestReceived;
-                    Client.SendRequestButtonPressed += Client_SendRequestButtonPressed;
+                    Client.MessageReceived += Client_MessageReceived;
+                    Client.SendMessageButtonPressed += Client_SendRequestButtonPressed;
                     Client.ServerStopping += Client_ServerStopping;
                     Client.BroadcastReceived += Client_BroadcastReceived;
 
