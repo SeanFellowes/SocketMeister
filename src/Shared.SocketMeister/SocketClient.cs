@@ -806,7 +806,7 @@ namespace SocketMeister
 
 
 
-        private void SendResponse(ResponseMessage Message, RequestMessage Request)
+        private void SendResponse(MessageResponse Message, Message Request)
         {
             byte[] sendBytes = MessageEngine.GenerateSendBytes(Message, false);
 
@@ -822,7 +822,7 @@ namespace SocketMeister
                 else if (StopClientPermanently)
                 {
                     //  SHUTDOWN: CLIENT IS SHUTTING DOWN. A SHUTDOWN MESSAGE SHOULD HAVE ALREADY BEEN SENT SO EXIT
-                    SendResponseQuickly(new ResponseMessage(Request.RequestId, RequestResult.Stopping));
+                    SendResponseQuickly(new MessageResponse(Request.RequestId, RequestResult.Stopping));
                     return;
                 }
 
@@ -852,7 +852,7 @@ namespace SocketMeister
         }
 
 
-        private void SendResponseQuickly(ResponseMessage Message)
+        private void SendResponseQuickly(MessageResponse Message)
         {
             byte[] sendBytes = MessageEngine.GenerateSendBytes(Message, false);
 
@@ -898,11 +898,11 @@ namespace SocketMeister
             }
             //DelaySending();
             int remainingMilliseconds = TimeoutMilliseconds - Convert.ToInt32((DateTime.Now - startTime).TotalMilliseconds);
-            return SendReceive(new RequestMessage(Parameters, remainingMilliseconds, IsLongPolling));
+            return SendReceive(new Message(Parameters, remainingMilliseconds, IsLongPolling));
         }
 
 
-        private byte[] SendReceive(RequestMessage Request)
+        private byte[] SendReceive(Message Request)
         {
             if (StopClientPermanently == true) return null;
 
@@ -1058,10 +1058,10 @@ namespace SocketMeister
                         if (_receiveEngine.MessageType == MessageTypes.ResponseMessageV1)
                         {
                             //  SyncEndPointSubscriptionsWithServer() IS WAITING. COMPLETE THE SYNCRONOUS OPERATION SO IT CAN CONTINUE
-                            ResponseMessage response = _receiveEngine.GetResponseMessage();
+                            MessageResponse response = _receiveEngine.GetResponseMessage();
 
                             //  CHECK TO SEE IS THE MESSAGE IS IN THE LIST OF OPEN SendReceive ITEMS.
-                            RequestMessage foundOpenRequest = _openRequests[response.RequestId];
+                            Message foundOpenRequest = _openRequests[response.MessageId];
                             if (foundOpenRequest != null)
                             {
                                 if (response.RequestResultCode == RequestResult.Stopping)
@@ -1085,7 +1085,7 @@ namespace SocketMeister
                         {
                             Thread bgThread = new Thread(new ThreadStart(delegate
                             {
-                                RequestMessage request = _receiveEngine.GetRequestMessage(2);
+                                Message request = _receiveEngine.GetRequestMessage(2);
                                 lock (_lock) { _requestsInProgress += 1; }
                                 ThreadPool.QueueUserWorkItem(BgProcessRequestMessage, request);
                             }));
@@ -1142,18 +1142,18 @@ namespace SocketMeister
 
         private void BgProcessRequestMessage(object state)
         {
-            RequestMessage request = (RequestMessage)state;
+            Message request = (Message)state;
             try
             {
                 if (MessageReceived == null)
                 {
                     //  THERE IS NO CODE LISTENING TO RequestReceive EVENTS. CANNOT PROCESS THIS REQUEST
-                    SendResponseQuickly(new ResponseMessage(request.RequestId, RequestResult.NoRequestProcessor));
+                    SendResponseQuickly(new MessageResponse(request.RequestId, RequestResult.NoRequestProcessor));
                 }
                 else if (StopClientPermanently)
                 {
                     //  SHUTDOWN: CLIENT IS SHUTTING DOWN. A SHUTDOWN MESSAGE SHOULD HAVE ALREADY BEEN SENT SO EXIT
-                    SendResponseQuickly(new ResponseMessage(request.RequestId, RequestResult.Stopping));
+                    SendResponseQuickly(new MessageResponse(request.RequestId, RequestResult.Stopping));
                 }
                 else if (request.IsTimeout)
                 {
@@ -1168,14 +1168,14 @@ namespace SocketMeister
                     MessageReceived(this, args);
 
                     //  SEND RESPONSE
-                    ResponseMessage response = new ResponseMessage(request.RequestId, args.Response);
+                    MessageResponse response = new MessageResponse(request.RequestId, args.Response);
                     SendResponse(response, request);
                 }
             }
             catch (Exception ex)
             {
                 NotifyExceptionRaised(ex);
-                SendResponseQuickly(new ResponseMessage(request.RequestId, ex));
+                SendResponseQuickly(new MessageResponse(request.RequestId, ex));
             }
             finally
             {

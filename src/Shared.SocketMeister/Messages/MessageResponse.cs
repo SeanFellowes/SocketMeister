@@ -10,7 +10,7 @@ using System.Text;
 namespace SocketMeister.Messages
 {
 #if !SILVERLIGHT && !SMNOSERVER && !NET35 && !NET20
-    internal partial class ResponseMessage : MessageBase
+    internal partial class MessageResponse : MessageBase
     {
         private SocketServer.Client _remoteClient = null;
 
@@ -26,30 +26,30 @@ namespace SocketMeister.Messages
 #endif
 
 
-    internal partial class ResponseMessage : MessageBase, IMessage
+    internal partial class MessageResponse : MessageBase, IMessage
     {
         //  RESPONSE VARIABLES
         private readonly string _error = null;
-        private readonly long _requestId;
+        private readonly long _messageId;
         private readonly RequestResult _requestResultCode;
         private readonly Byte[] _responseData = null;
 
-        public ResponseMessage(long RequestId, byte[] ResponseData) : base(MessageTypes.ResponseMessageV1)
+        public MessageResponse(long MessageId, byte[] ResponseData) : base(MessageTypes.ResponseMessageV1)
         {
-            _requestId = RequestId;
+            _messageId = MessageId;
             _responseData = ResponseData;
             _requestResultCode = RequestResult.Success;
         }
 
-        public ResponseMessage(long RequestId, RequestResult RequestResultCode) : base(MessageTypes.ResponseMessageV1)
+        public MessageResponse(long MessageId, RequestResult RequestResultCode) : base(MessageTypes.ResponseMessageV1)
         {
-            _requestId = RequestId;
+            _messageId = MessageId;
             _requestResultCode = RequestResultCode;
         }
 
-        public ResponseMessage(long RequestId, Exception Exception) : base(MessageTypes.ResponseMessageV1)
+        public MessageResponse(long MessageId, Exception Exception) : base(MessageTypes.ResponseMessageV1)
         {
-            _requestId = RequestId;
+            _messageId = MessageId;
             _requestResultCode = RequestResult.Exception;
             _error = Exception.Message;
             if (Exception.StackTrace != null) _error += Environment.NewLine + Environment.NewLine + Exception.StackTrace;
@@ -59,20 +59,20 @@ namespace SocketMeister.Messages
         /// Fastest was to build this is to create it directly from the SocketEnvelope buffer.
         /// </summary>
         /// <param name="Reader">Binary Reader</param>
-        public ResponseMessage(BinaryReader Reader) : base(MessageTypes.ResponseMessageV1)
+        public MessageResponse(BinaryReader Reader) : base(MessageTypes.ResponseMessageV1)
         {
-            _requestId = Reader.ReadInt64();
+            _messageId = Reader.ReadInt64();
             if (Reader.ReadBoolean() == true) _responseData = Reader.ReadBytes(Reader.ReadInt32());
             if (Reader.ReadBoolean() == true) _error = Reader.ReadString();
             _requestResultCode = (RequestResult)Reader.ReadInt16();
         }
 
         /// <summary>
-        /// The request that this response refers to
+        /// The message that this response refers to
         /// </summary>
-        public long RequestId
+        public long MessageId
         {
-            get { return _requestId; }
+            get { return _messageId; }
         }
 
 
@@ -96,7 +96,7 @@ namespace SocketMeister.Messages
 
         public void AppendBytes(BinaryWriter Writer)
         {
-            Writer.Write(_requestId);
+            Writer.Write(_messageId);
             if (_responseData == null) Writer.Write(false);
             else
             {

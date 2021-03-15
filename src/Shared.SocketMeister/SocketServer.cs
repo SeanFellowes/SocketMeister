@@ -463,12 +463,12 @@ namespace SocketMeister
                                 _totalRequestsReceived++;
                             }
 
-                            RequestMessage request = receiveEnvelope.GetRequestMessage(2);
+                            Message request = receiveEnvelope.GetRequestMessage(2);
                             request.RemoteClient = remoteClient;
 
                             if (Status == SocketServerStatus.Stopping)
                             {
-                                ResponseMessage response = new ResponseMessage(request.RequestId, RequestResult.Stopping);
+                                MessageResponse response = new MessageResponse(request.RequestId, RequestResult.Stopping);
                                 request.RemoteClient.SendIMessage(response, false);
                             }
                             else
@@ -615,7 +615,7 @@ namespace SocketMeister
 
 
 
-        private void BgProcessRequestMessage(RequestMessage request)
+        private void BgProcessRequestMessage(Message request)
         {
             try
             {
@@ -626,7 +626,7 @@ namespace SocketMeister
                 if (RequestReceived == null)
                 {
                     Exception ex = new Exception("There is no process on the server listening to 'RequestReceived' events from the socket server.");
-                    ResponseMessage noListener = new ResponseMessage(request.RequestId, ex);
+                    MessageResponse noListener = new MessageResponse(request.RequestId, ex);
                     request.RemoteClient.SendIMessage(noListener, false);
                 }
                 else
@@ -634,14 +634,14 @@ namespace SocketMeister
                     RequestReceived(this, args);
 
                     //  SEND RESPONSE
-                    ResponseMessage response = new ResponseMessage(request.RequestId, args.Response);
+                    MessageResponse response = new MessageResponse(request.RequestId, args.Response);
                     request.RemoteClient.SendIMessage(response, false);
                 }
             }
             catch (Exception ex)
             {
                 NotifyTraceEventRaised(ex, 5008);
-                ResponseMessage response = new ResponseMessage(request.RequestId, ex);
+                MessageResponse response = new MessageResponse(request.RequestId, ex);
                 request.RemoteClient.SendIMessage(response, false);
             }
             finally

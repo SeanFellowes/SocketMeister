@@ -99,9 +99,9 @@ namespace SocketMeister
                 return rVal;
             }
 
-            internal void ProcessResponseMessage(ResponseMessage Message)
+            internal void ProcessResponseMessage(MessageResponse Message)
             {
-                RequestMessage request = _openRequests[Message.RequestId];
+                Message request = _openRequests[Message.MessageId];
                 if (request == null) return;
                 request.Response = Message;
             }
@@ -193,11 +193,11 @@ namespace SocketMeister
                 }
                 if (_socketServer.Status != SocketServerStatus.Started) throw new Exception("Request cannot be sent. The socket server is not running");
                 int remainingMilliseconds = TimeoutMilliseconds - Convert.ToInt32((DateTime.Now - startTime).TotalMilliseconds);
-                return SendReceive(new RequestMessage(Parameters, remainingMilliseconds, IsLongPolling));
+                return SendReceive(new Message(Parameters, remainingMilliseconds, IsLongPolling));
             }
 
 
-            private byte[] SendReceive(RequestMessage Request)
+            private byte[] SendReceive(Message Request)
             {
                 if (_socketServer.Status != SocketServerStatus.Started) return null;
 

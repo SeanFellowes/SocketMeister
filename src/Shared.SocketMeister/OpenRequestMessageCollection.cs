@@ -15,16 +15,16 @@ namespace SocketMeister
     /// </summary>
     internal class OpenRequestMessageCollection
     {
-        private readonly List<RequestMessage> _list = new List<RequestMessage>();
+        private readonly List<Message> _list = new List<Message>();
         private readonly object _lock = new object();
 
-        public RequestMessage this[long RequestID]
+        public Message this[long RequestID]
         {
             get
             {
                 lock (_lock)
                 {
-                    foreach (RequestMessage message in _list)
+                    foreach (Message message in _list)
                     {
                         if (message.RequestId == RequestID) return message;
                     }
@@ -34,7 +34,7 @@ namespace SocketMeister
         }
 
 
-        internal void Add(RequestMessage AddItem)
+        internal void Add(Message AddItem)
         {
             lock (_lock) { _list.Add(AddItem); }
         }
@@ -49,7 +49,7 @@ namespace SocketMeister
         }
 
 
-        internal void Remove(RequestMessage RemoveItem)
+        internal void Remove(Message RemoveItem)
         {
             lock (_lock) { _list.Remove(RemoveItem); }
         }
@@ -59,12 +59,12 @@ namespace SocketMeister
         /// </summary>
         internal void ResetToUnsent()
         {
-            List<RequestMessage> messages;
+            List<Message> messages;
             lock (_lock)
             {
                 messages = _list.ToList();
             }
-            foreach (RequestMessage message in messages)
+            foreach (Message message in messages)
             {
                 if (message.WaitForResponse) message.Status = MessageStatus.Unsent;
             }

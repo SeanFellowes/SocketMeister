@@ -328,7 +328,7 @@ namespace SocketMeister.Messages
         }
 
 
-        internal RequestMessage GetRequestMessage(int Version)
+        internal Message GetRequestMessage(int Version)
         {
             MemoryStream stream = null;
             try
@@ -337,7 +337,7 @@ namespace SocketMeister.Messages
                 using (BinaryReader reader = new BinaryReader(stream))
                 {
                     stream = null;
-                    return new RequestMessage(reader, Version);
+                    return new Message(reader, Version);
                 }
             }
             finally
@@ -405,7 +405,7 @@ namespace SocketMeister.Messages
 
 
 
-        internal ResponseMessage GetResponseMessage()
+        internal MessageResponse GetResponseMessage()
         {
             MemoryStream stream = null;
             try
@@ -414,7 +414,7 @@ namespace SocketMeister.Messages
                 using (BinaryReader reader = new BinaryReader(stream))
                 {
                     stream = null;
-                    return new ResponseMessage(reader);
+                    return new MessageResponse(reader);
                 }
             }
             finally

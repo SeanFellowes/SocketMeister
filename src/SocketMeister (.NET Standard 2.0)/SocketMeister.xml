@@ -451,17 +451,17 @@
             Internal Message: Socket server sends a response to a 'PollRequest' message to indicate (to the client) that the server is alive.
             </summary>
         </member>
-        <member name="T:SocketMeister.Messages.RequestMessage">
+        <member name="T:SocketMeister.Messages.Message">
             <summary>
             A request, sent from socket client to socket server. A response is expected and will cause problems if it is not sent.
             </summary>
         </member>
-        <member name="P:SocketMeister.Messages.RequestMessage.RemoteClient">
+        <member name="P:SocketMeister.Messages.Message.RemoteClient">
             <summary>
             The remote client which sent this RequestMessage (value null on SocketClient)
             </summary>
         </member>
-        <member name="M:SocketMeister.Messages.RequestMessage.#ctor(System.Object[],System.Int32,System.Boolean)">
+        <member name="M:SocketMeister.Messages.Message.#ctor(System.Object[],System.Int32,System.Boolean)">
             <summary>
             RequestMessage constructor
             </summary>
@@ -469,55 +469,55 @@
             <param name="TimeoutMilliseconds">The maximum number of milliseconds to wait for a response before timing out.</param>
             <param name="IsLongPolling">The maximum number of milliseconds to wait for a response before timing out.</param>
         </member>
-        <member name="P:SocketMeister.Messages.RequestMessage.Parameters">
+        <member name="P:SocketMeister.Messages.Message.Parameters">
             <summary>
             Parameters provided with this request
             </summary>
         </member>
-        <member name="P:SocketMeister.Messages.RequestMessage.IsLongPolling">
+        <member name="P:SocketMeister.Messages.Message.IsLongPolling">
             <summary>
             True is this request is long polling on the server side. Long polling requests will be closed immediately in the event of a close from either the client or server side.
             </summary>
         </member>
-        <member name="P:SocketMeister.Messages.RequestMessage.IsTimeout">
+        <member name="P:SocketMeister.Messages.Message.IsTimeout">
             <summary>
             Whether the RequestMessage has timed out
             </summary>
         </member>
-        <member name="P:SocketMeister.Messages.RequestMessage.RequestId">
+        <member name="P:SocketMeister.Messages.Message.RequestId">
             <summary>
             Identifier assigned to this request when it was created (usually when created at the client)
             </summary>
         </member>
-        <member name="P:SocketMeister.Messages.RequestMessage.TimeoutMilliseconds">
+        <member name="P:SocketMeister.Messages.Message.TimeoutMilliseconds">
             <summary>
             Number of milliseconds to wait before a timeout will occur.
             </summary>
         </member>
-        <member name="P:SocketMeister.Messages.RequestMessage.TrySendReceive">
+        <member name="P:SocketMeister.Messages.Message.TrySendReceive">
             <summary>
             Whether the method SendReceive(RequestMessage Request) should continute trying
             </summary>
         </member>
-        <member name="P:SocketMeister.Messages.RequestMessage.WaitForResponse">
+        <member name="P:SocketMeister.Messages.Message.WaitForResponse">
             <summary>
             Whether a SendReceive process should continue waiting for a response
             </summary>
         </member>
-        <member name="P:SocketMeister.Messages.ResponseMessage.RemoteClient">
+        <member name="P:SocketMeister.Messages.MessageResponse.RemoteClient">
             <summary>
             The remote client which sent this RequestMessage (value null on SocketClient)
             </summary>
         </member>
-        <member name="M:SocketMeister.Messages.ResponseMessage.#ctor(System.IO.BinaryReader)">
+        <member name="M:SocketMeister.Messages.MessageResponse.#ctor(System.IO.BinaryReader)">
             <summary>
             Fastest was to build this is to create it directly from the SocketEnvelope buffer.
             </summary>
             <param name="Reader">Binary Reader</param>
         </member>
-        <member name="P:SocketMeister.Messages.ResponseMessage.RequestId">
+        <member name="P:SocketMeister.Messages.MessageResponse.MessageId">
             <summary>
-            The request that this response refers to
+            The message that this response refers to
             </summary>
         </member>
         <member name="M:SocketMeister.Messages.ServerStoppingMessage.#ctor(System.IO.BinaryReader)">

@@ -12,7 +12,7 @@ using System.Threading;
 namespace SocketMeister.Messages
 {
 #if !SILVERLIGHT && !SMNOSERVER && !NET35 && !NET20
-    internal partial class RequestMessage : MessageBase
+    internal partial class Message : MessageBase
     {
         private SocketServer.Client _remoteClient = null;
 
@@ -30,7 +30,7 @@ namespace SocketMeister.Messages
     /// <summary>
     /// A request, sent from socket client to socket server. A response is expected and will cause problems if it is not sent.
     /// </summary>
-    internal partial class RequestMessage : MessageBase, IMessage
+    internal partial class Message : MessageBase, IMessage
     {
         //  REQUEST ID
         private static long _maxRequestId = 0;
@@ -46,7 +46,7 @@ namespace SocketMeister.Messages
         private readonly int _timeoutMilliseconds;
 
         //  INTERNAL (NOT SENT IN MESSAGE DATA)
-        private ResponseMessage _response = null;
+        private MessageResponse _response = null;
 
         /// <summary>
         /// RequestMessage constructor
@@ -54,7 +54,7 @@ namespace SocketMeister.Messages
         /// <param name="Parameters">Array of parameters to send with the request. There must be at least 1 parameter.</param>
         /// <param name="TimeoutMilliseconds">The maximum number of milliseconds to wait for a response before timing out.</param>
         /// <param name="IsLongPolling">The maximum number of milliseconds to wait for a response before timing out.</param>
-        public RequestMessage(object[] Parameters, int TimeoutMilliseconds, bool IsLongPolling = false) : base(MessageTypes.RequestMessageV1)
+        public Message(object[] Parameters, int TimeoutMilliseconds, bool IsLongPolling = false) : base(MessageTypes.RequestMessageV1)
         {
             _parameters = Parameters;
             _timeoutMilliseconds = TimeoutMilliseconds;
@@ -85,7 +85,7 @@ namespace SocketMeister.Messages
         }
 
 
-        internal RequestMessage(BinaryReader bR, int Version) : base(MessageTypes.RequestMessageV1)
+        internal Message(BinaryReader bR, int Version) : base(MessageTypes.RequestMessageV1)
         {
             if (Version == 1)
             {
@@ -155,7 +155,7 @@ namespace SocketMeister.Messages
             get { return _requestId; }
         }
 
-        public ResponseMessage Response
+        public MessageResponse Response
         {
             get { lock (Lock) { return _response; } }
             set { lock (Lock) { _response = value; } }
