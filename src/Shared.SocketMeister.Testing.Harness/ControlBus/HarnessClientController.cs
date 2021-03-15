@@ -152,7 +152,7 @@ namespace SocketMeister.Testing.ControlBus
         {
             object[] parms = new object[2];
             parms[0] = ControlBus.ControlMessage.ExitClient;
-            ControlBusListenerClient.SendMessage(parms);
+            ControlBusListenerClient.SendRequest(parms);
 
             //  Wait zzzz miniseconds for the client to send a ClientDisconnecting message.
         }

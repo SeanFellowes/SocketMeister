@@ -85,12 +85,7 @@ namespace SocketMeister
         public event EventHandler<ExceptionEventArgs> ExceptionRaised;
 
         /// <summary>
-        /// Event raised whenever a message is received from the server.
-        /// </summary>
-        public event EventHandler<MessageReceivedEventArgs> MessageReceived;
-
-        /// <summary>
-        /// Raised when a request message is received from the server. A response can be provided which will be returned to the server.
+        /// Raised when a  message is received from the server. When processing this event, an optional response can be provided which will be returned to the server.
         /// </summary>
         public event EventHandler<RequestReceivedEventArgs> RequestReceived;
 
@@ -100,9 +95,9 @@ namespace SocketMeister
         public event EventHandler<EventArgs> ServerStopping;
 
         /// <summary>
-        /// Event raised whenever a message is received from the server for a specific subscription.
+        /// Event raised whenever a broadcast is received from the server.
         /// </summary>
-        public event EventHandler<SubscriptionMessageReceivedEventArgs> SubscriptionMessageReceived;
+        public event EventHandler<BroadcastReceivedEventArgs> BroadcastReceived;
 
 
 
@@ -1081,10 +1076,10 @@ namespace SocketMeister
                                 }
                             }
                         }
-                        else if (_receiveEngine.MessageType == MessageTypes.Message)
-                        {
-                            NotifyMessageReceived(_receiveEngine.GetMessage());
-                        }
+                        //else if (_receiveEngine.MessageType == MessageTypes.Message)
+                        //{
+                        //    NotifyMessageReceived(_receiveEngine.GetMessage());
+                        //}
 
                         else if (_receiveEngine.MessageType == MessageTypes.RequestMessageV1)
                         {
@@ -1119,9 +1114,9 @@ namespace SocketMeister
                             NextSendSubscriptions = DateTime.Now;
                         }
 
-                        else if (_receiveEngine.MessageType == MessageTypes.SubscriptionMessageV1)
+                        else if (_receiveEngine.MessageType == MessageTypes.BroadcastV1)
                         {
-                            NotifySubscriptionMessageV1Received(_receiveEngine.GetSubscriptionMessageV1());
+                            NotifyBroadcastReceived(_receiveEngine.GetBroadcastV1());
                         }
                     }
                 }
@@ -1243,35 +1238,15 @@ namespace SocketMeister
         }
 
 
-        private void NotifyMessageReceived(Messages.Message Message)
+        private void NotifyBroadcastReceived(Messages.BroadcastV1 Message)
         {
-            if (MessageReceived != null)
+            if (BroadcastReceived != null)
             {
                 Thread bgThread = new Thread(new ThreadStart(delegate
                 {
                     try
                     {
-                        MessageReceived(this, new MessageReceivedEventArgs(Message.Parameters));
-                    }
-                    catch (Exception ex)
-                    {
-                        NotifyExceptionRaised(ex);
-                    }
-                }));
-                bgThread.IsBackground = true;
-                bgThread.Start();
-            }
-        }
-
-        private void NotifySubscriptionMessageV1Received(Messages.SubscriptionMessageV1 Message)
-        {
-            if (SubscriptionMessageReceived != null)
-            {
-                Thread bgThread = new Thread(new ThreadStart(delegate
-                {
-                    try
-                    {
-                        SubscriptionMessageReceived(this, new SubscriptionMessageReceivedEventArgs(Message.SubscriptionName, Message.Parameters));
+                        BroadcastReceived(this, new BroadcastReceivedEventArgs(Message.Name, Message.Parameters));
                     }
                     catch (Exception ex)
                     {

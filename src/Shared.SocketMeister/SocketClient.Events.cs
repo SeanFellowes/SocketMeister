@@ -135,16 +135,16 @@ namespace SocketMeister
 
 
         /// <summary>
-        /// Values provided when a message is received from the socket server. 
+        /// Values provided when a broadcast is received from the socket server. 
         /// </summary>
-        public class SubscriptionMessageReceivedEventArgs : EventArgs
+        public class BroadcastReceivedEventArgs : EventArgs
         {
-            private readonly string _subscriptionName;
+            private readonly string _name;
             private readonly object[] _parameters;
 
-            internal SubscriptionMessageReceivedEventArgs(string SubscriptionName, object[] Parameters)
+            internal BroadcastReceivedEventArgs(string Name, object[] Parameters)
             {
-                _subscriptionName = SubscriptionName;
+                _name = Name;
                 _parameters = Parameters;
             }
 
@@ -154,9 +154,9 @@ namespace SocketMeister
             public object[] Parameters { get { return _parameters; } }
 
             /// <summary>
-            /// The name of the subscription 
+            /// Optional Name/Tag/Identifier for the broadcast 
             /// </summary>
-            public string SubscriptionName {  get { return _subscriptionName; } }
+            public string Name {  get { return _name; } }
         }
 
 

@@ -12,29 +12,37 @@ using System.Threading;
 namespace SocketMeister.Messages
 {
     /// <summary>
-    /// SocketServer sends subscription related messages to clients.
+    /// SocketServer sends broadcasts to clients.
     /// </summary>
-    internal partial class SubscriptionMessageV1 : MessageBase, IMessage
+    internal partial class BroadcastV1 : MessageBase, IMessage
     {
         //  REQUEST VARIABLES
         private readonly byte[] _parameterBytes = null;
         private readonly object[] _parameters = null;
-        private readonly string _subscriptionName;
+        private readonly string _name;
 
         /// <summary>
         /// RequestMessage constructor
         /// </summary>
-        /// <param name="SubscriptionName">Name of the subscription that message applies to.</param>
+        /// <param name="Name">Optional Name/Tag/Identifier for the broadcast.</param>
         /// <param name="Parameters">Array of parameters to send with the request. There must be at least 1 parameter.</param>
-        public SubscriptionMessageV1(string SubscriptionName, object[] Parameters) : base(MessageTypes.SubscriptionMessageV1)
+        public BroadcastV1(string Name, object[] Parameters) : base(MessageTypes.BroadcastV1)
         {
             _parameters = Parameters;
-            _subscriptionName = SubscriptionName;
+            _name = Name;
 
             //  SERIALIZE REQUEST MESSAGE
             using (BinaryWriter writer = new BinaryWriter(new MemoryStream()))
             {
-                writer.Write(_subscriptionName);
+                if (string.IsNullOrEmpty(_name))
+                {
+                    writer.Write(false);
+                }
+                else
+                {
+                    writer.Write(true);
+                    writer.Write(_name);
+                }
                 Serializer.SerializeParameters(writer, Parameters);
                 using (BinaryReader reader = new BinaryReader(writer.BaseStream))
                 {
@@ -45,9 +53,11 @@ namespace SocketMeister.Messages
         }
 
 
-        internal SubscriptionMessageV1(BinaryReader bR) : base(MessageTypes.SubscriptionMessageV1)
+        internal BroadcastV1(BinaryReader bR) : base(MessageTypes.BroadcastV1)
         {
-            _subscriptionName = bR.ReadString();
+            if (bR.ReadBoolean() == true) _name = bR.ReadString();
+            else _name = null;
+
             _parameters = Serializer.DeserializeParameters(bR);
         }
 
@@ -61,11 +71,11 @@ namespace SocketMeister.Messages
         }
 
         /// <summary>
-        /// Name of the subscription that this message applies to.
+        /// Optional Name/Tag/Identifier given to the broadcast
         /// </summary>
-        public string SubscriptionName
+        public string Name
         {
-            get { return _subscriptionName; }
+            get { return _name; }
         }
 
         public void AppendBytes(BinaryWriter Writer)

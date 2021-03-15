@@ -50,9 +50,9 @@ namespace SocketMeister.Messages
         SubscriptionChangesResponseV1 = 30,
 
         /// <summary>
-        /// Server sends a message which is applicable to a specific subscription name
+        /// Server sends a broadcast
         /// </summary>
-        SubscriptionMessageV1 = 40,
+        BroadcastV1 = 40,
 
         /// <summary>
         /// Request (expecting a response). Version 2 (From SocketMeister 2.x.x.x)

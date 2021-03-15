@@ -37,14 +37,9 @@ namespace SocketMeister.MiniTestClient
         public event EventHandler<EventArgs> StatusChanged;
 
         /// <summary>
-        /// Event raised whenever a message is received from the server.
-        /// </summary>
-        public event EventHandler<SocketClient.MessageReceivedEventArgs> MessageReceived;
-
-        /// <summary>
         /// Event raised whenever a subscription message is received from the server.
         /// </summary>
-        public event EventHandler<SocketClient.SubscriptionMessageReceivedEventArgs> SubscriptionMessageReceived;
+        public event EventHandler<SocketClient.BroadcastReceivedEventArgs> BroadcastReceived;
 
         /// <summary>
         /// Raised when a request message is received from the server. A response can be provided which will be returned to the server.
@@ -169,10 +164,9 @@ namespace SocketMeister.MiniTestClient
             _client.ConnectionStatusChanged += Client_ConnectionStatusChanged;
             _client.CurrentEndPointChanged += Client_CurrentEndPointChanged;
             _client.ExceptionRaised += Client_ExceptionRaised;
-            _client.MessageReceived += Client_MessageReceived;
             _client.RequestReceived += Client_RequestReceived;
             _client.ServerStopping += Client_ServerStopping;
-            _client.SubscriptionMessageReceived += Client_SubscriptionMessageReceived;
+            _client.BroadcastReceived += Client_BroadcastReceived;
 
             tbPort.Text = _client.CurrentEndPoint.Port.ToString();
         }
@@ -184,10 +178,9 @@ namespace SocketMeister.MiniTestClient
             _client.ConnectionStatusChanged += Client_ConnectionStatusChanged;
             _client.CurrentEndPointChanged += Client_CurrentEndPointChanged;
             _client.ExceptionRaised += Client_ExceptionRaised;
-            _client.MessageReceived += Client_MessageReceived;
             _client.RequestReceived += Client_RequestReceived;
             _client.ServerStopping += Client_ServerStopping;
-            _client.SubscriptionMessageReceived += Client_SubscriptionMessageReceived;
+            _client.BroadcastReceived += Client_BroadcastReceived;
 
             tbPort.Text = _client.CurrentEndPoint.Port.ToString();
         }
@@ -205,7 +198,6 @@ namespace SocketMeister.MiniTestClient
             //_client.MessageReceived -= Client_MessageReceived;
             //_client.RequestReceived -= Client_RequestReceived;
             //_client.ServerStopping -= Client_ServerStopping;
-            //_client.SubscriptionMessageReceived -= Client_SubscriptionMessageReceived;
             _client.Dispose();
 
             //bdStatus.Background = new SolidColorBrush(Colors.Red);
@@ -237,24 +229,14 @@ namespace SocketMeister.MiniTestClient
             ExceptionRaised?.Invoke(this, e);
         }
 
-        private void Client_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
+        private void Client_BroadcastReceived(object sender, SocketClient.BroadcastReceivedEventArgs e)
         {
             Dispatcher.Invoke(() =>
             {
                 _messagesReceived++;
                 tbMessagesReceived.Text = _messagesReceived.ToString();
             });
-            MessageReceived?.Invoke(this, e);
-        }
-
-        private void Client_SubscriptionMessageReceived(object sender, SocketClient.SubscriptionMessageReceivedEventArgs e)
-        {
-            Dispatcher.Invoke(() =>
-            {
-                _messagesReceived++;
-                tbMessagesReceived.Text = _messagesReceived.ToString();
-            });
-            SubscriptionMessageReceived?.Invoke(this, e);
+            BroadcastReceived?.Invoke(this, e);
         }
 
 

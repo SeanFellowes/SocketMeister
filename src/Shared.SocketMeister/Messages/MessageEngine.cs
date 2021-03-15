@@ -364,7 +364,7 @@ namespace SocketMeister.Messages
             }
         }
 
-        internal SubscriptionMessageV1 GetSubscriptionMessageV1()
+        internal BroadcastV1 GetBroadcastV1()
         {
             MemoryStream stream = null;
             try
@@ -373,7 +373,7 @@ namespace SocketMeister.Messages
                 using (BinaryReader reader = new BinaryReader(stream))
                 {
                     stream = null;
-                    return new SubscriptionMessageV1(reader);
+                    return new BroadcastV1(reader);
                 }
             }
             finally

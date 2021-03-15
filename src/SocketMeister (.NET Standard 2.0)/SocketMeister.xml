@@ -171,9 +171,9 @@
             Server sends a subscription response when a subscription request is received from a client
             </summary>
         </member>
-        <member name="F:SocketMeister.Messages.MessageTypes.SubscriptionMessageV1">
+        <member name="F:SocketMeister.Messages.MessageTypes.BroadcastV1">
             <summary>
-            Server sends a message which is applicable to a specific subscription name
+            Server sends a broadcast
             </summary>
         </member>
         <member name="F:SocketMeister.Messages.MessageTypes.RequestMessageV1">
@@ -231,26 +231,26 @@
             Send operation finished (Could be unsuccessful or successful)
             </summary>
         </member>
-        <member name="T:SocketMeister.Messages.SubscriptionMessageV1">
+        <member name="T:SocketMeister.Messages.BroadcastV1">
             <summary>
-            SocketServer sends subscription related messages to clients.
+            SocketServer sends broadcasts to clients.
             </summary>
         </member>
-        <member name="M:SocketMeister.Messages.SubscriptionMessageV1.#ctor(System.String,System.Object[])">
+        <member name="M:SocketMeister.Messages.BroadcastV1.#ctor(System.String,System.Object[])">
             <summary>
             RequestMessage constructor
             </summary>
-            <param name="SubscriptionName">Name of the subscription that message applies to.</param>
+            <param name="Name">Optional Name/Tag/Identifier for the broadcast.</param>
             <param name="Parameters">Array of parameters to send with the request. There must be at least 1 parameter.</param>
         </member>
-        <member name="P:SocketMeister.Messages.SubscriptionMessageV1.Parameters">
+        <member name="P:SocketMeister.Messages.BroadcastV1.Parameters">
             <summary>
             Parameters provided with this request
             </summary>
         </member>
-        <member name="P:SocketMeister.Messages.SubscriptionMessageV1.SubscriptionName">
+        <member name="P:SocketMeister.Messages.BroadcastV1.Name">
             <summary>
-            Name of the subscription that this message applies to.
+            Optional Name/Tag/Identifier given to the broadcast
             </summary>
         </member>
         <member name="T:SocketMeister.Messages.TokenChangesRequestV1">
@@ -810,19 +810,19 @@
             The byte array which is to be returned to the client. Null is returned if a 'Response' value is not provided when processing the 'RequestReceived' event.
             </summary>
         </member>
-        <member name="T:SocketMeister.SocketClient.SubscriptionMessageReceivedEventArgs">
+        <member name="T:SocketMeister.SocketClient.BroadcastReceivedEventArgs">
             <summary>
-            Values provided when a message is received from the socket server. 
+            Values provided when a broadcast is received from the socket server. 
             </summary>
         </member>
-        <member name="P:SocketMeister.SocketClient.SubscriptionMessageReceivedEventArgs.Parameters">
+        <member name="P:SocketMeister.SocketClient.BroadcastReceivedEventArgs.Parameters">
             <summary>
             The parameters provided with the message.
             </summary>
         </member>
-        <member name="P:SocketMeister.SocketClient.SubscriptionMessageReceivedEventArgs.SubscriptionName">
+        <member name="P:SocketMeister.SocketClient.BroadcastReceivedEventArgs.Name">
             <summary>
-            The name of the subscription 
+            Optional Name/Tag/Identifier for the broadcast 
             </summary>
         </member>
         <member name="F:SocketMeister.SocketClient.DISCONNECT_AFTER_NO_POLL_RESPONSE_SECONDS">
@@ -856,11 +856,6 @@
             Event raised when an exception occurs
             </summary>
         </member>
-        <member name="E:SocketMeister.SocketClient.MessageReceived">
-            <summary>
-            Event raised whenever a message is received from the server.
-            </summary>
-        </member>
         <member name="E:SocketMeister.SocketClient.RequestReceived">
             <summary>
             Raised when a request message is received from the server. A response can be provided which will be returned to the server.
@@ -871,9 +866,9 @@
             Event raised when a the server stops
             </summary>
         </member>
-        <member name="E:SocketMeister.SocketClient.SubscriptionMessageReceived">
+        <member name="E:SocketMeister.SocketClient.BroadcastReceived">
             <summary>
-            Event raised whenever a message is received from the server for a specific subscription.
+            Event raised whenever a broadcast is received from the server.
             </summary>
         </member>
         <member name="M:SocketMeister.SocketClient.#ctor(System.Collections.Generic.List{SocketMeister.SocketEndPoint},System.Boolean)">
@@ -1144,13 +1139,6 @@
             </summary>
             <returns>List of subscription names</returns>
         </member>
-        <member name="M:SocketMeister.SocketServer.Client.SendMessage(System.Object[],System.Int32)">
-            <summary>
-            Send a message to this client
-            </summary>
-            <param name="Parameters">Parameters to send to the client.</param>
-            <param name="TimeoutMilliseconds">Number of milliseconds to attempt to send the message before throwing a TimeoutException.</param>
-        </member>
         <member name="M:SocketMeister.SocketServer.Client.SendRequest(System.Object[],System.Int32,System.Boolean)">
             <summary>
             Send a request to the server and wait for a response. 
@@ -1269,18 +1257,18 @@
             Whether the socket service is in the process of stopping.
             </summary>
         </member>
-        <member name="M:SocketMeister.SocketServer.BroadcastMessage(System.Object[],System.Int32)">
+        <member name="M:SocketMeister.SocketServer.Broadcast(System.String,System.Object[])">
             <summary>
             Send a message to all connected clients. Exceptions will not halt this process, but generate 'ExceptionRaised' events. 
             </summary>
+            <param name="Name">Optional Name/Tag/Identifier for the broadcast.</param>
             <param name="Parameters">Parameters to send with the message</param>
-            <param name="TimeoutMilliseconds">Number of milliseconds to wait before timing out</param>
         </member>
-        <member name="M:SocketMeister.SocketServer.BroadcastMessageToSubscribers(System.String,System.Object[])">
+        <member name="M:SocketMeister.SocketServer.BroadcastToSubscribers(System.String,System.Object[])">
             <summary>
             Send a message to all clients subscribing to a subscription name. Exceptions will not halt this process, but generate 'ExceptionRaised' events. 
             </summary>
-            <param name="SubscriptionName">The name of the scription (Case insensitive)</param>
+            <param name="Name">Optional Name/Tag/Identifier for the broadcast.</param>
             <param name="Parameters">Parameters to send with the message</param>
         </member>
         <member name="P:SocketMeister.SocketServer.ClientCount">

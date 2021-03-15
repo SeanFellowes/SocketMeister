@@ -106,7 +106,6 @@ namespace SocketMeister.Testing.ControlBus
             ControlBusSocketClient = new SocketClient(endPoints, true);
             ControlBusSocketClient.ConnectionStatusChanged += ControlBusSocketClient_ConnectionStatusChanged;
             ControlBusSocketClient.ExceptionRaised += ControlBusSocketClient_ExceptionRaised;
-            ControlBusSocketClient.MessageReceived += ControlBusSocketClient_MessageReceived;
             ControlBusSocketClient.RequestReceived += ControlBusSocketClient_RequestReceived;
 
             //Thread bgFailIfDisconnected = new Thread(new ThreadStart(delegate
@@ -141,11 +140,6 @@ namespace SocketMeister.Testing.ControlBus
         private void ControlBusSocketClient_RequestReceived(object sender, SocketClient.RequestReceivedEventArgs e)
         {
             RequestReceived?.Invoke(this, e);
-        }
-
-        private void ControlBusSocketClient_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
-        {
-            MessageReceived?.Invoke(this, e);
         }
 
         private void ControlBusSocketClient_ExceptionRaised(object sender, ExceptionEventArgs e)

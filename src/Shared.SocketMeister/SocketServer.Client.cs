@@ -104,12 +104,6 @@ namespace SocketMeister
                 RequestMessage request = _openRequests[Message.RequestId];
                 if (request == null) return;
                 request.Response = Message;
-                //ThreadPool.QueueUserWorkItem(unused =>
-                //{
-                //    RequestMessage request = _openRequests[Message.RequestId];
-                //    if (request == null) return;
-                //    request.Response = Message;
-                //});
             }
 
             internal TokenChangesResponseV1 ImportSubscriptionChanges(TokenChangesRequestV1 request)
@@ -117,16 +111,16 @@ namespace SocketMeister
                 return _subscriptions.ImportTokenChangesV1(request.ChangeBytes);
             }
 
-            /// <summary>
-            /// Send a message to this client
-            /// </summary>
-            /// <param name="Parameters">Parameters to send to the client.</param>
-            /// <param name="TimeoutMilliseconds">Number of milliseconds to attempt to send the message before throwing a TimeoutException.</param>
-            public void SendMessage(object[] Parameters, int TimeoutMilliseconds = 60000)
-            {
-                Message message = new Message(Parameters, TimeoutMilliseconds);
-                SendIMessage(message, true);
-            }
+            ///// <summary>
+            ///// Send a message to this client
+            ///// </summary>
+            ///// <param name="Parameters">Parameters to send to the client.</param>
+            ///// <param name="TimeoutMilliseconds">Number of milliseconds to attempt to send the message before throwing a TimeoutException.</param>
+            //public void SendMessage(object[] Parameters, int TimeoutMilliseconds = 60000)
+            //{
+            //    Message message = new Message(Parameters, TimeoutMilliseconds);
+            //    SendIMessage(message, true);
+            //}
 
             internal void SendIMessage(IMessage Message, bool Async = true)
             {

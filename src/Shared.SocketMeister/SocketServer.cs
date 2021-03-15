@@ -191,16 +191,16 @@ namespace SocketMeister
 
 
 
-#region Public Methods
+        #region Public Methods
 
         /// <summary>
         /// Send a message to all connected clients. Exceptions will not halt this process, but generate 'ExceptionRaised' events. 
         /// </summary>
+        /// <param name="Name">Optional Name/Tag/Identifier for the broadcast.</param>
         /// <param name="Parameters">Parameters to send with the message</param>
-        /// <param name="TimeoutMilliseconds">Number of milliseconds to wait before timing out</param>
-        public void BroadcastMessage(object[] Parameters, int TimeoutMilliseconds = 60000)
+        public void Broadcast(string Name, object[] Parameters)
         {
-            Message message = new Message(Parameters, TimeoutMilliseconds);
+            BroadcastV1 message = new BroadcastV1(Name, Parameters);
             List<Client> clients = _connectedClients.ToList();
             foreach (Client client in clients)
             {
@@ -218,19 +218,19 @@ namespace SocketMeister
         /// <summary>
         /// Send a message to all clients subscribing to a subscription name. Exceptions will not halt this process, but generate 'ExceptionRaised' events. 
         /// </summary>
-        /// <param name="SubscriptionName">The name of the scription (Case insensitive)</param>
+        /// <param name="Name">Optional Name/Tag/Identifier for the broadcast.</param>
         /// <param name="Parameters">Parameters to send with the message</param>
-        public void BroadcastMessageToSubscribers(string SubscriptionName, object[] Parameters)
+        public void BroadcastToSubscribers(string Name, object[] Parameters)
         {
-            if (string.IsNullOrEmpty(SubscriptionName) == true) throw new ArgumentNullException(nameof(SubscriptionName));
+            if (string.IsNullOrEmpty(Name) == true) throw new ArgumentNullException(nameof(Name));
 
-            SubscriptionMessageV1 message = null;
+            BroadcastV1 message = null;
             List<Client> clients = _connectedClients.ToList();
             foreach (Client client in clients)
             {
-                if (client.DoesSubscriptionExist(SubscriptionName) == false) continue;
+                if (client.DoesSubscriptionExist(Name) == false) continue;
 
-                if (message == null) message = new SubscriptionMessageV1(SubscriptionName, Parameters);
+                if (message == null) message = new BroadcastV1(Name, Parameters);
                 try
                 {
                     client.SendIMessage(message, true);

@@ -284,7 +284,7 @@ namespace SocketMeister
             if (items.Count == 0) return 0;
             foreach (SocketServer.Client i in items)
             {
-                i.SendMessage(parms);
+                i.SendRequest(parms);
             }
             SetLabelText(lblTotalMessagesSent, Server.TotalMessagesSent.ToString("N0"));
             SetLabelText(lblBytesSent, Server.TotalBytesSent.ToString("N0"));
@@ -300,7 +300,7 @@ namespace SocketMeister
             object[] parms = new object[1];
             parms[0] = toSend;
 
-            _server.BroadcastMessageToSubscribers("My Test Subscription 1", parms);
+            _server.BroadcastToSubscribers("My Test Subscription 1", parms);
         }
 
         private void BtnSendMessage_Click(object sender, EventArgs e)
