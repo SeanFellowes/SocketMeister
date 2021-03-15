@@ -13,10 +13,10 @@ namespace SocketMeister.Messages
     {
         private bool _isAborted;
         private readonly object _lock = new object();
-        private readonly InternalMessageType _messageType;
-        private MessageProgress _messageStatus = MessageProgress.Unsent;
+        private readonly MessageEngineMessageType _messageType;
+        private MessageEngineDeliveryStatus _messageStatus = MessageEngineDeliveryStatus.Unsent;
 
-        internal MessageBase(InternalMessageType MessageType)
+        internal MessageBase(MessageEngineMessageType MessageType)
         {
             _messageType = MessageType;
         }
@@ -30,10 +30,10 @@ namespace SocketMeister.Messages
         }
 
 
-        public InternalMessageType MessageType { get { return _messageType; } }
+        public MessageEngineMessageType MessageType { get { return _messageType; } }
 
 
-        public MessageProgress Status
+        public MessageEngineDeliveryStatus Status
         {
             get { lock (_lock) { return _messageStatus; } }
             set { lock (_lock) { _messageStatus = value; } }

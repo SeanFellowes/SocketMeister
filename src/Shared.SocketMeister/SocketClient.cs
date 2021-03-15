@@ -817,16 +817,16 @@ namespace SocketMeister
                 else if (StopClientPermanently)
                 {
                     //  SHUTDOWN: CLIENT IS SHUTTING DOWN. A SHUTDOWN MESSAGE SHOULD HAVE ALREADY BEEN SENT SO EXIT
-                    SendResponseQuickly(new MessageResponsev1(message.MessageId, MessageResponseResult.Stopping));
+                    SendResponseQuickly(new MessageResponsev1(message.MessageId, MessageEngineDeliveryResult.Stopping));
                     return;
                 }
 
-                if (messageResponse.Status == MessageProgress.Unsent && CanSendReceive() == true)
+                if (messageResponse.Status == MessageEngineDeliveryStatus.Unsent && CanSendReceive() == true)
                 {
                     sendEventArgs = _sendEventArgsPool.Pop();
                     if (sendEventArgs != null)
                     {
-                        messageResponse.Status = MessageProgress.InProgress;
+                        messageResponse.Status = MessageEngineDeliveryStatus.InProgress;
                         sendEventArgs.UserToken = messageResponse;
                         sendEventArgs.SetBuffer(sendBytes, 0, sendBytes.Length);
                         sendEventArgs.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
@@ -858,7 +858,7 @@ namespace SocketMeister
 
             sendEventArgs.UserToken = Message;
             sendEventArgs.SetBuffer(sendBytes, 0, sendBytes.Length);
-            Message.Status = MessageProgress.InProgress;
+            Message.Status = MessageEngineDeliveryStatus.InProgress;
             sendEventArgs.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
             try
             {
@@ -912,12 +912,12 @@ namespace SocketMeister
             {
                 try
                 {
-                    if (message.Status == MessageProgress.Unsent && CanSendReceive() == true)
+                    if (message.Status == MessageEngineDeliveryStatus.Unsent && CanSendReceive() == true)
                     {
                         sendEventArgs = _sendEventArgsPool.Pop();
                         if (sendEventArgs != null)
                         {
-                            message.Status = MessageProgress.InProgress;
+                            message.Status = MessageEngineDeliveryStatus.InProgress;
                             sendEventArgs.UserToken = message;
                             sendEventArgs.SetBuffer(sendBytes, 0, sendBytes.Length);
                             int remainingMilliseconds = message.TimeoutMilliseconds - Convert.ToInt32((DateTime.Now - startTime).TotalMilliseconds);
@@ -976,20 +976,20 @@ namespace SocketMeister
             {
                 if (result == SocketError.ConnectionReset)
                 {
-                    message.Status = MessageProgress.Unsent;
+                    message.Status = MessageEngineDeliveryStatus.Unsent;
                     NotifyExceptionRaised(new Exception("Disconnecting: Connection was reset."));
                     CloseSocketWithForce();
                 }
                 else if (result != SocketError.Success)
                 {
-                    message.Status = MessageProgress.Unsent;
+                    message.Status = MessageEngineDeliveryStatus.Unsent;
                     NotifyExceptionRaised(new Exception("Disconnecting: Send did not generate a success. Socket operation returned error code " + (int)e.SocketError));
                     CloseSocketWithForce();
                 }
             }
             catch (Exception ex)
             {
-                message.Status = MessageProgress.Unsent;
+                message.Status = MessageEngineDeliveryStatus.Unsent;
                 NotifyExceptionRaised(ex);
             }
         }
@@ -1050,7 +1050,7 @@ namespace SocketMeister
                     {
                         LastMessageFromServer = DateTime.Now;
 
-                        if (_receiveEngine.MessageType == InternalMessageType.MessageResponseV1)
+                        if (_receiveEngine.MessageType == MessageEngineMessageType.MessageResponseV1)
                         {
                             //  SyncEndPointSubscriptionsWithServer() IS WAITING. COMPLETE THE SYNCRONOUS OPERATION SO IT CAN CONTINUE
                             MessageResponsev1 response = _receiveEngine.GetMessageResponseV1();
@@ -1059,15 +1059,15 @@ namespace SocketMeister
                             MessageV1 foundUnrespondedMessage = _unrespondedMessages[response.MessageId];
                             if (foundUnrespondedMessage != null)
                             {
-                                if (response.ProcessingResult == MessageResponseResult.Stopping)
+                                if (response.ProcessingResult == MessageEngineDeliveryResult.Stopping)
                                 {
                                     //  SOCKET SERVER IS SHUTTING DOWN. WE WILL RETRY
-                                    foundUnrespondedMessage.Status = MessageProgress.Unsent;
+                                    foundUnrespondedMessage.Status = MessageEngineDeliveryStatus.Unsent;
                                 }
                                 else
                                 {
                                     foundUnrespondedMessage.Response = response;
-                                    foundUnrespondedMessage.Status = MessageProgress.ResponseReceived;
+                                    foundUnrespondedMessage.Status = MessageEngineDeliveryStatus.ResponseReceived;
                                 }
                             }
                         }
@@ -1076,7 +1076,7 @@ namespace SocketMeister
                         //    NotifyMessageReceived(_receiveEngine.GetMessage());
                         //}
 
-                        else if (_receiveEngine.MessageType == InternalMessageType.MessageV1)
+                        else if (_receiveEngine.MessageType == MessageEngineMessageType.MessageV1)
                         {
                             Thread bgThread = new Thread(new ThreadStart(delegate
                             {
@@ -1088,7 +1088,7 @@ namespace SocketMeister
 
                         }
 
-                        else if (_receiveEngine.MessageType == InternalMessageType.ServerStoppingNotificationV1)
+                        else if (_receiveEngine.MessageType == MessageEngineMessageType.ServerStoppingNotificationV1)
                         {
                             //  DON'T RECONNECT TO THIS SERVER FOR SOME NUMBER OF SECONDS
                             CurrentEndPoint.DontReconnectUntil = DateTime.Now.AddSeconds(DONT_RECONNECT_DELAY_AFTER_SHUTDOWN);
@@ -1096,19 +1096,19 @@ namespace SocketMeister
                             NotifyServerStopping();
                             DisconnectSocketGracefully();
                         }
-                        else if (_receiveEngine.MessageType == InternalMessageType.PollingResponseV1)
+                        else if (_receiveEngine.MessageType == MessageEngineMessageType.PollingResponseV1)
                         {
                             LastPollResponse = DateTime.Now;
                         }
 
-                        else if (_receiveEngine.MessageType == InternalMessageType.SubscriptionChangesResponseV1)
+                        else if (_receiveEngine.MessageType == MessageEngineMessageType.SubscriptionChangesResponseV1)
                         {
                             TokenChangesResponseV1 response = _receiveEngine.GetSubscriptionChangesResponseV1();
                             _subscriptions.ImportTokenChangesResponseV1(response);
                             NextSendSubscriptions = DateTime.Now;
                         }
 
-                        else if (_receiveEngine.MessageType == InternalMessageType.BroadcastV1)
+                        else if (_receiveEngine.MessageType == MessageEngineMessageType.BroadcastV1)
                         {
                             NotifyBroadcastReceived(_receiveEngine.GetBroadcastV1());
                         }
@@ -1142,12 +1142,12 @@ namespace SocketMeister
                 if (MessageReceived == null)
                 {
                     //  THERE IS NO CODE LISTENING TO MessageReceived EVENTS. CANNOT PROCESS THIS MESSAGE
-                    SendResponseQuickly(new MessageResponsev1(message.MessageId, MessageResponseResult.NoMessageReceivedEventListener));
+                    SendResponseQuickly(new MessageResponsev1(message.MessageId, MessageEngineDeliveryResult.NoMessageReceivedEventListener));
                 }
                 else if (StopClientPermanently)
                 {
                     //  SHUTDOWN: CLIENT IS SHUTTING DOWN. A SHUTDOWN MESSAGE SHOULD HAVE ALREADY BEEN SENT SO EXIT
-                    SendResponseQuickly(new MessageResponsev1(message.MessageId, MessageResponseResult.Stopping));
+                    SendResponseQuickly(new MessageResponsev1(message.MessageId, MessageEngineDeliveryResult.Stopping));
                 }
                 else if (message.IsTimeout)
                 {

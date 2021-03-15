@@ -446,7 +446,7 @@ namespace SocketMeister
                             _totalBytesReceived += receiveEnvelope.MessageLength;
                         }
 
-                        if (receiveEnvelope.MessageType == InternalMessageType.MessageV1)
+                        if (receiveEnvelope.MessageType == MessageEngineMessageType.MessageV1)
                         {
                             lock (_lockTotals)
                             {
@@ -459,7 +459,7 @@ namespace SocketMeister
 
                             if (Status == SocketServerStatus.Stopping)
                             {
-                                MessageResponsev1 response = new MessageResponsev1(message.MessageId, MessageResponseResult.Stopping);
+                                MessageResponsev1 response = new MessageResponsev1(message.MessageId, MessageEngineDeliveryResult.Stopping);
                                 message.RemoteClient.SendIMessage(response, false);
                             }
                             else
@@ -471,7 +471,7 @@ namespace SocketMeister
                                 )).Start();
                             }
                         }
-                        else if (receiveEnvelope.MessageType == InternalMessageType.MessageResponseV1)
+                        else if (receiveEnvelope.MessageType == MessageEngineMessageType.MessageResponseV1)
                         {
                             if (Status == SocketServerStatus.Started)
                             {
@@ -479,7 +479,7 @@ namespace SocketMeister
                                 remoteClient.SetMessageResponseInUnrespondedMessages(receiveEnvelope.GetMessageResponseV1());
                             }
                         }
-                        else if (receiveEnvelope.MessageType == InternalMessageType.ClientDisconnectingNotificationV1)
+                        else if (receiveEnvelope.MessageType == MessageEngineMessageType.ClientDisconnectingNotificationV1)
                         {
                             try
                             {
@@ -490,7 +490,7 @@ namespace SocketMeister
                                 NotifyTraceEventRaised(ex, 5008);
                             }
                         }
-                        else if (receiveEnvelope.MessageType == InternalMessageType.PollingRequestV1)
+                        else if (receiveEnvelope.MessageType == MessageEngineMessageType.PollingRequestV1)
                         {
                             if (Status == SocketServerStatus.Started)
                             {
@@ -502,7 +502,7 @@ namespace SocketMeister
                             }
                         }
 
-                        else if (receiveEnvelope.MessageType == InternalMessageType.SubscriptionChangesNotificationV1)
+                        else if (receiveEnvelope.MessageType == MessageEngineMessageType.SubscriptionChangesNotificationV1)
                         {
                             if (Status == SocketServerStatus.Started)
                             {

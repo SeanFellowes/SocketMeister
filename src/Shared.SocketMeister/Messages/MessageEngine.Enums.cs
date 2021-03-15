@@ -18,7 +18,7 @@ namespace SocketMeister.Messages
     /// <summary>
     /// Internal message types
     /// </summary>
-    internal enum InternalMessageType
+    internal enum MessageEngineMessageType
     {
         /// <summary>
         /// Unknown message type, usually associated with an error
@@ -76,7 +76,7 @@ namespace SocketMeister.Messages
     /// <summary>
     /// Result of an attempt to process a message. This is included in the MessageResponse.
     /// </summary>
-    internal enum MessageResponseResult
+    internal enum MessageEngineDeliveryResult
     {
         /// <summary>
         /// The message was processed successfully
@@ -103,7 +103,7 @@ namespace SocketMeister.Messages
     /// <summary>
     /// The progress of a message from creation to receiving a response.
     /// </summary>
-    internal enum MessageProgress
+    internal enum MessageEngineDeliveryStatus
     {
         /// <summary>
         /// Message has not been sent or is flagged to resent (because socket connection failed)
