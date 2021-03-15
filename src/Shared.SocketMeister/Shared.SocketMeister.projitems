@@ -24,7 +24,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Exceptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\ClientDisconnectMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\IMessage.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Messages\Message.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\MessageBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\MessageEngine.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\PollRequest.cs" />
