@@ -70,27 +70,6 @@ namespace SocketMeister.Messages
                 _messageId = _maxMessageId;
             }
 
-            //  MAKE A COPY OF THE PARAMETERS. THIS IS IMPORTANT BECAUSE IN THE CASE OF BYTE ARRAYS, THE BYTE ARRAY CAN BE CHANGED BY
-            //  THE CALLING PROGRAM. THERE HAVE BEEN ERRORS UNDER LOAD WHERE BYTE ARRAY HAS CHANGED AND CAUSED DESERIALIZATION ERRORS
-            _parameters = new object[Parameters.Length];
-            int idxPtr = 0;
-            foreach (object o in Parameters)
-            {
-                if (o.GetType() == typeof(byte[]))
-                {
-                    byte[] source = (byte[])o;
-                    byte[] target = new byte[source.Length];
-                    source.CopyTo(target, 0);
-                    _parameters[idxPtr] = target;
-                }
-                else
-                {
-                    _parameters[idxPtr] = o;
-                }
-
-                idxPtr++;
-            }
-
             //  SERIALIZE MESSAGE
             using (BinaryWriter writer = new BinaryWriter(new MemoryStream()))
             {

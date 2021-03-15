@@ -165,7 +165,7 @@ namespace SocketMeister.MiniTestClient
             _client.ConnectionStatusChanged += Client_ConnectionStatusChanged;
             _client.CurrentEndPointChanged += Client_CurrentEndPointChanged;
             _client.ExceptionRaised += Client_ExceptionRaised;
-            _client.MessageReceived += Client_MessageReceived;
+            //_client.MessageReceived += Client_MessageReceived;
             _client.ServerStopping += Client_ServerStopping;
             _client.BroadcastReceived += Client_BroadcastReceived;
 
@@ -179,7 +179,7 @@ namespace SocketMeister.MiniTestClient
             _client.ConnectionStatusChanged += Client_ConnectionStatusChanged;
             _client.CurrentEndPointChanged += Client_CurrentEndPointChanged;
             _client.ExceptionRaised += Client_ExceptionRaised;
-            _client.MessageReceived += Client_MessageReceived;
+            //_client.MessageReceived += Client_MessageReceived;
             _client.ServerStopping += Client_ServerStopping;
             _client.BroadcastReceived += Client_BroadcastReceived;
 
@@ -190,17 +190,8 @@ namespace SocketMeister.MiniTestClient
         {
             if (_client == null) throw new Exception("Client has not been started");
 
-            //bdStatus.Background = new SolidColorBrush(Colors.Orange);
-
             _client.Stop();
-            ////_client.ConnectionStatusChanged -= Client_ConnectionStatusChanged;
-            //_client.CurrentEndPointChanged -= Client_CurrentEndPointChanged;
-            //_client.ExceptionRaised -= Client_ExceptionRaised;
-            //_client.MessageReceived -= Client_MessageReceived;
-            //_client.ServerStopping -= Client_ServerStopping;
             _client.Dispose();
-
-            //bdStatus.Background = new SolidColorBrush(Colors.Red);
         }
 
         private void Client_ConnectionStatusChanged(object sender, EventArgs e)
@@ -238,7 +229,6 @@ namespace SocketMeister.MiniTestClient
             });
             BroadcastReceived?.Invoke(this, e);
         }
-
 
 
         private void Client_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
