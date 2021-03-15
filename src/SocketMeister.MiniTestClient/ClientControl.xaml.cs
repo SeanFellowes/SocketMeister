@@ -44,7 +44,7 @@ namespace SocketMeister.MiniTestClient
         /// <summary>
         /// Raised when a request message is received from the server. A response can be provided which will be returned to the server.
         /// </summary>
-        public event EventHandler<SocketClient.RequestReceivedEventArgs> RequestReceived;
+        public event EventHandler<SocketClient.MessageReceivedEventArgs> RequestReceived;
 
         /// <summary>
         /// Raised when a request message is received from the server. A response can be provided which will be returned to the server.
@@ -164,7 +164,7 @@ namespace SocketMeister.MiniTestClient
             _client.ConnectionStatusChanged += Client_ConnectionStatusChanged;
             _client.CurrentEndPointChanged += Client_CurrentEndPointChanged;
             _client.ExceptionRaised += Client_ExceptionRaised;
-            _client.RequestReceived += Client_RequestReceived;
+            _client.MessageReceived += Client_RequestReceived;
             _client.ServerStopping += Client_ServerStopping;
             _client.BroadcastReceived += Client_BroadcastReceived;
 
@@ -178,7 +178,7 @@ namespace SocketMeister.MiniTestClient
             _client.ConnectionStatusChanged += Client_ConnectionStatusChanged;
             _client.CurrentEndPointChanged += Client_CurrentEndPointChanged;
             _client.ExceptionRaised += Client_ExceptionRaised;
-            _client.RequestReceived += Client_RequestReceived;
+            _client.MessageReceived += Client_RequestReceived;
             _client.ServerStopping += Client_ServerStopping;
             _client.BroadcastReceived += Client_BroadcastReceived;
 
@@ -241,7 +241,7 @@ namespace SocketMeister.MiniTestClient
 
 
 
-        private void Client_RequestReceived(object sender, SocketClient.RequestReceivedEventArgs e)
+        private void Client_RequestReceived(object sender, SocketClient.MessageReceivedEventArgs e)
         {
             Dispatcher.Invoke(() =>
             {

@@ -99,9 +99,8 @@ namespace SocketMeister
         }
 
 
-
         /// <summary>
-        /// Values provided when a message is received from the socket server. 
+        /// Values provided when a message is received from a server. 
         /// </summary>
         public class MessageReceivedEventArgs : EventArgs
         {
@@ -116,18 +115,10 @@ namespace SocketMeister
             /// The parameters provided with the message.
             /// </summary>
             public object[] Parameters { get { return _parameters; } }
-        }
 
-
-        /// <summary>
-        /// Values provided when a request is received from a server. 
-        /// </summary>
-        public class RequestReceivedEventArgs : MessageReceivedEventArgs
-        {
-            internal RequestReceivedEventArgs(object[] Parameters) : base(Parameters) { }
 
             /// <summary>
-            /// The byte array which is to be returned to the client. Null is returned if a 'Response' value is not provided when processing the 'RequestReceived' event.
+            /// The byte array which can optionally be returned to the client. Null is returned if a 'Response' value is not provided.
             /// </summary>
             public byte[] Response { get; set; } = null;
         }

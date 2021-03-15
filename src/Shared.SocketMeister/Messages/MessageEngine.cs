@@ -327,24 +327,6 @@ namespace SocketMeister.Messages
             }
         }
 
-        internal Message GetMessage()
-        {
-            MemoryStream stream = null;
-            try
-            {
-                stream = new MemoryStream(GetBuffer());
-                using (BinaryReader reader = new BinaryReader(stream))
-                {
-                    stream = null;
-                    return new Message(reader);
-                }
-            }
-            finally
-            {
-                if (stream != null) stream.Dispose();
-            }
-        }
-
 
         internal RequestMessage GetRequestMessage(int Version)
         {

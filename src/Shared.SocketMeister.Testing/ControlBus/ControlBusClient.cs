@@ -35,14 +35,9 @@ namespace SocketMeister.Testing.ControlBus
 
 
         /// <summary>
-        /// Event raised whenever a message is received from the server.
-        /// </summary>
-        public event EventHandler<SocketClient.MessageReceivedEventArgs> MessageReceived;
-
-        /// <summary>
         /// Raised when a request message is received from the server. A response can be provided which will be returned to the server.
         /// </summary>
-        public event EventHandler<SocketClient.RequestReceivedEventArgs> RequestReceived;
+        public event EventHandler<SocketClient.MessageReceivedEventArgs> RequestReceived;
 
 
 
@@ -106,7 +101,7 @@ namespace SocketMeister.Testing.ControlBus
             ControlBusSocketClient = new SocketClient(endPoints, true);
             ControlBusSocketClient.ConnectionStatusChanged += ControlBusSocketClient_ConnectionStatusChanged;
             ControlBusSocketClient.ExceptionRaised += ControlBusSocketClient_ExceptionRaised;
-            ControlBusSocketClient.RequestReceived += ControlBusSocketClient_RequestReceived;
+            ControlBusSocketClient.MessageReceived += ControlBusSocketClient_RequestReceived;
 
             //Thread bgFailIfDisconnected = new Thread(new ThreadStart(delegate
             //{
@@ -137,7 +132,7 @@ namespace SocketMeister.Testing.ControlBus
             //bgFailIfDisconnected.Start();
         }
 
-        private void ControlBusSocketClient_RequestReceived(object sender, SocketClient.RequestReceivedEventArgs e)
+        private void ControlBusSocketClient_RequestReceived(object sender, SocketClient.MessageReceivedEventArgs e)
         {
             RequestReceived?.Invoke(this, e);
         }

@@ -441,38 +441,6 @@
             </summary>
             <param name="Writer"></param>
         </member>
-        <member name="T:SocketMeister.Messages.Message">
-            <summary>
-            A basic message
-            </summary>
-        </member>
-        <member name="P:SocketMeister.Messages.Message.RemoteClient">
-            <summary>
-            Only populated for messages received on the server. This is the remote client which sent the message
-            </summary>
-        </member>
-        <member name="M:SocketMeister.Messages.Message.#ctor(System.Object[],System.Int32)">
-            <summary>
-            RequestMessage constructor
-            </summary>
-            <param name="Parameters">Array of parameters to send with the request. There must be at least 1 parameter.</param>
-            <param name="TimeoutMilliseconds">The maximum number of milliseconds to wait for a response before timing out.</param>
-        </member>
-        <member name="P:SocketMeister.Messages.Message.IsTimeout">
-            <summary>
-            Whether the RequestMessage has timed out
-            </summary>
-        </member>
-        <member name="P:SocketMeister.Messages.Message.Parameters">
-            <summary>
-            Parameters provided with this request
-            </summary>
-        </member>
-        <member name="P:SocketMeister.Messages.Message.TimeoutMilliseconds">
-            <summary>
-            Number of milliseconds to wait before a timeout will occur.
-            </summary>
-        </member>
         <member name="T:SocketMeister.Messages.PollRequest">
             <summary>
             Internal Message: Socket client regulary sends a poll request to the server to check that the server is alive.
@@ -792,7 +760,7 @@
         </member>
         <member name="T:SocketMeister.SocketClient.MessageReceivedEventArgs">
             <summary>
-            Values provided when a message is received from the socket server. 
+            Values provided when a message is received from a server. 
             </summary>
         </member>
         <member name="P:SocketMeister.SocketClient.MessageReceivedEventArgs.Parameters">
@@ -800,14 +768,9 @@
             The parameters provided with the message.
             </summary>
         </member>
-        <member name="T:SocketMeister.SocketClient.RequestReceivedEventArgs">
+        <member name="P:SocketMeister.SocketClient.MessageReceivedEventArgs.Response">
             <summary>
-            Values provided when a request is received from a server. 
-            </summary>
-        </member>
-        <member name="P:SocketMeister.SocketClient.RequestReceivedEventArgs.Response">
-            <summary>
-            The byte array which is to be returned to the client. Null is returned if a 'Response' value is not provided when processing the 'RequestReceived' event.
+            The byte array which can optionally be returned to the client. Null is returned if a 'Response' value is not provided.
             </summary>
         </member>
         <member name="T:SocketMeister.SocketClient.BroadcastReceivedEventArgs">
@@ -856,9 +819,9 @@
             Event raised when an exception occurs
             </summary>
         </member>
-        <member name="E:SocketMeister.SocketClient.RequestReceived">
+        <member name="E:SocketMeister.SocketClient.MessageReceived">
             <summary>
-            Raised when a request message is received from the server. A response can be provided which will be returned to the server.
+            Raised when a  message is received from the server. When processing this event, an optional response can be provided which will be returned to the server.
             </summary>
         </member>
         <member name="E:SocketMeister.SocketClient.ServerStopping">

@@ -98,7 +98,7 @@ namespace SocketMeister.MiniTestClient
             Log(LogItem.SeverityType.Error, "Client " + ct.ClientId, e.Exception.Message);
         }
 
-        private void Client_RequestReceived(object sender, SocketClient.RequestReceivedEventArgs e)
+        private void Client_RequestReceived(object sender, SocketClient.MessageReceivedEventArgs e)
         {
             ClientControl ct = (ClientControl)sender;
 

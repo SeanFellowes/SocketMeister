@@ -55,7 +55,6 @@ namespace SocketMeister.Testing
             //  CONNECT TO THE HarnessController
             _controlBusClient = new ControlBusClient(ControlBusClientType.ClientController, ControlBusClientId, ControlBusServerIPAddress, Constants.ControlBusPort);
             _controlBusClient.ConnectionFailed += ControlBusClient_ConnectionFailed;
-            _controlBusClient.MessageReceived += ControlBusClient_MessageReceived;
             _controlBusClient.RequestReceived += ControlBusClient_RequestReceived;
             _controlBusClient.ExceptionRaised += ControlBusClient_ExceptionRaised;
         }
@@ -89,23 +88,7 @@ namespace SocketMeister.Testing
         internal OpenTransactions OpenMessages {  get { return _openTransactions; } }
 
 
-
-
-        private void ControlBusClient_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
-        {
-            //int r = Convert.ToInt32(e.Parameters[0]);
-
-            //if (r == ControlBus.ControlMessage.SocketServerStart)
-            //{
-            //    int Port = Convert.ToInt32(e.Parameters[1]);
-
-            //    //  THIS WORKS. 
-                
-            //    //  START THE SOCKET SERVER ON THE PORT REQUESTED SEND AND ACKNOWLEDGEMENT SOMETHING BACK
-            //}
-        }
-
-        private void ControlBusClient_RequestReceived(object sender, SocketClient.RequestReceivedEventArgs e)
+        private void ControlBusClient_RequestReceived(object sender, SocketClient.MessageReceivedEventArgs e)
         {
             short messageType = (short)e.Parameters[0];
             if (messageType == ControlMessage.SocketServerStart)

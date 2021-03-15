@@ -48,7 +48,6 @@ namespace SocketMeister.Testing
             _controlBusClient = new ControlBusClient( ControlBusClientType.ClientController, ControlBusClientId, Constants.ControlBusServerIPAddress, Constants.ControlBusPort);
             _controlBusClient.ConnectionFailed += ControlBusClient_ConnectionFailed;
             _controlBusClient.ConnectionStatusChanged += ControlBusClient_ConnectionStatusChanged;
-            _controlBusClient.MessageReceived += ControlBusClient_MessageReceived; 
             _controlBusClient.RequestReceived += ControlBusClient_RequestReceived; 
             _controlBusClient.ExceptionRaised += ControlBusClient_ExceptionRaised;
         }
@@ -80,7 +79,7 @@ namespace SocketMeister.Testing
 
 
 
-        private void ControlBusClient_RequestReceived(object sender, SocketClient.RequestReceivedEventArgs e)
+        private void ControlBusClient_RequestReceived(object sender, SocketClient.MessageReceivedEventArgs e)
         {
             short messageType = Convert.ToInt16(e.Parameters[0]);
 
@@ -128,11 +127,6 @@ namespace SocketMeister.Testing
             }
         }
 
-        private void ControlBusClient_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
         private void ControlBusClient_ConnectionFailed(object sender, EventArgs e)
         {
             //  CONNECTION TO THE HarnessController COULD NOT BE ESTABLISHED.
@@ -161,7 +155,6 @@ namespace SocketMeister.Testing
         {
             _controlBusClient.ConnectionFailed -= ControlBusClient_ConnectionFailed;
             _controlBusClient.ConnectionStatusChanged -= ControlBusClient_ConnectionStatusChanged;
-            _controlBusClient.MessageReceived -= ControlBusClient_MessageReceived; ;
             _controlBusClient.RequestReceived -= ControlBusClient_RequestReceived; ;
             _controlBusClient.ExceptionRaised -= ControlBusClient_ExceptionRaised;
             _controlBusClient.Stop();

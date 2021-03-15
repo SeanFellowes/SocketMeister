@@ -87,7 +87,7 @@ namespace SocketMeister
         /// <summary>
         /// Raised when a  message is received from the server. When processing this event, an optional response can be provided which will be returned to the server.
         /// </summary>
-        public event EventHandler<RequestReceivedEventArgs> RequestReceived;
+        public event EventHandler<MessageReceivedEventArgs> MessageReceived;
 
         /// <summary>
         /// Event raised when a the server stops
@@ -1145,7 +1145,7 @@ namespace SocketMeister
             RequestMessage request = (RequestMessage)state;
             try
             {
-                if (RequestReceived == null)
+                if (MessageReceived == null)
                 {
                     //  THERE IS NO CODE LISTENING TO RequestReceive EVENTS. CANNOT PROCESS THIS REQUEST
                     SendResponseQuickly(new ResponseMessage(request.RequestId, RequestResult.NoRequestProcessor));
@@ -1164,8 +1164,8 @@ namespace SocketMeister
                 {
                     //  DESERIALIZE THE REQUEST FROM THE CLIENT
                     //  WE HAVE A MESSAGE IN FULL. UNPACK, (RESETS COUNTERS) AND RAISE AN EVENT
-                    RequestReceivedEventArgs args = new RequestReceivedEventArgs(request.Parameters);
-                    RequestReceived(this, args);
+                    MessageReceivedEventArgs args = new MessageReceivedEventArgs(request.Parameters);
+                    MessageReceived(this, args);
 
                     //  SEND RESPONSE
                     ResponseMessage response = new ResponseMessage(request.RequestId, args.Response);
