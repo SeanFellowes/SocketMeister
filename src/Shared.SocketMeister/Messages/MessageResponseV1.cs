@@ -10,7 +10,7 @@ using System.Text;
 namespace SocketMeister.Messages
 {
 #if !SILVERLIGHT && !SMNOSERVER && !NET35 && !NET20
-    internal partial class MessageResponsev1 : MessageBase
+    internal partial class MessageResponseV1 : MessageBase
     {
         private SocketServer.Client _remoteClient = null;
 
@@ -26,7 +26,7 @@ namespace SocketMeister.Messages
 #endif
 
 
-    internal partial class MessageResponsev1 : MessageBase, IMessage
+    internal partial class MessageResponseV1 : MessageBase, IMessage
     {
         //  RESPONSE VARIABLES
         private readonly string _error = null;
@@ -34,20 +34,20 @@ namespace SocketMeister.Messages
         private readonly MessageEngineDeliveryResult _processingResult;
         private readonly byte[] _responseData = null;
 
-        public MessageResponsev1(long MessageId, byte[] ResponseData) : base(MessageEngineMessageType.MessageResponseV1)
+        public MessageResponseV1(long MessageId, byte[] ResponseData) : base(MessageEngineMessageType.MessageResponseV1)
         {
             _messageId = MessageId;
             _responseData = ResponseData;
             _processingResult = MessageEngineDeliveryResult.Success;
         }
 
-        public MessageResponsev1(long MessageId, MessageEngineDeliveryResult ProcessingResult) : base(MessageEngineMessageType.MessageResponseV1)
+        public MessageResponseV1(long MessageId, MessageEngineDeliveryResult ProcessingResult) : base(MessageEngineMessageType.MessageResponseV1)
         {
             _messageId = MessageId;
             _processingResult = ProcessingResult;
         }
 
-        public MessageResponsev1(long MessageId, Exception Exception) : base(MessageEngineMessageType.MessageResponseV1)
+        public MessageResponseV1(long MessageId, Exception Exception) : base(MessageEngineMessageType.MessageResponseV1)
         {
             _messageId = MessageId;
             _processingResult = MessageEngineDeliveryResult.Exception;
@@ -59,7 +59,7 @@ namespace SocketMeister.Messages
         /// Fastest was to build this is to create it directly from the SocketEnvelope buffer.
         /// </summary>
         /// <param name="Reader">Binary Reader</param>
-        public MessageResponsev1(BinaryReader Reader) : base(MessageEngineMessageType.MessageResponseV1)
+        public MessageResponseV1(BinaryReader Reader) : base(MessageEngineMessageType.MessageResponseV1)
         {
             _messageId = Reader.ReadInt64();
             if (Reader.ReadBoolean() == true) _responseData = Reader.ReadBytes(Reader.ReadInt32());

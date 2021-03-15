@@ -99,7 +99,7 @@ namespace SocketMeister
                 return rVal;
             }
 
-            internal void SetMessageResponseInUnrespondedMessages(MessageResponsev1 Message)
+            internal void SetMessageResponseInUnrespondedMessages(MessageResponseV1 Message)
             {
                 MessageV1 request = _unrespondedMessages[Message.MessageId];
                 if (request == null) return;

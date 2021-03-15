@@ -579,18 +579,18 @@
             Whether a SendReceive process should continue waiting for a response
             </summary>
         </member>
-        <member name="P:SocketMeister.Messages.MessageResponsev1.RemoteClient">
+        <member name="P:SocketMeister.Messages.MessageResponseV1.RemoteClient">
             <summary>
             The remote client which sent this Message (value null on SocketClient)
             </summary>
         </member>
-        <member name="M:SocketMeister.Messages.MessageResponsev1.#ctor(System.IO.BinaryReader)">
+        <member name="M:SocketMeister.Messages.MessageResponseV1.#ctor(System.IO.BinaryReader)">
             <summary>
             Fastest was to build this is to create it directly from the SocketEnvelope buffer.
             </summary>
             <param name="Reader">Binary Reader</param>
         </member>
-        <member name="P:SocketMeister.Messages.MessageResponsev1.MessageId">
+        <member name="P:SocketMeister.Messages.MessageResponseV1.MessageId">
             <summary>
             The message that this response refers to
             </summary>

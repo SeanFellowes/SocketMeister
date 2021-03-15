@@ -453,12 +453,12 @@ namespace SocketMeister
                                 _totalMessagesReceived++;
                             }
 
-                            MessageV1 message = receiveEnvelope.GetMessageV1(2);
+                            MessageV1 message = receiveEnvelope.GetMessageV1();
                             message.RemoteClient = remoteClient;
 
                             if (Status == SocketServerStatus.Stopping)
                             {
-                                MessageResponsev1 response = new MessageResponsev1(message.MessageId, MessageEngineDeliveryResult.Stopping);
+                                MessageResponseV1 response = new MessageResponseV1(message.MessageId, MessageEngineDeliveryResult.Stopping);
                                 message.RemoteClient.SendIMessage(response, false);
                             }
                             else
@@ -603,7 +603,7 @@ namespace SocketMeister
                 if (MessageReceived == null)
                 {
                     Exception ex = new Exception("There is no process on the server listening to 'MessageReceived' events from the socket server.");
-                    MessageResponsev1 noListener = new MessageResponsev1(message.MessageId, ex);
+                    MessageResponseV1 noListener = new MessageResponseV1(message.MessageId, ex);
                     message.RemoteClient.SendIMessage(noListener, false);
                 }
                 else
@@ -611,14 +611,14 @@ namespace SocketMeister
                     MessageReceived(this, args);
 
                     //  SEND RESPONSE
-                    MessageResponsev1 response = new MessageResponsev1(message.MessageId, args.Response);
+                    MessageResponseV1 response = new MessageResponseV1(message.MessageId, args.Response);
                     message.RemoteClient.SendIMessage(response, false);
                 }
             }
             catch (Exception ex)
             {
                 NotifyTraceEventRaised(ex, 5008);
-                MessageResponsev1 response = new MessageResponsev1(message.MessageId, ex);
+                MessageResponseV1 response = new MessageResponseV1(message.MessageId, ex);
                 message.RemoteClient.SendIMessage(response, false);
             }
         }

@@ -65,6 +65,9 @@
     <Compile Include="..\Shared.SocketMeister\Enums.cs">
       <Link>Shared.SocketMeister\Enums.cs</Link>
     </Compile>
+    <Compile Include="..\Shared.SocketMeister\Events.cs">
+      <Link>Shared.SocketMeister\Events.cs</Link>
+    </Compile>
     <Compile Include="..\Shared.SocketMeister\Exceptions.cs">
       <Link>Shared.SocketMeister\Exceptions.cs</Link>
     </Compile>

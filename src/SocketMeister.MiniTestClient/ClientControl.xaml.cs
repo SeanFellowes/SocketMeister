@@ -205,12 +205,12 @@ namespace SocketMeister.MiniTestClient
 
         private void Client_ConnectionStatusChanged(object sender, EventArgs e)
         {
-            Dispatcher.Invoke(() =>
+            Dispatcher.Invoke((Action)(() =>
             {
                 if (_client.ConnectionStatus == SocketClient.ConnectionStatuses.Connected) bdStatus.Background = new SolidColorBrush(Colors.Green);
                 else if (_client.ConnectionStatus == SocketClient.ConnectionStatuses.Disconnected) bdStatus.Background = new SolidColorBrush(Colors.Red);
                 else bdStatus.Background = new SolidColorBrush(Colors.Orange);
-            });
+            }));
             StatusChanged?.Invoke(this, new EventArgs());
         }
 

@@ -7,6 +7,7 @@ using System;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading;
 
 namespace SocketMeister.Messages
@@ -46,7 +47,7 @@ namespace SocketMeister.Messages
         private readonly int _timeoutMilliseconds;
 
         //  INTERNAL (NOT SENT IN MESSAGE DATA)
-        private MessageResponsev1 _response = null;
+        private MessageResponseV1 _response = null;
 
         /// <summary>
         /// Message constructor
@@ -69,13 +70,34 @@ namespace SocketMeister.Messages
                 _messageId = _maxMessageId;
             }
 
+            //  MAKE A COPY OF THE PARAMETERS. THIS IS IMPORTANT BECAUSE IN THE CASE OF BYTE ARRAYS, THE BYTE ARRAY CAN BE CHANGED BY
+            //  THE CALLING PROGRAM. THERE HAVE BEEN ERRORS UNDER LOAD WHERE BYTE ARRAY HAS CHANGED AND CAUSED DESERIALIZATION ERRORS
+            _parameters = new object[Parameters.Length];
+            int idxPtr = 0;
+            foreach (object o in Parameters)
+            {
+                if (o.GetType() == typeof(byte[]))
+                {
+                    byte[] source = (byte[])o;
+                    byte[] target = new byte[source.Length];
+                    source.CopyTo(target, 0);
+                    _parameters[idxPtr] = target;
+                }
+                else
+                {
+                    _parameters[idxPtr] = o;
+                }
+
+                idxPtr++;
+            }
+
             //  SERIALIZE MESSAGE
             using (BinaryWriter writer = new BinaryWriter(new MemoryStream()))
             {
                 writer.Write(_messageId);
                 writer.Write(_timeoutMilliseconds);
                 writer.Write(_isLongPolling);
-                Serializer.SerializeParameters(writer, Parameters);
+                Serializer.SerializeParameters(writer, _parameters);
                 using (BinaryReader reader = new BinaryReader(writer.BaseStream))
                 {
                     reader.BaseStream.Position = 0;
@@ -85,29 +107,15 @@ namespace SocketMeister.Messages
         }
 
 
-        internal MessageV1(BinaryReader bR, int Version) : base(MessageEngineMessageType.MessageV1)
+        internal MessageV1(BinaryReader bR) : base(MessageEngineMessageType.MessageV1)
         {
-            if (Version == 1)
-            {
-                _messageId = bR.ReadInt64();
-                _timeoutMilliseconds = 60000;       //  NOT IN VERSION 1
-                _isLongPolling = bR.ReadBoolean();
-                _parameters = Serializer.DeserializeParameters(bR);
-            }
-            else if (Version == 2)
-            {
-                _messageId = bR.ReadInt64();
-                _timeoutMilliseconds = bR.ReadInt32();
-                _isLongPolling = bR.ReadBoolean();
-                _parameters = Serializer.DeserializeParameters(bR);
-            }
-            else
-            {
-                throw new ArgumentOutOfRangeException(nameof(Version), "Only versions 1 and 2 have a deserializer");
-            }
+            _messageId = bR.ReadInt64();
+            _timeoutMilliseconds = bR.ReadInt32();
+            _isLongPolling = bR.ReadBoolean();
+            _parameters = Serializer.DeserializeParameters(bR);
 
             //  SETUP TIMEOUT
-            _timeout = DateTime.Now.AddMilliseconds(TimeoutMilliseconds);
+            _timeout = DateTime.Now.AddMilliseconds(_timeoutMilliseconds);
         }
 
 
@@ -155,7 +163,7 @@ namespace SocketMeister.Messages
             get { return _messageId; }
         }
 
-        public MessageResponsev1 Response
+        public MessageResponseV1 Response
         {
             get { lock (Lock) { return _response; } }
             set { lock (Lock) { _response = value; } }

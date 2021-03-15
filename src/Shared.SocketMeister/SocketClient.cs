@@ -801,7 +801,7 @@ namespace SocketMeister
 
 
 
-        private void SendResponse(MessageResponsev1 messageResponse, MessageV1 message)
+        private void SendResponse(MessageResponseV1 messageResponse, MessageV1 message)
         {
             byte[] sendBytes = MessageEngine.GenerateSendBytes(messageResponse, false);
 
@@ -817,7 +817,7 @@ namespace SocketMeister
                 else if (StopClientPermanently)
                 {
                     //  SHUTDOWN: CLIENT IS SHUTTING DOWN. A SHUTDOWN MESSAGE SHOULD HAVE ALREADY BEEN SENT SO EXIT
-                    SendResponseQuickly(new MessageResponsev1(message.MessageId, MessageEngineDeliveryResult.Stopping));
+                    SendResponseQuickly(new MessageResponseV1(message.MessageId, MessageEngineDeliveryResult.Stopping));
                     return;
                 }
 
@@ -847,7 +847,7 @@ namespace SocketMeister
         }
 
 
-        private void SendResponseQuickly(MessageResponsev1 Message)
+        private void SendResponseQuickly(MessageResponseV1 Message)
         {
             byte[] sendBytes = MessageEngine.GenerateSendBytes(Message, false);
 
@@ -1053,7 +1053,7 @@ namespace SocketMeister
                         if (_receiveEngine.MessageType == MessageEngineMessageType.MessageResponseV1)
                         {
                             //  SyncEndPointSubscriptionsWithServer() IS WAITING. COMPLETE THE SYNCRONOUS OPERATION SO IT CAN CONTINUE
-                            MessageResponsev1 response = _receiveEngine.GetMessageResponseV1();
+                            MessageResponseV1 response = _receiveEngine.GetMessageResponseV1();
 
                             //  CHECK TO SEE IS THE MESSAGE IS IN THE LIST OF OPEN SendReceive ITEMS.
                             MessageV1 foundUnrespondedMessage = _unrespondedMessages[response.MessageId];
@@ -1071,16 +1071,12 @@ namespace SocketMeister
                                 }
                             }
                         }
-                        //else if (_receiveEngine.MessageType == MessageTypes.Message)
-                        //{
-                        //    NotifyMessageReceived(_receiveEngine.GetMessage());
-                        //}
 
                         else if (_receiveEngine.MessageType == MessageEngineMessageType.MessageV1)
                         {
+                            MessageV1 message = _receiveEngine.GetMessageV1();
                             Thread bgThread = new Thread(new ThreadStart(delegate
                             {
-                                MessageV1 message = _receiveEngine.GetMessageV1(2);
                                 ThreadPool.QueueUserWorkItem(BgProcessMessage, message);
                             }));
                             bgThread.IsBackground = true;
@@ -1142,12 +1138,12 @@ namespace SocketMeister
                 if (MessageReceived == null)
                 {
                     //  THERE IS NO CODE LISTENING TO MessageReceived EVENTS. CANNOT PROCESS THIS MESSAGE
-                    SendResponseQuickly(new MessageResponsev1(message.MessageId, MessageEngineDeliveryResult.NoMessageReceivedEventListener));
+                    SendResponseQuickly(new MessageResponseV1(message.MessageId, MessageEngineDeliveryResult.NoMessageReceivedEventListener));
                 }
                 else if (StopClientPermanently)
                 {
                     //  SHUTDOWN: CLIENT IS SHUTTING DOWN. A SHUTDOWN MESSAGE SHOULD HAVE ALREADY BEEN SENT SO EXIT
-                    SendResponseQuickly(new MessageResponsev1(message.MessageId, MessageEngineDeliveryResult.Stopping));
+                    SendResponseQuickly(new MessageResponseV1(message.MessageId, MessageEngineDeliveryResult.Stopping));
                 }
                 else if (message.IsTimeout)
                 {
@@ -1162,14 +1158,14 @@ namespace SocketMeister
                     MessageReceived(this, args);
 
                     //  SEND RESPONSE
-                    MessageResponsev1 response = new MessageResponsev1(message.MessageId, args.Response);
+                    MessageResponseV1 response = new MessageResponseV1(message.MessageId, args.Response);
                     SendResponse(response, message);
                 }
             }
             catch (Exception ex)
             {
                 NotifyExceptionRaised(ex);
-                SendResponseQuickly(new MessageResponsev1(message.MessageId, ex));
+                SendResponseQuickly(new MessageResponseV1(message.MessageId, ex));
             }
         }
 
