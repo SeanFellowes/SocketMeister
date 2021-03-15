@@ -8,9 +8,9 @@ namespace SocketMeister.Messages
     /// <summary>
     /// Internal Message: Socket client regulary sends a poll request to the server to check that the server is alive.
     /// </summary>
-    internal class PollRequest : MessageBase, IMessage
+    internal class PollingRequestV1 : MessageBase, IMessage
     {
-        public PollRequest() : base(MessageTypes.PollingRequestV1) { }
+        public PollingRequestV1() : base(MessageTypes.PollingRequestV1) { }
 
         ///// <summary>
         ///// Fastest was to build this is to create it directly from the SocketEnvelope buffer.

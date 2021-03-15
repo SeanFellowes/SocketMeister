@@ -12,9 +12,9 @@ namespace SocketMeister.Messages
     /// <summary>
     /// Internal Message: Socket server sends a response to a 'PollRequest' message to indicate (to the client) that the server is alive.
     /// </summary>
-    internal class PollResponse : MessageBase, IMessage
+    internal class PollingResponseV1 : MessageBase, IMessage
     {
-        public PollResponse() : base(MessageTypes.PollingResponseV1) { }
+        public PollingResponseV1() : base(MessageTypes.PollingResponseV1) { }
 
         ///// <summary>
         ///// Fastest was to build this is to create it directly from the SocketEnvelope buffer.

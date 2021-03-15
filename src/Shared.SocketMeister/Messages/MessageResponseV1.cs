@@ -10,7 +10,7 @@ using System.Text;
 namespace SocketMeister.Messages
 {
 #if !SILVERLIGHT && !SMNOSERVER && !NET35 && !NET20
-    internal partial class MessageResponse : MessageBase
+    internal partial class MessageResponsev1 : MessageBase
     {
         private SocketServer.Client _remoteClient = null;
 
@@ -26,7 +26,7 @@ namespace SocketMeister.Messages
 #endif
 
 
-    internal partial class MessageResponse : MessageBase, IMessage
+    internal partial class MessageResponsev1 : MessageBase, IMessage
     {
         //  RESPONSE VARIABLES
         private readonly string _error = null;
@@ -34,20 +34,20 @@ namespace SocketMeister.Messages
         private readonly MessageProcessingResult _processingResult;
         private readonly Byte[] _responseData = null;
 
-        public MessageResponse(long MessageId, byte[] ResponseData) : base(MessageTypes.MessageResponseV1)
+        public MessageResponsev1(long MessageId, byte[] ResponseData) : base(MessageTypes.MessageResponseV1)
         {
             _messageId = MessageId;
             _responseData = ResponseData;
             _processingResult = MessageProcessingResult.Success;
         }
 
-        public MessageResponse(long MessageId, MessageProcessingResult ProcessingResult) : base(MessageTypes.MessageResponseV1)
+        public MessageResponsev1(long MessageId, MessageProcessingResult ProcessingResult) : base(MessageTypes.MessageResponseV1)
         {
             _messageId = MessageId;
             _processingResult = ProcessingResult;
         }
 
-        public MessageResponse(long MessageId, Exception Exception) : base(MessageTypes.MessageResponseV1)
+        public MessageResponsev1(long MessageId, Exception Exception) : base(MessageTypes.MessageResponseV1)
         {
             _messageId = MessageId;
             _processingResult = MessageProcessingResult.Exception;
@@ -59,7 +59,7 @@ namespace SocketMeister.Messages
         /// Fastest was to build this is to create it directly from the SocketEnvelope buffer.
         /// </summary>
         /// <param name="Reader">Binary Reader</param>
-        public MessageResponse(BinaryReader Reader) : base(MessageTypes.MessageResponseV1)
+        public MessageResponsev1(BinaryReader Reader) : base(MessageTypes.MessageResponseV1)
         {
             _messageId = Reader.ReadInt64();
             if (Reader.ReadBoolean() == true) _responseData = Reader.ReadBytes(Reader.ReadInt32());

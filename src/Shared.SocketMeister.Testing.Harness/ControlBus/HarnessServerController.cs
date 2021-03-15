@@ -70,7 +70,7 @@ namespace SocketMeister.Testing.ControlBus
         {
             object[] parms = new object[2];
             parms[0] = ControlBus.ControlMessage.ExitClient;
-            ControlBusListenerClient.SendRequest(parms);
+            ControlBusListenerClient.SendMessage(parms);
 
             //  Wait zzzz miniseconds for the client to send a ClientDisconnecting message.
         }
@@ -110,7 +110,7 @@ namespace SocketMeister.Testing.ControlBus
                     parms[1] = ClassName;
                     parms[2] = StaticMethodName;
                     parms[3] = Serializer.SerializeParameters(Parameters);
-                    return ControlBusListenerClient.SendRequest(parms);
+                    return ControlBusListenerClient.SendMessage(parms);
                 }
                 else
                 {
@@ -118,7 +118,7 @@ namespace SocketMeister.Testing.ControlBus
                     parms[0] = ControlMessage.ExecuteCommand;
                     parms[1] = ClassName;
                     parms[2] = StaticMethodName;
-                    return ControlBusListenerClient.SendRequest(parms);
+                    return ControlBusListenerClient.SendMessage(parms);
                 }
             }
 
@@ -129,7 +129,7 @@ namespace SocketMeister.Testing.ControlBus
                 object[] parms = new object[2];
                 parms[0] = ControlMessage.SocketServerStart;
                 parms[1] = Port;
-                ControlBusListenerClient.SendRequest(parms);
+                ControlBusListenerClient.SendMessage(parms);
             }
 
 
@@ -137,7 +137,7 @@ namespace SocketMeister.Testing.ControlBus
             {
                 object[] parms = new object[1];
                 parms[0] = ControlMessage.SocketServerStop;
-                ControlBusListenerClient.SendRequest(parms);
+                ControlBusListenerClient.SendMessage(parms);
             }
 
 

@@ -5,12 +5,12 @@ using System.Text;
 
 namespace SocketMeister.Messages
 {
-    internal class ServerStoppingMessage : MessageBase, IMessage
+    internal class ServerStoppingNotificationV1 : MessageBase, IMessage
     {
         //  INTERNAL (NOT SENT IN MESSAGE DATA)
         private readonly int _maxWaitMilliseconds;
 
-        public ServerStoppingMessage(int MaxWaitMilliseconds) : base(MessageTypes.ServerStoppingNotificationV1)
+        public ServerStoppingNotificationV1(int MaxWaitMilliseconds) : base(MessageTypes.ServerStoppingNotificationV1)
         {
             _maxWaitMilliseconds = MaxWaitMilliseconds;
         }
@@ -19,7 +19,7 @@ namespace SocketMeister.Messages
         /// Fastest was to build this is to create it directly from the SocketEnvelope buffer.
         /// </summary>
         /// <param name="Reader">Binary Reader</param>
-        public ServerStoppingMessage(BinaryReader Reader) : base(MessageTypes.ServerStoppingNotificationV1)
+        public ServerStoppingNotificationV1(BinaryReader Reader) : base(MessageTypes.ServerStoppingNotificationV1)
         {
             _maxWaitMilliseconds = Reader.ReadInt32();
         }

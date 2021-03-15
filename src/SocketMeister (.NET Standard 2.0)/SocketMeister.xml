@@ -171,7 +171,7 @@
             Server sends a subscription response when a subscription request is received from a client
             </summary>
         </member>
-        <member name="F:SocketMeister.Messages.MessageTypes.PollingV1">
+        <member name="F:SocketMeister.Messages.MessageTypes.PollingRequestV1">
             <summary>
             Clients sent poll requests to determine if a connection is alive
             </summary>
@@ -410,7 +410,7 @@
             Resets the envelope for a fresh receive operation. Warning: should not be done in the middle of a receive operation.
             </summary>
         </member>
-        <member name="T:SocketMeister.Messages.ClientDisconnectMessage">
+        <member name="T:SocketMeister.Messages.ClientDisconnectingNotificationV1">
             <summary>
             Sent when a client is disconnecting
             </summary>
@@ -436,27 +436,27 @@
             </summary>
             <param name="Writer"></param>
         </member>
-        <member name="T:SocketMeister.Messages.PollRequest">
+        <member name="T:SocketMeister.Messages.PollingRequestV1">
             <summary>
             Internal Message: Socket client regulary sends a poll request to the server to check that the server is alive.
             </summary>
         </member>
-        <member name="T:SocketMeister.Messages.PollResponse">
+        <member name="T:SocketMeister.Messages.PollingResponseV1">
             <summary>
             Internal Message: Socket server sends a response to a 'PollRequest' message to indicate (to the client) that the server is alive.
             </summary>
         </member>
-        <member name="T:SocketMeister.Messages.Message">
+        <member name="T:SocketMeister.Messages.MessageV1">
             <summary>
             A message, sent from socket client to socket server. A response is expected and will cause problems if it is not sent.
             </summary>
         </member>
-        <member name="P:SocketMeister.Messages.Message.RemoteClient">
+        <member name="P:SocketMeister.Messages.MessageV1.RemoteClient">
             <summary>
             The remote client which sent this Message (value null on SocketClient)
             </summary>
         </member>
-        <member name="M:SocketMeister.Messages.Message.#ctor(System.Object[],System.Int32,System.Boolean)">
+        <member name="M:SocketMeister.Messages.MessageV1.#ctor(System.Object[],System.Int32,System.Boolean)">
             <summary>
             Message constructor
             </summary>
@@ -464,64 +464,64 @@
             <param name="TimeoutMilliseconds">The maximum number of milliseconds to wait for a response before timing out.</param>
             <param name="IsLongPolling">The maximum number of milliseconds to wait for a response before timing out.</param>
         </member>
-        <member name="P:SocketMeister.Messages.Message.Parameters">
+        <member name="P:SocketMeister.Messages.MessageV1.Parameters">
             <summary>
             Parameters provided with this message
             </summary>
         </member>
-        <member name="P:SocketMeister.Messages.Message.IsLongPolling">
+        <member name="P:SocketMeister.Messages.MessageV1.IsLongPolling">
             <summary>
             True is this message is long polling on the server side. Long polling messages will be closed immediately in the event of a close from either the client or server side.
             </summary>
         </member>
-        <member name="P:SocketMeister.Messages.Message.IsTimeout">
+        <member name="P:SocketMeister.Messages.MessageV1.IsTimeout">
             <summary>
             Whether the Message has timed out
             </summary>
         </member>
-        <member name="P:SocketMeister.Messages.Message.MessageId">
+        <member name="P:SocketMeister.Messages.MessageV1.MessageId">
             <summary>
             Identifier assigned to this message when it was created
             </summary>
         </member>
-        <member name="P:SocketMeister.Messages.Message.TimeoutMilliseconds">
+        <member name="P:SocketMeister.Messages.MessageV1.TimeoutMilliseconds">
             <summary>
             Number of milliseconds to wait before a timeout will occur.
             </summary>
         </member>
-        <member name="P:SocketMeister.Messages.Message.TrySendReceive">
+        <member name="P:SocketMeister.Messages.MessageV1.TrySendReceive">
             <summary>
             Whether the method SendReceive(Message Message) should continute trying
             </summary>
         </member>
-        <member name="P:SocketMeister.Messages.Message.WaitForResponse">
+        <member name="P:SocketMeister.Messages.MessageV1.WaitForResponse">
             <summary>
             Whether a SendReceive process should continue waiting for a response
             </summary>
         </member>
-        <member name="P:SocketMeister.Messages.MessageResponse.RemoteClient">
+        <member name="P:SocketMeister.Messages.MessageResponsev1.RemoteClient">
             <summary>
             The remote client which sent this Message (value null on SocketClient)
             </summary>
         </member>
-        <member name="M:SocketMeister.Messages.MessageResponse.#ctor(System.IO.BinaryReader)">
+        <member name="M:SocketMeister.Messages.MessageResponsev1.#ctor(System.IO.BinaryReader)">
             <summary>
             Fastest was to build this is to create it directly from the SocketEnvelope buffer.
             </summary>
             <param name="Reader">Binary Reader</param>
         </member>
-        <member name="P:SocketMeister.Messages.MessageResponse.MessageId">
+        <member name="P:SocketMeister.Messages.MessageResponsev1.MessageId">
             <summary>
             The message that this response refers to
             </summary>
         </member>
-        <member name="M:SocketMeister.Messages.ServerStoppingMessage.#ctor(System.IO.BinaryReader)">
+        <member name="M:SocketMeister.Messages.ServerStoppingNotificationV1.#ctor(System.IO.BinaryReader)">
             <summary>
             Fastest was to build this is to create it directly from the SocketEnvelope buffer.
             </summary>
             <param name="Reader">Binary Reader</param>
         </member>
-        <member name="P:SocketMeister.Messages.ServerStoppingMessage.MaxWaitMilliseconds">
+        <member name="P:SocketMeister.Messages.ServerStoppingNotificationV1.MaxWaitMilliseconds">
             <summary>
             The maximum number of milliseconds the client should wait for open requests to be completed. The server will not send back responses for open requests after this time.
             </summary>
@@ -1097,13 +1097,13 @@
             </summary>
             <returns>List of subscription names</returns>
         </member>
-        <member name="M:SocketMeister.SocketServer.Client.SendRequest(System.Object[],System.Int32,System.Boolean)">
+        <member name="M:SocketMeister.SocketServer.Client.SendMessage(System.Object[],System.Int32,System.Boolean)">
             <summary>
-            Send a request to the server and wait for a response. 
+            Send a message to the client and wait for a response. 
             </summary>
-            <param name="Parameters">Array of parameters to send with the request</param>
+            <param name="Parameters">Array of parameters to send with the message</param>
             <param name="TimeoutMilliseconds">Maximum number of milliseconds to wait for a response from the server</param>
-            <param name="IsLongPolling">If the request is long polling on the server mark this as true and the request will be cancelled instantly when a disconnect occurs</param>
+            <param name="IsLongPolling">If the message is long polling on the server mark this as true and the message will be cancelled instantly when a disconnect occurs</param>
             <returns>Nullable array of bytes which was returned from the socket server</returns>
         </member>
         <member name="E:SocketMeister.SocketServer.Clients.ClientConnected">

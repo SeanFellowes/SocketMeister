@@ -309,7 +309,7 @@ namespace SocketMeister.Messages
         }
 
 
-        internal ServerStoppingMessage GetDisconnectRequest()
+        internal ServerStoppingNotificationV1 GetServerStoppingNotificationV1()
         {
             MemoryStream stream = null;
             try
@@ -318,7 +318,7 @@ namespace SocketMeister.Messages
                 using (BinaryReader reader = new BinaryReader(stream))
                 {
                     stream = null;
-                    return new ServerStoppingMessage(reader);
+                    return new ServerStoppingNotificationV1(reader);
                 }
             }
             finally
@@ -328,7 +328,7 @@ namespace SocketMeister.Messages
         }
 
 
-        internal MessageV1 GetMessage(int Version)
+        internal MessageV1 GetMessageV1(int Version)
         {
             MemoryStream stream = null;
             try
@@ -366,7 +366,7 @@ namespace SocketMeister.Messages
 
 
 
-        internal TokenChangesRequestV1 GetSubscriptionRequestV1()
+        internal TokenChangesRequestV1 GetSubscriptionChangesNotificationV1()
         {
             MemoryStream stream = null;
             try
@@ -385,7 +385,7 @@ namespace SocketMeister.Messages
         }
 
 
-        internal TokenChangesResponseV1 GetSubscriptionResponseV1()
+        internal TokenChangesResponseV1 GetSubscriptionChangesResponseV1()
         {
             MemoryStream stream = null;
             try
@@ -405,7 +405,7 @@ namespace SocketMeister.Messages
 
 
 
-        internal MessageResponse GetResponseMessage()
+        internal MessageResponsev1 GetMessageResponseV1()
         {
             MemoryStream stream = null;
             try
@@ -414,7 +414,7 @@ namespace SocketMeister.Messages
                 using (BinaryReader reader = new BinaryReader(stream))
                 {
                     stream = null;
-                    return new MessageResponse(reader);
+                    return new MessageResponsev1(reader);
                 }
             }
             finally

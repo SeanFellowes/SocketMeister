@@ -46,7 +46,7 @@ namespace SocketMeister.Messages
         private readonly int _timeoutMilliseconds;
 
         //  INTERNAL (NOT SENT IN MESSAGE DATA)
-        private MessageResponse _response = null;
+        private MessageResponsev1 _response = null;
 
         /// <summary>
         /// Message constructor
@@ -155,7 +155,7 @@ namespace SocketMeister.Messages
             get { return _messageId; }
         }
 
-        public MessageResponse Response
+        public MessageResponsev1 Response
         {
             get { lock (Lock) { return _response; } }
             set { lock (Lock) { _response = value; } }

@@ -454,12 +454,12 @@ namespace SocketMeister
                                 _totalMessagesReceived++;
                             }
 
-                            MessageV1 message = receiveEnvelope.GetMessage(2);
+                            MessageV1 message = receiveEnvelope.GetMessageV1(2);
                             message.RemoteClient = remoteClient;
 
                             if (Status == SocketServerStatus.Stopping)
                             {
-                                MessageResponse response = new MessageResponse(message.MessageId, MessageProcessingResult.Stopping);
+                                MessageResponsev1 response = new MessageResponsev1(message.MessageId, MessageProcessingResult.Stopping);
                                 message.RemoteClient.SendIMessage(response, false);
                             }
                             else
@@ -476,7 +476,7 @@ namespace SocketMeister
                             if (Status == SocketServerStatus.Started)
                             {
                                 //  PROCESS ResponseMessage. NOTE: METHOD IS EXECUTED IN A ThreadPool THREAD
-                                remoteClient.ProcessResponseMessage(receiveEnvelope.GetResponseMessage());
+                                remoteClient.SetMessageResponseInUnrespondedMessages(receiveEnvelope.GetMessageResponseV1());
                             }
                         }
                         else if (receiveEnvelope.MessageType == MessageTypes.ClientDisconnectingNotificationV1)
@@ -506,7 +506,7 @@ namespace SocketMeister
                         {
                             if (Status == SocketServerStatus.Started)
                             {
-                                TokenChangesRequestV1 request = receiveEnvelope.GetSubscriptionRequestV1();
+                                TokenChangesRequestV1 request = receiveEnvelope.GetSubscriptionChangesNotificationV1();
                                 new Thread(new ThreadStart(delegate
                                 {
                                     BgProcessSubscriptionRequest(remoteClient, request);
@@ -570,7 +570,7 @@ namespace SocketMeister
             try
             {
                 //  SEND POLL RESPONSE
-                remoteClient.SendIMessage(new PollResponse(), false);
+                remoteClient.SendIMessage(new PollingResponseV1(), false);
             }
             catch (Exception ex)
             {
@@ -604,7 +604,7 @@ namespace SocketMeister
                 if (MessageReceived == null)
                 {
                     Exception ex = new Exception("There is no process on the server listening to 'MessageReceived' events from the socket server.");
-                    MessageResponse noListener = new MessageResponse(message.MessageId, ex);
+                    MessageResponsev1 noListener = new MessageResponsev1(message.MessageId, ex);
                     message.RemoteClient.SendIMessage(noListener, false);
                 }
                 else
@@ -612,14 +612,14 @@ namespace SocketMeister
                     MessageReceived(this, args);
 
                     //  SEND RESPONSE
-                    MessageResponse response = new MessageResponse(message.MessageId, args.Response);
+                    MessageResponsev1 response = new MessageResponsev1(message.MessageId, args.Response);
                     message.RemoteClient.SendIMessage(response, false);
                 }
             }
             catch (Exception ex)
             {
                 NotifyTraceEventRaised(ex, 5008);
-                MessageResponse response = new MessageResponse(message.MessageId, ex);
+                MessageResponsev1 response = new MessageResponsev1(message.MessageId, ex);
                 message.RemoteClient.SendIMessage(response, false);
             }
         }
@@ -661,7 +661,7 @@ namespace SocketMeister
             try
             {
                 if (RemoteClient.ClientSocket == null || RemoteClient.ClientSocket.Connected == false) return;
-                byte[] sendBytes = MessageEngine.GenerateSendBytes(new ServerStoppingMessage(MAX_WAIT_FOR_CLIENT_DISCONNECT_WHEN_STOPPING), _compressSentData);
+                byte[] sendBytes = MessageEngine.GenerateSendBytes(new ServerStoppingNotificationV1(MAX_WAIT_FOR_CLIENT_DISCONNECT_WHEN_STOPPING), _compressSentData);
                 RemoteClient.ClientSocket.Send(sendBytes, sendBytes.Length, SocketFlags.None);
             }
             catch (Exception ex)

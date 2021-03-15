@@ -29,7 +29,7 @@ namespace SocketMeister
             private readonly Socket _clientSocket;
             private readonly bool _compressSentData;
             private readonly DateTime _connectTimestamp = DateTime.Now;
-            private readonly UnrespondedMessageCollection _openRequests = new UnrespondedMessageCollection();
+            private readonly UnrespondedMessageCollection _unrespondedMessages = new UnrespondedMessageCollection();
             private readonly MessageEngine _receivedEnvelope;
             private readonly SocketServer _socketServer;
             private readonly TokenCollectionReadOnly _subscriptions = new TokenCollectionReadOnly();
@@ -99,9 +99,9 @@ namespace SocketMeister
                 return rVal;
             }
 
-            internal void ProcessResponseMessage(MessageResponse Message)
+            internal void SetMessageResponseInUnrespondedMessages(MessageResponsev1 Message)
             {
-                MessageV1 request = _openRequests[Message.MessageId];
+                MessageV1 request = _unrespondedMessages[Message.MessageId];
                 if (request == null) return;
                 request.Response = Message;
             }
@@ -110,17 +110,6 @@ namespace SocketMeister
             {
                 return _subscriptions.ImportTokenChangesV1(request.ChangeBytes);
             }
-
-            ///// <summary>
-            ///// Send a message to this client
-            ///// </summary>
-            ///// <param name="Parameters">Parameters to send to the client.</param>
-            ///// <param name="TimeoutMilliseconds">Number of milliseconds to attempt to send the message before throwing a TimeoutException.</param>
-            //public void SendMessage(object[] Parameters, int TimeoutMilliseconds = 60000)
-            //{
-            //    Message message = new Message(Parameters, TimeoutMilliseconds);
-            //    SendIMessage(message, true);
-            //}
 
             internal void SendIMessage(IMessage Message, bool Async = true)
             {
@@ -174,16 +163,16 @@ namespace SocketMeister
 
 
             /// <summary>
-            /// Send a request to the server and wait for a response. 
+            /// Send a message to the client and wait for a response. 
             /// </summary>
-            /// <param name="Parameters">Array of parameters to send with the request</param>
+            /// <param name="Parameters">Array of parameters to send with the message</param>
             /// <param name="TimeoutMilliseconds">Maximum number of milliseconds to wait for a response from the server</param>
-            /// <param name="IsLongPolling">If the request is long polling on the server mark this as true and the request will be cancelled instantly when a disconnect occurs</param>
+            /// <param name="IsLongPolling">If the message is long polling on the server mark this as true and the message will be cancelled instantly when a disconnect occurs</param>
             /// <returns>Nullable array of bytes which was returned from the socket server</returns>
-            public byte[] SendRequest(object[] Parameters, int TimeoutMilliseconds = 60000, bool IsLongPolling = false)
+            public byte[] SendMessage(object[] Parameters, int TimeoutMilliseconds = 60000, bool IsLongPolling = false)
             {
-                if (Parameters == null) throw new ArgumentException("Request parameters cannot be null.", nameof(Parameters));
-                if (Parameters.Length == 0) throw new ArgumentException("At least 1 request parameter is required.", nameof(Parameters));
+                if (Parameters == null) throw new ArgumentException("Message parameters cannot be null.", nameof(Parameters));
+                if (Parameters.Length == 0) throw new ArgumentException("At least 1 parameter is required because it will be meaningless at the other end.", nameof(Parameters));
                 DateTime startTime = DateTime.Now;
                 DateTime maxWait = startTime.AddMilliseconds(TimeoutMilliseconds);
                 while (_socketServer.Status == SocketServerStatus.Starting)
@@ -191,48 +180,48 @@ namespace SocketMeister
                     Thread.Sleep(200);
                     if (DateTime.Now > maxWait) throw new TimeoutException();
                 }
-                if (_socketServer.Status != SocketServerStatus.Started) throw new Exception("Request cannot be sent. The socket server is not running");
+                if (_socketServer.Status != SocketServerStatus.Started) throw new Exception("Message cannot be sent. The socket server is not running");
                 int remainingMilliseconds = TimeoutMilliseconds - Convert.ToInt32((DateTime.Now - startTime).TotalMilliseconds);
-                return SendReceive(new Message(Parameters, remainingMilliseconds, IsLongPolling));
+                return SendReceive(new MessageV1(Parameters, remainingMilliseconds, IsLongPolling));
             }
 
 
-            private byte[] SendReceive(MessageV1 Request)
+            private byte[] SendReceive(MessageV1 message)
             {
                 if (_socketServer.Status != SocketServerStatus.Started) return null;
 
                 DateTime nowTs = DateTime.Now;
-                _openRequests.Add(Request);
+                _unrespondedMessages.Add(message);
 
-                byte[] sendBytes = MessageEngine.GenerateSendBytes(Request, false);
+                byte[] sendBytes = MessageEngine.GenerateSendBytes(message, false);
 
-                while (Request.TrySendReceive == true)
+                while (message.TrySendReceive == true)
                 {
                     if (_socketServer.Status != SocketServerStatus.Started) return null;
 
-                    if (Request.Status == MessageStatus.Unsent)
+                    if (message.Status == MessageStatus.Unsent)
                     {
-                        SendIMessage(Request, true);
-                        Request.Status = MessageStatus.InProgress;
+                        SendIMessage(message, true);
+                        message.Status = MessageStatus.InProgress;
 
                         //  WAIT FOR RESPONSE
-                        while (Request.WaitForResponse)
+                        while (message.WaitForResponse)
                         {
                             Thread.Sleep(5);
                         }
                     }
 
-                    if (Request.TrySendReceive == true) Thread.Sleep(200);
+                    if (message.TrySendReceive == true) Thread.Sleep(200);
                 }
 
-                _openRequests.Remove(Request);
+                _unrespondedMessages.Remove(message);
 
-                if (Request.Response != null)
+                if (message.Response != null)
                 {
-                    if (Request.Response.Error != null) throw new Exception(Request.Response.Error);
-                    else return Request.Response.ResponseData;
+                    if (message.Response.Error != null) throw new Exception(message.Response.Error);
+                    else return message.Response.ResponseData;
                 }
-                else throw new TimeoutException("SendReceive() timed out after " + Request.TimeoutMilliseconds + " milliseconds");
+                else throw new TimeoutException("SendReceive() timed out after " + message.TimeoutMilliseconds + " milliseconds");
             }
 
         }

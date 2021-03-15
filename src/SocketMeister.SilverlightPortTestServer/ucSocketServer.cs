@@ -202,7 +202,7 @@ namespace SocketMeister
             if (items.Count == 0) return 0;
             foreach (SocketServer.Client i in items)
             {
-                i.SendRequest(parms);
+                i.SendMessage(parms);
             }
             return items.Count;
         }

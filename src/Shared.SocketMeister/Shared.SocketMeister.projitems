@@ -26,11 +26,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Messages\IMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\MessageBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\MessageEngine.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Messages\PollRequest.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Messages\PollResponse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Messages\PollingRequestV1.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Messages\PollingResponseV1.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\MessageV1.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Messages\MessageResponse.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Messages\ServerStoppingMessage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Messages\MessageResponseV1.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Messages\ServerStoppingNotificationV1.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SocketClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SocketEndPoint.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SocketServer.Client.cs" />
