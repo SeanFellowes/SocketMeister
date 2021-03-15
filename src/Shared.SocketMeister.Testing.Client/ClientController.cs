@@ -27,7 +27,7 @@ namespace SocketMeister.Testing
         /// <summary>
         /// Event raised when a status of a socket connection has changed
         /// </summary>
-        public event EventHandler<SocketClient.ConnectionStatusChangedEventArgs> ControlBusConnectionStatusChanged;
+        public event EventHandler<EventArgs> ControlBusConnectionStatusChanged;
 
         /// Event raised when an exception occurs
         /// </summary>
@@ -133,7 +133,7 @@ namespace SocketMeister.Testing
             ControlBusConnectionFailed?.Invoke(this, e);
         }
 
-        private void ControlBusClient_ConnectionStatusChanged(object sender, SocketClient.ConnectionStatusChangedEventArgs e)
+        private void ControlBusClient_ConnectionStatusChanged(object sender, EventArgs e)
         {
             ControlBusConnectionStatusChanged?.Invoke(sender, e);
         }

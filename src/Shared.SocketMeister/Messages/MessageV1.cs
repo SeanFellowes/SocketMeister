@@ -54,7 +54,7 @@ namespace SocketMeister.Messages
         /// <param name="Parameters">Array of parameters to send with the message. There must be at least 1 parameter.</param>
         /// <param name="TimeoutMilliseconds">The maximum number of milliseconds to wait for a response before timing out.</param>
         /// <param name="IsLongPolling">The maximum number of milliseconds to wait for a response before timing out.</param>
-        public MessageV1(object[] Parameters, int TimeoutMilliseconds, bool IsLongPolling = false) : base(MessageTypes.MessageV1)
+        public MessageV1(object[] Parameters, int TimeoutMilliseconds, bool IsLongPolling = false) : base(InternalMessageType.MessageV1)
         {
             _parameters = Parameters;
             _timeoutMilliseconds = TimeoutMilliseconds;
@@ -85,7 +85,7 @@ namespace SocketMeister.Messages
         }
 
 
-        internal MessageV1(BinaryReader bR, int Version) : base(MessageTypes.MessageV1)
+        internal MessageV1(BinaryReader bR, int Version) : base(InternalMessageType.MessageV1)
         {
             if (Version == 1)
             {
@@ -174,7 +174,7 @@ namespace SocketMeister.Messages
         {
             get
             {
-                if (Status == MessageStatus.Unsent) return true;
+                if (Status == MessageProgress.Unsent) return true;
                 else return WaitForResponse;
             }
         }
@@ -189,7 +189,7 @@ namespace SocketMeister.Messages
                 if (IsAborted) return false;
                 if (IsTimeout) return false;
                 else if (Response != null) return false;
-                else if (Status == MessageStatus.InProgress) return true;
+                else if (Status == MessageProgress.InProgress) return true;
                 else return false;
             }
         }

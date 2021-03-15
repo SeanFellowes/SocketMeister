@@ -111,14 +111,14 @@ namespace SocketMeister
             client.SendRequest(tbTextToSend.Text);
         }
 
-        private void Client_SubscriptionMessageReceived(object sender, SocketClient.SubscriptionMessageReceivedEventArgs e)
+        private void Client_BroadcastReceived(object sender, SocketClient.BroadcastReceivedEventArgs e)
         {
             ClientControl ct = (ClientControl)sender;
 
             byte[] receivedBytes = (byte[])e.Parameters[0];
             string msgRec = Encoding.UTF8.GetString(receivedBytes, 0, receivedBytes.Length);
 
-            Log(LogItem.SeverityType.Information, "Client " + ct.Port, "SubscriptionMessageReceived: " + e.SubscriptionName + ", " + msgRec);
+            Log(LogItem.SeverityType.Information, "Client " + ct.Port, "BroadcastReceived: " + e.Name + ", " + msgRec);
         }
 
 
@@ -183,7 +183,7 @@ namespace SocketMeister
                     Client.MessageReceived += Client_MessageReceived;
                     Client.SendRequestButtonPressed += Client_SendRequestButtonPressed;
                     Client.ServerStopping += Client_ServerStopping;
-                    Client.SubscriptionMessageReceived += Client_SubscriptionMessageReceived;
+                    Client.BroadcastReceived += Client_BroadcastReceived;
 
                     Client.Start(IPAddress.Text);
                 }

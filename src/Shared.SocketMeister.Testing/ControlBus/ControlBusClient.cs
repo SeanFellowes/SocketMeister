@@ -22,7 +22,7 @@ namespace SocketMeister.Testing.ControlBus
         /// <summary>
         /// Event raised when a status of a socket connection has changed
         /// </summary>
-        public event EventHandler<SocketClient.ConnectionStatusChangedEventArgs> ConnectionStatusChanged;
+        public event EventHandler<EventArgs> ConnectionStatusChanged;
 
         /// <summary>
         /// Triggered when connection the the control socket failed or could not start. This should never happen. ServerController or ClientController should exit.
@@ -103,12 +103,8 @@ namespace SocketMeister.Testing.ControlBus
             ControlBusSocketClient.ExceptionRaised += ControlBusSocketClient_ExceptionRaised;
             ControlBusSocketClient.MessageReceived += ControlBusSocketClient_MessageReceived;
 
-            //Thread bgFailIfDisconnected = new Thread(new ThreadStart(delegate
-            //{
             //  WAIT UP TO 5 SECONDS FOR THE HarnessControlBusSocketClient TO CONNECT TO THE HarnessController
-            //  SEAN SEAN SEAN (Try 5000)
-            //DateTime maxWait = DateTime.Now.AddMilliseconds(5000);
-            DateTime maxWait = DateTime.Now.AddMilliseconds(60000);
+            DateTime maxWait = DateTime.Now.AddMilliseconds(5000);
 
             while (true == true)
                 {
@@ -143,12 +139,13 @@ namespace SocketMeister.Testing.ControlBus
         }
 
 
-        private void ControlBusSocketClient_ConnectionStatusChanged(object sender, SocketClient.ConnectionStatusChangedEventArgs e)
+        private void ControlBusSocketClient_ConnectionStatusChanged(object sender, EventArgs e)
         {
             try
             {
                 //  SEND A CONTROL MESSAGE TO THE SERVER
-                if (e.Status == SocketClient.ConnectionStatuses.Connected)
+                SocketClient client = (SocketClient)sender;
+                if (client.ConnectionStatus == SocketClient.ConnectionStatuses.Connected)
                 {
                     object[] parms = new object[2];
                     parms[0] = ControlMessage.HarnessControlBusClientIsConnecting;

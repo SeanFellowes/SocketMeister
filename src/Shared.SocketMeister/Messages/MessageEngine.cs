@@ -79,7 +79,7 @@ namespace SocketMeister.Messages
         private bool _messageIsCompressed = false;
         private int _messageLength = 0;
         private int _messageLengthUncompressed = 0;
-        private MessageTypes _messageType = MessageTypes.Unknown;
+        private InternalMessageType _messageType = InternalMessageType.Unknown;
         private readonly byte[] _headerBuffer = new byte[11];
         private int _headerBufferPtr = 0;
         private bool _headerReceived = false;
@@ -121,12 +121,12 @@ namespace SocketMeister.Messages
                         _headerReceived = true;
 
                         //  SETUP MESSAGE BODY BYTE ARRAY FOR THE EXPECTED BYTES
-                        _messageType = (MessageTypes)Convert.ToInt16(_headerBuffer[0] | (_headerBuffer[1] << 8));
+                        _messageType = (InternalMessageType)Convert.ToInt16(_headerBuffer[0] | (_headerBuffer[1] << 8));
                         _messageIsCompressed = Convert.ToBoolean(_headerBuffer[2]);
                         _messageLength = _headerBuffer[3] | (_headerBuffer[4] << 8) | (_headerBuffer[5] << 16) | (_headerBuffer[6] << 24);
                         _messageLengthUncompressed = _headerBuffer[7] | (_headerBuffer[8] << 8) | (_headerBuffer[9] << 16) | (_headerBuffer[10] << 24);
 
-                        if (Enum.IsDefined(typeof(MessageTypes), _messageType) == false)
+                        if (Enum.IsDefined(typeof(InternalMessageType), _messageType) == false)
                         {
                             throw new Exception("Invalid Message Type");
                         }
@@ -287,7 +287,7 @@ namespace SocketMeister.Messages
         /// <summary>
         /// The type of message. 
         /// </summary>
-        internal MessageTypes MessageType
+        internal InternalMessageType MessageType
         {
             get { return _messageType; }
         }

@@ -126,106 +126,6 @@
             Service is stopping
             </summary>
         </member>
-        <member name="T:SocketMeister.Messages.MessageTypes">
-            <summary>
-            Internal message types
-            </summary>
-        </member>
-        <member name="F:SocketMeister.Messages.MessageTypes.Unknown">
-            <summary>
-            Unknown message type, usually associated with an error
-            </summary>
-        </member>
-        <member name="F:SocketMeister.Messages.MessageTypes.BroadcastV1">
-            <summary>
-            Server sends a broadcast
-            </summary>
-        </member>
-        <member name="F:SocketMeister.Messages.MessageTypes.MessageV1">
-            <summary>
-            Message (expecting a response, even a null response is valid). 
-            </summary>
-        </member>
-        <member name="F:SocketMeister.Messages.MessageTypes.MessageResponseV1">
-            <summary>
-            Response to a message
-            </summary>
-        </member>
-        <member name="F:SocketMeister.Messages.MessageTypes.ServerStoppingNotificationV1">
-            <summary>
-            Server is shutting down
-            </summary>
-        </member>
-        <member name="F:SocketMeister.Messages.MessageTypes.ClientDisconnectingNotificationV1">
-            <summary>
-            Client is disconnecting
-            </summary>
-        </member>
-        <member name="F:SocketMeister.Messages.MessageTypes.SubscriptionChangesNotificationV1">
-            <summary>
-            Clients send subscription information to the server. The server updates it's local client details
-            </summary>
-        </member>
-        <member name="F:SocketMeister.Messages.MessageTypes.SubscriptionChangesResponseV1">
-            <summary>
-            Server sends a subscription response when a subscription notification is received from a client
-            </summary>
-        </member>
-        <member name="F:SocketMeister.Messages.MessageTypes.PollingRequestV1">
-            <summary>
-            Clients sent poll requests to determine if a connection is alive
-            </summary>
-        </member>
-        <member name="F:SocketMeister.Messages.MessageTypes.PollingResponseV1">
-            <summary>
-            Server sends a poll response when a poll request is received from a client
-            </summary>
-        </member>
-        <member name="T:SocketMeister.Messages.MessageProcessingResult">
-            <summary>
-            Result of an attempt to process a message. This is included in the MessageResponse.
-            </summary>
-        </member>
-        <member name="F:SocketMeister.Messages.MessageProcessingResult.Success">
-            <summary>
-            The message was processed successfully
-            </summary>
-        </member>
-        <member name="F:SocketMeister.Messages.MessageProcessingResult.Stopping">
-            <summary>
-            The client or server is shutting down. The message was not processed.
-            </summary>
-        </member>
-        <member name="F:SocketMeister.Messages.MessageProcessingResult.NoMessageReceivedEventListener">
-            <summary>
-            There is no process listening for 'MessageReceived' events.
-            </summary>
-        </member>
-        <member name="F:SocketMeister.Messages.MessageProcessingResult.Exception">
-            <summary>
-            An exception occured while processing the message
-            </summary>
-        </member>
-        <member name="T:SocketMeister.Messages.MessageStatus">
-            <summary>
-            Status of a send operation
-            </summary>
-        </member>
-        <member name="F:SocketMeister.Messages.MessageStatus.Unsent">
-            <summary>
-            Message has not been sent or is flagged to resent (because socket connection failed)
-            </summary>
-        </member>
-        <member name="F:SocketMeister.Messages.MessageStatus.InProgress">
-            <summary>
-            Message is in progress
-            </summary>
-        </member>
-        <member name="F:SocketMeister.Messages.MessageStatus.Finished">
-            <summary>
-            Send operation finished (Could be unsuccessful or successful)
-            </summary>
-        </member>
         <member name="T:SocketMeister.Messages.BroadcastV1">
             <summary>
             SocketServer sends broadcasts to clients.
@@ -246,6 +146,106 @@
         <member name="P:SocketMeister.Messages.BroadcastV1.Name">
             <summary>
             Optional Name/Tag/Identifier given to the broadcast
+            </summary>
+        </member>
+        <member name="T:SocketMeister.Messages.InternalMessageType">
+            <summary>
+            Internal message types
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Messages.InternalMessageType.Unknown">
+            <summary>
+            Unknown message type, usually associated with an error
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Messages.InternalMessageType.BroadcastV1">
+            <summary>
+            Server sends a broadcast
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Messages.InternalMessageType.MessageV1">
+            <summary>
+            Message (expecting a response, even a null response is valid). 
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Messages.InternalMessageType.MessageResponseV1">
+            <summary>
+            Response to a message
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Messages.InternalMessageType.ServerStoppingNotificationV1">
+            <summary>
+            Server is shutting down
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Messages.InternalMessageType.ClientDisconnectingNotificationV1">
+            <summary>
+            Client is disconnecting
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Messages.InternalMessageType.SubscriptionChangesNotificationV1">
+            <summary>
+            Clients send subscription information to the server. The server updates it's local client details
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Messages.InternalMessageType.SubscriptionChangesResponseV1">
+            <summary>
+            Server sends a subscription response when a subscription notification is received from a client
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Messages.InternalMessageType.PollingRequestV1">
+            <summary>
+            Clients sent poll requests to determine if a connection is alive
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Messages.InternalMessageType.PollingResponseV1">
+            <summary>
+            Server sends a poll response when a poll request is received from a client
+            </summary>
+        </member>
+        <member name="T:SocketMeister.Messages.MessageResponseResult">
+            <summary>
+            Result of an attempt to process a message. This is included in the MessageResponse.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Messages.MessageResponseResult.Success">
+            <summary>
+            The message was processed successfully
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Messages.MessageResponseResult.Stopping">
+            <summary>
+            The client or server is shutting down. The message was not processed.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Messages.MessageResponseResult.NoMessageReceivedEventListener">
+            <summary>
+            There is no process listening for 'MessageReceived' events.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Messages.MessageResponseResult.Exception">
+            <summary>
+            An exception occured while processing the message
+            </summary>
+        </member>
+        <member name="T:SocketMeister.Messages.MessageProgress">
+            <summary>
+            The progress of a message from creation to receiving a response.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Messages.MessageProgress.Unsent">
+            <summary>
+            Message has not been sent or is flagged to resent (because socket connection failed)
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Messages.MessageProgress.InProgress">
+            <summary>
+            Message is in progress
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Messages.MessageProgress.ResponseReceived">
+            <summary>
+            Send operation finished (Could be unsuccessful or successful)
             </summary>
         </member>
         <member name="T:SocketMeister.Messages.TokenChangesRequestV1">
@@ -714,45 +714,6 @@
             Socket is disconnecting;
             </summary>
         </member>
-        <member name="T:SocketMeister.SocketClient.ConnectionStatusChangedEventArgs">
-            <summary>
-            Information provided when a SocketClient connection to a socket server changes status
-            </summary>
-        </member>
-        <member name="M:SocketMeister.SocketClient.ConnectionStatusChangedEventArgs.#ctor(SocketMeister.SocketClient.ConnectionStatuses)">
-            <summary>
-            Default constructor
-            </summary>
-            <param name="Status">The status of the socket</param>
-        </member>
-        <member name="M:SocketMeister.SocketClient.ConnectionStatusChangedEventArgs.#ctor(SocketMeister.SocketClient.ConnectionStatuses,System.String,System.UInt16)">
-            <summary>
-            Default constructor
-            </summary>
-            <param name="Status">The status of the socket</param>
-            <param name="IPAddress">Destination TCP/IP Port.</param>
-            <param name="Port"></param>
-        </member>
-        <member name="P:SocketMeister.SocketClient.ConnectionStatusChangedEventArgs.IPAddress">
-            <summary>
-            If connected, the IP Address which the socket is connected to.
-            </summary>
-        </member>
-        <member name="P:SocketMeister.SocketClient.ConnectionStatusChangedEventArgs.Port">
-            <summary>
-            The port which the socket is connected to.
-            </summary>
-        </member>
-        <member name="P:SocketMeister.SocketClient.ConnectionStatusChangedEventArgs.Status">
-            <summary>
-            The connection status to the remote socket server.
-            </summary>
-        </member>
-        <member name="P:SocketMeister.SocketClient.ConnectionStatusChangedEventArgs.StatusDescription">
-            <summary>
-            Description of the connection status.
-            </summary>
-        </member>
         <member name="T:SocketMeister.SocketClient.MessageReceivedEventArgs">
             <summary>
             Values provided when a message is received from a server. 
@@ -801,7 +762,7 @@
         </member>
         <member name="E:SocketMeister.SocketClient.ConnectionStatusChanged">
             <summary>
-            Event raised when a status of a socket connection has changed
+            Event raised when the status of a socket connection changes
             </summary>
         </member>
         <member name="E:SocketMeister.SocketClient.CurrentEndPointChanged">
@@ -908,9 +869,9 @@
             The number of subscriptions for this client
             </summary>
         </member>
-        <member name="M:SocketMeister.SocketClient.DoesSubscriptionExist(System.String)">
+        <member name="M:SocketMeister.SocketClient.DoesSubscriptionNameExist(System.String)">
             <summary>
-            Whether a subscription exists. 
+            Whether a subscription name exists in the list of subscriptions. 
             </summary>
             <param name="SubscriptionName">Name of the subscription (Case insensitive).</param>
             <returns>True if exists, false if the subscription does not exist</returns>
@@ -1231,7 +1192,7 @@
         </member>
         <member name="M:SocketMeister.SocketServer.DoSubscribersExist(System.String)">
             <summary>
-            Are there any sclients connected which are subscribing to a specific subscription name
+            Are there any clients subscribing to a subscription name
             </summary>
             <param name="SubscriptionName">Name of the subscription (Case insensitive)</param>
             <returns>true if there is at least one client subscribing to the SubscriptionName</returns>

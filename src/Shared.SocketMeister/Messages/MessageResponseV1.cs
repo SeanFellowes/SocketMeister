@@ -31,26 +31,26 @@ namespace SocketMeister.Messages
         //  RESPONSE VARIABLES
         private readonly string _error = null;
         private readonly long _messageId;
-        private readonly MessageProcessingResult _processingResult;
+        private readonly MessageResponseResult _processingResult;
         private readonly Byte[] _responseData = null;
 
-        public MessageResponsev1(long MessageId, byte[] ResponseData) : base(MessageTypes.MessageResponseV1)
+        public MessageResponsev1(long MessageId, byte[] ResponseData) : base(InternalMessageType.MessageResponseV1)
         {
             _messageId = MessageId;
             _responseData = ResponseData;
-            _processingResult = MessageProcessingResult.Success;
+            _processingResult = MessageResponseResult.Success;
         }
 
-        public MessageResponsev1(long MessageId, MessageProcessingResult ProcessingResult) : base(MessageTypes.MessageResponseV1)
+        public MessageResponsev1(long MessageId, MessageResponseResult ProcessingResult) : base(InternalMessageType.MessageResponseV1)
         {
             _messageId = MessageId;
             _processingResult = ProcessingResult;
         }
 
-        public MessageResponsev1(long MessageId, Exception Exception) : base(MessageTypes.MessageResponseV1)
+        public MessageResponsev1(long MessageId, Exception Exception) : base(InternalMessageType.MessageResponseV1)
         {
             _messageId = MessageId;
-            _processingResult = MessageProcessingResult.Exception;
+            _processingResult = MessageResponseResult.Exception;
             _error = Exception.Message;
             if (Exception.StackTrace != null) _error += Environment.NewLine + Environment.NewLine + Exception.StackTrace;
         }
@@ -59,12 +59,12 @@ namespace SocketMeister.Messages
         /// Fastest was to build this is to create it directly from the SocketEnvelope buffer.
         /// </summary>
         /// <param name="Reader">Binary Reader</param>
-        public MessageResponsev1(BinaryReader Reader) : base(MessageTypes.MessageResponseV1)
+        public MessageResponsev1(BinaryReader Reader) : base(InternalMessageType.MessageResponseV1)
         {
             _messageId = Reader.ReadInt64();
             if (Reader.ReadBoolean() == true) _responseData = Reader.ReadBytes(Reader.ReadInt32());
             if (Reader.ReadBoolean() == true) _error = Reader.ReadString();
-            _processingResult = (MessageProcessingResult)Reader.ReadInt16();
+            _processingResult = (MessageResponseResult)Reader.ReadInt16();
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace SocketMeister.Messages
         }
 
 
-        public MessageProcessingResult ProcessingResult
+        public MessageResponseResult ProcessingResult
         {
             get { return _processingResult; }
         }

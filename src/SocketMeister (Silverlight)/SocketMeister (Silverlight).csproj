@@ -68,17 +68,17 @@
     <Compile Include="..\Shared.SocketMeister\Exceptions.cs">
       <Link>Shared.SocketMeister\Exceptions.cs</Link>
     </Compile>
-    <Compile Include="..\Shared.SocketMeister\Messages\ClientDisconnectMessage.cs">
-      <Link>Shared.SocketMeister\Messages\ClientDisconnectMessage.cs</Link>
+    <Compile Include="..\Shared.SocketMeister\Messages\BroadcastV1.cs">
+      <Link>Shared.SocketMeister\Messages\BroadcastV1.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\Messages\ClientDisconnectingNotificationV1.cs">
+      <Link>Shared.SocketMeister\Messages\ClientDisconnectingNotificationV1.cs</Link>
     </Compile>
     <Compile Include="..\Shared.SocketMeister\Messages\Enums.cs">
       <Link>Shared.SocketMeister\Messages\Enums.cs</Link>
     </Compile>
     <Compile Include="..\Shared.SocketMeister\Messages\IMessage.cs">
       <Link>Shared.SocketMeister\Messages\IMessage.cs</Link>
-    </Compile>
-    <Compile Include="..\Shared.SocketMeister\Messages\Message.cs">
-      <Link>Shared.SocketMeister\Messages\Message.cs</Link>
     </Compile>
     <Compile Include="..\Shared.SocketMeister\Messages\MessageBase.cs">
       <Link>Shared.SocketMeister\Messages\MessageBase.cs</Link>
@@ -89,32 +89,26 @@
     <Compile Include="..\Shared.SocketMeister\Messages\MessageEngine.cs">
       <Link>Shared.SocketMeister\Messages\MessageEngine.cs</Link>
     </Compile>
-    <Compile Include="..\Shared.SocketMeister\Messages\PollRequest.cs">
-      <Link>Shared.SocketMeister\Messages\PollRequest.cs</Link>
+    <Compile Include="..\Shared.SocketMeister\Messages\MessageResponseV1.cs">
+      <Link>Shared.SocketMeister\Messages\MessageResponseV1.cs</Link>
     </Compile>
-    <Compile Include="..\Shared.SocketMeister\Messages\PollResponse.cs">
-      <Link>Shared.SocketMeister\Messages\PollResponse.cs</Link>
+    <Compile Include="..\Shared.SocketMeister\Messages\MessageV1.cs">
+      <Link>Shared.SocketMeister\Messages\MessageV1.cs</Link>
     </Compile>
-    <Compile Include="..\Shared.SocketMeister\Messages\RequestMessage.cs">
-      <Link>Shared.SocketMeister\Messages\RequestMessage.cs</Link>
+    <Compile Include="..\Shared.SocketMeister\Messages\PollingRequestV1.cs">
+      <Link>Shared.SocketMeister\Messages\PollingRequestV1.cs</Link>
     </Compile>
-    <Compile Include="..\Shared.SocketMeister\Messages\ResponseMessage.cs">
-      <Link>Shared.SocketMeister\Messages\ResponseMessage.cs</Link>
+    <Compile Include="..\Shared.SocketMeister\Messages\PollingResponseV1.cs">
+      <Link>Shared.SocketMeister\Messages\PollingResponseV1.cs</Link>
     </Compile>
-    <Compile Include="..\Shared.SocketMeister\Messages\ServerStoppingMessage.cs">
-      <Link>Shared.SocketMeister\Messages\ServerStoppingMessage.cs</Link>
-    </Compile>
-    <Compile Include="..\Shared.SocketMeister\Messages\SubscriptionMessageV1.cs">
-      <Link>Shared.SocketMeister\Messages\SubscriptionMessageV1.cs</Link>
+    <Compile Include="..\Shared.SocketMeister\Messages\ServerStoppingNotificationV1.cs">
+      <Link>Shared.SocketMeister\Messages\ServerStoppingNotificationV1.cs</Link>
     </Compile>
     <Compile Include="..\Shared.SocketMeister\Messages\TokenChangesRequestV1.cs">
       <Link>Shared.SocketMeister\Messages\TokenChangesRequestV1.cs</Link>
     </Compile>
     <Compile Include="..\Shared.SocketMeister\Messages\TokenChangesResponseV1.cs">
       <Link>Shared.SocketMeister\Messages\TokenChangesResponseV1.cs</Link>
-    </Compile>
-    <Compile Include="..\Shared.SocketMeister\OpenRequestMessageCollection.cs">
-      <Link>Shared.SocketMeister\OpenRequestMessageCollection.cs</Link>
     </Compile>
     <Compile Include="..\Shared.SocketMeister\Serializer.cs">
       <Link>Shared.SocketMeister\Serializer.cs</Link>
@@ -160,6 +154,9 @@
     </Compile>
     <Compile Include="..\Shared.SocketMeister\TokenCollectionReadOnly.cs">
       <Link>Shared.SocketMeister\TokenCollectionReadOnly.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared.SocketMeister\UnrespondedMessageCollection.cs">
+      <Link>Shared.SocketMeister\UnrespondedMessageCollection.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

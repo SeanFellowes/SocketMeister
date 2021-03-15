@@ -14,12 +14,12 @@ namespace SocketMeister.Messages
         /// <summary>
         /// Type of message
         /// </summary>
-        MessageTypes MessageType { get; }
+        InternalMessageType MessageType { get; }
 
         /// <summary>
         /// Status of the message. 
         /// </summary>
-        MessageStatus Status { get; set; }
+        MessageProgress Status { get; set; }
 
         /// <summary>
         /// Mandatory method to append binary data to the IMessage object,

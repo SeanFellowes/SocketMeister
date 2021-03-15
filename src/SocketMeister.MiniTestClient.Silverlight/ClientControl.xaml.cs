@@ -37,14 +37,9 @@ namespace SocketMeister
         internal event EventHandler<SocketClient.MessageReceivedEventArgs> MessageReceived;
 
         /// <summary>
-        /// Event raised whenever a subscription message is received from the server.
+        /// Event raised whenever a broadcast is received from the server.
         /// </summary>
-        internal event EventHandler<SocketClient.SubscriptionMessageReceivedEventArgs> SubscriptionMessageReceived;
-
-        /// <summary>
-        /// Raised when a request message is received from the server. A response can be provided which will be returned to the server.
-        /// </summary>
-        internal event EventHandler<SocketClient.RequestReceivedEventArgs> RequestReceived;
+        internal event EventHandler<SocketClient.BroadcastReceivedEventArgs> BroadcastReceived;
 
         /// <summary>
         /// Raised when a request message is received from the server. A response can be provided which will be returned to the server.
@@ -119,7 +114,7 @@ namespace SocketMeister
                 }
             }
 
-            if (_client.DoesSubscriptionExist("My Test Subscription 1") == false)
+            if (_client.DoesSubscriptionNameExist("My Test Subscription 1") == false)
             {
                 _client.AddSubscription("My Test Subscription 1");
             }
@@ -140,7 +135,7 @@ namespace SocketMeister
                 object[] p = new object[2];
                 p[0] = _clientId;
                 p[1] = toSend;
-                byte[] result = _client.SendRequest(p);
+                byte[] result = _client.SendMessage(p);
 
                 Dispatcher.BeginInvoke(() =>
                 {
@@ -163,9 +158,8 @@ namespace SocketMeister
             _client.CurrentEndPointChanged += Client_CurrentEndPointChanged;
             _client.ExceptionRaised += Client_ExceptionRaised;
             _client.MessageReceived += Client_MessageReceived;
-            _client.RequestReceived += Client_RequestReceived;
             _client.ServerStopping += Client_ServerStopping;
-            _client.SubscriptionMessageReceived += Client_SubscriptionMessageReceived;
+            _client.BroadcastReceived += Client_BroadcastReceived;
 
             tbPort.Text = _client.CurrentEndPoint.Port.ToString();
         }
@@ -189,7 +183,7 @@ namespace SocketMeister
             //bdStatus.Background = new SolidColorBrush(Colors.Red);
         }
 
-        private void Client_ConnectionStatusChanged(object sender, SocketClient.ConnectionStatusChangedEventArgs e)
+        private void Client_ConnectionStatusChanged(object sender, EventArgs e)
         {
             Dispatcher.BeginInvoke(() =>
             {
@@ -225,27 +219,16 @@ namespace SocketMeister
             MessageReceived?.Invoke(this, e);
         }
 
-        private void Client_SubscriptionMessageReceived(object sender, SocketClient.SubscriptionMessageReceivedEventArgs e)
+        private void Client_BroadcastReceived(object sender, SocketClient.BroadcastReceivedEventArgs e)
         {
             Dispatcher.BeginInvoke(() =>
             {
                 _messagesReceived++;
                 tbMessagesReceived.Text = _messagesReceived.ToString();
             });
-            SubscriptionMessageReceived?.Invoke(this, e);
+            BroadcastReceived?.Invoke(this, e);
         }
 
-
-
-        private void Client_RequestReceived(object sender, SocketClient.RequestReceivedEventArgs e)
-        {
-            Dispatcher.BeginInvoke(() =>
-            {
-                _requestsReceived++;
-                tbRequestsReceived.Text = _requestsReceived.ToString();
-            });
-            RequestReceived?.Invoke(this, e);
-        }
 
         private void Client_ServerStopping(object sender, EventArgs e)
         {

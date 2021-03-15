@@ -66,7 +66,7 @@ namespace SocketMeister
             }
             foreach (MessageV1 message in messages)
             {
-                if (message.WaitForResponse) message.Status = MessageStatus.Unsent;
+                if (message.WaitForResponse) message.Status = MessageProgress.Unsent;
             }
         }
     }

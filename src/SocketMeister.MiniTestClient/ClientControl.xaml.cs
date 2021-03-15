@@ -37,7 +37,7 @@ namespace SocketMeister.MiniTestClient
         public event EventHandler<EventArgs> StatusChanged;
 
         /// <summary>
-        /// Event raised whenever a subscription message is received from the server.
+        /// Event raised whenever a broadcast is received from the server.
         /// </summary>
         public event EventHandler<SocketClient.BroadcastReceivedEventArgs> BroadcastReceived;
 
@@ -120,7 +120,7 @@ namespace SocketMeister.MiniTestClient
                 }
             }
 
-            if (_client.DoesSubscriptionExist("My Test Subscription 1") == false)
+            if (_client.DoesSubscriptionNameExist("My Test Subscription 1") == false)
             {
                 _client.AddSubscription("My Test Subscription 1");
             }
@@ -151,6 +151,7 @@ namespace SocketMeister.MiniTestClient
                     tbRequestsSent.Text = _messagesSent.ToString();
 
                 });
+
             }
             catch (Exception ex)
             {
@@ -202,7 +203,7 @@ namespace SocketMeister.MiniTestClient
             //bdStatus.Background = new SolidColorBrush(Colors.Red);
         }
 
-        private void Client_ConnectionStatusChanged(object sender, SocketClient.ConnectionStatusChangedEventArgs e)
+        private void Client_ConnectionStatusChanged(object sender, EventArgs e)
         {
             Dispatcher.Invoke(() =>
             {

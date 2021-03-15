@@ -246,7 +246,7 @@ namespace SocketMeister
         }
 
         /// <summary>
-        /// Are there any sclients connected which are subscribing to a specific subscription name
+        /// Are there any clients subscribing to a subscription name
         /// </summary>
         /// <param name="SubscriptionName">Name of the subscription (Case insensitive)</param>
         /// <returns>true if there is at least one client subscribing to the SubscriptionName</returns>
@@ -446,7 +446,7 @@ namespace SocketMeister
                             _totalBytesReceived += receiveEnvelope.MessageLength;
                         }
 
-                        if (receiveEnvelope.MessageType == MessageTypes.MessageV1)
+                        if (receiveEnvelope.MessageType == InternalMessageType.MessageV1)
                         {
                             lock (_lockTotals)
                             {
@@ -459,7 +459,7 @@ namespace SocketMeister
 
                             if (Status == SocketServerStatus.Stopping)
                             {
-                                MessageResponsev1 response = new MessageResponsev1(message.MessageId, MessageProcessingResult.Stopping);
+                                MessageResponsev1 response = new MessageResponsev1(message.MessageId, MessageResponseResult.Stopping);
                                 message.RemoteClient.SendIMessage(response, false);
                             }
                             else
@@ -471,7 +471,7 @@ namespace SocketMeister
                                 )).Start();
                             }
                         }
-                        else if (receiveEnvelope.MessageType == MessageTypes.MessageResponseV1)
+                        else if (receiveEnvelope.MessageType == InternalMessageType.MessageResponseV1)
                         {
                             if (Status == SocketServerStatus.Started)
                             {
@@ -479,7 +479,7 @@ namespace SocketMeister
                                 remoteClient.SetMessageResponseInUnrespondedMessages(receiveEnvelope.GetMessageResponseV1());
                             }
                         }
-                        else if (receiveEnvelope.MessageType == MessageTypes.ClientDisconnectingNotificationV1)
+                        else if (receiveEnvelope.MessageType == InternalMessageType.ClientDisconnectingNotificationV1)
                         {
                             try
                             {
@@ -490,7 +490,7 @@ namespace SocketMeister
                                 NotifyTraceEventRaised(ex, 5008);
                             }
                         }
-                        else if (receiveEnvelope.MessageType == MessageTypes.PollingRequestV1)
+                        else if (receiveEnvelope.MessageType == InternalMessageType.PollingRequestV1)
                         {
                             if (Status == SocketServerStatus.Started)
                             {
@@ -502,14 +502,14 @@ namespace SocketMeister
                             }
                         }
 
-                        else if (receiveEnvelope.MessageType == MessageTypes.SubscriptionChangesNotificationV1)
+                        else if (receiveEnvelope.MessageType == InternalMessageType.SubscriptionChangesNotificationV1)
                         {
                             if (Status == SocketServerStatus.Started)
                             {
                                 TokenChangesRequestV1 request = receiveEnvelope.GetSubscriptionChangesNotificationV1();
                                 new Thread(new ThreadStart(delegate
                                 {
-                                    BgProcessSubscriptionRequest(remoteClient, request);
+                                    BgProcessSubscriptionChanges(remoteClient, request);
                                 }
                                 )).Start();
                             }
@@ -578,7 +578,7 @@ namespace SocketMeister
             }
         }
 
-        private void BgProcessSubscriptionRequest(Client remoteClient, TokenChangesRequestV1 request)
+        private void BgProcessSubscriptionChanges(Client remoteClient, TokenChangesRequestV1 request)
         {
             try
             {

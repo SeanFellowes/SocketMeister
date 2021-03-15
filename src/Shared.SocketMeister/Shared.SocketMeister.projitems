@@ -13,6 +13,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Enums.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\Enums.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\BroadcastV1.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Messages\MessageEngine.Enums.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\TokenChangesRequestV1.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\TokenChangesResponseV1.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UnrespondedMessageCollection.cs" />

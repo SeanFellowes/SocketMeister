@@ -199,10 +199,10 @@ namespace SocketMeister
                 {
                     if (_socketServer.Status != SocketServerStatus.Started) return null;
 
-                    if (message.Status == MessageStatus.Unsent)
+                    if (message.Status == MessageProgress.Unsent)
                     {
                         SendIMessage(message, true);
-                        message.Status = MessageStatus.InProgress;
+                        message.Status = MessageProgress.InProgress;
 
                         //  WAIT FOR RESPONSE
                         while (message.WaitForResponse)
