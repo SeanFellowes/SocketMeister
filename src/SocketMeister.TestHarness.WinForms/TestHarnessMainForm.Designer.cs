@@ -604,7 +604,6 @@
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.Label lblErrors;
         private System.Windows.Forms.DataGridView dGrid;
-        private SocketServerOverview ControlPolicyServer;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
