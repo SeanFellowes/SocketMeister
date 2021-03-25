@@ -12,11 +12,11 @@ namespace SocketMeister
     internal class TraceEventArgs : EventArgs
 #endif
     {
-        private readonly int eventId;
-        private readonly string message;
-        private readonly SeverityType severity;
-        private readonly string source;
-        private readonly string stackTrace;
+        private readonly int _eventId;
+        private readonly string _message;
+        private readonly SeverityType _severity;
+        private readonly string _source;
+        private readonly string _stackTrace;
 
         /// <summary>
         /// Constructor
@@ -26,11 +26,11 @@ namespace SocketMeister
         /// <param name="eventId">Event identifier for this trace event. Useful if writing this to the Windows Event Log (Or equivalent).</param>
         public TraceEventArgs(string message, SeverityType severity, int eventId)
         {
-            this.message = message;
-            this.severity = severity;
-            this.eventId = eventId;
-            source = null;
-            stackTrace = null;
+            this._message = message;
+            this._severity = severity;
+            this._eventId = eventId;
+            _source = null;
+            _stackTrace = null;
         }
 
         /// <summary>
@@ -42,11 +42,11 @@ namespace SocketMeister
         /// <param name="source">Source of the trace event.</param>
         public TraceEventArgs(string message, SeverityType severity, int eventId, string source)
         {
-            this.message = message;
-            this.severity = severity;
-            this.eventId = eventId;
-            this.source = source;
-            stackTrace = null;
+            this._message = message;
+            this._severity = severity;
+            this._eventId = eventId;
+            this._source = source;
+            _stackTrace = null;
         }
 
         /// <summary>
@@ -56,11 +56,13 @@ namespace SocketMeister
         /// <param name="eventId">Event identifier for this trace event. Useful if writing this to the Windows Event Log (Or equivalent).</param>
         public TraceEventArgs(Exception exception, int eventId)
         {
-            message = exception.Message;
-            severity = SeverityType.Error;
-            this.eventId = eventId;
-            source = null;
-            if (exception.StackTrace != null) stackTrace = exception.StackTrace;
+            if (exception == null) throw new ArgumentNullException(nameof(exception));
+
+            _message = exception.Message;
+            _severity = SeverityType.Error;
+            this._eventId = eventId;
+            _source = null;
+            if (exception.StackTrace != null) _stackTrace = exception.StackTrace;
         }
 
         /// <summary>
@@ -71,37 +73,39 @@ namespace SocketMeister
         /// <param name="source">Source of the trace event.</param>
         public TraceEventArgs(Exception exception, int eventId, string source)
         {
-            message = exception.Message;
-            severity = SeverityType.Error;
-            this.eventId = eventId;
-            this.source = source;
-            if (exception.StackTrace != null) stackTrace = exception.StackTrace;
+            if (exception == null) throw new ArgumentNullException(nameof(exception));
+
+            _message = exception.Message;
+            _severity = SeverityType.Error;
+            this._eventId = eventId;
+            this._source = source;
+            if (exception.StackTrace != null) _stackTrace = exception.StackTrace;
         }
 
         /// <summary>
         /// Event identifier for this trace event. Useful if writing this to the Windows Event Log (Or equivalent).
         /// </summary>
-        public int EventId { get { return eventId; } }
+        public int EventId => _eventId;
 
         /// <summary>
         /// Message describing the trace event
         /// </summary>
-        public string Message { get { return message; } }
+        public string Message => _message;
 
         /// <summary>
         /// Severity of the trace event.
         /// </summary>
-        public SeverityType Severity { get { return severity; } }
+        public SeverityType Severity => _severity;
 
         /// <summary>
         /// Optional source of the trace event.
         /// </summary>
-        public string Source { get { return source; } }
+        public string Source => _source;
 
         /// <summary>
         /// Optional stack trace information.
         /// </summary>
-        public string StackTrace { get { return stackTrace; } }
+        public string StackTrace => _stackTrace;
     }
 
 }

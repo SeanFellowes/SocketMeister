@@ -52,7 +52,7 @@ namespace SocketMeister.Messages
             }
         }
 
-        public List<ChangeIdentifier> ChangeIdentifiers { get { return _changes; } }
+        public List<ChangeIdentifier> ChangeIdentifiers => _changes;
 
         public void AppendBytes(BinaryWriter Writer)
         {

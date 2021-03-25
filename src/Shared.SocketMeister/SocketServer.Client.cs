@@ -45,17 +45,17 @@ namespace SocketMeister
             /// <summary>
             /// Unique GUID assigned to each client
             /// </summary>
-            public Guid ClientId { get { return _clientId; } }
+            public Guid ClientId => _clientId;
 
             /// <summary>
             /// Socket which the client is transmitting data on.
             /// </summary>
-            internal Socket ClientSocket { get { return _clientSocket; } }
+            internal Socket ClientSocket => _clientSocket;
 
             /// <summary>
             /// Date and time which the client connected.
             /// </summary>
-            public DateTime ConnectTimestamp { get { return _connectTimestamp; } }
+            public DateTime ConnectTimestamp => _connectTimestamp;
 
             /// <summary>
             /// Byte array to directly receive data from the socket. 
@@ -65,12 +65,12 @@ namespace SocketMeister
             /// <summary>
             /// Class which processes raw data directly from the socket and converts into usable messages.
             /// </summary>
-            internal MessageEngine ReceiveEnvelope { get { return _receivedEnvelope; } }
+            internal MessageEngine ReceiveEnvelope => _receivedEnvelope;
 
             /// <summary>
             /// The number of subscriptions for this client
             /// </summary>
-            public int SubscriptionCount { get { return _subscriptions.Count; } }
+            public int SubscriptionCount => _subscriptions.Count;
 
             /// <summary>
             /// Whether a subscription exists. 

@@ -1,7 +1,7 @@
 ﻿
 namespace SocketMeister
 {
-    partial class ucSocketServer
+    partial class UcSocketServer
     {
         /// <summary> 
         /// Required designer variable.

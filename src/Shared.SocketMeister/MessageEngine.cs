@@ -286,14 +286,11 @@ namespace SocketMeister.Messages
         /// <summary>
         /// The type of message. 
         /// </summary>
-        internal MessageEngineMessageType MessageType
-        {
-            get { return _messageType; }
-        }
+        internal MessageEngineMessageType MessageType => _messageType;
 
-        internal int MessageLength { get { return _messageLength; } }
+        internal int MessageLength => _messageLength;
 
-        internal int MessageLengthUncompressed { get { return _messageLengthUncompressed; } }
+        internal int MessageLengthUncompressed => _messageLengthUncompressed;
 
 
         private void AddParseAttemptDetails()

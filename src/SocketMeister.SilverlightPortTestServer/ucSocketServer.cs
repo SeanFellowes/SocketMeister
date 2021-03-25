@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace SocketMeister
 {
-    public partial class ucSocketServer : UserControl
+    public partial class UcSocketServer : UserControl
     {
         private DateTime _nextAutomatedSend = DateTime.Now;
         private string _messageText = "I had planned on using drones early on—not too much because I think drones can be so overused. But I wanted to also shoot from the hornet's POV. Hornets articulate themselves in a totally different way than just the normal drone beauty shot. That's when I got tipped off about racing drones, which I had not used before. They're smaller, and the way they can articulate through the forest on a dime is very different from the regular drone.";
@@ -17,7 +17,7 @@ namespace SocketMeister
 
         public event EventHandler<LogEventArgs> LogEventRaised;
 
-        public ucSocketServer()
+        public UcSocketServer()
         {
             InitializeComponent();
         }
@@ -36,7 +36,7 @@ namespace SocketMeister
 
         public int Port
         {
-            get { return _port; }
+            get => _port;
             set
             {
                 _port = value;

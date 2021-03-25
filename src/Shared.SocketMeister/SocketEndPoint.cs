@@ -107,12 +107,12 @@ namespace SocketMeister
         /// <summary>
         /// IP Address of the server to connect to
         /// </summary>
-        public string IPAddress { get { return _iPAddress; } }
+        public string IPAddress => _iPAddress;
 
         /// <summary>
         /// IPEndpoint
         /// </summary>
-        internal IPEndPoint IPEndPoint { get { return _ipEndPoint; } }
+        internal IPEndPoint IPEndPoint => _ipEndPoint;
 
 
         private bool IsDisposed
@@ -124,7 +124,7 @@ namespace SocketMeister
         /// <summary>
         /// Port number of the socket listener to connect to
         /// </summary>
-        public ushort Port { get { return _port; } }
+        public ushort Port => _port;
 
         /// <summary>
         /// TCP Socket in use for the current destination.

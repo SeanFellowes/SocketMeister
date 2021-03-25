@@ -13,10 +13,7 @@ namespace SocketMeister.Testing
             else percentComplete = PercentComplete;
         }
 
-        public int PercentComplete
-        {
-            get { return percentComplete; }
-        }
+        public int PercentComplete => percentComplete;
 
     }
 

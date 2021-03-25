@@ -398,7 +398,7 @@ namespace SocketMeister
         /// <summary>
         /// The number of subscriptions for this client
         /// </summary>
-        public int SubscriptionCount { get { return _subscriptions.Count; } }
+        public int SubscriptionCount => _subscriptions.Count;
 
         /// <summary>
         /// Whether a subscription name exists in the list of subscriptions. 

@@ -16,7 +16,7 @@ namespace SocketMeister.Messages
             _messageType = MessageType;
         }
 
-        public object Lock { get { return _lock; } }
+        public object Lock => _lock;
 
         public bool IsAborted
         {
@@ -25,7 +25,7 @@ namespace SocketMeister.Messages
         }
 
 
-        public MessageEngineMessageType MessageType { get { return _messageType; } }
+        public MessageEngineMessageType MessageType => _messageType;
 
 
         public MessageEngineDeliveryStatus Status

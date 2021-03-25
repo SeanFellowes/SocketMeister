@@ -4,15 +4,18 @@ using System.Windows.Forms;
 
 namespace SocketMeister
 {
-    delegate void SetLabelTextDelegate(Label label, string text);
-    delegate void ListBoxAddItemDelegate(LogEventArgs Item);
-    delegate void SetButtonEnabledDelegate(Button button, bool enabled);
-    delegate void SetCheckBoxEnabledDelegate(CheckBox checkbox, bool enabled);
+    internal delegate void SetLabelTextDelegate(Label label, string text);
+
+    internal delegate void ListBoxAddItemDelegate(LogEventArgs Item);
+
+    internal delegate void SetButtonEnabledDelegate(Button button, bool enabled);
+
+    internal delegate void SetCheckBoxEnabledDelegate(CheckBox checkbox, bool enabled);
 
 
     public partial class Form1 : Form
     {
-        private readonly List<ucSocketServer> _servers = new List<ucSocketServer>();
+        private readonly List<UcSocketServer> _servers = new List<UcSocketServer>();
 
         public Form1()
         {
@@ -58,7 +61,7 @@ namespace SocketMeister
                 Left = 0;
                 Width = 700;
 
-                foreach (ucSocketServer uc in _servers)
+                foreach (UcSocketServer uc in _servers)
                 {
                     uc.MessageText = "I had planned on using drones early on—not too much because I think drones can be so overused. But I wanted to also shoot from the hornet's POV. Hornets articulate themselves in a totally different way than just the normal drone beauty shot. That's when I got tipped off about racing drones, which I had not used before. They're smaller, and the way they can articulate through the forest on a dime is very different from the regular drone.";
                     uc.Start();
@@ -74,7 +77,7 @@ namespace SocketMeister
 
         private void Main_FormClosing(object sender, FormClosingEventArgs e)
         {
-            foreach (ucSocketServer uc in _servers)
+            foreach (UcSocketServer uc in _servers)
             {
                 uc.Stop(true);
             }

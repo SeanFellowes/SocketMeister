@@ -23,7 +23,7 @@ namespace SocketMeister.Messages
             _changeBytes = Reader.ReadBytes(Reader.ReadInt32());
         }
 
-        public byte[] ChangeBytes { get { return _changeBytes; } }
+        public byte[] ChangeBytes => _changeBytes;
 
         public void AppendBytes(BinaryWriter Writer)
         {

@@ -62,18 +62,12 @@ namespace SocketMeister.Messages
         /// <summary>
         /// Parameters provided with this broadcast
         /// </summary>
-        public object[] Parameters
-        {
-            get { return _parameters; }
-        }
+        public object[] Parameters => _parameters;
 
         /// <summary>
         /// Optional Name/Tag/Identifier given to the broadcast
         /// </summary>
-        public string Name
-        {
-            get { return _name; }
-        }
+        public string Name => _name;
 
         public void AppendBytes(BinaryWriter Writer)
         {

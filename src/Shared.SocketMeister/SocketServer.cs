@@ -111,12 +111,12 @@ namespace SocketMeister
         }
 
 
-        internal Clients ConnectedClients { get { return _connectedClients; } }
+        internal Clients ConnectedClients => _connectedClients;
 
         /// <summary>
         /// The IP Address and Port that this socket server is using to communicate (e.g. 10.200.50.25:6000).
         /// </summary>
-        public string EndPoint { get { return _endPoint; } }
+        public string EndPoint => _endPoint;
 
 
         /// <summary>
@@ -181,7 +181,7 @@ namespace SocketMeister
 
 
 
-        #region Public Methods
+#region Public Methods
 
         /// <summary>
         /// Send a message to all connected clients. Exceptions will not halt this process, but generate 'ExceptionRaised' events. 
@@ -236,13 +236,7 @@ namespace SocketMeister
         /// <summary>
         /// Number of clients connected to the socket server.
         /// </summary>
-        public int ClientCount
-        {
-            get
-            {
-                return _connectedClients.Count;
-            }
-        }
+        public int ClientCount => _connectedClients.Count;
 
         /// <summary>
         /// Are there any clients subscribing to a subscription name
@@ -342,7 +336,7 @@ namespace SocketMeister
             Status = SocketServerStatus.Stopped;
         }
 
-#endregion
+        #endregion
 
 
 

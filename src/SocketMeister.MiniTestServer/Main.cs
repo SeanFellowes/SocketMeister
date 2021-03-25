@@ -6,10 +6,13 @@ using System.Windows.Forms;
 
 namespace SocketMeister
 {
-    delegate void SetLabelTextDelegate(Label label, string text);
-    delegate void ListBoxAddItemDelegate(LogEventArgs Item);
-    delegate void SetButtonEnabledDelegate(Button button, bool enabled);
-    delegate void SetCheckBoxEnabledDelegate(CheckBox checkbox, bool enabled);
+    internal delegate void SetLabelTextDelegate(Label label, string text);
+
+    internal delegate void ListBoxAddItemDelegate(LogEventArgs Item);
+
+    internal delegate void SetButtonEnabledDelegate(Button button, bool enabled);
+
+    internal delegate void SetCheckBoxEnabledDelegate(CheckBox checkbox, bool enabled);
 
     public partial class Main : Form
     {

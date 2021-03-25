@@ -55,15 +55,9 @@ namespace SocketMeister.Testing.ControlBus
             }
         }
 
-        public SocketServer Listener
-        {
-            get { return _listener; }
-        }
+        public SocketServer Listener => _listener;
 
-        public int Port
-        {
-            get { return Constants.ControlBusPort; }
-        }
+        public int Port => Constants.ControlBusPort;
 
         internal void Start()
         {

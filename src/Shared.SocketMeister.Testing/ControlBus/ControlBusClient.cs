@@ -61,34 +61,19 @@ namespace SocketMeister.Testing.ControlBus
             set { lock (_lock) { _controlBusSocketClient = value; } }
         }
 
-        public int ControlBusClientId
-        {
-            get { return _controlBusClientId; }
-        }
+        public int ControlBusClientId => _controlBusClientId;
 
-        public ControlBusClientType ControlBusClientType
-        {
-            get { return _controlBusClientType; }
-        }
+        public ControlBusClientType ControlBusClientType => _controlBusClientType;
 
-        public int ControlBusPort
-        {
-            get { return _controlBusPort; }
-        }
+        public int ControlBusPort => _controlBusPort;
 
-        public string ControlBusServerIPAddress
-        {
-            get { return _controlBusServerIPAddress; }
-        }
+        public string ControlBusServerIPAddress => _controlBusServerIPAddress;
 
 
         /// <summary>
         /// The connection status of the socket client
         /// </summary>
-        public SocketClientConnectionStatus SocketClientConnectionStatus
-        {
-            get { return (SocketClientConnectionStatus)ControlBusSocketClient.ConnectionStatus; }
-        }
+        public SocketClientConnectionStatus SocketClientConnectionStatus => (SocketClientConnectionStatus)ControlBusSocketClient.ConnectionStatus;
 
 
 

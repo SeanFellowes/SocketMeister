@@ -251,7 +251,7 @@ namespace SocketMeister.Testing
         /// <summary>
         /// Suite of tests which are available;
         /// </summary>
-        public List<ITestOnHarness> Tests { get { return _tests; } }
+        public List<ITestOnHarness> Tests => _tests;
 
 
         public ITestOnHarness CurrentTest

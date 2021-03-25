@@ -20,12 +20,12 @@ namespace SocketMeister.MiniTestClient
         {
             public enum SeverityType { Information = 0, Warning = 1, Error = 2 }
 
-            readonly DateTime timeStamp = DateTime.Now;
+            private readonly DateTime timeStamp = DateTime.Now;
 
             public SeverityType Severity { get; set; }
             public string Source { get; set; }
             public string Text { get; set; }
-            public string TimeStamp { get { return timeStamp.ToString("HH:mm:ss fff"); } }
+            public string TimeStamp => timeStamp.ToString("HH:mm:ss fff");
             public SolidColorBrush Background
             {
                 get
@@ -46,10 +46,10 @@ namespace SocketMeister.MiniTestClient
             }
         }
 
-        readonly DispatcherTimer _dispatcherTimer = new DispatcherTimer();
-        readonly List<ClientControl> _clients = new List<ClientControl>();
-        readonly ObservableCollection<LogItem> _log = new ObservableCollection<LogItem>();
-        bool _windowClosingProcessed = false;
+        private readonly DispatcherTimer _dispatcherTimer = new DispatcherTimer();
+        private readonly List<ClientControl> _clients = new List<ClientControl>();
+        private readonly ObservableCollection<LogItem> _log = new ObservableCollection<LogItem>();
+        private bool _windowClosingProcessed = false;
 
         public MainWindow()
         {

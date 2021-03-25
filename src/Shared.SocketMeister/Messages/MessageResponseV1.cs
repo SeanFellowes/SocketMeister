@@ -68,28 +68,16 @@ namespace SocketMeister.Messages
         /// <summary>
         /// The message that this response refers to
         /// </summary>
-        public long MessageId
-        {
-            get { return _messageId; }
-        }
+        public long MessageId => _messageId;
 
 
-        public Byte[] ResponseData
-        {
-            get { return _responseData; }
-        }
+        public Byte[] ResponseData => _responseData;
 
 
-        public MessageEngineDeliveryResult ProcessingResult
-        {
-            get { return _processingResult; }
-        }
+        public MessageEngineDeliveryResult ProcessingResult => _processingResult;
 
 
-        public string Error
-        {
-            get { return _error; }
-        }
+        public string Error => _error;
 
 
         public void AppendBytes(BinaryWriter Writer)

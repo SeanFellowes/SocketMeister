@@ -46,7 +46,7 @@ namespace SocketMeister.Testing.ControlBus
         }
 
 
-        public ControlBusClientType ClientType { get { return ControlBusClientType.ClientController; } }
+        public ControlBusClientType ClientType => ControlBusClientType.ClientController;
 
         /// <summary>
         /// Socketmeister client (from the server perspective)
@@ -64,7 +64,7 @@ namespace SocketMeister.Testing.ControlBus
             }
         }
 
-        public ControlBusCommands Commands { get { return _commands; } }
+        public ControlBusCommands Commands => _commands;
 
 
 

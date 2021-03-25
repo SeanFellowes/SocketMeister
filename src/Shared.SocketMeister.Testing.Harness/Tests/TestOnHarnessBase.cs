@@ -45,7 +45,7 @@ namespace SocketMeister.Testing.Tests
 
         public int PercentComplete
         {
-            get { return _percentComplete; }
+            get => _percentComplete;
             internal set
             {
                 lock (Lock)

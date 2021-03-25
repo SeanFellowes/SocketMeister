@@ -59,7 +59,7 @@ namespace SocketMeister.MiniTestClient
 
         public int ClientId
         {
-            get { return _clientId; }
+            get => _clientId;
             set
             {
                 _clientId = value;
@@ -70,11 +70,8 @@ namespace SocketMeister.MiniTestClient
 
         public bool TestSubscriptions
         {
-            get { return cbSubscriptions.IsChecked.Value; }
-            set
-            {
-                cbSubscriptions.IsChecked = value;
-            }
+            get => cbSubscriptions.IsChecked.Value;
+            set => cbSubscriptions.IsChecked = value;
 
         }
 

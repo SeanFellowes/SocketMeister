@@ -30,12 +30,12 @@ namespace SocketMeister
             _exception = Exception;
         }
 
-        public Exception Exception { get { return _exception; } }
-        public SeverityType Severity { get { return _severity; } }
-        public string Server { get { return _server; } }
-        public string Source { get { return _source; } }
-        public string Text { get { return _text; } }
-        public string TimeStamp { get { return _timeStamp.ToString("HH:mm:ss fff"); } }
+        public Exception Exception => _exception;
+        public SeverityType Severity => _severity;
+        public string Server => _server;
+        public string Source => _source;
+        public string Text => _text;
+        public string TimeStamp => _timeStamp.ToString("HH:mm:ss fff");
 
 
     }

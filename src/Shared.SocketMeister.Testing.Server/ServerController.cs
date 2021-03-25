@@ -12,7 +12,7 @@ namespace SocketMeister.Testing
         private bool _disposed;
         private bool _disposeCalled;
         private readonly object _lock = new object();
-        private readonly static OpenTransactions _openTransactions = new OpenTransactions();
+        private static readonly OpenTransactions _openTransactions = new OpenTransactions();
         private int _port;
         private SocketServer _socketServer = null;
 
@@ -58,7 +58,7 @@ namespace SocketMeister.Testing
         /// <summary>
         /// Lock to provide threadsafe operations
         /// </summary>
-        public object Lock { get { return _lock; } }
+        public object Lock => _lock;
 
 
         public void Dispose()
@@ -81,7 +81,7 @@ namespace SocketMeister.Testing
         }
 
 
-        internal OpenTransactions OpenMessages { get { return _openTransactions; } }
+        internal OpenTransactions OpenMessages => _openTransactions;
 
 
         private void ControlBusClient_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
@@ -133,12 +133,9 @@ namespace SocketMeister.Testing
         }
 
 
-        public int ClientId { get { return _controlBusClient.ControlBusClientId; } }
+        public int ClientId => _controlBusClient.ControlBusClientId;
 
-        public SocketServer SocketServer
-        {
-            get { return _socketServer; }
-        }
+        public SocketServer SocketServer => _socketServer;
 
         public int Port
         {

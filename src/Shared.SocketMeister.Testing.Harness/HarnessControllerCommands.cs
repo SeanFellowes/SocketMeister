@@ -10,7 +10,7 @@ namespace SocketMeister.Testing
     /// </summary>
     internal static class HarnessControllerCommands
     {
-        private readonly static object _lock = new object();
+        private static readonly object _lock = new object();
         private static int _lastMessageId = 0;
 
         internal static async Task ClientToServerSendRequestEcho01(HarnessServerController ServerController, HarnessClientController ClientController, int MessageLength, int TimeoutMilliseconds = 60000)

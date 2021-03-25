@@ -97,18 +97,12 @@ namespace SocketMeister.Messages
         /// <summary>
         /// Parameters provided with this message
         /// </summary>
-        public object[] Parameters
-        {
-            get { return _parameters; }
-        }
+        public object[] Parameters => _parameters;
 
         /// <summary>
         /// True is this message is long polling on the server side. Long polling messages will be closed immediately in the event of a close from either the client or server side.
         /// </summary>
-        public bool IsLongPolling
-        {
-            get { return _isLongPolling; }
-        }
+        public bool IsLongPolling => _isLongPolling;
 
         public bool IsResponseReceived
         {
@@ -133,10 +127,7 @@ namespace SocketMeister.Messages
         /// <summary>
         /// Identifier assigned to this message when it was created
         /// </summary>
-        public long MessageId
-        {
-            get { return _messageId; }
-        }
+        public long MessageId => _messageId;
 
         public MessageResponseV1 Response
         {
@@ -148,7 +139,7 @@ namespace SocketMeister.Messages
         /// <summary>
         /// Number of milliseconds to wait before a timeout will occur.
         /// </summary>
-        public int TimeoutMilliseconds { get { return _timeoutMilliseconds; } }
+        public int TimeoutMilliseconds => _timeoutMilliseconds;
 
         /// <summary>
         /// Whether the method SendReceive(Message Message) should continute trying

@@ -34,7 +34,7 @@ namespace SocketMeister
             /// <summary>
             /// The parameters provided with the message.
             /// </summary>
-            public object[] Parameters { get { return _parameters; } }
+            public object[] Parameters => _parameters;
 
 
             /// <summary>
@@ -62,12 +62,12 @@ namespace SocketMeister
             /// <summary>
             /// The parameters provided with the message.
             /// </summary>
-            public object[] Parameters { get { return _parameters; } }
+            public object[] Parameters => _parameters;
 
             /// <summary>
             /// Optional Name/Tag/Identifier for the broadcast 
             /// </summary>
-            public string Name { get { return _name; } }
+            public string Name => _name;
         }
 
 

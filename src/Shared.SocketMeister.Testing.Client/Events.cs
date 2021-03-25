@@ -11,10 +11,7 @@ namespace SocketMeister.Testing
             _client = Client;
         }
 
-        public ClientController Client
-        {
-            get { return _client; }
-        }
+        public ClientController Client => _client;
 
     }
 }

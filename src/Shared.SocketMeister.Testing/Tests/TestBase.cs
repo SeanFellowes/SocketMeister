@@ -14,16 +14,16 @@
         }
 
 
-        public string Description { get { return _description; } }
+        public string Description => _description;
 
-        public int Id { get { return _id; } }
+        public int Id => _id;
 
-        public object Lock { get { return _lock; } }
+        public object Lock => _lock;
 
         /// <summary>
         /// Short name for the test (e.g. Test001)
         /// </summary>
-        public string Name { get { return "Test" + _id.ToString("000"); } }
+        public string Name => "Test" + _id.ToString("000");
 
         internal T Parent
         {

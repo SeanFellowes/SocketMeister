@@ -29,11 +29,11 @@ namespace SocketMeister
         /// <summary>
         /// Event identifier for this exception. Useful if writing this to the Windows Event Log.
         /// </summary>
-        public int EventId { get { return _eventId; } }
+        public int EventId => _eventId;
 
         /// <summary>
         /// Exception that occured
         /// </summary>
-        public Exception Exception { get { return _exception; } }
+        public Exception Exception => _exception;
     }
 }

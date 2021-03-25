@@ -40,7 +40,7 @@ namespace SocketMeister
 
         public int Port
         {
-            get { return _port; }
+            get => _port;
             set
             {
                 _port = value;
@@ -56,7 +56,7 @@ namespace SocketMeister
 
         public int ServerId
         {
-            get { return _serverId; }
+            get => _serverId;
             set
             {
                 _serverId = value;

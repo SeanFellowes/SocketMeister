@@ -12,10 +12,7 @@ namespace SocketMeister.Testing
             _client = Client;
         }
 
-        public ControlBus.HarnessClientController Client
-        {
-            get { return _client; }
-        }
+        public ControlBus.HarnessClientController Client => _client;
 
     }
 
@@ -31,15 +28,9 @@ namespace SocketMeister.Testing
             _status = Status;
         }
 
-        public TestStatus Status
-        {
-            get { return _status; }
-        }
+        public TestStatus Status => _status;
 
-        public ITestOnHarness Test
-        {
-            get { return _test; }
-        }
+        public ITestOnHarness Test => _test;
     }
 
 

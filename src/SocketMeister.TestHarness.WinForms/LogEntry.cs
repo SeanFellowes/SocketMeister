@@ -5,19 +5,19 @@ namespace SocketMeister.Test
 {
     internal class LogEntry : INotifyPropertyChanged
     {
-        readonly string eventId = "";
-        readonly string message = "";
-        readonly string severity = "";
-        readonly string source = "";
-        readonly string stackTrace = "";
-        readonly DateTime timeStamp;
+        private readonly string eventId = "";
+        private readonly string message = "";
+        private readonly string severity = "";
+        private readonly string source = "";
+        private readonly string stackTrace = "";
+        private readonly DateTime timeStamp;
 
-        public string TimeStamp { get { return timeStamp.ToString("HH:mm:ss fff"); } }
-        public string Source { get { return source; } }
-        public string StackTrace { get { return stackTrace; } }
-        public string EventId { get { return eventId; } }
-        public string Message { get { return message; } }
-        public string Severity { get { return severity; } }
+        public string TimeStamp => timeStamp.ToString("HH:mm:ss fff");
+        public string Source => source;
+        public string StackTrace => stackTrace;
+        public string EventId => eventId;
+        public string Message => message;
+        public string Severity => severity;
 
         public LogEntry() { }
 

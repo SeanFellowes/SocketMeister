@@ -65,12 +65,12 @@ namespace SocketMeister.Testing
         }
 
 
-        public int ClientId { get { return _controlBusClient.ControlBusClientId; } }
+        public int ClientId => _controlBusClient.ControlBusClientId;
 
         /// <summary>
         /// Lock to provide threadsafe operations
         /// </summary>
-        public object Lock { get { return _lock; } }
+        public object Lock => _lock;
 
         public SocketClient SocketClient { get { lock (_lock) { return _socketClient; } } }
 
