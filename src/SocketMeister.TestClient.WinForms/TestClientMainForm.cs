@@ -1,14 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using SocketMeister.Testing;
 
 namespace Test.Client.WinForms
 {
@@ -25,22 +17,23 @@ namespace Test.Client.WinForms
         {
             try
             {
-                this.Text = "SocketMeister Test Client (" + Program.ClientId.ToString() + ")";
+                Text = "SocketMeister Test Client (" + Program.ClientId.ToString() + ")";
                 Guid guid = Guid.NewGuid();
                 client = new SocketMeister.Testing.ClientController(Program.ClientId);
                 client.ControlBusConnectionFailed += Harness_ControlConnectionFailed;
             }
             catch
             {
-                this.Close();
+                Close();
                 Application.Exit();
             }
         }
 
         private void Harness_ControlConnectionFailed(object sender, EventArgs e)
         {
-            this.Invoke((MethodInvoker)delegate {
-                this.Close();
+            Invoke((MethodInvoker)delegate
+            {
+                Close();
             });
             Thread.Sleep(500);
             Environment.Exit(2);

@@ -1,13 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using SocketMeister;
 
 namespace SocketMeister.Test
 {
@@ -91,7 +84,7 @@ namespace SocketMeister.Test
                 {
                     LabelStatus.Text = "Started";
                     StatusIndicator.BackColor = Color.DarkGreen;
-                    this.Cursor = Cursors.Default;
+                    Cursor = Cursors.Default;
                 }
                 else if (serverCtl.Listener.Status == SocketServerStatus.Starting)
                 {
@@ -102,7 +95,7 @@ namespace SocketMeister.Test
                 {
                     LabelStatus.Text = "Stopped";
                     StatusIndicator.BackColor = Color.Red;
-                    this.Cursor = Cursors.Default;
+                    Cursor = Cursors.Default;
                 }
                 else
                 {

@@ -7,7 +7,6 @@ using SocketMeister.Messages;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
 
 namespace SocketMeister
 {
@@ -71,7 +70,7 @@ namespace SocketMeister
         /// <summary>
         /// Number of tokens in the token collection
         /// </summary>
-        public int Count {  get { lock (_lock) { return _dict.Count; } } }
+        public int Count { get { lock (_lock) { return _dict.Count; } } }
 
         /// <summary>
         /// Add a token to the token collection. Throws ArgumentException if Token.Name (case insensitive) already exists.
@@ -165,9 +164,9 @@ namespace SocketMeister
         public List<Token> ToList()
         {
             List<Token> rVal = new List<Token>();
-            lock(_lock)
+            lock (_lock)
             {
-                foreach (KeyValuePair<string , Token> kvp in _dict)
+                foreach (KeyValuePair<string, Token> kvp in _dict)
                 {
                     rVal.Add(kvp.Value);
                 }

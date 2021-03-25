@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
-using System.Threading;
-
-
-namespace SocketMeister.Testing.Tests
+﻿namespace SocketMeister.Testing.Tests
 {
     internal partial class TestBase<T> : ITest<T>
     {
@@ -30,7 +23,7 @@ namespace SocketMeister.Testing.Tests
         /// <summary>
         /// Short name for the test (e.g. Test001)
         /// </summary>
-        public string Name {  get { return "Test" + _id.ToString("000"); } }
+        public string Name { get { return "Test" + _id.ToString("000"); } }
 
         internal T Parent
         {

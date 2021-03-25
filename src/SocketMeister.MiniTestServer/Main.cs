@@ -1,12 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Threading;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace SocketMeister
@@ -33,9 +28,9 @@ namespace SocketMeister
 
             try
             {
-                this.Top = 0;
-                this.Left = 0;
-                this.Width = 850;
+                Top = 0;
+                Left = 0;
+                Width = 850;
                 lblStatus.Text = "";
 
                 dGrid.AutoGenerateColumns = false;
@@ -86,10 +81,10 @@ namespace SocketMeister
         {
             try
             {
-                if (this.dGrid.InvokeRequired)
+                if (dGrid.InvokeRequired)
                 {
                     ListBoxAddItemDelegate d = new ListBoxAddItemDelegate(InsertListboxItem);
-                    this.Invoke(d, new object[] { Item });
+                    Invoke(d, new object[] { Item });
                 }
                 else
                 {
@@ -106,7 +101,7 @@ namespace SocketMeister
         {
             while (true == true)
             {
-                lock(_lock) { if (_stopAutomaticMessageGenerator == true) return; }
+                lock (_lock) { if (_stopAutomaticMessageGenerator == true) return; }
 
                 foreach (UcSocketServer uc in _servers)
                 {

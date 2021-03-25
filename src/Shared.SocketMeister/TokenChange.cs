@@ -2,10 +2,7 @@
 #pragma warning disable IDE0090 // Use 'new(...)'
 
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
-using System.Text;
 
 namespace SocketMeister
 {
@@ -32,7 +29,7 @@ namespace SocketMeister
             }
 
             this.Action = Action;
-            this.TokenNameUppercase = TokenName.ToUpper(CultureInfo.InvariantCulture);
+            TokenNameUppercase = TokenName.ToUpper(CultureInfo.InvariantCulture);
             this.Token = Token;
         }
 
@@ -42,7 +39,7 @@ namespace SocketMeister
 
             this.ChangeId = ChangeId;
             this.Action = Action;
-            this.TokenNameUppercase = TokenName.ToUpper(CultureInfo.InvariantCulture);
+            TokenNameUppercase = TokenName.ToUpper(CultureInfo.InvariantCulture);
             this.Token = Token;
         }
 

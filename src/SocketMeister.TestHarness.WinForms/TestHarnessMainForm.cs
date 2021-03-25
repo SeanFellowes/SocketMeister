@@ -1,12 +1,10 @@
-﻿using System;
+﻿using SocketMeister.Testing;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Text;
 using System.Threading;
 using System.Windows.Forms;
-using SocketMeister.Testing;
 
 namespace SocketMeister.Test
 {
@@ -64,15 +62,15 @@ namespace SocketMeister.Test
 
         private void FormMain_Load(object sender, EventArgs e)
         {
-            this.WindowState = FormWindowState.Normal;
-            this.Top = 0;
-            this.Left = 0;
-            this.Height = Screen.PrimaryScreen.WorkingArea.Height;
+            WindowState = FormWindowState.Normal;
+            Top = 0;
+            Left = 0;
+            Height = Screen.PrimaryScreen.WorkingArea.Height;
 
             if (Screen.PrimaryScreen.WorkingArea.Width > 5000)
-                this.Width = Convert.ToInt32(Screen.PrimaryScreen.WorkingArea.Width * .33);
+                Width = Convert.ToInt32(Screen.PrimaryScreen.WorkingArea.Width * .33);
             else
-                this.Width = Convert.ToInt32(Screen.PrimaryScreen.WorkingArea.Width * .5);
+                Width = Convert.ToInt32(Screen.PrimaryScreen.WorkingArea.Width * .5);
 
 
             //  START HARNESS
@@ -98,7 +96,7 @@ namespace SocketMeister.Test
             {
                 ShowErrorMessage(ex);
             }
-            
+
         }
 
         private void FormMain_FormClosed(object sender, FormClosedEventArgs e)
@@ -319,7 +317,7 @@ namespace SocketMeister.Test
         {
             PanelMainTrace.Top = 0;
             PanelMainTrace.Left = 0;
-            PanelMainTrace.Height = Convert.ToInt32( PanelMain.Height * 0.3);
+            PanelMainTrace.Height = Convert.ToInt32(PanelMain.Height * 0.3);
             PanelMainTrace.Width = PanelMain.Width;
             PanelMainTests.Left = 0;
             PanelMainTests.Top = PanelMainTrace.Height - 1;
@@ -498,7 +496,7 @@ namespace SocketMeister.Test
                     (lCol5[row]).Top = top - 1;
                     (lCol5[row]).Width = executeButtonWidth;
                     (lCol5[row]).Left = CH4.Left + CH4.Width + spacer;
-                 }
+                }
             }
             catch { }
         }
@@ -555,7 +553,7 @@ namespace SocketMeister.Test
 
         private void DGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            var senderGrid = (DataGridView)sender;
+            DataGridView senderGrid = (DataGridView)sender;
 
             if (senderGrid.Columns[e.ColumnIndex] is DataGridViewButtonColumn &&
                 e.RowIndex >= 0)

@@ -5,8 +5,6 @@
 #pragma warning disable CA1034 // Nested types should not be visible
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SocketMeister
 {
@@ -69,7 +67,7 @@ namespace SocketMeister
             /// <summary>
             /// Optional Name/Tag/Identifier for the broadcast 
             /// </summary>
-            public string Name {  get { return _name; } }
+            public string Name { get { return _name; } }
         }
 
 

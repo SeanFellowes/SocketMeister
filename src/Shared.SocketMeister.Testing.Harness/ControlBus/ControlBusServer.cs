@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
 
 namespace SocketMeister.Testing.ControlBus
 {
@@ -70,7 +67,7 @@ namespace SocketMeister.Testing.ControlBus
 
         internal void Start()
         {
-           _listener.Start();
+            _listener.Start();
         }
 
         internal void Stop()

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SocketMeister.Testing.ControlBus
+﻿namespace SocketMeister.Testing.ControlBus
 {
     public class ControlMessage
     {

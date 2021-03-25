@@ -5,12 +5,12 @@
 #pragma warning disable CA1034 // Nested types should not be visible
 
 #if !SILVERLIGHT && !SMNOSERVER && !NET35 && !NET20
+using SocketMeister.Messages;
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using SocketMeister.Messages;
 
 namespace SocketMeister
 {

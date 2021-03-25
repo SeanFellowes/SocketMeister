@@ -2,8 +2,6 @@
 #pragma warning disable IDE0090 // Use 'new(...)'
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SocketMeister.Messages
 {
@@ -266,7 +264,7 @@ namespace SocketMeister.Messages
                             hval = (hval << 8) | input[iidx + 2];
                             hslot = ((hval ^ (hval << 5)) >> (int)(((3 * 8 - HLOG)) - hval * 5) & (HSIZE - 1));
                             reference = HashTable[hslot];
-                            HashTable[hslot] = (long)iidx;
+                            HashTable[hslot] = iidx;
 
                             if ((off = iidx - reference - 1) < MAX_OFF
                                 && iidx + 4 < inputLength

@@ -7,13 +7,13 @@
 #pragma warning disable CA1001 // Types that own disposable fields should be disposable
 
 #if !SILVERLIGHT && !SMNOSERVER && !NET35 && !NET20
+using SocketMeister.Messages;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using SocketMeister.Messages;
 
 
 namespace SocketMeister
@@ -111,7 +111,7 @@ namespace SocketMeister
         }
 
 
-        internal Clients ConnectedClients {  get { return _connectedClients; } }
+        internal Clients ConnectedClients { get { return _connectedClients; } }
 
         /// <summary>
         /// The IP Address and Port that this socket server is using to communicate (e.g. 10.200.50.25:6000).
@@ -169,7 +169,7 @@ namespace SocketMeister
         /// </summary>
         public int TotalMessagesReceived
         {
-            get { lock(_lockTotals) { return _totalMessagesReceived; } }
+            get { lock (_lockTotals) { return _totalMessagesReceived; } }
         }
 
 
@@ -236,12 +236,12 @@ namespace SocketMeister
         /// <summary>
         /// Number of clients connected to the socket server.
         /// </summary>
-        public int ClientCount 
-        { 
-            get 
+        public int ClientCount
+        {
+            get
             {
-                return _connectedClients.Count; 
-            } 
+                return _connectedClients.Count;
+            }
         }
 
         /// <summary>
@@ -275,12 +275,12 @@ namespace SocketMeister
         public void Start()
         {
             StopSocketServer = false;
-            lock(_lockTotals) 
-            { 
+            lock (_lockTotals)
+            {
                 _totalBytesReceived = 0;
                 _totalBytesSent = 0;
                 _totalMessagesSent = 0;
-                _totalMessagesReceived = 0; 
+                _totalMessagesReceived = 0;
             }
             _threadListener.Start();
         }
@@ -626,7 +626,7 @@ namespace SocketMeister
 
         internal static IPAddress GetLocalIPAddress()
         {
-            var host = Dns.GetHostEntry(Dns.GetHostName());
+            IPHostEntry host = Dns.GetHostEntry(Dns.GetHostName());
             foreach (IPAddress ip in host.AddressList)
             {
                 if (ip.AddressFamily == AddressFamily.InterNetwork)

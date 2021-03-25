@@ -1,11 +1,8 @@
 ﻿using SocketMeister.Testing.ControlBus;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Text;
-using System.Threading;
 
 namespace SocketMeister.Testing
 {
@@ -40,15 +37,15 @@ namespace SocketMeister.Testing
             Type[] assemblyTypes = Assembly.GetExecutingAssembly().GetTypes();
             foreach (Type t in assemblyTypes)
             {
-                if (assemblyTypeDictionary.ContainsKey(t.Name) == false) 
+                if (assemblyTypeDictionary.ContainsKey(t.Name) == false)
                     assemblyTypeDictionary.Add(t.Name, t);
             }
 
             //  SETUP CONTROL BUS
-            _controlBusClient = new ControlBusClient( ControlBusClientType.ClientController, ControlBusClientId, Constants.ControlBusServerIPAddress, Constants.ControlBusPort);
+            _controlBusClient = new ControlBusClient(ControlBusClientType.ClientController, ControlBusClientId, Constants.ControlBusServerIPAddress, Constants.ControlBusPort);
             _controlBusClient.ConnectionFailed += ControlBusClient_ConnectionFailed;
             _controlBusClient.ConnectionStatusChanged += ControlBusClient_ConnectionStatusChanged;
-            _controlBusClient.MessageReceived += ControlBusClient_MessageReceived; 
+            _controlBusClient.MessageReceived += ControlBusClient_MessageReceived;
             _controlBusClient.ExceptionRaised += ControlBusClient_ExceptionRaised;
         }
 
@@ -68,14 +65,14 @@ namespace SocketMeister.Testing
         }
 
 
-        public int ClientId {  get { return _controlBusClient.ControlBusClientId; } }
+        public int ClientId { get { return _controlBusClient.ControlBusClientId; } }
 
         /// <summary>
         /// Lock to provide threadsafe operations
         /// </summary>
         public object Lock { get { return _lock; } }
 
-        public SocketClient SocketClient { get {  lock(_lock) { return _socketClient; } } }
+        public SocketClient SocketClient { get { lock (_lock) { return _socketClient; } } }
 
 
 
@@ -116,7 +113,7 @@ namespace SocketMeister.Testing
                 {
                     e.Response = ExecuteMethod((string)e.Parameters[1], (string)e.Parameters[2], Serializer.DeserializeParameters((byte[])e.Parameters[3]));
                 }
-                else 
+                else
                     throw new ArgumentOutOfRangeException(nameof(e) + "." + nameof(e.Parameters), "Expected 3 or 4 parameters for messageType == ControlMessage.ExecuteMethod");
             }
 
@@ -168,7 +165,7 @@ namespace SocketMeister.Testing
             if (thisObjectType == null) throw new ArgumentOutOfRangeException(nameof(ClassName), "Class '" + ClassName + "' does not exist in the assembly '" + Assembly.GetExecutingAssembly().FullName + "'");
 
             //  GET THE METHOD. IT MUST BE STATIC
-            MethodInfo getMethod = thisObjectType.GetMethod(StaticMethodName, BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public );
+            MethodInfo getMethod = thisObjectType.GetMethod(StaticMethodName, BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
             if (getMethod == null)
             {
                 throw new ArgumentOutOfRangeException(nameof(StaticMethodName), "Method '" + StaticMethodName + "' does not exist or is not static, in the class '" + ClassName + "'.");
@@ -317,7 +314,7 @@ namespace SocketMeister.Testing
         {
             lock (_lock)
             {
-                 SocketClientStop();
+                SocketClientStop();
                 _socketClient = new SocketClient(EndPoints, EnableCompression);
             }
         }

@@ -2,9 +2,7 @@
 #pragma warning disable IDE0090 // Use 'new(...)'
 
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace SocketMeister
 {
@@ -183,7 +181,7 @@ namespace SocketMeister
                 {
                     //  PREFIX THE DATA WITH AN int OF THE LENGTH, FOLLOWED BY THE DATA (WE NEED THE PREFIX TO DESERIALIZE)
                     byte[] ToWrite = (byte[])_value;
-                    Writer.Write((int)ToWrite.Length);
+                    Writer.Write(ToWrite.Length);
                     Writer.Write(ToWrite);
                 }
                 else

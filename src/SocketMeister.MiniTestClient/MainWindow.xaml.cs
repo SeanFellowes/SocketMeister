@@ -3,21 +3,11 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Threading;
-using SocketMeister;
 
 namespace SocketMeister.MiniTestClient
 {
@@ -36,8 +26,8 @@ namespace SocketMeister.MiniTestClient
             public string Source { get; set; }
             public string Text { get; set; }
             public string TimeStamp { get { return timeStamp.ToString("HH:mm:ss fff"); } }
-            public SolidColorBrush Background 
-            { 
+            public SolidColorBrush Background
+            {
                 get
                 {
                     if (Severity == SeverityType.Error) return new SolidColorBrush(Color.FromArgb(255, 255, 204, 204));
@@ -67,10 +57,10 @@ namespace SocketMeister.MiniTestClient
             {
                 InitializeComponent();
 
-                this.Top = 0;
-                this.Left = 850;
-                this.Height = 900;
-                this.Visibility = Visibility.Visible;
+                Top = 0;
+                Left = 850;
+                Height = 900;
+                Visibility = Visibility.Visible;
                 IPAddress.Text = "127.0.0.1";
 
                 lvLog.ItemsSource = _log;
@@ -83,7 +73,7 @@ namespace SocketMeister.MiniTestClient
 
         private void DispatcherTimer_Tick(object sender, EventArgs e)
         {
-            foreach(ClientControl clientControl in _clients)
+            foreach (ClientControl clientControl in _clients)
             {
                 if (clientControl.TestSubscriptions == true)
                 {

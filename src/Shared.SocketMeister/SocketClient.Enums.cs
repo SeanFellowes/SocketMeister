@@ -2,8 +2,6 @@
 #pragma warning disable CA1717 // Only FlagsAttribute enums should have plural names
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SocketMeister
 {

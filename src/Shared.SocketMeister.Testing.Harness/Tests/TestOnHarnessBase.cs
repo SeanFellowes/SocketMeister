@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
 using System.Threading;
 
 
@@ -34,7 +31,7 @@ namespace SocketMeister.Testing.Tests
         /// </summary>
         public bool IsExecuting
         {
-            get {  lock (Lock) { return _isExecuting; } }
+            get { lock (Lock) { return _isExecuting; } }
             private set
             {
                 lock (Lock)

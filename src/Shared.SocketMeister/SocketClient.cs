@@ -9,13 +9,12 @@
 #pragma warning disable CA1805 // Do not initialize unnecessarily
 #pragma warning disable CA2213 // Disposable fields should be disposed
 
+
+using SocketMeister.Messages;
 using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
-using SocketMeister.Messages;
 
 namespace SocketMeister
 {

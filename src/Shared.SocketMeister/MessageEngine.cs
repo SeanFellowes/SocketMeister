@@ -11,7 +11,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using SocketMeister.Messages;
 
 namespace SocketMeister.Messages
 {
@@ -28,7 +27,7 @@ namespace SocketMeister.Messages
                 this.MessageLengthUncompressed = MessageLengthUncompressed;
                 this.MessageNumber = MessageNumber;
                 this.MessageType = MessageType;
-                this.ReceivedDateTime = DateTime.Now;
+                ReceivedDateTime = DateTime.Now;
             }
 
             public long MessageNumber { get; set; }
@@ -217,8 +216,8 @@ namespace SocketMeister.Messages
                 {
                     //  WRITE HEADER
                     writer.Write(false);    //  NOT COMPRESSED
-                    writer.Write((int)0);   //  WILL BE USED TO WRITE _compressedLength
-                    writer.Write((int)0);   //  WILL BE USED TO WRITE _uncompressedLength
+                    writer.Write(0);   //  WILL BE USED TO WRITE _compressedLength
+                    writer.Write(0);   //  WILL BE USED TO WRITE _uncompressedLength
 
                     //  WRITE USER BYTES
                     long position1 = writer.BaseStream.Position;
@@ -257,8 +256,8 @@ namespace SocketMeister.Messages
                     else
                     {
                         writer.Write(false);     //  UNCOMPRESSED
-                        writer.Write((int)0);   //  WILL BE USED TO WRITE _compressedLength
-                        writer.Write((int)0);   //  WILL BE USED TO WRITE _uncompressedLength
+                        writer.Write(0);   //  WILL BE USED TO WRITE _compressedLength
+                        writer.Write(0);   //  WILL BE USED TO WRITE _uncompressedLength
 
                         //  WRITE USER BYTES
                         long position1 = writer.BaseStream.Position;

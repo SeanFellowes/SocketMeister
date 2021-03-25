@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SocketMeister
 {
@@ -34,7 +30,7 @@ namespace SocketMeister
             _exception = Exception;
         }
 
-        public Exception Exception {  get { return _exception; } }
+        public Exception Exception { get { return _exception; } }
         public SeverityType Severity { get { return _severity; } }
         public string Server { get { return _server; } }
         public string Source { get { return _source; } }

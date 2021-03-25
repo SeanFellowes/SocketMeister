@@ -1,9 +1,5 @@
 ﻿using SocketMeister.Testing.ControlBus;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Text;
-using System.Threading;
 
 namespace SocketMeister.Testing
 {
@@ -85,7 +81,7 @@ namespace SocketMeister.Testing
         }
 
 
-        internal OpenTransactions OpenMessages {  get { return _openTransactions; } }
+        internal OpenTransactions OpenMessages { get { return _openTransactions; } }
 
 
         private void ControlBusClient_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
@@ -147,7 +143,7 @@ namespace SocketMeister.Testing
         public int Port
         {
             get { lock (_lock) { return _port; } }
-            set {  lock(_lock) { _port = value; } }
+            set { lock (_lock) { _port = value; } }
         }
 
 

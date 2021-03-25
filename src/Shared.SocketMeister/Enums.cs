@@ -1,9 +1,6 @@
 ﻿#pragma warning disable IDE0079 // Remove unnecessary suppression
 #pragma warning disable CA1062 // Validate arguments of public methods
 
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SocketMeister
 {
@@ -183,7 +180,7 @@ namespace SocketMeister
 #if SMISPUBLIC
     public enum ValueType
 #else
-internal enum ValueType
+    internal enum ValueType
 #endif
     {
         /// <summary>

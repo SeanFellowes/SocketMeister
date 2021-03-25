@@ -1,7 +1,5 @@
-﻿using SocketMeister.Testing.ControlBus;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 #if TESTHARNESS
@@ -12,7 +10,7 @@ namespace SocketMeister.Testing.Tests
     internal partial class Test001Harness : TestOnHarnessBase, ITestOnHarness
     {
         private readonly HarnessController _harnessController;
-        public Test001Harness(HarnessController HarnessController) : base (HarnessController, Test001Base.Id, Test001Base.Description)  
+        public Test001Harness(HarnessController HarnessController) : base(HarnessController, Test001Base.Id, Test001Base.Description)
         {
             _harnessController = HarnessController;
             base.Parent = this;
@@ -110,7 +108,7 @@ namespace SocketMeister.Testing.Tests
 
             //  SEND A 1KB FILE
             //byte[] rVal = _harnessController.FixedClient1.Commands.ExecuteMethod("Test001Client", "Test001Step001");
-            
+
         }
 
 

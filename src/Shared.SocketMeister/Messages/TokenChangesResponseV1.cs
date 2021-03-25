@@ -1,11 +1,9 @@
 ﻿#pragma warning disable IDE0079 // Remove unnecessary suppression
 #pragma warning disable IDE0090 // Use 'new(...)'
 
-using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Text;
 
 namespace SocketMeister.Messages
 {
@@ -18,7 +16,7 @@ namespace SocketMeister.Messages
         {
             public ChangeIdentifier(string TokenName, int ChangeId)
             {
-                this.TokenNameUppercase = TokenName.ToUpper(CultureInfo.InvariantCulture);
+                TokenNameUppercase = TokenName.ToUpper(CultureInfo.InvariantCulture);
                 this.ChangeId = ChangeId;
             }
 
@@ -59,7 +57,7 @@ namespace SocketMeister.Messages
         public void AppendBytes(BinaryWriter Writer)
         {
             Writer.Write(_changes.Count);
-            foreach(ChangeIdentifier i in _changes)
+            foreach (ChangeIdentifier i in _changes)
             {
                 Writer.Write(i.TokenNameUppercase);
                 Writer.Write(i.ChangeId);

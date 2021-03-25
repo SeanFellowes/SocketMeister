@@ -1,17 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace SocketMeister.MiniTestClient
 {
@@ -69,7 +61,7 @@ namespace SocketMeister.MiniTestClient
         {
             get { return _clientId; }
             set
-            { 
+            {
                 _clientId = value;
                 tbClientId.Text = value.ToString();
             }
@@ -196,12 +188,12 @@ namespace SocketMeister.MiniTestClient
 
         private void Client_ConnectionStatusChanged(object sender, EventArgs e)
         {
-            Dispatcher.Invoke((Action)(() =>
+            Dispatcher.Invoke(() =>
             {
                 if (_client.ConnectionStatus == SocketClient.ConnectionStatuses.Connected) bdStatus.Background = new SolidColorBrush(Colors.Green);
                 else if (_client.ConnectionStatus == SocketClient.ConnectionStatuses.Disconnected) bdStatus.Background = new SolidColorBrush(Colors.Red);
                 else bdStatus.Background = new SolidColorBrush(Colors.Orange);
-            }));
+            });
             StatusChanged?.Invoke(this, new EventArgs());
         }
 

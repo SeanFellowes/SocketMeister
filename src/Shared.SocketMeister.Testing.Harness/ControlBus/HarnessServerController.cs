@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Security.Permissions;
-using System.Text;
-using System.Threading;
-using SocketMeister.Testing;
 
 
 namespace SocketMeister.Testing.ControlBus
@@ -45,7 +39,7 @@ namespace SocketMeister.Testing.ControlBus
 
         public ControlBusClientType ClientType { get { return ControlBusClientType.ServerController; } }
 
-        public ControlBusCommands Commands {  get { return _commands; } }
+        public ControlBusCommands Commands { get { return _commands; } }
 
         /// <summary>
         /// Socketmeister client (from the server perspective)
@@ -88,14 +82,14 @@ namespace SocketMeister.Testing.ControlBus
 
             public SocketServer.Client ControlBusListenerClient
             {
-                get 
-                { 
-                    lock (_lock) 
+                get
+                {
+                    lock (_lock)
                     {
                         if (_controlBuslistenerClient == null)
-                            throw new NullReferenceException( "Function failed. Property " + nameof(ControlBusListenerClient) + " is null.");
-                        return _controlBuslistenerClient; 
-                    } 
+                            throw new NullReferenceException("Function failed. Property " + nameof(ControlBusListenerClient) + " is null.");
+                        return _controlBuslistenerClient;
+                    }
                 }
                 set { lock (_lock) { _controlBuslistenerClient = value; } }
             }

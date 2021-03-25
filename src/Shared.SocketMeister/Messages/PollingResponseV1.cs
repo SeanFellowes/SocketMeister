@@ -2,10 +2,7 @@
 #pragma warning disable CA1062 // Validate arguments of public methods
 #pragma warning disable CA1812 // Validate arguments of public methods
 
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace SocketMeister.Messages
 {

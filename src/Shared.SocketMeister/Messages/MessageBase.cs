@@ -1,11 +1,6 @@
 ﻿#pragma warning disable IDE0079 // Remove unnecessary suppression
 #pragma warning disable IDE0090 // Use 'new(...)'
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Threading;
 
 namespace SocketMeister.Messages
 {

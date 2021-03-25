@@ -7,11 +7,8 @@
 #pragma warning disable CA1812 // Avoid uninstantiated internal classes
 
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
-using System.Threading;
 
 namespace SocketMeister
 {
@@ -118,10 +115,10 @@ namespace SocketMeister
         internal IPEndPoint IPEndPoint { get { return _ipEndPoint; } }
 
 
-        private bool IsDisposed 
-        { 
-            get { lock (_lock) { return _isDisposed; } } 
-            set { lock (_lock) { _isDisposed = value; } } 
+        private bool IsDisposed
+        {
+            get { lock (_lock) { return _isDisposed; } }
+            set { lock (_lock) { _isDisposed = value; } }
         }
 
         /// <summary>

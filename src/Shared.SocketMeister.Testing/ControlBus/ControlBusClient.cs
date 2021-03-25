@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
 using System.Threading;
 
 namespace SocketMeister.Testing.ControlBus
@@ -52,20 +50,20 @@ namespace SocketMeister.Testing.ControlBus
 
         private SocketClient ControlBusSocketClient
         {
-            get 
-            { 
-                lock (_lock) 
+            get
+            {
+                lock (_lock)
                 {
                     if (_controlBusSocketClient == null) throw new InvalidOperationException("Method Start() must be successfully called first.");
-                    return _controlBusSocketClient; 
-                } 
+                    return _controlBusSocketClient;
+                }
             }
-            set {  lock (_lock) { _controlBusSocketClient = value; } }
+            set { lock (_lock) { _controlBusSocketClient = value; } }
         }
 
         public int ControlBusClientId
         {
-            get { return _controlBusClientId; } 
+            get { return _controlBusClientId; }
         }
 
         public ControlBusClientType ControlBusClientType
@@ -75,7 +73,7 @@ namespace SocketMeister.Testing.ControlBus
 
         public int ControlBusPort
         {
-            get { return _controlBusPort; } 
+            get { return _controlBusPort; }
         }
 
         public string ControlBusServerIPAddress
@@ -107,22 +105,22 @@ namespace SocketMeister.Testing.ControlBus
             DateTime maxWait = DateTime.Now.AddMilliseconds(5000);
 
             while (true == true)
+            {
+                if (ControlBusSocketClient.ConnectionStatus == SocketClient.ConnectionStatuses.Connected)
                 {
-                    if (ControlBusSocketClient.ConnectionStatus == SocketClient.ConnectionStatuses.Connected)
-                    {
-                        break;
-                    }
-                    else if (DateTime.Now > maxWait)
-                    {
-                        if (ControlBusSocketClient != null) ControlBusSocketClient.Stop();
-                        ConnectionFailed?.Invoke(this, new EventArgs());
-                        break;
-                    }
-                    else
-                    {
-                        Thread.Sleep(250);
-                    }
+                    break;
                 }
+                else if (DateTime.Now > maxWait)
+                {
+                    if (ControlBusSocketClient != null) ControlBusSocketClient.Stop();
+                    ConnectionFailed?.Invoke(this, new EventArgs());
+                    break;
+                }
+                else
+                {
+                    Thread.Sleep(250);
+                }
+            }
             //}));
             //bgFailIfDisconnected.IsBackground = true;
             //bgFailIfDisconnected.Start();

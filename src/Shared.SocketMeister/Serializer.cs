@@ -4,9 +4,7 @@
 
 
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace SocketMeister
 {
@@ -231,7 +229,7 @@ namespace SocketMeister
                     //  PREFIX THE DATA WITH AN int OF THE LENGTH, FOLLOWED BY THE DATA (WE NEED THE PREFIX TO DESERIALIZE)
                     Writer.Write((short)ParameterType.ByteArrayParam);
                     byte[] ToWrite = (byte[])Parameters[ptr];
-                    Writer.Write((int)ToWrite.Length);
+                    Writer.Write(ToWrite.Length);
                     Writer.Write(ToWrite);
                 }
                 else

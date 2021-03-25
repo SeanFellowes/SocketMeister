@@ -1,7 +1,5 @@
 ﻿using SocketMeister.Testing.ControlBus;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -21,7 +19,7 @@ namespace SocketMeister.Testing
             Task tasks = null;
             try
             {
-                var task1 = Task.Run(() =>
+                Task task1 = Task.Run(() =>
                 {
                     object[] p = new object[3];
                     p[0] = messageId;
@@ -29,7 +27,7 @@ namespace SocketMeister.Testing
                     p[2] = TimeoutMilliseconds;
                     byte[] rVal = ServerController.Commands.ExecuteCommand(nameof(ServerControllerCommands), nameof(ServerControllerCommands.ClientToServerSendRequestEcho01), p);
                 });
-                var task2 = Task.Run(() => 
+                Task task2 = Task.Run(() =>
                 {
                     object[] p = new object[3];
                     p[0] = messageId;
@@ -44,7 +42,7 @@ namespace SocketMeister.Testing
             catch
             {
                 AggregateException aggregateException = tasks.Exception;
-                foreach (var e in aggregateException.InnerExceptions)
+                foreach (Exception e in aggregateException.InnerExceptions)
                 {
                     Console.WriteLine(e.GetType().ToString());
                 }

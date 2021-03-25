@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.IO;
 
 namespace SocketMeister.Messages
 {
@@ -12,7 +9,7 @@ namespace SocketMeister.Messages
     {
         private readonly byte[] _changeBytes;
 
-        public TokenChangesRequestV1(byte[] ChangeBytes) : base(MessageEngineMessageType.SubscriptionChangesNotificationV1) 
+        public TokenChangesRequestV1(byte[] ChangeBytes) : base(MessageEngineMessageType.SubscriptionChangesNotificationV1)
         {
             _changeBytes = ChangeBytes;
         }
@@ -26,7 +23,7 @@ namespace SocketMeister.Messages
             _changeBytes = Reader.ReadBytes(Reader.ReadInt32());
         }
 
-        public byte[] ChangeBytes {  get { return _changeBytes; } }
+        public byte[] ChangeBytes { get { return _changeBytes; } }
 
         public void AppendBytes(BinaryWriter Writer)
         {

@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Xml;
 
 namespace SocketMeister.Testing.ControlBus
 {
@@ -53,20 +50,20 @@ namespace SocketMeister.Testing.ControlBus
         public void DisconnectClients()
         {
             List<HarnessClientController> items;
-            lock (_lock) 
-            { 
-                items = _listClient.ToList(); 
+            lock (_lock)
+            {
+                items = _listClient.ToList();
             }
 
-            foreach(HarnessClientController item in items)
+            foreach (HarnessClientController item in items)
             {
                 item.Disconnect();
             }
-            
+
         }
 
 
-     }
+    }
 
 
 }

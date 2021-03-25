@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Text;
 
 namespace SocketMeister
 {
@@ -97,7 +96,7 @@ namespace SocketMeister
                 {
                     writer.Write(_dictName.Count);
 
-                    foreach(KeyValuePair<string, TokenChange> kvp in _dictName)
+                    foreach (KeyValuePair<string, TokenChange> kvp in _dictName)
                     {
                         writer.Write(kvp.Key);                  //  NAME
 

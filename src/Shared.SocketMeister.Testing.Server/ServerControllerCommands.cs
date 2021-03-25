@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 
 namespace SocketMeister.Testing
@@ -71,7 +70,7 @@ namespace SocketMeister.Testing
 
         public void Remove(OpenTransaction Item)
         {
-            lock(_lock) { _items.Remove(Item); }
+            lock (_lock) { _items.Remove(Item); }
         }
     }
 
@@ -85,14 +84,14 @@ namespace SocketMeister.Testing
         public OpenTransaction(int TransactionId)
         {
             this.TransactionId = TransactionId;
-            this.TimeStamp = DateTime.Now;
+            TimeStamp = DateTime.Now;
         }
 
 
         public bool IsTransacted
         {
             get { lock (_lock) { return _isTransacted; } }
-            set { lock(_lock) { _isTransacted = value; } }
+            set { lock (_lock) { _isTransacted = value; } }
         }
 
         public int TransactionId { get; }

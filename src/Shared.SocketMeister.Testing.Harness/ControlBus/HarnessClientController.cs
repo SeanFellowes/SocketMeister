@@ -2,11 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
-using System.Security.Permissions;
-using System.Text;
 using System.Threading;
-using SocketMeister.Testing;
 
 namespace SocketMeister.Testing.ControlBus
 {
@@ -50,7 +46,7 @@ namespace SocketMeister.Testing.ControlBus
         }
 
 
-        public ControlBusClientType ClientType { get { return  ControlBusClientType.ClientController; } }
+        public ControlBusClientType ClientType { get { return ControlBusClientType.ClientController; } }
 
         /// <summary>
         /// Socketmeister client (from the server perspective)
@@ -78,7 +74,7 @@ namespace SocketMeister.Testing.ControlBus
         /// Creates a new GUI Client Controller running in it's own application
         /// </summary>
         public HarnessClientController() : base(NextClientId())
-        { 
+        {
         }
 
 
@@ -208,7 +204,7 @@ namespace SocketMeister.Testing.ControlBus
 
             public void SocketClientStart(List<SocketEndPoint> EndPoints, bool EnableCompression)
             {
-                if (EndPoints == null || EndPoints.Count == 0) throw new ArgumentNullException( nameof(EndPoints), "Null or empty list");
+                if (EndPoints == null || EndPoints.Count == 0) throw new ArgumentNullException(nameof(EndPoints), "Null or empty list");
                 object[] parms = new object[2];
                 parms[0] = ControlMessage.SocketClientStart;
 

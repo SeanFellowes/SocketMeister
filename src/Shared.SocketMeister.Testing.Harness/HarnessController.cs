@@ -1,13 +1,8 @@
-﻿using Microsoft.SqlServer.Server;
+﻿using SocketMeister.Testing.ControlBus;
+using SocketMeister.Testing.Tests;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
-using SocketMeister.Testing.Tests;
-using System.Threading;
-using SocketMeister;
-using System.ComponentModel;
-using SocketMeister.Testing.ControlBus;
 
 namespace SocketMeister.Testing
 {
@@ -165,14 +160,14 @@ namespace SocketMeister.Testing
 
         public ControlBusServer ControlBusServer { get; }
 
-        private int CurrentTestPtr {  get {  lock (_lock) { return _currentTestPtr; } } }
+        private int CurrentTestPtr { get { lock (_lock) { return _currentTestPtr; } } }
 
         /// <summary>
         /// In DEBUG, this is attached to this test harness for easy debugging. In RELEASE, a seperate client application is launched.
         /// </summary>
-        public HarnessClientController FixedClient1 { get; } 
+        public HarnessClientController FixedClient1 { get; }
 
-        public HarnessServerController FixedServer1 { get; } 
+        public HarnessServerController FixedServer1 { get; }
 
 
         private void AddTest(Type t)
@@ -181,7 +176,7 @@ namespace SocketMeister.Testing
             ITestOnHarness Test = (ITestOnHarness)Activator.CreateInstance(t, this);
             _tests.Add(Test);
             Test.IsExecutingChanged += Test_IsExecutingChanged;
-           
+
         }
 
         private void Test_IsExecutingChanged(object sender, EventArgs e)
@@ -194,7 +189,7 @@ namespace SocketMeister.Testing
                 ExecuteMode = ExecuteModes.Stopped;
             else if (ExecuteMode == ExecuteModes.AllTests && CurrentTest.IsExecuting == false)
             {
-                lock(_lock)
+                lock (_lock)
                 {
                     _currentTestPtr++;
                 }
@@ -262,25 +257,25 @@ namespace SocketMeister.Testing
         public ITestOnHarness CurrentTest
         {
             get { lock (_lock) { return _currentTest; } }
-            private set 
-            { 
-                lock (_lock) 
+            private set
+            {
+                lock (_lock)
                 {
                     if (_currentTest == value) return;
-                    _currentTest = value; 
-                } 
+                    _currentTest = value;
+                }
             }
         }
 
         internal ExecuteModes ExecuteMode
         {
             get { lock (_lock) { return _executeMode; } }
-            private set 
-            { 
-                lock (_lock) 
+            private set
+            {
+                lock (_lock)
                 {
                     if (_executeMode == value) return;
-                    _executeMode = value; 
+                    _executeMode = value;
                 }
                 ExecuteModeChanged?.Invoke(this, new EventArgs());
             }

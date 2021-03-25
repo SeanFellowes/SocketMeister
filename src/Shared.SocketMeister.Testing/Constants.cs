@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SocketMeister.Testing
+﻿namespace SocketMeister.Testing
 {
     internal class Constants
     {

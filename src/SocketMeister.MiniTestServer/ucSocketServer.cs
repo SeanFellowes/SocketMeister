@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace SocketMeister
@@ -32,8 +28,8 @@ namespace SocketMeister
 
         public string MessageText
         {
-            get {  lock(_lock) { return _messageText; } }
-            set { lock(_lock) { _messageText = value; } }
+            get { lock (_lock) { return _messageText; } }
+            set { lock (_lock) { _messageText = value; } }
         }
 
         public DateTime NextAutomatedSend
@@ -45,8 +41,8 @@ namespace SocketMeister
         public int Port
         {
             get { return _port; }
-            set 
-            { 
+            set
+            {
                 _port = value;
                 lbPort.Text = value.ToString();
             }
@@ -73,7 +69,7 @@ namespace SocketMeister
             if (button.InvokeRequired)
             {
                 SetButtonEnabledDelegate d = new SetButtonEnabledDelegate(SetButtonEnabled);
-                this.Invoke(d, new object[] { button, enabled });
+                Invoke(d, new object[] { button, enabled });
             }
             else { button.Enabled = enabled; }
         }
@@ -83,7 +79,7 @@ namespace SocketMeister
             if (checkbox.InvokeRequired)
             {
                 SetCheckBoxEnabledDelegate d = new SetCheckBoxEnabledDelegate(SetCheckBoxEnabled);
-                this.Invoke(d, new object[] { checkbox, enabled });
+                Invoke(d, new object[] { checkbox, enabled });
             }
             else { checkbox.Enabled = enabled; }
         }
@@ -95,7 +91,7 @@ namespace SocketMeister
                 if (label.InvokeRequired)
                 {
                     SetLabelTextDelegate d = new SetLabelTextDelegate(SetLabelText);
-                    this.Invoke(d, new object[] { label, text });
+                    Invoke(d, new object[] { label, text });
                 }
                 else { label.Text = text; }
             }

@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Text;
-using System.Windows.Forms;
-using SocketMeister;
 
 namespace SocketMeister.Test
 {
@@ -31,17 +26,17 @@ namespace SocketMeister.Test
             timeStamp = DateTime.Now;
             this.source = source;
             this.message = message;
-            this.stackTrace = stacktrace;
+            stackTrace = stacktrace;
             if (eventId != 0) this.eventId = eventId.ToString();
             if (severity == SeverityType.Error) this.severity = "Error";
             else if (severity == SeverityType.Information) this.severity = "Information";
             else if (severity == SeverityType.Warning) this.severity = "Warning";
-            this.NotifyPropertyChanged("TimeStamp");
-            this.NotifyPropertyChanged("Source");
-            this.NotifyPropertyChanged("EventId");
-            this.NotifyPropertyChanged("Message");
-            this.NotifyPropertyChanged("Severity");
-            if (this.stackTrace != null) this.NotifyPropertyChanged("StackTrace");
+            NotifyPropertyChanged("TimeStamp");
+            NotifyPropertyChanged("Source");
+            NotifyPropertyChanged("EventId");
+            NotifyPropertyChanged("Message");
+            NotifyPropertyChanged("Severity");
+            if (stackTrace != null) NotifyPropertyChanged("StackTrace");
         }
         public event PropertyChangedEventHandler PropertyChanged;
         private void NotifyPropertyChanged(string name)

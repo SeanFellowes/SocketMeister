@@ -2,10 +2,8 @@
 #pragma warning disable CA1805 // Do not initialize unnecessarily
 
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Text;
 
 namespace SocketMeister.Messages
 {
