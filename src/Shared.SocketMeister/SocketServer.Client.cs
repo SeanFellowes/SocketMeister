@@ -2,6 +2,7 @@
 #pragma warning disable IDE0059 // Unnecessary assignment of a value
 #pragma warning disable IDE0090 // Use 'new(...)'
 #pragma warning disable CA1001 // Types that own disposable fields should be disposable
+#pragma warning disable CA1031 // Do not catch general exception types
 #pragma warning disable CA1034 // Nested types should not be visible
 
 #if !SILVERLIGHT && !SMNOSERVER && !NET35 && !NET20
@@ -230,6 +231,7 @@ namespace SocketMeister
 #endif
 
 #pragma warning restore CA1034 // Nested types should not be visible
+#pragma warning restore CA1031 // Do not catch general exception types
 #pragma warning restore CA1001 // Types that own disposable fields should be disposable
 #pragma warning restore IDE0059 // Unnecessary assignment of a value
 #pragma warning restore IDE0090 // Use 'new(...)'
