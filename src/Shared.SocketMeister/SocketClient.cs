@@ -716,6 +716,7 @@ namespace SocketMeister
         {
             if (StopClientPermanently == true) return;
 
+            double pauseReconnect = 0;
             if (e.SocketError == SocketError.Success)
             {
                 //  ATTEMPT TO START RECEIVING
@@ -727,13 +728,10 @@ namespace SocketMeister
                     if (!CurrentEndPoint.Socket.ReceiveAsync(_asyncEventArgsReceive)) ProcessReceive(null, _asyncEventArgsReceive);
                     //  CONNECTED
                     ConnectionStatus = ConnectionStatuses.Connected;
-                    //  DONE
-                    _autoResetConnectEvent.Set();
                 }
                 catch (Exception ex)
                 {
-                    CurrentEndPoint.DontReconnectUntil = DateTime.Now.AddMilliseconds(2000 + _randomizer.Next(4000));
-                    _autoResetConnectEvent.Set();
+                    pauseReconnect = 2000;
                     NotifyExceptionRaised(ex);
                 }
             }
@@ -741,18 +739,32 @@ namespace SocketMeister
             {
                 //  NOTE: WHEN FAILING OVER UNDER HIGH LOAD, SocketError.TimedOut OCCURS FOR UP TO 120 SECONDS (WORSE CASE)
                 //  BEFORE CONNECTION SUCCESSFULLY COMPLETES. IT'S A BIT ANNOYING BUT I HAVE FOUND NO WORK AROUND.
-                CurrentEndPoint.DontReconnectUntil = DateTime.Now.AddMilliseconds(2000 + _randomizer.Next(4000));
-                _autoResetConnectEvent.Set();
+                pauseReconnect = 2000;
             }
             else if (e.SocketError == SocketError.AddressAlreadyInUse)
             {
-                CurrentEndPoint.DontReconnectUntil = DateTime.Now.AddMilliseconds(2000 + _randomizer.Next(4000));
-                _autoResetConnectEvent.Set();
+                pauseReconnect = 2000;
             }
             else
             {
-                CurrentEndPoint.DontReconnectUntil = DateTime.Now.AddMilliseconds(2000 + _randomizer.Next(4000));
+                pauseReconnect = 2000;
+            }
+
+            //  RESET
+            try
+            {
+                if (pauseReconnect > 0)
+                {
+                    CurrentEndPoint.DontReconnectUntil = DateTime.Now.AddMilliseconds(pauseReconnect + _randomizer.Next(4000));
+                }
                 _autoResetConnectEvent.Set();
+            }
+            catch (Exception ex)
+            {
+                if (!StopClientPermanently)
+                {
+                    NotifyExceptionRaised(ex);
+                }
             }
         }
 

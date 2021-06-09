@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>SocketMeister.Sources</id>
+    <version>4.0.2</version>
+    <title>SocketMeister C# source code</title>
+    <authors>Sean Fellowes</authors>
+    <owners>Sean Fellowes</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+    <icon>icon_128.png</icon>
+    <projectUrl>https://github.com/SeanFellowes/SocketMeister</projectUrl>
+    <description>C# source code for SocketMeister, which can be compiled  directly into your own projects. This eliminates the need to distribute SocketMeister.dll with your software.</description>
+    <summary>Performant TCP socket server and client for .NET</summary>
+    <releaseNotes>Fixed bug when closing client connection buit not closing application</releaseNotes>
+    <copyright>© 2010-2022 Sean Fellowes.</copyright>
+    <tags>TCP sockets source</tags>
+  </metadata>
+  <files>
+    <file src="..\src\Shared.SocketMeister\*.cs" target="content\App_Packages\SocketMeister.Sources.4.0.2\" />
+    <file src="..\src\Shared.SocketMeister\Messages\*.cs" target="content\App_Packages\SocketMeister.Sources.4.0.2\Messages\" />
+    <file src="..\images\icon_128.png" target="icon_128.png" />
+  </files>
+</package>
