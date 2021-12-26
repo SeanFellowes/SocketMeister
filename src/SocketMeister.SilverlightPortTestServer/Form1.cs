@@ -59,7 +59,7 @@ namespace SocketMeister
             {
                 Top = 0;
                 Left = 0;
-                Width = 700;
+                Width = 800;
 
                 foreach (UcSocketServer uc in _servers)
                 {
@@ -101,6 +101,11 @@ namespace SocketMeister
                 e = e + Environment.NewLine + Environment.NewLine + ex.StackTrace;
             }
             MessageBox.Show(e, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
         }
 
         //private void tbMessage_TextChanged(object sender, EventArgs e)
