@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net35;net40;net45;net46;net472;net5.0;net6.0;netstandard2.0;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net35;net40;net45;net46;net472;net48;net5.0;net6.0;netstandard2.0;netcoreapp3.1</TargetFrameworks>
     <RootNamespace>SocketMeister</RootNamespace>
     <AssemblyName>SocketMeister</AssemblyName>
     <Authors>Sean Fellowes</Authors>
@@ -11,7 +11,7 @@
     <RepositoryUrl>https://github.com/SeanFellowes/SocketMeister</RepositoryUrl>
     <PackageTags>tcp socket</PackageTags>
     <Company>Sean Fellowes</Company>
-    <PackageReleaseNotes>Minor improvements</PackageReleaseNotes>
+    <PackageReleaseNotes>Support for .NET 4.8 and 6.0</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseUrl></PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
@@ -65,7 +65,15 @@
     <DefineConstants>SMISPUBLIC</DefineConstants>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net5.0|AnyCPU'">
+    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net48|AnyCPU'">
+	    <DefineConstants>DEBUG;SMISPUBLIC</DefineConstants>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net48|AnyCPU'">
+	    <DefineConstants>SMISPUBLIC</DefineConstants>
+    </PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net5.0|AnyCPU'">
     <DefineConstants>DEBUG;SMISPUBLIC</DefineConstants>
   </PropertyGroup>
 
@@ -75,10 +83,12 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0|AnyCPU'">
     <DefineConstants>DEBUG;SMISPUBLIC</DefineConstants>
+    <WarningLevel>5</WarningLevel>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net6.0|AnyCPU'">
     <DefineConstants>SMISPUBLIC</DefineConstants>
+    <WarningLevel>5</WarningLevel>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
