@@ -6,12 +6,12 @@
     <AssemblyName>SocketMeister</AssemblyName>
     <Authors>Sean Fellowes</Authors>
     <Description>Performant TCP socket server and client for .NET. Client features automated reconnect within single and multiple server environments.</Description>
-    <Copyright>Copyright © 2010-2021 Sean Fellowes</Copyright>
+    <Copyright>Copyright © 2010-2022 Sean Fellowes</Copyright>
     <PackageProjectUrl>https://github.com/SeanFellowes/SocketMeister</PackageProjectUrl>
     <RepositoryUrl>https://github.com/SeanFellowes/SocketMeister</RepositoryUrl>
     <PackageTags>tcp socket</PackageTags>
     <Company>Sean Fellowes</Company>
-    <PackageReleaseNotes>Support for .NET 4.8 and 6.0</PackageReleaseNotes>
+    <PackageReleaseNotes>Fixed Socketclient bug ManualResetEvent is already disposed. Changed geneneral exceptions to ArgumentException when parameters are invalid.</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseUrl></PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
@@ -23,6 +23,7 @@
     <Version>4.0.4</Version>
     <AssemblyVersion>4.0.4.0</AssemblyVersion>
     <FileVersion>4.0.4.0</FileVersion>
+    <PackageReadmeFile>NuGetDocumentation.md</PackageReadmeFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net35|AnyCPU'">
@@ -118,6 +119,10 @@
     <None Include="..\..\images\icon_128.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
+    </None>
+    <None Include="..\..\NuGetDocumentation.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
     </None>
   </ItemGroup>
 

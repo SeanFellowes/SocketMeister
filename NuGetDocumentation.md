@@ -16,7 +16,7 @@ There are 3 NuGet packages available:
 
 1. The [SocketMeister](https://www.nuget.org/packages/SocketMeister/) NuGet package contains the DLL for numerous .NET Frameworks including.NET 3.5, .NET 4.0, .NET 4.5, .NET 4.6, .NET 4.7.2, .NET 4.8, .NET Standard 2.0, .NET Core 3.1, .NET 5 and .NET 6. The SocketMeister `SocketClient` works in all included frameworks. The SocketMeister `SocketServer` is not available in .NET 3.5.  
 
-2. The [SocketMeister.Silverlight]() NuGet package contains the DLL for Silverlight 5 projects. The SocketMeister `SocketServer` class is not included because the server component wouldn't work in Silverlight.
+2. The [SocketMeister.Silverlight]() NuGet package contains the DLL for Silverlight 5 projects. The SocketMeister `SocketServer` class is not avaialable in Silverlight.
 
 3. The [SocketMeister.Sources](https://www.nuget.org/packages/SocketMeister.Sources/) NuGet package contains the C# source files for SocketMeister, enabling you to embed SocketMeister in your own project EXE or DLL. This eliminates the need to ship the SocketMeister DLL with your product. Simply add the [SocketMeister.Sources](https://www.nuget.org/packages/SocketMeister.Sources/) NuGet package to your Visual Studio project and a folder containing the code will be added to the project.
 
