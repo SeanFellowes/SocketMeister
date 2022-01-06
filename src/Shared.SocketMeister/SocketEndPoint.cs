@@ -38,8 +38,8 @@ namespace SocketMeister
         public SocketEndPoint(string IPAddress, int Port)
         {
             //  VALIDATE
-            if (string.IsNullOrEmpty(IPAddress) == true) throw new Exception("IP Address cannot be null or empty");
-            if (Port < 1024 || Port > ushort.MaxValue) throw new Exception("Port " + Port + " must be between 1024 and " + ushort.MaxValue);
+            if (string.IsNullOrEmpty(IPAddress) == true) throw new ArgumentException("IP Address cannot be null or empty", nameof(IPAddress));
+            if (Port < 1024 || Port > ushort.MaxValue) throw new ArgumentException("Port " + Port + " must be between 1024 and " + ushort.MaxValue, nameof(Port));
 
             _iPAddress = IPAddress;
             _port = Convert.ToUInt16(Port);
@@ -53,12 +53,12 @@ namespace SocketMeister
                     case AddressFamily.InterNetwork:
                         break;  //  OKAY
                     case AddressFamily.InterNetworkV6:
-                        throw new Exception("IP address (" + IPAddress + ") cannot be of type 'InterNetworkV6'. Only IPv4 (e.g. '192.168.23.56') values are acceptable");
+                        throw new ArgumentException("IP address (" + IPAddress + ") cannot be of type 'InterNetworkV6'. Only IPv4 (e.g. '192.168.23.56') values are acceptable", nameof(IPAddress));
                     default:
                         break;  //  OKAY
                 }
             }
-            else throw new Exception("Unable to create an IPAddress from the provided IPAddress '" + IPAddress + "' and Port " + Port);
+            else throw new ArgumentException("IP Address '" + IPAddress + "' is invalid", nameof(IPAddress));
 
             _ipEndPoint = new IPEndPoint(IPAddr, _port);
 

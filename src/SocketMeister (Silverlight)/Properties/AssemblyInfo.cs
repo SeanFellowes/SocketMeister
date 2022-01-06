@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("SocketMeister")]
-[assembly: AssemblyCopyright("Copyright © Sean Fellowes 2021")]
+[assembly: AssemblyCopyright("Copyright © Sean Fellowes 2022")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -30,5 +30,5 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("4.0.2")]
-[assembly: AssemblyFileVersion("4.0.2")]
+[assembly: AssemblyVersion("4.0.4")]
+[assembly: AssemblyFileVersion("4.0.4")]

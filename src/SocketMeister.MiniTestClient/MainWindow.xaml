@@ -53,7 +53,7 @@
                 </StackPanel>
             </Border>
 
-            <Button Grid.Row="4" Grid.Column="4" Name="StartBtn" Margin="3,3" Width="60" Click="StartBtn_Click">Start</Button>
+            <Button Grid.Row="4" Grid.Column="3" HorizontalAlignment="Left" Name="StartBtn" Margin="3,3" Width="60" Click="StartBtn_Click">Start</Button>
         </Grid>
 
         <!-- ROW 0 - CLIENT STATS + FUTURE USE-->

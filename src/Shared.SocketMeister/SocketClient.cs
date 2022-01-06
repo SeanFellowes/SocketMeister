@@ -286,6 +286,7 @@ namespace SocketMeister
         {
             if (disposing)
             {
+                StopClientPermanently = true;
                 _autoResetConnectEvent.Close();
 
                 if (_asyncEventArgsConnect != null) _asyncEventArgsConnect.Dispose();
@@ -602,6 +603,7 @@ namespace SocketMeister
                             //  TRY TO CONNECT
                             _asyncEventArgsConnect.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
                             if (!CurrentEndPoint.Socket.ConnectAsync(_asyncEventArgsConnect)) ProcessConnect(null, _asyncEventArgsConnect);
+                            if (StopClientPermanently == true) return;
                             _autoResetConnectEvent.Reset();
                             _autoResetConnectEvent.WaitOne(5000);
 
@@ -757,7 +759,7 @@ namespace SocketMeister
                 {
                     CurrentEndPoint.DontReconnectUntil = DateTime.Now.AddMilliseconds(pauseReconnect + _randomizer.Next(4000));
                 }
-                _autoResetConnectEvent.Set();
+                if (!StopClientPermanently) _autoResetConnectEvent.Set();
             }
             catch (Exception ex)
             {
