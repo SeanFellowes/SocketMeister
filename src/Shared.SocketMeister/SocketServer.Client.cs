@@ -5,7 +5,7 @@
 #pragma warning disable CA1031 // Do not catch general exception types
 #pragma warning disable CA1034 // Nested types should not be visible
 
-#if !SILVERLIGHT && !SMNOSERVER && !NET35 && !NET20
+#if !SMNOSERVER && !NET35 && !NET20
 using SocketMeister.Messages;
 using System;
 using System.Collections.Generic;

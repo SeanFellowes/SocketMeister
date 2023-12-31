@@ -6,7 +6,7 @@
 #pragma warning disable CA1805 // Do not initialize unnecessarily
 #pragma warning disable CA1001 // Types that own disposable fields should be disposable
 
-#if !SILVERLIGHT && !SMNOSERVER && !NET35 && !NET20
+#if !SMNOSERVER && !NET35 && !NET20
 using SocketMeister.Messages;
 using System;
 using System.Collections.Generic;

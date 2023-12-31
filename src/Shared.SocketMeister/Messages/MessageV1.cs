@@ -8,7 +8,7 @@ using System.IO;
 
 namespace SocketMeister.Messages
 {
-#if !SILVERLIGHT && !SMNOSERVER && !NET35 && !NET20
+#if !SMNOSERVER && !NET35 && !NET20
     internal partial class MessageV1 : MessageBase
     {
         private SocketServer.Client _remoteClient = null;

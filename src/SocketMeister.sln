@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28729.10
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared.SocketMeister", "Shared.SocketMeister\Shared.SocketMeister.shproj", "{7FE383EC-5FD4-4D60-BEEB-149E51549260}"
 EndProject
@@ -36,27 +36,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Code", "Code", "{F79E4971-5
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SocketMeister.SilverlightPortTestServer", "SocketMeister.SilverlightPortTestServer\SocketMeister.SilverlightPortTestServer.csproj", "{A615A986-96D7-47BE-A024-F64BB634D616}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocketMeister (.NET 8)", "SocketMeister (.NET 8)\SocketMeister (.NET 8).csproj", "{B1BBB636-3EB5-4EAC-A96D-6CA353B491C7}"
+EndProject
 Global
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		Shared.SocketMeister.Testing.Server\Shared.SocketMeister.Testing.Server.projitems*{20d137cd-b17e-42f9-b281-5bd7d6248241}*SharedItemsImports = 13
-		Shared.SocketMeister\Shared.SocketMeister.projitems*{37be6cd5-9876-438a-b946-0aa155b13ef5}*SharedItemsImports = 5
-		Shared.SocketMeister.Testing.Client\Shared.SocketMeister.Testing.Client.projitems*{4d2e0d0c-c1ad-4e32-b73a-f6e3fb07be64}*SharedItemsImports = 5
-		Shared.SocketMeister.Testing\Shared.SocketMeister.Testing.projitems*{4d2e0d0c-c1ad-4e32-b73a-f6e3fb07be64}*SharedItemsImports = 5
-		Shared.SocketMeister\Shared.SocketMeister.projitems*{4d2e0d0c-c1ad-4e32-b73a-f6e3fb07be64}*SharedItemsImports = 5
-		Shared.SocketMeister\Shared.SocketMeister.projitems*{4dedd745-2f5a-4b4a-acfe-a1d8c07110d4}*SharedItemsImports = 4
-		Shared.SocketMeister.Testing.Client\Shared.SocketMeister.Testing.Client.projitems*{6daa2828-818e-444b-a389-5e5af4a28b38}*SharedItemsImports = 5
-		Shared.SocketMeister.Testing.Harness\Shared.SocketMeister.Testing.Harness.projitems*{6daa2828-818e-444b-a389-5e5af4a28b38}*SharedItemsImports = 5
-		Shared.SocketMeister.Testing.Server\Shared.SocketMeister.Testing.Server.projitems*{6daa2828-818e-444b-a389-5e5af4a28b38}*SharedItemsImports = 5
-		Shared.SocketMeister.Testing\Shared.SocketMeister.Testing.projitems*{6daa2828-818e-444b-a389-5e5af4a28b38}*SharedItemsImports = 5
-		Shared.SocketMeister\Shared.SocketMeister.projitems*{6daa2828-818e-444b-a389-5e5af4a28b38}*SharedItemsImports = 5
-		Shared.SocketMeister\Shared.SocketMeister.projitems*{719e367c-132f-4c9d-ad8e-db25f59e707b}*SharedItemsImports = 4
-		Shared.SocketMeister.Testing.Harness\Shared.SocketMeister.Testing.Harness.projitems*{75699ac7-3ce3-4946-aa6a-98a932dab76e}*SharedItemsImports = 13
-		Shared.SocketMeister\Shared.SocketMeister.projitems*{7fe383ec-5fd4-4d60-beeb-149e51549260}*SharedItemsImports = 13
-		Shared.SocketMeister.Testing\Shared.SocketMeister.Testing.projitems*{c1465f45-1a63-427c-8eab-ff3d7518224a}*SharedItemsImports = 13
-		Shared.SocketMeister.Testing.Server\Shared.SocketMeister.Testing.Server.projitems*{c7d99721-27c2-4c3c-a471-f5af7165e7b0}*SharedItemsImports = 5
-		Shared.SocketMeister.Testing\Shared.SocketMeister.Testing.projitems*{c7d99721-27c2-4c3c-a471-f5af7165e7b0}*SharedItemsImports = 5
-		Shared.SocketMeister.Testing.Client\Shared.SocketMeister.Testing.Client.projitems*{f31e9834-6fea-4178-89bd-f1e3da8447a0}*SharedItemsImports = 13
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|ARM = Debug|ARM
@@ -250,11 +232,52 @@ Global
 		{A615A986-96D7-47BE-A024-F64BB634D616}.Release|x64.Build.0 = Release|Any CPU
 		{A615A986-96D7-47BE-A024-F64BB634D616}.Release|x86.ActiveCfg = Release|Any CPU
 		{A615A986-96D7-47BE-A024-F64BB634D616}.Release|x86.Build.0 = Release|Any CPU
+		{B1BBB636-3EB5-4EAC-A96D-6CA353B491C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1BBB636-3EB5-4EAC-A96D-6CA353B491C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1BBB636-3EB5-4EAC-A96D-6CA353B491C7}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{B1BBB636-3EB5-4EAC-A96D-6CA353B491C7}.Debug|ARM.Build.0 = Debug|Any CPU
+		{B1BBB636-3EB5-4EAC-A96D-6CA353B491C7}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{B1BBB636-3EB5-4EAC-A96D-6CA353B491C7}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{B1BBB636-3EB5-4EAC-A96D-6CA353B491C7}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B1BBB636-3EB5-4EAC-A96D-6CA353B491C7}.Debug|x64.Build.0 = Debug|Any CPU
+		{B1BBB636-3EB5-4EAC-A96D-6CA353B491C7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B1BBB636-3EB5-4EAC-A96D-6CA353B491C7}.Debug|x86.Build.0 = Debug|Any CPU
+		{B1BBB636-3EB5-4EAC-A96D-6CA353B491C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1BBB636-3EB5-4EAC-A96D-6CA353B491C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B1BBB636-3EB5-4EAC-A96D-6CA353B491C7}.Release|ARM.ActiveCfg = Release|Any CPU
+		{B1BBB636-3EB5-4EAC-A96D-6CA353B491C7}.Release|ARM.Build.0 = Release|Any CPU
+		{B1BBB636-3EB5-4EAC-A96D-6CA353B491C7}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{B1BBB636-3EB5-4EAC-A96D-6CA353B491C7}.Release|ARM64.Build.0 = Release|Any CPU
+		{B1BBB636-3EB5-4EAC-A96D-6CA353B491C7}.Release|x64.ActiveCfg = Release|Any CPU
+		{B1BBB636-3EB5-4EAC-A96D-6CA353B491C7}.Release|x64.Build.0 = Release|Any CPU
+		{B1BBB636-3EB5-4EAC-A96D-6CA353B491C7}.Release|x86.ActiveCfg = Release|Any CPU
+		{B1BBB636-3EB5-4EAC-A96D-6CA353B491C7}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C4E7889F-22D0-451C-AE7D-287E06E0DDED}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Shared.SocketMeister.Testing.Server\Shared.SocketMeister.Testing.Server.projitems*{20d137cd-b17e-42f9-b281-5bd7d6248241}*SharedItemsImports = 13
+		Shared.SocketMeister\Shared.SocketMeister.projitems*{37be6cd5-9876-438a-b946-0aa155b13ef5}*SharedItemsImports = 5
+		Shared.SocketMeister.Testing.Client\Shared.SocketMeister.Testing.Client.projitems*{4d2e0d0c-c1ad-4e32-b73a-f6e3fb07be64}*SharedItemsImports = 5
+		Shared.SocketMeister.Testing\Shared.SocketMeister.Testing.projitems*{4d2e0d0c-c1ad-4e32-b73a-f6e3fb07be64}*SharedItemsImports = 5
+		Shared.SocketMeister\Shared.SocketMeister.projitems*{4d2e0d0c-c1ad-4e32-b73a-f6e3fb07be64}*SharedItemsImports = 5
+		Shared.SocketMeister\Shared.SocketMeister.projitems*{4dedd745-2f5a-4b4a-acfe-a1d8c07110d4}*SharedItemsImports = 4
+		Shared.SocketMeister.Testing.Client\Shared.SocketMeister.Testing.Client.projitems*{6daa2828-818e-444b-a389-5e5af4a28b38}*SharedItemsImports = 5
+		Shared.SocketMeister.Testing.Harness\Shared.SocketMeister.Testing.Harness.projitems*{6daa2828-818e-444b-a389-5e5af4a28b38}*SharedItemsImports = 5
+		Shared.SocketMeister.Testing.Server\Shared.SocketMeister.Testing.Server.projitems*{6daa2828-818e-444b-a389-5e5af4a28b38}*SharedItemsImports = 5
+		Shared.SocketMeister.Testing\Shared.SocketMeister.Testing.projitems*{6daa2828-818e-444b-a389-5e5af4a28b38}*SharedItemsImports = 5
+		Shared.SocketMeister\Shared.SocketMeister.projitems*{6daa2828-818e-444b-a389-5e5af4a28b38}*SharedItemsImports = 5
+		Shared.SocketMeister\Shared.SocketMeister.projitems*{719e367c-132f-4c9d-ad8e-db25f59e707b}*SharedItemsImports = 4
+		Shared.SocketMeister.Testing.Harness\Shared.SocketMeister.Testing.Harness.projitems*{75699ac7-3ce3-4946-aa6a-98a932dab76e}*SharedItemsImports = 13
+		Shared.SocketMeister\Shared.SocketMeister.projitems*{7fe383ec-5fd4-4d60-beeb-149e51549260}*SharedItemsImports = 13
+		Shared.SocketMeister\Shared.SocketMeister.projitems*{b1bbb636-3eb5-4eac-a96d-6ca353b491c7}*SharedItemsImports = 5
+		Shared.SocketMeister.Testing\Shared.SocketMeister.Testing.projitems*{c1465f45-1a63-427c-8eab-ff3d7518224a}*SharedItemsImports = 13
+		Shared.SocketMeister.Testing.Server\Shared.SocketMeister.Testing.Server.projitems*{c7d99721-27c2-4c3c-a471-f5af7165e7b0}*SharedItemsImports = 5
+		Shared.SocketMeister.Testing\Shared.SocketMeister.Testing.projitems*{c7d99721-27c2-4c3c-a471-f5af7165e7b0}*SharedItemsImports = 5
+		Shared.SocketMeister.Testing.Client\Shared.SocketMeister.Testing.Client.projitems*{f31e9834-6fea-4178-89bd-f1e3da8447a0}*SharedItemsImports = 13
 	EndGlobalSection
 EndGlobal

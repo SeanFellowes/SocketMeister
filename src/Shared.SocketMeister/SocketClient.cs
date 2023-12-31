@@ -536,10 +536,6 @@ namespace SocketMeister
             }
             catch { }
 
-#if SILVERLIGHT
-            try { EndPoint.Socket.Close(); }
-            catch { }
-#else
             try
             {
                 if (StopClientPermanently == true) EndPoint.Socket.Disconnect(false);
@@ -547,7 +543,7 @@ namespace SocketMeister
                 else EndPoint.Socket.Disconnect(true);
             }
             catch { }
-#endif
+
             if (CreateNewSocket == true)
             {
 #if !NET35 && !NET20
