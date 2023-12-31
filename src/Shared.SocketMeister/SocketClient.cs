@@ -546,7 +546,7 @@ namespace SocketMeister
 
             if (CreateNewSocket == true)
             {
-#if !NET35 && !NET20
+#if !NET35
                 try { EndPoint.Socket.Dispose(); }
                 catch { }
 #endif

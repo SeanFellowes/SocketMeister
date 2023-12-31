@@ -81,8 +81,8 @@ namespace SocketMeister
         {
             if (disposing && IsDisposed == false)
             {
-                //  NOTE: You may need to define NET20 or NET35 as a conditional compilation symbol in your project's Build properties
-#if !NET35 && !NET20
+                //  NOTE: You may need to define NET35 as a conditional compilation symbol in your project's Build properties
+#if !NET35
                 try { _socket.Dispose(); }
                 catch { }
 #else

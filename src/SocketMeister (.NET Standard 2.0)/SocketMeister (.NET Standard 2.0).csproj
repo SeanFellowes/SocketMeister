@@ -6,7 +6,7 @@
     <AssemblyName>SocketMeister</AssemblyName>
     <Authors>Sean Fellowes</Authors>
     <Description>Performant TCP socket server and client for .NET. Client features automated reconnect within single and multiple server environments.</Description>
-    <Copyright>Copyright © 2010-2022 Sean Fellowes</Copyright>
+    <Copyright>Copyright © 2010-2024 Sean Fellowes</Copyright>
     <PackageProjectUrl>https://github.com/SeanFellowes/SocketMeister</PackageProjectUrl>
     <RepositoryUrl>https://github.com/SeanFellowes/SocketMeister</RepositoryUrl>
     <PackageTags>tcp socket</PackageTags>
@@ -74,14 +74,6 @@
 	    <DefineConstants>SMISPUBLIC</DefineConstants>
     </PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net5.0|AnyCPU'">
-    <DefineConstants>DEBUG;SMISPUBLIC</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net5.0|AnyCPU'">
-    <DefineConstants>SMISPUBLIC</DefineConstants>
-  </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0|AnyCPU'">
     <DefineConstants>DEBUG;SMISPUBLIC</DefineConstants>
   </PropertyGroup>
@@ -113,15 +105,6 @@
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0|AnyCPU'">
 		<DefineConstants>SMISPUBLIC</DefineConstants>
 	</PropertyGroup>
-
-
-
-	<ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
 
 
   <ItemGroup>

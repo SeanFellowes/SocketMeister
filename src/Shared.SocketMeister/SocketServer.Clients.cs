@@ -3,7 +3,7 @@
 #pragma warning disable CA1031 // Do not catch general exception types
 #pragma warning disable CA1001 // Types that own disposable fields should be disposable
 
-#if !SMNOSERVER && !NET35 && !NET20
+#if !SMNOSERVER && !NET35
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
