@@ -289,16 +289,16 @@ namespace SocketMeister
                 StopClientPermanently = true;
                 _autoResetConnectEvent.Close();
 
-                if (_asyncEventArgsConnect != null) _asyncEventArgsConnect.Dispose();
+                _asyncEventArgsConnect?.Dispose();
                 _asyncEventArgsConnect = null;
 
-                if (_asyncEventArgsPolling != null) _asyncEventArgsPolling.Dispose();
+                _asyncEventArgsPolling?.Dispose();
                 _asyncEventArgsPolling = null;
 
-                if (_asyncEventArgsReceive != null) _asyncEventArgsReceive.Dispose();
+                _asyncEventArgsReceive?.Dispose();
                 _asyncEventArgsReceive = null;
 
-                if (_asyncEventArgsSendSubscriptionChanges != null) _asyncEventArgsSendSubscriptionChanges.Dispose();
+                _asyncEventArgsSendSubscriptionChanges?.Dispose();
                 _asyncEventArgsSendSubscriptionChanges = null;
 
                 _receiveEngine = null; ;

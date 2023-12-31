@@ -319,7 +319,7 @@ namespace SocketMeister.Messages
             }
             finally
             {
-                if (stream != null) stream.Dispose();
+                stream?.Dispose();
             }
         }
 
@@ -338,7 +338,7 @@ namespace SocketMeister.Messages
             }
             finally
             {
-                if (stream != null) stream.Dispose();
+                stream?.Dispose();
             }
         }
 
@@ -356,7 +356,7 @@ namespace SocketMeister.Messages
             }
             finally
             {
-                if (stream != null) stream.Dispose();
+                stream?.Dispose();
             }
         }
 
@@ -376,7 +376,7 @@ namespace SocketMeister.Messages
             }
             finally
             {
-                if (stream != null) stream.Dispose();
+                stream?.Dispose();
             }
         }
 
@@ -395,7 +395,7 @@ namespace SocketMeister.Messages
             }
             finally
             {
-                if (stream != null) stream.Dispose();
+                stream?.Dispose();
             }
         }
 
@@ -415,7 +415,7 @@ namespace SocketMeister.Messages
             }
             finally
             {
-                if (stream != null) stream.Dispose();
+                stream?.Dispose();
             }
         }
 
