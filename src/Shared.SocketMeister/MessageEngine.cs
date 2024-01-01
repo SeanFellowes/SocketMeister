@@ -272,7 +272,7 @@ namespace SocketMeister.Messages
                     writer.Write(compressedBytes);
 
                     // Update Header
-                    writer.BaseStream.Position = 2; // Assuming 1 byte for MessageType
+                    writer.BaseStream.Position = 2; // 2 bytes for MessageType
                     writer.Write(true);  // Compression flag
                     writer.Write(compressedBytes.Length);
                     writer.Write(messageBodyLength);
@@ -280,8 +280,8 @@ namespace SocketMeister.Messages
                 else
                 {
                     // Update Header for uncompressed data
-                    writer.BaseStream.Position = 3; // Assuming 1 byte for MessageType
-                    writer.Write(messageBodyLength);      // Compressed length (0 for uncompressed)
+                    writer.BaseStream.Position = 3;         // 2 bytes for MessageType + 1 byte for compressed flag
+                    writer.Write(messageBodyLength);        // Compressed length (0 for uncompressed)
                     writer.Write(messageBodyLength);
                 }
 

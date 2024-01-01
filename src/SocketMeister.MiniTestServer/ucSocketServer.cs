@@ -188,8 +188,11 @@ namespace SocketMeister
             int clientId = (int)e.Parameters[0];
             byte[] receivedBytes = (byte[])e.Parameters[1];
             string msgRec = Encoding.UTF8.GetString(receivedBytes, 0, receivedBytes.Length);
+            if (msgRec.Length > 60)
+                LogEventRaised?.Invoke(this, new LogEventArgs(SeverityType.Information, "Server #" + ServerId.ToString(), "Client " + clientId, "MessageReceived: " + msgRec.Substring(0, 60) + "..."));
+            else
+                LogEventRaised?.Invoke(this, new LogEventArgs(SeverityType.Information, "Server #" + ServerId.ToString(), "Client " + clientId, "MessageReceived: " + msgRec));
 
-            LogEventRaised?.Invoke(this, new LogEventArgs(SeverityType.Information, "Server #" + ServerId.ToString(), "Client " + clientId, "MessageReceived: " + msgRec));
 
             byte[] toSend = new byte[msgRec.Length];
             Buffer.BlockCopy(Encoding.UTF8.GetBytes(msgRec), 0, toSend, 0, toSend.Length);

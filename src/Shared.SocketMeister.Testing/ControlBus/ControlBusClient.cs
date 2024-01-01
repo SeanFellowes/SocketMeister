@@ -97,7 +97,7 @@ namespace SocketMeister.Testing.ControlBus
                 }
                 else if (DateTime.Now > maxWait)
                 {
-                    if (ControlBusSocketClient != null) ControlBusSocketClient.Stop();
+                    ControlBusSocketClient?.Stop();
                     ConnectionFailed?.Invoke(this, new EventArgs());
                     break;
                 }

@@ -20,11 +20,12 @@
     <DocumentationFile>C:\Users\sfell\Source\Repos\SeanFellowes\SocketMeister\src\SocketMeister (.NET Standard 2.0)\SocketMeister.xml</DocumentationFile>
     <PackageIcon>icon_128.png</PackageIcon>
     <SelfContained>true</SelfContained>
-    <Version>4.0.5</Version>
-    <AssemblyVersion>4.0.5.0</AssemblyVersion>
-    <FileVersion>4.0.5.0</FileVersion>
+    <Version>4.0.6</Version>
+    <AssemblyVersion>4.0.6.0</AssemblyVersion>
+    <FileVersion>4.0.6.0</FileVersion>
     <PackageReadmeFile>NuGetDocumentation.md</PackageReadmeFile>
     <Title>SocketMeister</Title>
+    <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net35|AnyCPU'">
@@ -53,10 +54,12 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net472|AnyCPU'">
     <DefineConstants>DEBUG;SMISPUBLIC</DefineConstants>
+    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net472|AnyCPU'">
     <DefineConstants>SMISPUBLIC</DefineConstants>
+    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net48|AnyCPU'">
@@ -69,38 +72,42 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0|AnyCPU'">
     <DefineConstants>DEBUG;SMISPUBLIC</DefineConstants>
+    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net6.0|AnyCPU'">
     <DefineConstants>SMISPUBLIC</DefineConstants>
+    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
     <DefineConstants>DEBUG;SMISPUBLIC</DefineConstants>
-    <WarningLevel>7</WarningLevel>
+    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
     <DefineConstants>SMISPUBLIC</DefineConstants>
-    <WarningLevel>7</WarningLevel>
+    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0|AnyCPU'">
     <DefineConstants>DEBUG;SMISPUBLIC</DefineConstants>
+    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0|AnyCPU'">
     <DefineConstants>SMISPUBLIC</DefineConstants>
+    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net8.0|AnyCPU'">
 		<DefineConstants>DEBUG;SMISPUBLIC</DefineConstants>
-		<WarningLevel>7</WarningLevel>
+		<WarningLevel>4</WarningLevel>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0|AnyCPU'">
 		<DefineConstants>SMISPUBLIC</DefineConstants>
-		<WarningLevel>7</WarningLevel>
+		<WarningLevel>4</WarningLevel>
 	</PropertyGroup>
 
 
