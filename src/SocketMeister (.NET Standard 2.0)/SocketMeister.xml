@@ -606,21 +606,6 @@
             The maximum number of milliseconds the client should wait for unresponded messages to be completed. The server will not send back responses for unresponded messages after this time.
             </summary>
         </member>
-        <member name="T:SocketMeister.UnrespondedMessageCollection">
-            <summary>
-            Threadsafe list of open messages, which we are waiting for a response.
-            </summary>
-        </member>
-        <member name="P:SocketMeister.UnrespondedMessageCollection.Count">
-            <summary>
-            Number of open items.
-            </summary>
-        </member>
-        <member name="M:SocketMeister.UnrespondedMessageCollection.ResetToUnsent">
-            <summary>
-            Resets all messages which do not have a response, to 'Unsent'. The locks on all items are released so unsent items can be resent when a connection is reestablished.
-            </summary>
-        </member>
         <member name="T:SocketMeister.Serializer">
             <summary>
             Serialization routines for SocketMeister
@@ -1376,6 +1361,12 @@
             Returns a list of all the tokens in the collection
             </summary>
             <returns></returns>
+        </member>
+        <member name="M:SocketMeister.TokenCollectionReadOnly.ToListOfNames">
+            <summary>
+            Returns a string list of names
+            </summary>
+            <returns>List of names</returns>
         </member>
         <member name="T:SocketMeister.Token">
             <summary>

@@ -13,6 +13,7 @@
 using SocketMeister.Messages;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
 
@@ -420,17 +421,8 @@ namespace SocketMeister
         /// <returns>List of subscription names</returns>
         public List<string> GetSubscriptions()
         {
-            List<string> rVal = new List<string>();
-            List<Token> tokens = _subscriptions.ToList();
-            foreach (Token t in tokens)
-            {
-                rVal.Add(t.Name);
-            }
-            return rVal;
+            return _subscriptions.ToList().Select(t => t.Name).ToList();
         }
-
-
-
 
 
         #region Socket async connect

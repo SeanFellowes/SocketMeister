@@ -54,9 +54,9 @@ namespace SocketMeister
         /// </summary>
         internal void FlagAllAfterSocketConnect()
         {
-            List<Token> tokens = _tokenCollection.ToList();
             lock (_lock)
             {
+                List<Token> tokens = _tokenCollection.ToList();
                 _dictName.Clear();
                 foreach (Token token in tokens)
                 {

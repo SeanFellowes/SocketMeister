@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 
 namespace SocketMeister
 {
@@ -128,14 +129,21 @@ namespace SocketMeister
         /// <returns></returns>
         public List<Token> ToList()
         {
-            List<Token> rVal = new List<Token>();
             lock (_lock)
             {
-                foreach (KeyValuePair<string, Token> kvp in _dict)
-                {
-                    rVal.Add(kvp.Value);
-                }
-                return rVal;
+                return _dict.Values.ToList();
+            }
+        }
+
+        /// <summary>
+        /// Returns a string list of names
+        /// </summary>
+        /// <returns>List of names</returns>
+        public List<string> ToListOfNames()
+        {
+            lock (_lock)
+            {
+                return _dict.Values.ToList().Select(t => t.Name).ToList();
             }
         }
 

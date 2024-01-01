@@ -6,9 +6,11 @@
 #if !SMNOSERVER && !NET35
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace SocketMeister
 {
@@ -110,28 +112,33 @@ namespace SocketMeister
             {
                 if (ClientConnected != null)
                 {
-                    //  RAISE EVENT IN THE BACKGROUND AND ERRORS ARE IGNORED
-                    new Thread(new ThreadStart(delegate
-                    {
-                        ClientConnected?.Invoke(null, new ClientEventArgs(client));
-                    }
-                    )).Start();
+                    Task.Run(() => ClientConnected?.Invoke(null, new ClientEventArgs(client)));
                 }
             }
 
             private void NotifyClientDisconnected(Client client)
             {
-                if (ClientConnected != null)
+                if (ClientDisconnected != null)
                 {
-                    //  RAISE EVENT IN THE BACKGROUND AND ERRORS ARE IGNORED
-                    new Thread(new ThreadStart(delegate
-                    {
-                        ClientDisconnected?.Invoke(null, new ClientEventArgs(client));
-                    }
-                    )).Start();
+                    Task.Run(() => ClientDisconnected?.Invoke(null, new ClientEventArgs(client)));
                 }
             }
 
+            //private void NotifyTraceEventRaised(Exception error)
+            //{
+            //    if (TraceEventRaised != null)
+            //    {
+            //        string msg = error.Message;
+            //        if (error.StackTrace != null) msg += Environment.NewLine + Environment.NewLine + error.StackTrace;
+            //        if (error.InnerException != null) msg += Environment.NewLine + Environment.NewLine + "Inner Exception: " + error.InnerException.Message;
+            //        //  RAISE EVENT IN THE BACKGROUND
+            //        new Thread(new ThreadStart(delegate
+            //        {
+            //            TraceEventRaised?.Invoke(this, new TraceEventArgs(error, 5008));
+            //        }
+            //        )).Start();
+            //    }
+            //}
             private void NotifyTraceEventRaised(Exception error)
             {
                 if (TraceEventRaised != null)
@@ -139,12 +146,12 @@ namespace SocketMeister
                     string msg = error.Message;
                     if (error.StackTrace != null) msg += Environment.NewLine + Environment.NewLine + error.StackTrace;
                     if (error.InnerException != null) msg += Environment.NewLine + Environment.NewLine + "Inner Exception: " + error.InnerException.Message;
-                    //  RAISE EVENT IN THE BACKGROUND
-                    new Thread(new ThreadStart(delegate
+
+                    // Raise event in the background using a Task
+                    Task.Run(() =>
                     {
                         TraceEventRaised?.Invoke(this, new TraceEventArgs(error, 5008));
-                    }
-                    )).Start();
+                    });
                 }
             }
 
@@ -156,15 +163,10 @@ namespace SocketMeister
             /// <returns>List of clients</returns>
             public List<Client> ToList()
             {
-                List<Client> rVal = new List<Client>();
                 lock (_lock)
                 {
-                    foreach (Client cl in _list)
-                    {
-                        rVal.Add(cl);
-                    }
+                    return _list.ToList();
                 }
-                return rVal;
             }
         }
     }

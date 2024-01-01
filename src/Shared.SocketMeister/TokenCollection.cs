@@ -7,6 +7,7 @@ using SocketMeister.Messages;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 
 namespace SocketMeister
 {
@@ -94,20 +95,29 @@ namespace SocketMeister
         /// </summary>
         internal void Clear()
         {
-            List<Token> deletedTokens = new List<Token>();
+            List<Token> deletedTokens = null;
             lock (_lock)
             {
-                foreach (KeyValuePair<string, Token> kvp in _dict)
+                if (TokenDeleted != null)
                 {
-                    deletedTokens.Add(kvp.Value);
+                    deletedTokens = new List<Token>(_dict.Count);
+                    foreach (KeyValuePair<string, Token> kvp in _dict)
+                    {
+                        deletedTokens.Add(kvp.Value);
+                    }
                 }
                 _dict.Clear();
             }
-            foreach (Token t in deletedTokens)
+
+            if (deletedTokens != null)
             {
-                TokenDeleted?.Invoke(t, new EventArgs());
+                foreach (Token t in deletedTokens)
+                {
+                    TokenDeleted?.Invoke(t, new EventArgs());
+                }
             }
         }
+
 
         /// <summary>
         /// After a socket connects, all tokens are sent to the other side.
@@ -163,14 +173,9 @@ namespace SocketMeister
         /// <returns></returns>
         public List<Token> ToList()
         {
-            List<Token> rVal = new List<Token>();
             lock (_lock)
             {
-                foreach (KeyValuePair<string, Token> kvp in _dict)
-                {
-                    rVal.Add(kvp.Value);
-                }
-                return rVal;
+                return _dict.Values.ToList();
             }
         }
 

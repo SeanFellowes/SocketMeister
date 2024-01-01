@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Text;
 
 namespace SocketMeister.Messages
 {
@@ -42,7 +43,7 @@ namespace SocketMeister.Messages
 
         internal class ParseHistory
         {
-            private readonly List<Parse> _items = new List<Parse>();
+            private readonly List<Parse> _items = new List<Parse>(20);
 
             public void Add(Parse message)
             {
@@ -50,24 +51,42 @@ namespace SocketMeister.Messages
                 _items.Add(message);
             }
 
+            //public string Text
+            //{
+            //    get
+            //    {
+            //        string T = Environment.NewLine + Environment.NewLine + "Receive History" + Environment.NewLine;
+            //        foreach (Parse m in _items)
+            //        {
+            //            T += "#" + m.MessageNumber + " " + m.ReceivedDateTime.ToString("HH:mm:ss.fff", CultureInfo.InvariantCulture);
+            //            T += ", MessageType: " + m.MessageType;
+            //            T += ", MessageLength: " + m.MessageLength + " (" + m.MessageLengthUncompressed + " uncompressed)";
+            //            T += ", SocketBytesRead: " + m.SocketBytesRead + "(BufSize: " + m.SocketBufferLength + ")";
+            //            if (m.MessageReceived == true) T += ", MsgComplete: Y";
+            //            else T += ", MsgComplete: N";
+            //            T += Environment.NewLine;
+            //        }
+            //        return T;
+            //    }
+            //}
+
             public string Text
             {
                 get
                 {
-                    string T = Environment.NewLine + Environment.NewLine + "Receive History" + Environment.NewLine;
+                    StringBuilder sb = new StringBuilder();
+                    sb.AppendLine(Environment.NewLine + "Receive History");
                     foreach (Parse m in _items)
                     {
-                        T += "#" + m.MessageNumber + " " + m.ReceivedDateTime.ToString("HH:mm:ss.fff", CultureInfo.InvariantCulture);
-                        T += ", MessageType: " + m.MessageType;
-                        T += ", MessageLength: " + m.MessageLength + " (" + m.MessageLengthUncompressed + " uncompressed)";
-                        T += ", SocketBytesRead: " + m.SocketBytesRead + "(BufSize: " + m.SocketBufferLength + ")";
-                        if (m.MessageReceived == true) T += ", MsgComplete: Y";
-                        else T += ", MsgComplete: N";
-                        T += Environment.NewLine;
+                        sb.AppendFormat(CultureInfo.InvariantCulture,
+                            "# {0} {1:HH:mm:ss.fff}, MessageType: {2}, MessageLength: {3} ({4} uncompressed), SocketBytesRead: {5}(BufSize: {6}), MsgComplete: {7}",
+                            m.MessageNumber, m.ReceivedDateTime, m.MessageType, m.MessageLength, m.MessageLengthUncompressed, m.SocketBytesRead, m.SocketBufferLength, m.MessageReceived ? "Y" : "N")
+                          .AppendLine();
                     }
-                    return T;
+                    return sb.ToString();
                 }
             }
+
         }
 
 

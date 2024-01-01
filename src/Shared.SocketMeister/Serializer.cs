@@ -89,7 +89,7 @@ namespace SocketMeister
             {
                 using (BinaryReader reader = new BinaryReader(stream))
                 {
-                    return Serializer.DeserializeParameters(reader);
+                    return DeserializeParameters(reader);
                 }
             }
         }
@@ -107,21 +107,21 @@ namespace SocketMeister
             object[] parameters = new object[paramCount];
             for (int ptr = 0; ptr < paramCount; ptr++)
             {
-                Serializer.ParameterType ParamType = (Serializer.ParameterType)Reader.ReadInt16();
+                ParameterType ParamType = (Serializer.ParameterType)Reader.ReadInt16();
 
-                if (ParamType == Serializer.ParameterType.Null) parameters[ptr] = null;
-                else if (ParamType == Serializer.ParameterType.BoolParam) parameters[ptr] = Reader.ReadBoolean();
-                else if (ParamType == Serializer.ParameterType.Int16Param) parameters[ptr] = Reader.ReadInt16();
-                else if (ParamType == Serializer.ParameterType.Int32Param) parameters[ptr] = Reader.ReadInt32();
-                else if (ParamType == Serializer.ParameterType.Int64Param) parameters[ptr] = Reader.ReadInt64();
-                else if (ParamType == Serializer.ParameterType.UInt16Param) parameters[ptr] = Reader.ReadUInt16();
-                else if (ParamType == Serializer.ParameterType.UInt32Param) parameters[ptr] = Reader.ReadUInt32();
-                else if (ParamType == Serializer.ParameterType.UInt64Param) parameters[ptr] = Reader.ReadUInt64();
-                else if (ParamType == Serializer.ParameterType.StringParam) parameters[ptr] = Reader.ReadString();
-                else if (ParamType == Serializer.ParameterType.DateTimeParam) parameters[ptr] = new DateTime(Reader.ReadInt64());
-                else if (ParamType == Serializer.ParameterType.DoubleParam) parameters[ptr] = Reader.ReadDouble();
-                else if (ParamType == Serializer.ParameterType.ByteParam) parameters[ptr] = Reader.ReadByte();
-                else if (ParamType == Serializer.ParameterType.ByteArrayParam) parameters[ptr] = Reader.ReadBytes(Reader.ReadInt32());
+                if (ParamType == ParameterType.Null) parameters[ptr] = null;
+                else if (ParamType == ParameterType.BoolParam) parameters[ptr] = Reader.ReadBoolean();
+                else if (ParamType == ParameterType.Int16Param) parameters[ptr] = Reader.ReadInt16();
+                else if (ParamType == ParameterType.Int32Param) parameters[ptr] = Reader.ReadInt32();
+                else if (ParamType == ParameterType.Int64Param) parameters[ptr] = Reader.ReadInt64();
+                else if (ParamType == ParameterType.UInt16Param) parameters[ptr] = Reader.ReadUInt16();
+                else if (ParamType == ParameterType.UInt32Param) parameters[ptr] = Reader.ReadUInt32();
+                else if (ParamType == ParameterType.UInt64Param) parameters[ptr] = Reader.ReadUInt64();
+                else if (ParamType == ParameterType.StringParam) parameters[ptr] = Reader.ReadString();
+                else if (ParamType == ParameterType.DateTimeParam) parameters[ptr] = new DateTime(Reader.ReadInt64());
+                else if (ParamType == ParameterType.DoubleParam) parameters[ptr] = Reader.ReadDouble();
+                else if (ParamType == ParameterType.ByteParam) parameters[ptr] = Reader.ReadByte();
+                else if (ParamType == ParameterType.ByteArrayParam) parameters[ptr] = Reader.ReadBytes(Reader.ReadInt32());
                 else throw new NotSupportedException("Cannot deserialize parameter[" + ptr + "] because there is no deserialize code for type " + ParamType.ToString());
             }
             return parameters;

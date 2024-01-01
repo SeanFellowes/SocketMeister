@@ -14,6 +14,7 @@ using System.Globalization;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using System.Threading.Tasks;
 
 
 namespace SocketMeister
@@ -343,6 +344,63 @@ namespace SocketMeister
 
 
 
+        //private void AcceptCallback(IAsyncResult ar)
+        //{
+        //    // Signal the main thread to continue.  
+        //    _allDone.Set();
+
+        //    if (Status == SocketServerStatus.Stopped)
+        //    {
+        //        return;
+        //    }
+        //    else if (Status == SocketServerStatus.Stopping)
+        //    {
+        //        //  ACCEPT THE CONNECTION BUT DISCONNECT THE CLIENT
+        //        Thread bgReceive = new Thread(
+        //        new ThreadStart(delegate
+        //        {
+        //            Socket listener = (Socket)ar.AsyncState;
+        //            Socket handler = null;
+        //            try { handler = listener.EndAccept(ar); }
+        //            catch { return; }
+
+        //            //  SHUTDOWN THE CLIENT'S SOCKET
+        //            try { handler.Shutdown(SocketShutdown.Both); }
+        //            catch { }
+        //            try { handler.Close(); }
+        //            catch { }
+        //            return;
+        //        }))
+        //        {
+        //            IsBackground = true
+        //        };
+        //        bgReceive.Start();
+        //    }
+        //    else
+        //    {
+        //        //  RECEIVE DATA ON A DEDICATED BACKGROUND THREAD
+        //        Thread bgReceive = new Thread(
+        //        new ThreadStart(delegate
+        //        {
+        //            // Get the socket that handles the client. 
+        //            Socket listener = (Socket)ar.AsyncState;
+        //            Socket handler = null;
+        //            try { handler = listener.EndAccept(ar); }
+        //            catch { return; }
+        //            handler.SendTimeout = 30000;
+        //            // Create the state object.  
+        //            Client remoteClient = new Client(this, handler, _compressSentData);
+        //            _connectedClients.Add(remoteClient);
+        //            handler.BeginReceive(remoteClient.ReceiveBuffer, 0, Constants.SEND_RECEIVE_BUFFER_SIZE, 0, new AsyncCallback(ReadCallback), remoteClient);
+        //        }))
+        //        {
+        //            IsBackground = true
+        //        };
+        //        bgReceive.Start();
+        //    }
+
+        //}
+
         private void AcceptCallback(IAsyncResult ar)
         {
             // Signal the main thread to continue.  
@@ -354,32 +412,26 @@ namespace SocketMeister
             }
             else if (Status == SocketServerStatus.Stopping)
             {
-                //  ACCEPT THE CONNECTION BUT DISCONNECT THE CLIENT
-                Thread bgReceive = new Thread(
-                new ThreadStart(delegate
+                // Accept the connection but disconnect the client
+                Task.Run(() =>
                 {
                     Socket listener = (Socket)ar.AsyncState;
                     Socket handler = null;
                     try { handler = listener.EndAccept(ar); }
                     catch { return; }
 
-                    //  SHUTDOWN THE CLIENT'S SOCKET
+                    // Shutdown the client's socket
                     try { handler.Shutdown(SocketShutdown.Both); }
                     catch { }
                     try { handler.Close(); }
                     catch { }
                     return;
-                }))
-                {
-                    IsBackground = true
-                };
-                bgReceive.Start();
+                });
             }
             else
             {
-                //  RECEIVE DATA ON A DEDICATED BACKGROUND THREAD
-                Thread bgReceive = new Thread(
-                new ThreadStart(delegate
+                // Receive data on a dedicated background task
+                Task.Run(() =>
                 {
                     // Get the socket that handles the client. 
                     Socket listener = (Socket)ar.AsyncState;
@@ -391,14 +443,10 @@ namespace SocketMeister
                     Client remoteClient = new Client(this, handler, _compressSentData);
                     _connectedClients.Add(remoteClient);
                     handler.BeginReceive(remoteClient.ReceiveBuffer, 0, Constants.SEND_RECEIVE_BUFFER_SIZE, 0, new AsyncCallback(ReadCallback), remoteClient);
-                }))
-                {
-                    IsBackground = true
-                };
-                bgReceive.Start();
+                });
             }
-
         }
+
 
         private void ReadCallback(IAsyncResult ar)
         {
@@ -457,11 +505,13 @@ namespace SocketMeister
                             }
                             else
                             {
-                                new Thread(new ThreadStart(delegate
-                                {
-                                    BgProcessMessage(message);
-                                }
-                                )).Start();
+                                // Offload CPU-bound work to a thread pool thread
+                                Task.Run(() => BgProcessMessage(message));
+                                 //new Thread(new ThreadStart(delegate
+                                //{
+                                //    BgProcessMessage(message);
+                                //}
+                                //)).Start();
                             }
                         }
                         else if (receiveEnvelope.MessageType == MessageEngineMessageType.MessageResponseV1)
@@ -487,11 +537,12 @@ namespace SocketMeister
                         {
                             if (Status == SocketServerStatus.Started)
                             {
-                                new Thread(new ThreadStart(delegate
-                                {
-                                    BgProcessPollRequest(remoteClient);
-                                }
-                                )).Start();
+                                Task.Run(() => BgProcessPollRequest(remoteClient));
+                            //    new Thread(new ThreadStart(delegate
+                            //    {
+                            //        BgProcessPollRequest(remoteClient);
+                            //    }
+                            //    )).Start();
                             }
                         }
 
@@ -500,11 +551,12 @@ namespace SocketMeister
                             if (Status == SocketServerStatus.Started)
                             {
                                 TokenChangesRequestV1 request = receiveEnvelope.GetSubscriptionChangesNotificationV1();
-                                new Thread(new ThreadStart(delegate
-                                {
-                                    BgProcessSubscriptionChanges(remoteClient, request);
-                                }
-                                )).Start();
+                                Task.Run(() => BgProcessSubscriptionChanges(remoteClient, request));
+                            //    new Thread(new ThreadStart(delegate
+                            //    {
+                            //        BgProcessSubscriptionChanges(remoteClient, request);
+                            //    }
+                            //    )).Start();
                             }
                         }
 

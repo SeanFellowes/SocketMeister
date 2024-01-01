@@ -91,13 +91,7 @@ namespace SocketMeister
             /// <returns>List of subscription names</returns>
             public List<string> GetSubscriptions()
             {
-                List<string> rVal = new List<string>();
-                List<Token> tokens = _subscriptions.ToList();
-                foreach (Token t in tokens)
-                {
-                    rVal.Add(t.Name);
-                }
-                return rVal;
+               return _subscriptions.ToListOfNames();
             }
 
             internal void SetMessageResponseInUnrespondedMessages(MessageResponseV1 Message)

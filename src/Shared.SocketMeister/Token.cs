@@ -2,6 +2,7 @@
 #pragma warning disable IDE0090 // Use 'new(...)'
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace SocketMeister
@@ -20,6 +21,7 @@ namespace SocketMeister
         private object _value;
         private ValueType _valueType = ValueType.NullValue;
         private readonly object _lock = new object();
+
 
         /// <summary>
         /// Raised when the value is changed.
