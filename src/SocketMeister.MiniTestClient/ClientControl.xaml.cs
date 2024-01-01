@@ -72,7 +72,6 @@ namespace SocketMeister.MiniTestClient
         {
             get => cbSubscriptions.IsChecked.Value;
             set => cbSubscriptions.IsChecked = value;
-
         }
 
         public SocketClient.ConnectionStatuses Status
@@ -154,7 +153,7 @@ namespace SocketMeister.MiniTestClient
             _client.ConnectionStatusChanged += Client_ConnectionStatusChanged;
             _client.CurrentEndPointChanged += Client_CurrentEndPointChanged;
             _client.ExceptionRaised += Client_ExceptionRaised;
-            //_client.MessageReceived += Client_MessageReceived;
+            _client.MessageReceived += Client_MessageReceived;
             _client.ServerStopping += Client_ServerStopping;
             _client.BroadcastReceived += Client_BroadcastReceived;
 
@@ -168,7 +167,7 @@ namespace SocketMeister.MiniTestClient
             _client.ConnectionStatusChanged += Client_ConnectionStatusChanged;
             _client.CurrentEndPointChanged += Client_CurrentEndPointChanged;
             _client.ExceptionRaised += Client_ExceptionRaised;
-            //_client.MessageReceived += Client_MessageReceived;
+            _client.MessageReceived += Client_MessageReceived;
             _client.ServerStopping += Client_ServerStopping;
             _client.BroadcastReceived += Client_BroadcastReceived;
 

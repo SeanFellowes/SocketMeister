@@ -107,7 +107,8 @@
                     <TextBlock Grid.Column="2" Foreground="White" Text="Messages Received" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center"/>
                     <TextBlock Grid.Column="3" Foreground="White" Text="Requests Received" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center"/>
                     <TextBlock Grid.Column="4" Foreground="White" Text="Requests Sent" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center"/>
-                    <TextBlock Grid.Column="5" Foreground="White" Text="Subscriptions" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Grid.Column="5" Foreground="White" Text="Send a Message" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Grid.Column="6" Foreground="White" Text="Subscriptions" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center"/>
                 </Grid>
 
                 <!-- CLIENT STATS - CLIENT ROWS -->

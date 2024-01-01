@@ -41,34 +41,16 @@ namespace SocketMeister.Messages
             public DateTime ReceivedDateTime { get; set; }
         }
 
+
         internal class ParseHistory
         {
-            private readonly List<Parse> _items = new List<Parse>(20);
+            private readonly Queue<Parse> _items = new Queue<Parse>(20);
 
             public void Add(Parse message)
             {
-                if (_items.Count > 19) _items.RemoveAt(0);
-                _items.Add(message);
+                if (_items.Count >= 20) _items.Dequeue();
+                _items.Enqueue(message);
             }
-
-            //public string Text
-            //{
-            //    get
-            //    {
-            //        string T = Environment.NewLine + Environment.NewLine + "Receive History" + Environment.NewLine;
-            //        foreach (Parse m in _items)
-            //        {
-            //            T += "#" + m.MessageNumber + " " + m.ReceivedDateTime.ToString("HH:mm:ss.fff", CultureInfo.InvariantCulture);
-            //            T += ", MessageType: " + m.MessageType;
-            //            T += ", MessageLength: " + m.MessageLength + " (" + m.MessageLengthUncompressed + " uncompressed)";
-            //            T += ", SocketBytesRead: " + m.SocketBytesRead + "(BufSize: " + m.SocketBufferLength + ")";
-            //            if (m.MessageReceived == true) T += ", MsgComplete: Y";
-            //            else T += ", MsgComplete: N";
-            //            T += Environment.NewLine;
-            //        }
-            //        return T;
-            //    }
-            //}
 
             public string Text
             {
@@ -86,8 +68,8 @@ namespace SocketMeister.Messages
                     return sb.ToString();
                 }
             }
-
         }
+
 
 
         public const int HEADERLENGTH = 11;
@@ -152,28 +134,41 @@ namespace SocketMeister.Messages
                         //  ONLY EXTEND THE MESSAGE BUFFER IF IT IS TOO SMALL FOR THE INCOMING MESSAGE.
                         //  THIS PROVIDES IMPROVED SPEED AND MUCH LESS WORK FOR THE GARBAGE COLLECTOR (BECAUSE WE ARE REUSING THE BUFFER)
                         if (_messageLength > _receiveBuffer.Length) _receiveBuffer = new byte[_messageLength];
-                        // _receiveBuffer = new byte[_messageLength];
-
-                        //  WE MAY NEED THIS
-                        ////  WRITE THE MESSAGE LENGTH IN THE FIRST 4 BYTES (THIS LOOKS CONVOLUTED BUT ACTUALLY IS THE FASTEST WAY POSSIBLE)
-                        //_sendBytes[0] = (byte)(_uncompressedLength >> 24);
-                        //_sendBytes[1] = (byte)(_uncompressedLength >> 16);
-                        //_sendBytes[2] = (byte)(_uncompressedLength >> 8);
-                        //_sendBytes[3] = (byte)_uncompressedLength;
                     }
                 }
                 catch (Exception ex)
                 {
-                    string msg = "Error processing Message Body. _messageLength: " + _messageLength + "(" + _messageLengthUncompressed + " uncompressed), ReceivedByesCount: " + SocketBytesRead + ", SocketReceiveBuffer.Length: " + SocketReceiveBuffer.Length;
-                    msg += ", SocketReceiveBufferPtr: " + SocketReceiveBufferPtr;
-                    msg += ", _receiveBuffer.Length: " + _receiveBuffer.Length + ", _receiveBufferPtr: " + _receiveBufferPtr;
-                    msg += ", bytesRequired: " + bytesRequired + ", BytesPossible: " + bytesPossible;
-                    msg += ", _messageType: " + _messageType.ToString() + ", _messageIsCompressed: " + _messageIsCompressed.ToString(CultureInfo.InvariantCulture);
-                    msg += ", MessageCount: " + _statMessageNumber;
-                    msg += _history.Text;
-                    msg += Environment.NewLine + Environment.NewLine;
-                    msg += ex.Message;
-                    throw new Exception(msg);
+                    StringBuilder msgBuilder = new StringBuilder();
+                    msgBuilder.Append("Error processing Message Body. _messageLength: ");
+                    msgBuilder.Append(_messageLength);
+                    msgBuilder.Append("(");
+                    msgBuilder.Append(_messageLengthUncompressed);
+                    msgBuilder.Append(" uncompressed), ReceivedByesCount: ");
+                    msgBuilder.Append(SocketBytesRead);
+                    msgBuilder.Append(", SocketReceiveBuffer.Length: ");
+                    msgBuilder.Append(SocketReceiveBuffer.Length);
+                    msgBuilder.Append(", SocketReceiveBufferPtr: ");
+                    msgBuilder.Append(SocketReceiveBufferPtr);
+                    msgBuilder.Append(", _receiveBuffer.Length: ");
+                    msgBuilder.Append(_receiveBuffer.Length);
+                    msgBuilder.Append(", _receiveBufferPtr: ");
+                    msgBuilder.Append(_receiveBufferPtr);
+                    msgBuilder.Append(", bytesRequired: ");
+                    msgBuilder.Append(bytesRequired);
+                    msgBuilder.Append(", BytesPossible: ");
+                    msgBuilder.Append(bytesPossible);
+                    msgBuilder.Append(", _messageType: ");
+                    msgBuilder.Append(_messageType.ToString());
+                    msgBuilder.Append(", _messageIsCompressed: ");
+                    msgBuilder.Append(_messageIsCompressed.ToString(CultureInfo.InvariantCulture));
+                    msgBuilder.Append(", MessageCount: ");
+                    msgBuilder.Append(_statMessageNumber);
+                    msgBuilder.Append(_history.Text);
+                    msgBuilder.Append(Environment.NewLine);
+                    msgBuilder.Append(Environment.NewLine);
+                    msgBuilder.Append(ex.Message);
+
+                    throw new Exception(msgBuilder.ToString());
                 }
             }
             if (_headerReceived == true && (SocketReceiveBufferPtr < SocketBytesRead || _messageLength == 0))
@@ -200,16 +195,37 @@ namespace SocketMeister.Messages
                 }
                 catch (Exception ex)
                 {
-                    string msg = "Error processing Message Body. _messageLength: " + _messageLength + "(" + _messageLengthUncompressed + " uncompressed), ReceivedByesCount: " + SocketBytesRead + ", SocketReceiveBuffer.Length: " + SocketReceiveBuffer.Length;
-                    msg += ", SocketReceiveBufferPtr: " + SocketReceiveBufferPtr;
-                    msg += ", _receiveBuffer.Length: " + _receiveBuffer.Length + ", _receiveBufferPtr: " + _receiveBufferPtr;
-                    msg += ", bytesRequired: " + bytesRequired + ", BytesPossible: " + bytesPossible;
-                    msg += ", _messageType: " + _messageType.ToString() + ", _messageIsCompressed: " + _messageIsCompressed.ToString(CultureInfo.InvariantCulture);
-                    msg += ", MessageCount: " + _statMessageNumber;
-                    msg += _history.Text;
-                    msg += Environment.NewLine + Environment.NewLine;
-                    msg += ex.Message;
-                    throw new Exception(msg);
+                    StringBuilder msgBuilder = new StringBuilder();
+                    msgBuilder.Append("Error processing Message Body. _messageLength: ");
+                    msgBuilder.Append(_messageLength);
+                    msgBuilder.Append("(");
+                    msgBuilder.Append(_messageLengthUncompressed);
+                    msgBuilder.Append(" uncompressed), ReceivedByesCount: ");
+                    msgBuilder.Append(SocketBytesRead);
+                    msgBuilder.Append(", SocketReceiveBuffer.Length: ");
+                    msgBuilder.Append(SocketReceiveBuffer.Length);
+                    msgBuilder.Append(", SocketReceiveBufferPtr: ");
+                    msgBuilder.Append(SocketReceiveBufferPtr);
+                    msgBuilder.Append(", _receiveBuffer.Length: ");
+                    msgBuilder.Append(_receiveBuffer.Length);
+                    msgBuilder.Append(", _receiveBufferPtr: ");
+                    msgBuilder.Append(_receiveBufferPtr);
+                    msgBuilder.Append(", bytesRequired: ");
+                    msgBuilder.Append(bytesRequired);
+                    msgBuilder.Append(", BytesPossible: ");
+                    msgBuilder.Append(bytesPossible);
+                    msgBuilder.Append(", _messageType: ");
+                    msgBuilder.Append(_messageType.ToString());
+                    msgBuilder.Append(", _messageIsCompressed: ");
+                    msgBuilder.Append(_messageIsCompressed.ToString(CultureInfo.InvariantCulture));
+                    msgBuilder.Append(", MessageCount: ");
+                    msgBuilder.Append(_statMessageNumber);
+                    msgBuilder.Append(_history.Text);
+                    msgBuilder.Append(Environment.NewLine);
+                    msgBuilder.Append(Environment.NewLine);
+                    msgBuilder.Append(ex.Message);
+
+                    throw new Exception(msgBuilder.ToString());
                 }
 
             }
@@ -221,91 +237,155 @@ namespace SocketMeister.Messages
         /// <summary>
         /// Generate send bytes for a transmit operation.
         /// </summary>
-        /// <param name="SendObject">Object to be sent</param>
-        /// <param name="Compress">Compress the data</param>
+        /// <param name = "SendObject" > Object to be sent</param>
+        /// <param name = "Compress" > Compress the data</param>
         /// <returns>Byte array of the data to be sent</returns>
         public static byte[] GenerateSendBytes(IMessage SendObject, bool Compress)
         {
             using (BinaryWriter writer = new BinaryWriter(new MemoryStream()))
             {
-                //  WRITE HEADER
+                // Initial Header (placeholder values)
                 writer.Write(Convert.ToInt16(SendObject.MessageType, CultureInfo.InvariantCulture));
+                writer.Write(false);  // Compression flag
+                writer.Write(0);      // Placeholder for compressed length
+                writer.Write(0);      // Placeholder for uncompressed length
 
-                if (Compress == false)
+                // Write user bytes
+                int messageBodyStartPosition = Convert.ToInt32(writer.BaseStream.Position);
+                SendObject.AppendBytes(writer);
+                int messageBodyLength = Convert.ToInt32(writer.BaseStream.Position - messageBodyStartPosition);
+
+                // Decide whether to compress
+                if (Compress && messageBodyLength > 1024)
                 {
-                    //  WRITE HEADER
-                    writer.Write(false);    //  NOT COMPRESSED
-                    writer.Write(0);   //  WILL BE USED TO WRITE _compressedLength
-                    writer.Write(0);   //  WILL BE USED TO WRITE _uncompressedLength
+                    byte[] uncompressedBytes = new byte[messageBodyLength];
+                    writer.BaseStream.Position = messageBodyStartPosition;
+                    writer.BaseStream.Read(uncompressedBytes, 0, messageBodyLength);
 
-                    //  WRITE USER BYTES
-                    long position1 = writer.BaseStream.Position;
-                    SendObject.AppendBytes(writer);
-                    int messageLength = Convert.ToInt32(writer.BaseStream.Position - position1);
-                    int messageLengthUncompressed = messageLength;
+                    byte[] compressedBytes = CLZF2.Compress(uncompressedBytes);
 
-                    //  GO BACK AND FINISH HEADER
-                    writer.BaseStream.Position = 3;
-                    writer.Write(messageLength);
-                    writer.Write(messageLengthUncompressed);
+                    // The messageBodyLength is now the compressed message length
+                    messageBodyLength = compressedBytes.Length;
+
+                    // Write compressed data over uncompressed data
+                    writer.BaseStream.Position = messageBodyStartPosition;
+                    writer.Write(compressedBytes);
+
+                    // Update Header
+                    writer.BaseStream.Position = 2; // Assuming 1 byte for MessageType
+                    writer.Write(true);  // Compression flag
+                    writer.Write(compressedBytes.Length);
+                    writer.Write(messageBodyLength);
                 }
                 else
                 {
-                    byte[] uncompressedBytes = null;
-                    using (BinaryWriter writer2 = new BinaryWriter(new MemoryStream()))
-                    {
-                        SendObject.AppendBytes(writer2);
-
-                        using (BinaryReader reader2 = new BinaryReader(writer2.BaseStream))
-                        {
-                            reader2.BaseStream.Position = 0;
-                            uncompressedBytes = reader2.ReadBytes(Convert.ToInt32(reader2.BaseStream.Length));
-
-                        }
-                    }
-
-                    if (uncompressedBytes != null && uncompressedBytes.Length > 1024)
-                    {
-                        writer.Write(true);     //  COMPRESSED
-                        byte[] compressedBytes = CLZF2.Compress(uncompressedBytes);
-                        writer.Write(compressedBytes.Length);
-                        writer.Write(uncompressedBytes.Length);
-                        writer.Write(compressedBytes);
-                    }
-                    else
-                    {
-                        writer.Write(false);     //  UNCOMPRESSED
-                        writer.Write(0);   //  WILL BE USED TO WRITE _compressedLength
-                        writer.Write(0);   //  WILL BE USED TO WRITE _uncompressedLength
-
-                        //  WRITE USER BYTES
-                        long position1 = writer.BaseStream.Position;
-                        SendObject.AppendBytes(writer);
-                        int messageLength2 = Convert.ToInt32(writer.BaseStream.Position - position1);
-                        int messageLengthUncompressed2 = messageLength2;
-
-                        //  GO BACK AND FINISH HEADER
-                        writer.BaseStream.Position = 3;
-                        writer.Write(messageLength2);
-                        writer.Write(messageLengthUncompressed2);
-                    }
-
-
+                    // Update Header for uncompressed data
+                    writer.BaseStream.Position = 3; // Assuming 1 byte for MessageType
+                    writer.Write(messageBodyLength);      // Compressed length (0 for uncompressed)
+                    writer.Write(messageBodyLength);
                 }
+
+                // Return byte array
                 using (BinaryReader reader = new BinaryReader(writer.BaseStream))
                 {
                     reader.BaseStream.Position = 0;
-                    return reader.ReadBytes(Convert.ToInt32(reader.BaseStream.Length));
 
+                    int totalLength = messageBodyStartPosition + messageBodyLength;
+                    return reader.ReadBytes(totalLength);
                 }
             }
         }
 
 
-        /// <summary>
-        /// The type of message. 
-        /// </summary>
-        internal MessageEngineMessageType MessageType => _messageType;
+
+        //    public static byte[] GenerateSendBytes(IMessage SendObject, bool Compress)
+        //{
+        //    using (BinaryWriter writer = new BinaryWriter(new MemoryStream()))
+        //    {
+        //        //  WRITE HEADER
+        //        writer.Write(Convert.ToInt16(SendObject.MessageType, CultureInfo.InvariantCulture));
+
+        //        if (Compress == false)
+        //        {
+        //            //  WRITE HEADER
+        //            writer.Write(false);    //  NOT COMPRESSED
+        //            writer.Write(0);   //  WILL BE USED TO WRITE _compressedLength
+        //            writer.Write(0);   //  WILL BE USED TO WRITE _uncompressedLength
+
+        //            //  WRITE USER BYTES
+        //            long position1 = writer.BaseStream.Position;
+        //            SendObject.AppendBytes(writer);
+        //            int messageLength = Convert.ToInt32(writer.BaseStream.Position - position1);
+        //            int messageLengthUncompressed = messageLength;
+
+        //            //  GO BACK AND FINISH HEADER
+        //            writer.BaseStream.Position = 3;
+        //            writer.Write(messageLength);
+        //            writer.Write(messageLengthUncompressed);
+        //        }
+        //        else
+        //        {
+        //            byte[] uncompressedBytes = null;
+        //            using (BinaryWriter writer2 = new BinaryWriter(new MemoryStream()))
+        //            {
+        //                SendObject.AppendBytes(writer2);
+
+        //                using (BinaryReader reader2 = new BinaryReader(writer2.BaseStream))
+        //                {
+        //                    reader2.BaseStream.Position = 0;
+        //                    uncompressedBytes = reader2.ReadBytes(Convert.ToInt32(reader2.BaseStream.Length));
+        //                }
+        //            }
+
+        //            if (uncompressedBytes != null && uncompressedBytes.Length > 1024)
+        //            {
+        //                writer.Write(true);     //  COMPRESSED
+        //                byte[] compressedBytes = CLZF2.Compress(uncompressedBytes);
+        //                writer.Write(compressedBytes.Length);
+        //                writer.Write(uncompressedBytes.Length);
+        //                writer.Write(compressedBytes);
+        //            }
+        //            else
+        //            {
+        //                writer.Write(false);     //  UNCOMPRESSED
+        //                writer.Write(0);   //  WILL BE USED TO WRITE _compressedLength
+        //                writer.Write(0);   //  WILL BE USED TO WRITE _uncompressedLength
+
+        //                //  WRITE USER BYTES
+        //                long position1 = writer.BaseStream.Position;
+        //                SendObject.AppendBytes(writer);
+        //                int messageLength2 = Convert.ToInt32(writer.BaseStream.Position - position1);
+        //                int messageLengthUncompressed2 = messageLength2;
+
+        //                //  GO BACK AND FINISH HEADER
+        //                writer.BaseStream.Position = 3;
+        //                writer.Write(messageLength2);
+        //                writer.Write(messageLengthUncompressed2);
+        //            }
+
+
+        //        }
+        //        using (BinaryReader reader = new BinaryReader(writer.BaseStream))
+        //        {
+        //            reader.BaseStream.Position = 0;
+        //            return reader.ReadBytes(Convert.ToInt32(reader.BaseStream.Length));
+
+        //        }
+        //    }
+        //}
+
+
+
+
+
+
+
+
+
+    /// <summary>
+    /// The type of message. 
+    /// </summary>
+    internal MessageEngineMessageType MessageType => _messageType;
 
         internal int MessageLength => _messageLength;
 

@@ -12,7 +12,7 @@ namespace SocketMeister.Messages
     /// </summary>
     internal class TokenChangesResponseV1 : MessageBase, IMessage
     {
-        internal struct ChangeIdentifier
+        internal readonly struct ChangeIdentifier
         {
             public ChangeIdentifier(string TokenName, int ChangeId)
             {

@@ -476,8 +476,8 @@
             <summary>
             Generate send bytes for a transmit operation.
             </summary>
-            <param name="SendObject">Object to be sent</param>
-            <param name="Compress">Compress the data</param>
+            <param name = "SendObject" > Object to be sent</param>
+            <param name = "Compress" > Compress the data</param>
             <returns>Byte array of the data to be sent</returns>
         </member>
         <member name="P:SocketMeister.Messages.MessageEngine.MessageType">
