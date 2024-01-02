@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
+
 namespace SocketMeister
 {
     /// <summary>
@@ -73,6 +74,7 @@ namespace SocketMeister
         /// </summary>
         public int Count { get { lock (_lock) { return _dict.Count; } } }
 
+
         /// <summary>
         /// Add a token to the token collection. Throws ArgumentException if Token.Name (case insensitive) already exists.
         /// </summary>
@@ -85,14 +87,11 @@ namespace SocketMeister
             {
                 _dict.Add(Token.Name.ToUpper(CultureInfo.InvariantCulture), Token);
                 Token.Changed += Token_Changed;
-
-                TokenAdded?.Invoke(Token, new EventArgs());
             }
+            TokenAdded?.Invoke(Token, new EventArgs());
         }
 
-        /// <summary>
-        /// Clears all tokens
-        /// </summary>
+
         internal void Clear()
         {
             List<Token> deletedTokens = null;
@@ -100,15 +99,18 @@ namespace SocketMeister
             {
                 if (TokenDeleted != null)
                 {
-                    deletedTokens = new List<Token>(_dict.Count);
-                    foreach (KeyValuePair<string, Token> kvp in _dict)
-                    {
-                        deletedTokens.Add(kvp.Value);
-                    }
+                    deletedTokens = new List<Token>(_dict.Values);
                 }
+
+                foreach (var token in _dict.Values)
+                {
+                    token.Changed -= Token_Changed;
+                }
+
                 _dict.Clear();
             }
 
+            //  if there is an event listener attached, send TokenDeleted events.
             if (deletedTokens != null)
             {
                 foreach (Token t in deletedTokens)
@@ -117,6 +119,7 @@ namespace SocketMeister
                 }
             }
         }
+
 
 
         /// <summary>
@@ -178,6 +181,19 @@ namespace SocketMeister
                 return _dict.Values.ToList();
             }
         }
+
+        /// <summary>
+        /// Returns a list of token names
+        /// </summary>
+        /// <returns>List of strings containing the token names.</returns>
+        public List<string> ToListOfStrings()
+        {
+            lock (_lock)
+            {
+                return _dict.Values.Select(t => t.Name).ToList();
+            }
+        }
+
 
         private void Token_Changed(object sender, EventArgs e)
         {

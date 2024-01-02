@@ -36,7 +36,7 @@ namespace SocketMeister
             public event EventHandler<ClientEventArgs> ClientDisconnected;
 
             /// <summary>
-            /// Raised when an exception occurs.
+            /// Raised when an exception occurs (Raised in a seperate thread)
             /// </summary>
             public event EventHandler<TraceEventArgs> TraceEventRaised;
 
@@ -124,21 +124,6 @@ namespace SocketMeister
                 }
             }
 
-            //private void NotifyTraceEventRaised(Exception error)
-            //{
-            //    if (TraceEventRaised != null)
-            //    {
-            //        string msg = error.Message;
-            //        if (error.StackTrace != null) msg += Environment.NewLine + Environment.NewLine + error.StackTrace;
-            //        if (error.InnerException != null) msg += Environment.NewLine + Environment.NewLine + "Inner Exception: " + error.InnerException.Message;
-            //        //  RAISE EVENT IN THE BACKGROUND
-            //        new Thread(new ThreadStart(delegate
-            //        {
-            //            TraceEventRaised?.Invoke(this, new TraceEventArgs(error, 5008));
-            //        }
-            //        )).Start();
-            //    }
-            //}
             private void NotifyTraceEventRaised(Exception error)
             {
                 if (TraceEventRaised != null)
@@ -154,8 +139,6 @@ namespace SocketMeister
                     });
                 }
             }
-
-
 
             /// <summary>
             /// Returns a list of clients which are connected to the socket server

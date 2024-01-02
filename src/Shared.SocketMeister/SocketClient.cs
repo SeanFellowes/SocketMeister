@@ -16,6 +16,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
+#if ! NET35
+using System.Threading.Tasks;
+#endif
 
 namespace SocketMeister
 {
@@ -421,7 +424,7 @@ namespace SocketMeister
         /// <returns>List of subscription names</returns>
         public List<string> GetSubscriptions()
         {
-            return _subscriptions.ToList().Select(t => t.Name).ToList();
+            return _subscriptions.ToListOfStrings();
         }
 
 
@@ -1076,13 +1079,15 @@ namespace SocketMeister
                         else if (_receiveEngine.MessageType == MessageEngineMessageType.MessageV1)
                         {
                             MessageV1 message = _receiveEngine.GetMessageV1();
-                            Thread bgThread = new Thread(new ThreadStart(delegate
+#if NET35
+                            new Thread(new ThreadStart(delegate
                             {
                                 ThreadPool.QueueUserWorkItem(BgProcessMessage, message);
-                            }));
-                            bgThread.IsBackground = true;
-                            bgThread.Start();
-
+                            }))
+                            { IsBackground = true }.Start();
+#else
+                            Task.Run(() => BgProcessMessage(message));
+#endif
                         }
 
                         else if (_receiveEngine.MessageType == MessageEngineMessageType.ServerStoppingNotificationV1)
@@ -1173,7 +1178,7 @@ namespace SocketMeister
 
 
 
-        #endregion
+#endregion
 
         #region Shared
 
@@ -1210,68 +1215,98 @@ namespace SocketMeister
 
         private void NotifyExceptionRaised(Exception ex)
         {
-            Thread bgThread = new Thread(new ThreadStart(delegate
+            if (ExceptionRaised == null) return;    
+
+#if NET35
+            new Thread(new ThreadStart(delegate
             {
-                try
-                {
-                    ExceptionRaised(this, new ExceptionEventArgs(ex, 1234));
-                }
-                catch
-                {
-                }
-            }));
-            bgThread.IsBackground = true;
-            bgThread.Start();
+                NotifyExceptionRaisedInThread(ex);
+            }))
+            { IsBackground = true }.Start();
+#else
+            Task.Run(() =>
+            {
+                NotifyExceptionRaisedInThread(ex);
+            });
+#endif
         }
+
+        private void NotifyExceptionRaisedInThread(Exception ex)
+        {
+            try
+            {
+                ExceptionRaised?.Invoke(this, new ExceptionEventArgs(ex, 1234));
+            }
+            catch { }
+        }
+
+
+
 
 
         private void NotifyBroadcastReceived(Messages.BroadcastV1 Message)
         {
-            if (BroadcastReceived != null)
+            if (BroadcastReceived == null) return;
+#if NET35
+            new Thread(new ThreadStart(delegate
             {
-                Thread bgThread = new Thread(new ThreadStart(delegate
+                try
                 {
-                    try
-                    {
-                        BroadcastReceived(this, new BroadcastReceivedEventArgs(Message.Name, Message.Parameters));
-                    }
-                    catch (Exception ex)
-                    {
-                        NotifyExceptionRaised(ex);
-                    }
-                }));
-                bgThread.IsBackground = true;
-                bgThread.Start();
-            }
+                    BroadcastReceived(this, new BroadcastReceivedEventArgs(Message.Name, Message.Parameters));
+                }
+                catch (Exception ex)
+                {
+                    NotifyExceptionRaisedInThread(ex);
+                }
+            }))
+            { IsBackground = true }.Start();
+#else
+            Task.Run(() =>
+            {
+                try
+                {
+                    BroadcastReceived(this, new BroadcastReceivedEventArgs(Message.Name, Message.Parameters));
+                }
+                catch (Exception ex)
+                {
+                    NotifyExceptionRaisedInThread(ex);
+                }
+            });
+#endif
         }
-
 
 
         private void NotifyServerStopping()
         {
-            if (ServerStopping != null)
-            {
-                Thread bgThread = new Thread(new ThreadStart(delegate
-                {
-                    //  RAISE EVENT IN THE BACKGROUND
-                    new Thread(new ThreadStart(delegate
-                    {
-                        try
-                        {
-                            ServerStopping(this, null);
-                        }
-                        catch (Exception ex)
-                        {
-                            NotifyExceptionRaised(ex);
-                        }
-                    }
-                    )).Start();
-                }));
-                bgThread.IsBackground = true;
-                bgThread.Start();
-            }
-        }
+            if (ServerStopping == null) return;
 
+#if NET35
+            new Thread(new ThreadStart(delegate
+            {
+                try
+                {
+                    ServerStopping(this, null);
+                }
+                catch (Exception ex)
+                {
+                    NotifyExceptionRaisedInThread(ex);
+                }
+            }))
+            { IsBackground = true }.Start();
+#else
+            Task.Run(() =>
+            {
+                try
+                {
+                    ServerStopping(this, null);
+                }
+                catch (Exception ex)
+                {
+                    NotifyExceptionRaisedInThread(ex);
+                }
+            });
+#endif
+        }
 
 
         #endregion

@@ -413,7 +413,7 @@ namespace SocketMeister
             else if (Status == SocketServerStatus.Stopping)
             {
                 // Accept the connection but disconnect the client
-                Task.Run(() =>
+                new Thread(() =>
                 {
                     Socket listener = (Socket)ar.AsyncState;
                     Socket handler = null;
@@ -426,12 +426,14 @@ namespace SocketMeister
                     try { handler.Close(); }
                     catch { }
                     return;
-                });
+                })
+                { IsBackground = true }.Start(); // Optionally set as a background thread
+
             }
             else
             {
                 // Receive data on a dedicated background task
-                Task.Run(() =>
+                new Thread(() =>
                 {
                     // Get the socket that handles the client. 
                     Socket listener = (Socket)ar.AsyncState;
@@ -443,7 +445,8 @@ namespace SocketMeister
                     Client remoteClient = new Client(this, handler, _compressSentData);
                     _connectedClients.Add(remoteClient);
                     handler.BeginReceive(remoteClient.ReceiveBuffer, 0, Constants.SEND_RECEIVE_BUFFER_SIZE, 0, new AsyncCallback(ReadCallback), remoteClient);
-                });
+                })
+                { IsBackground = true }.Start(); // Optionally set as a background thread
             }
         }
 
@@ -507,11 +510,6 @@ namespace SocketMeister
                             {
                                 // Offload CPU-bound work to a thread pool thread
                                 Task.Run(() => BgProcessMessage(message));
-                                 //new Thread(new ThreadStart(delegate
-                                //{
-                                //    BgProcessMessage(message);
-                                //}
-                                //)).Start();
                             }
                         }
                         else if (receiveEnvelope.MessageType == MessageEngineMessageType.MessageResponseV1)
@@ -538,11 +536,6 @@ namespace SocketMeister
                             if (Status == SocketServerStatus.Started)
                             {
                                 Task.Run(() => BgProcessPollRequest(remoteClient));
-                            //    new Thread(new ThreadStart(delegate
-                            //    {
-                            //        BgProcessPollRequest(remoteClient);
-                            //    }
-                            //    )).Start();
                             }
                         }
 
@@ -689,14 +682,25 @@ namespace SocketMeister
             NotifyTraceEventRaised(new TraceEventArgs(ex, ErrorNumber));
         }
 
+
         private void NotifyTraceEventRaised(TraceEventArgs args)
         {
-            try
+            // Raise event in the background using a Task
+            Task.Run(() =>
             {
-                TraceEventRaised?.Invoke(this, args);
-            }
-            catch { }
+                try
+                {
+                    TraceEventRaised?.Invoke(this, args);
+                }
+                catch 
+                {
+                    // Ignore any errors in the event handlers
+                }
+            });
         }
+
+
+
 
 
 
@@ -731,12 +735,34 @@ namespace SocketMeister
 
         private void ConnectedClients_ClientConnected(object sender, ClientEventArgs e)
         {
-            ClientConnected?.Invoke(this, e);
+            // Raise event in the background using a Task
+            Task.Run(() =>
+            {
+                try
+                {
+                    ClientConnected?.Invoke(this, e);
+                }
+                catch
+                {
+                    // Ignore any errors in the event handlers
+                }
+            });
         }
 
         private void ConnectedClients_ClientDisconnected(object sender, ClientEventArgs e)
         {
-            ClientDisconnected?.Invoke(this, e);
+            // Raise event in the background using a Task
+            Task.Run(() =>
+            {
+                try
+                {
+                    ClientDisconnected?.Invoke(this, e);
+                }
+                catch
+                {
+                    // Ignore any errors in the event handlers
+                }
+            });
         }
 
         private void ConnectedClients_ExceptionRaised(object sender, TraceEventArgs e)

@@ -30,7 +30,7 @@ namespace SocketMeister
             {
                 _dictName.TryGetValue(Token.Name.ToUpper(CultureInfo.InvariantCulture), out foundTokenChange);
 
-                //  IF EXISTING RECORD EXISTS, DELETE IT
+                //  IF EXISTING TokenChange EXISTS, DELETE IT
                 _dictName.Remove(Token.Name.ToUpper(CultureInfo.InvariantCulture));
 
                 //  ADD IT BACK IN

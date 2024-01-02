@@ -1144,7 +1144,7 @@
         </member>
         <member name="E:SocketMeister.SocketServer.Clients.TraceEventRaised">
             <summary>
-            Raised when an exception occurs.
+            Raised when an exception occurs (Raised in a seperate thread)
             </summary>
         </member>
         <member name="P:SocketMeister.SocketServer.Clients.Count">
@@ -1461,11 +1461,6 @@
             </summary>
             <param name="Token">Token to add</param>
         </member>
-        <member name="M:SocketMeister.TokenCollection.Clear">
-            <summary>
-            Clears all tokens
-            </summary>
-        </member>
         <member name="M:SocketMeister.TokenCollection.FlagAllAfterSocketConnect">
             <summary>
             After a socket connects, all tokens are sent to the other side.
@@ -1483,6 +1478,12 @@
             Returns a list of all the tokens in the collection
             </summary>
             <returns></returns>
+        </member>
+        <member name="M:SocketMeister.TokenCollection.ToListOfStrings">
+            <summary>
+            Returns a list of token names
+            </summary>
+            <returns>List of strings containing the token names.</returns>
         </member>
     </members>
 </doc>
