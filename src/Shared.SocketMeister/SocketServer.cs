@@ -80,7 +80,8 @@ namespace SocketMeister
         /// </summary>
         /// <param name="Port">Port that this socket server will listen on</param>
         /// <param name="CompressSentData">Enable compression on message data</param>
-        public SocketServer(int Port, bool CompressSentData)
+        /// <param name="DontLinger">Set socket don't linger option</param>
+        public SocketServer(int Port, bool CompressSentData, bool DontLinger = true)
         {
             _compressSentData = CompressSentData;
 
@@ -97,7 +98,8 @@ namespace SocketMeister
 
             //  WARNING - DO NOT USE SocketOptionName.ReceiveTimeout OR SocketOptionName.SendTimeout. TRIED THIS AND IT COMPLETELY BROKE THIS FOR BIG DATA TRANSFERS
             _listener.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
-            _listener.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, 0);
+            if(DontLinger)
+                _listener.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, 0);
 
             //  REGISTER FOR EVENTS
             _connectedClients.ClientDisconnected += ConnectedClients_ClientDisconnected;
@@ -110,7 +112,6 @@ namespace SocketMeister
                 IsBackground = true
             };
         }
-
 
         internal Clients ConnectedClients => _connectedClients;
 
