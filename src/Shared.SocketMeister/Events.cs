@@ -56,7 +56,10 @@ namespace SocketMeister
         /// <param name="eventId">Event identifier for this trace event. Useful if writing this to the Windows Event Log (Or equivalent).</param>
         public TraceEventArgs(Exception exception, int eventId)
         {
-            if (exception == null) throw new ArgumentNullException(nameof(exception));
+            if (exception == null)
+            {
+                throw new ArgumentNullException(nameof(exception));
+            }
 
             _message = exception.Message;
             _severity = SeverityType.Error;

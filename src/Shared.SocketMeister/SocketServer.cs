@@ -545,11 +545,6 @@ namespace SocketMeister
                             {
                                 TokenChangesRequestV1 request = receiveEnvelope.GetSubscriptionChangesNotificationV1();
                                 Task.Run(() => BgProcessSubscriptionChanges(remoteClient, request));
-                            //    new Thread(new ThreadStart(delegate
-                            //    {
-                            //        BgProcessSubscriptionChanges(remoteClient, request);
-                            //    }
-                            //    )).Start();
                             }
                         }
 

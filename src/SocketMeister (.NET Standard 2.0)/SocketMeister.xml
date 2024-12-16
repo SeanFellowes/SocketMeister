@@ -814,7 +814,7 @@
             If a poll response has not been received from the server after a number of seconds, the socket client will be disconnected.
             </summary>
         </member>
-        <member name="F:SocketMeister.SocketClient.DONT_RECONNECT_DELAY_AFTER_SHUTDOWN">
+        <member name="F:SocketMeister.SocketClient.RECONNECT_DELAY_AFTER_SERVER_SHUTDOWN_AND_ONE_ENDPOINT">
             <summary>
             When a shutdown occurs, particularly because of network failure or server shutdown, delay attempting to reconnect to that server, giving the server some time to complete it's shutdown process.
             When a shutdown occurs, particularly because of network failure or serveDisconnectr shutdown, delay attempting to reconnect to that server, giving the server some time to complete it's shutdown process.
@@ -823,6 +823,11 @@
         <member name="F:SocketMeister.SocketClient.POLLING_FREQUENCY">
             <summary>
             The frequency, in seconds, that this client will poll the server, to ensure the socket is alive.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.SocketClient.SEND_SUBSCRIPTIONS_FREQUENCY">
+            <summary>
+            The frequency, in seconds, that the client will send subscriptions to the server
             </summary>
         </member>
         <member name="E:SocketMeister.SocketClient.ConnectionStatusChanged">
@@ -924,11 +929,6 @@
             The last time a polling response was received from the socket server.
             </summary>
         </member>
-        <member name="P:SocketMeister.SocketClient.NextPoll">
-            <summary>
-            The next time this socket client should attempt to poll the socket server.
-            </summary>
-        </member>
         <member name="P:SocketMeister.SocketClient.SubscriptionCount">
             <summary>
             The number of subscriptions for this client
@@ -946,26 +946,6 @@
             Get a list of subscription names
             </summary>
             <returns>List of subscription names</returns>
-        </member>
-        <member name="M:SocketMeister.SocketClient.DisconnectSocketGracefully">
-            <summary>
-            Disconnect the socket gracefully. 
-            </summary>
-        </member>
-        <member name="M:SocketMeister.SocketClient.CloseSocketWithForce">
-            <summary>
-            Disconnect the socket. Note: This is performed in the background.
-            </summary>
-        </member>
-        <member name="M:SocketMeister.SocketClient.BgConnectToServer">
-            <summary>
-            Background process which creates a connection with one of the servers specified
-            </summary>
-        </member>
-        <member name="M:SocketMeister.SocketClient.ExecuteBackgroundOperations">
-            <summary>
-            Background process which performas various operations
-            </summary>
         </member>
         <member name="M:SocketMeister.SocketClient.ProcessConnect(System.Object,System.Net.Sockets.SocketAsyncEventArgs)">
             <summary>

@@ -7,16 +7,15 @@
 #pragma warning disable CA1303 // Do not pass literals as localized parameters
 #pragma warning disable CA1031 // Do not catch general exception types
 #pragma warning disable CA1805 // Do not initialize unnecessarily
-#pragma warning disable CA2213 // Disposable fields should be disposed
 
 
 using SocketMeister.Messages;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics;
 using System.Net.Sockets;
 using System.Threading;
-#if ! NET35
+#if ! NET35 // Compiler directive for code which will be compiled to .NET 3.5. This provides a less efficient but workable solution to the desired functional requirements.
 using System.Threading.Tasks;
 #endif
 
@@ -40,36 +39,40 @@ namespace SocketMeister
         /// When a shutdown occurs, particularly because of network failure or server shutdown, delay attempting to reconnect to that server, giving the server some time to complete it's shutdown process.
         /// When a shutdown occurs, particularly because of network failure or serveDisconnectr shutdown, delay attempting to reconnect to that server, giving the server some time to complete it's shutdown process.
         /// </summary>
-        private const int DONT_RECONNECT_DELAY_AFTER_SHUTDOWN = 30;
+        private const int RECONNECT_DELAY_AFTER_SERVER_SHUTDOWN_AND_ONE_ENDPOINT = 30;
 
         /// <summary>
         /// The frequency, in seconds, that this client will poll the server, to ensure the socket is alive.
         /// </summary>
         private const int POLLING_FREQUENCY = 15;
 
+        /// <summary>
+        /// The frequency, in seconds, that the client will send subscriptions to the server
+        /// </summary>
+        private const int SEND_SUBSCRIPTIONS_FREQUENCY = 60;
+
         private SocketAsyncEventArgs _asyncEventArgsConnect = null;
         private SocketAsyncEventArgs _asyncEventArgsPolling = null;
         private SocketAsyncEventArgs _asyncEventArgsReceive = null;
         private SocketAsyncEventArgs _asyncEventArgsSendSubscriptionChanges = null;
-        private readonly ManualResetEvent _autoResetConnectEvent = new ManualResetEvent(false);
-        private readonly TokenCollection _subscriptions;
+        private readonly TokenCollection _subscriptions = new TokenCollection();
         private ConnectionStatuses _connectionStatus = ConnectionStatuses.Disconnected;
+        private readonly ReaderWriterLockSlim _connectionStatusLock = new ReaderWriterLockSlim();
         private SocketEndPoint _currentEndPoint = null;
+        private readonly ReaderWriterLockSlim _currentEndPointLock = new ReaderWriterLockSlim();
         private readonly bool _enableCompression;
         private readonly List<SocketEndPoint> _endPoints = null;
-        private bool _isBackgroundConnectThreadRunning;
-        private bool _isBackgroundOperationsThreadRunning;
+        private bool _isBackgroundWorkerRunning;
+        private DateTime? _lastMessageFromServer = null;
         private DateTime _lastPollResponse = DateTime.Now;
         private readonly object _lock = new object();
-        private DateTime? _lastMessageFromServer = null;
-        private DateTime _nextPoll;
-        private DateTime _nextSendSubscriptions;
-        private readonly UnrespondedMessageCollection _unrespondedMessages = new UnrespondedMessageCollection();
+        private readonly byte[] _pollingBuffer = new byte[Constants.SEND_RECEIVE_BUFFER_SIZE];
         private readonly Random _randomizer = new Random();
-        private MessageEngine _receiveEngine;
+        private readonly MessageEngine _receiveEngine;
         private readonly SocketAsyncEventArgsPool _sendEventArgsPool;
-        private bool _stopAllBackgroundThreads;
         private bool _stopClientPermanently;
+        private bool _triggerSendSubscriptions;
+        private readonly UnrespondedMessageCollection _unrespondedMessages = new UnrespondedMessageCollection();
 
         /// <summary>
         /// Event raised when the status of a socket connection changes
@@ -102,7 +105,6 @@ namespace SocketMeister
         public event EventHandler<BroadcastReceivedEventArgs> BroadcastReceived;
 
 
-
         /// <summary>
         /// Constructor
         /// </summary>
@@ -112,34 +114,26 @@ namespace SocketMeister
         {
             if (EndPoints == null) throw new ArgumentNullException(nameof(EndPoints));
             else if (EndPoints.Count == 0) throw new ArgumentException("EndPoints must contain at least 1 value", nameof(EndPoints));
+            _endPoints = EndPoints;
 
             _enableCompression = EnableCompression;
             _receiveEngine = new MessageEngine(EnableCompression);
 
-            //  CREATE SUBSCRIPTION AND SUBSCRIPTION CHANGES
-            _subscriptions = new TokenCollection();
+            //  STATIC BUFFERS
+            _pollingBuffer = MessageEngine.GenerateSendBytes(new PollingRequestV1(), false);
 
             //  SETUP ENDPOINTS AND CHOOSE THE ENDPOINT TO START WITH
-            _endPoints = EndPoints;
             if (_endPoints.Count == 1)
             {
-                CurrentEndPoint = _endPoints[0];
+                _currentEndPoint = _endPoints[0];   // Safe to use direct access in class constructor
             }
             else
             {
-                int loopCnt = _randomizer.Next(20);
-                int pointer = 0;
-                for (int a = 0; a < loopCnt; a++)
-                {
-                    pointer = _randomizer.Next(_endPoints.Count);
-                }
-                pointer = _randomizer.Next(_endPoints.Count);
-                CurrentEndPoint = _endPoints[pointer];
-                //  ENSURE THIS ENDPOINT IS SELECTED FIRST (Must have the lowest DontReconnectUntil)
-                CurrentEndPoint.DontReconnectUntil = DateTime.Now.AddYears(-1);
+                _currentEndPoint = _endPoints[_randomizer.Next(_endPoints.Count)];   // Safe to use direct access in class constructor
             }
+            _currentEndPoint.DontReconnectUntil = DateTime.Now.AddYears(-1);   // Safe to use direct access in class constructor
 
-            //  PREALLOCATE A POOL OF SocketAsyncEventArgs FOR SENDING
+            //  Setup a pool of SocketAsyncEventArgs for sending messages
             _sendEventArgsPool = new SocketAsyncEventArgsPool(Constants.SocketAsyncEventArgsPoolSize);
             _sendEventArgsPool.Completed += ProcessSend;
 
@@ -154,7 +148,7 @@ namespace SocketMeister
             _asyncEventArgsSendSubscriptionChanges.SetBuffer(new byte[Constants.SEND_RECEIVE_BUFFER_SIZE], 0, Constants.SEND_RECEIVE_BUFFER_SIZE);
             _asyncEventArgsSendSubscriptionChanges.Completed += ProcessSendSubscriptionChanges;
 
-            BgConnectToServer();
+            StartBackgroundWorker();
         }
 
         /// <summary>
@@ -164,53 +158,7 @@ namespace SocketMeister
         /// <param name="Port1">TCP port the server is listening on</param>
         /// <param name="EnableCompression">Whether compression will be applied to data.</param>
         public SocketClient(string IPAddress1, int Port1, bool EnableCompression)
-        {
-            List<SocketEndPoint> EndPoints = new List<SocketEndPoint>();
-            EndPoints.Add(new SocketEndPoint(IPAddress1, Port1));
-
-            _enableCompression = EnableCompression;
-            _receiveEngine = new MessageEngine(EnableCompression);
-
-            //  CREATE SUBSCRIPTION AND SUBSCRIPTION CHANGES
-            _subscriptions = new TokenCollection();
-
-            //  SETUP ENDPOINTS AND CHOOSE THE ENDPOINT TO START WITH
-            _endPoints = EndPoints;
-            if (_endPoints.Count == 1)
-            {
-                CurrentEndPoint = _endPoints[0];
-            }
-            else
-            {
-                int loopCnt = _randomizer.Next(20);
-                int pointer = 0;
-                for (int a = 0; a < loopCnt; a++)
-                {
-                    pointer = _randomizer.Next(_endPoints.Count);
-                }
-                pointer = _randomizer.Next(_endPoints.Count);
-                CurrentEndPoint = _endPoints[pointer];
-                //  ENSURE THIS ENDPOINT IS SELECTED FIRST (Must have the lowest DontReconnectUntil)
-                CurrentEndPoint.DontReconnectUntil = DateTime.Now.AddYears(-1);
-            }
-
-            //  PREALLOCATE A POOL OF SocketAsyncEventArgs FOR SENDING
-            _sendEventArgsPool = new SocketAsyncEventArgsPool(Constants.SocketAsyncEventArgsPoolSize);
-            _sendEventArgsPool.Completed += ProcessSend;
-
-            _asyncEventArgsConnect = new SocketAsyncEventArgs();
-            _asyncEventArgsConnect.Completed += new EventHandler<SocketAsyncEventArgs>(ProcessConnect);
-
-            _asyncEventArgsPolling = new SocketAsyncEventArgs();
-            _asyncEventArgsPolling.SetBuffer(new byte[Constants.SEND_RECEIVE_BUFFER_SIZE], 0, Constants.SEND_RECEIVE_BUFFER_SIZE);
-            _asyncEventArgsPolling.Completed += ProcessSendPollRequest;
-
-            _asyncEventArgsSendSubscriptionChanges = new SocketAsyncEventArgs();
-            _asyncEventArgsSendSubscriptionChanges.SetBuffer(new byte[Constants.SEND_RECEIVE_BUFFER_SIZE], 0, Constants.SEND_RECEIVE_BUFFER_SIZE);
-            _asyncEventArgsSendSubscriptionChanges.Completed += ProcessSendSubscriptionChanges;
-
-            BgConnectToServer();
-        }
+            : this(new List<SocketEndPoint> { new SocketEndPoint(IPAddress1, Port1) }, EnableCompression) { }
 
 
         /// <summary>
@@ -222,55 +170,15 @@ namespace SocketMeister
         /// <param name="Port2">TCP port the second server is listening on</param>
         /// <param name="EnableCompression">Whether compression will be applied to data.</param>
         public SocketClient(string IPAddress1, int Port1, string IPAddress2, int Port2, bool EnableCompression)
-        {
-            List<SocketEndPoint> EndPoints = new List<SocketEndPoint>();
-            EndPoints.Add(new SocketEndPoint(IPAddress1, Port1));
-            EndPoints.Add(new SocketEndPoint(IPAddress2, Port2));
-
-            _enableCompression = EnableCompression;
-            _receiveEngine = new MessageEngine(EnableCompression);
-
-            //  CREATE SUBSCRIPTION AND SUBSCRIPTION CHANGES
-            _subscriptions = new TokenCollection();
-
-            //  SETUP ENDPOINTS AND CHOOSE THE ENDPOINT TO START WITH
-            _endPoints = EndPoints;
-            if (_endPoints.Count == 1)
-            {
-                CurrentEndPoint = _endPoints[0];
-            }
-            else
-            {
-                int loopCnt = _randomizer.Next(20);
-                int pointer = 0;
-                for (int a = 0; a < loopCnt; a++)
+            : this(
+                new List<SocketEndPoint>
                 {
-                    pointer = _randomizer.Next(_endPoints.Count);
-                }
-                pointer = _randomizer.Next(_endPoints.Count);
-                CurrentEndPoint = _endPoints[pointer];
-                //  ENSURE THIS ENDPOINT IS SELECTED FIRST (Must have the lowest DontReconnectUntil)
-                CurrentEndPoint.DontReconnectUntil = DateTime.Now.AddYears(-1);
-            }
-
-            //  PREALLOCATE A POOL OF SocketAsyncEventArgs FOR SENDING
-            _sendEventArgsPool = new SocketAsyncEventArgsPool(Constants.SocketAsyncEventArgsPoolSize);
-            _sendEventArgsPool.Completed += ProcessSend;
-
-            _asyncEventArgsConnect = new SocketAsyncEventArgs();
-            _asyncEventArgsConnect.Completed += new EventHandler<SocketAsyncEventArgs>(ProcessConnect);
-
-            _asyncEventArgsPolling = new SocketAsyncEventArgs();
-            _asyncEventArgsPolling.SetBuffer(new byte[Constants.SEND_RECEIVE_BUFFER_SIZE], 0, Constants.SEND_RECEIVE_BUFFER_SIZE);
-            _asyncEventArgsPolling.Completed += ProcessSendPollRequest;
-
-            _asyncEventArgsSendSubscriptionChanges = new SocketAsyncEventArgs();
-            _asyncEventArgsSendSubscriptionChanges.SetBuffer(new byte[Constants.SEND_RECEIVE_BUFFER_SIZE], 0, Constants.SEND_RECEIVE_BUFFER_SIZE);
-            _asyncEventArgsSendSubscriptionChanges.Completed += ProcessSendSubscriptionChanges;
-
-            BgConnectToServer();
+                    new SocketEndPoint(IPAddress1, Port1),
+                    new SocketEndPoint(IPAddress2, Port2)
+                },
+                EnableCompression)
+        {
         }
-
 
 
         /// <summary>
@@ -290,8 +198,10 @@ namespace SocketMeister
         {
             if (disposing)
             {
-                StopClientPermanently = true;
-                _autoResetConnectEvent.Close();
+                Stop();
+
+                _connectionStatusLock.Dispose();
+                _currentEndPointLock.Dispose();
 
                 _asyncEventArgsConnect?.Dispose();
                 _asyncEventArgsConnect = null;
@@ -305,11 +215,11 @@ namespace SocketMeister
                 _asyncEventArgsSendSubscriptionChanges?.Dispose();
                 _asyncEventArgsSendSubscriptionChanges = null;
 
-                _receiveEngine = null; ;
                 foreach (SocketEndPoint ep in _endPoints)
                 {
                     ep.Dispose();
                 }
+
                 _endPoints.Clear();
             }
         }
@@ -345,58 +255,115 @@ namespace SocketMeister
             else return false;
         }
 
+
         /// <summary>
         /// The connection status of the socket client
         /// </summary>
         public ConnectionStatuses ConnectionStatus
         {
-            get { lock (_lock) { return _connectionStatus; } }
+            get
+            {
+                if (_connectionStatusLock == null)
+                {
+                    return ConnectionStatuses.Disconnected;
+                }
+
+                bool lockAcquired = false;
+                try
+                {
+                    _connectionStatusLock.EnterReadLock();
+                    lockAcquired = true;
+                    return _connectionStatus;
+                }
+                catch (ObjectDisposedException)
+                {
+                    return ConnectionStatuses.Disconnected;
+                }
+                finally
+                {
+                    if (lockAcquired && _connectionStatusLock.IsReadLockHeld)
+                    {
+                        _connectionStatusLock.ExitReadLock();
+                    }
+                }
+            }
             private set
             {
-                lock (_lock)
+                bool lockAcquired = false;
+                try
                 {
-                    if (_connectionStatus == value) return;
+                    if (ConnectionStatus == value) return;
+                    _connectionStatusLock.EnterWriteLock();
+                    lockAcquired = true;
                     _connectionStatus = value;
                 }
-                ConnectionStatusChanged?.Invoke(this, new EventArgs());
+                finally
+                {
+                    if (lockAcquired && _connectionStatusLock.IsWriteLockHeld)
+                    {
+                        _connectionStatusLock.ExitWriteLock();
+                    }
+                }
+
+                try
+                {
+                    ConnectionStatusChanged?.Invoke(this, EventArgs.Empty);
+                }
+                catch 
+                {
+                    Debug.Write("Calling program error processing ConnectionStatusChanged event");
+                }
             }
         }
+
 
         /// <summary>
         /// The current socket endpoint which the client is using
         /// </summary>
         public SocketEndPoint CurrentEndPoint
         {
-            get { lock (_lock) { return _currentEndPoint; } }
+            get 
+            {
+                try
+                {
+                    _currentEndPointLock.EnterReadLock();
+                    return _currentEndPoint;
+                }
+                finally
+                {
+                    _currentEndPointLock.ExitReadLock();
+                }
+            }
             private set
             {
-                lock (_lock)
+                //  SET _currentEndPoint IN A LOCK
+                bool lockAcquired = false;
+                try
                 {
-                    if (_currentEndPoint == value) return;
+                    _currentEndPointLock.EnterWriteLock();
+                    lockAcquired = true;
                     _currentEndPoint = value;
                 }
-                CurrentEndPointChanged?.Invoke(this, new EventArgs());
+                finally
+                {
+                    if (lockAcquired && _currentEndPointLock.IsWriteLockHeld)
+                    {
+                        _currentEndPointLock.ExitWriteLock();
+                    }
+
+                }
+
             }
         }
 
-
-        private bool IsBackgroundConnectRunning { get { lock (_lock) { return _isBackgroundConnectThreadRunning; } } set { lock (_lock) { _isBackgroundConnectThreadRunning = value; } } }
-
-        private bool IsBackgroundOperationsRunning { get { lock (_lock) { return _isBackgroundOperationsThreadRunning; } } set { lock (_lock) { _isBackgroundOperationsThreadRunning = value; } } }
+        private bool IsBackgroundWorkerRunning { get { lock (_lock) { return _isBackgroundWorkerRunning; } } set { lock (_lock) { _isBackgroundWorkerRunning = value; } } }
 
         /// <summary>
         /// The last time a polling response was received from the socket server.
         /// </summary>
         private DateTime LastPollResponse { get { lock (_lock) { return _lastPollResponse; } } set { lock (_lock) { _lastPollResponse = value; } } }
 
-        /// <summary>
-        /// The next time this socket client should attempt to poll the socket server.
-        /// </summary>
-        private DateTime NextPoll { get { lock (_lock) { return _nextPoll; } } set { lock (_lock) { _nextPoll = value; } } }
-
-        private DateTime NextSendSubscriptions { get { lock (_lock) { return _nextSendSubscriptions; } } set { lock (_lock) { _nextSendSubscriptions = value; } } }
-
-        private bool StopAllBackgroundThreads { get { lock (_lock) { return _stopAllBackgroundThreads; } } set { lock (_lock) { _stopAllBackgroundThreads = value; } } }
+        private bool TriggerSendSubscriptions { get { lock (_lock) { return _triggerSendSubscriptions; } } set { lock (_lock) { _triggerSendSubscriptions = value; } } }
 
         private bool StopClientPermanently { get { lock (_lock) { return _stopClientPermanently; } } set { lock (_lock) { _stopClientPermanently = value; } } }
 
@@ -428,276 +395,229 @@ namespace SocketMeister
         }
 
 
-        #region Socket async connect
 
-
-
-        /// <summary>
-        /// Disconnect the socket gracefully. 
-        /// </summary>
-        private void DisconnectSocketGracefully()
+        private void PerformDisconnect(bool SocketHasErrored)
         {
-            //  INITIATE SHUTDOWN
-            ConnectionStatus = ConnectionStatuses.Disconnecting;
-            StopAllBackgroundThreads = true;
-
-            //  CLOSE UNRESPONDED MESSAGES
-            _unrespondedMessages.ResetToUnsent();
-
-            //  ENSURE BACKGROUND THREADS HAVE STOPPED
-            EnsureBackgroundThreadsHaveStopped();
-
-            //  A GRACEFUL CLOSE SHOULD OCCUR LIKE THIS (* IS THIS STEP/S)
-            //  1. * The client socket calls Shutdown(SocketShutdown.Send)) but should keep receiving
-            //  2.   On the server, EndReceive returns 0 bytes read(the client signals there is no more data from its side)
-            //  3.   The server A) sends its last data B) calls Shutdown(SocketShutdown.Send)) C) calls Close on the socket, optionally with a timeout to allow the data to be read from the client
-            //  4.   The client A) reads the remaining data from the server and then receives 0 bytes(the server signals there is no more data from its side) B) calls Close on the socket
-            try { CurrentEndPoint.Socket.Shutdown(SocketShutdown.Send); }
-            catch { }
-        }
-
-
-        /// <summary>
-        /// Disconnect the socket. Note: This is performed in the background.
-        /// </summary>
-        private void CloseSocketWithForce()
-        {
-            if (ConnectionStatus == ConnectionStatuses.Disconnecting || ConnectionStatus == ConnectionStatuses.Disconnected) return;
-
-            //  INITIATE SHUTDOWN
-            SocketEndPoint disconnectingEndPoint = CurrentEndPoint;
-
-            ConnectionStatus = ConnectionStatuses.Disconnecting;
-
-            //  SET BACKGROUND THREADS TO STOP
-            StopAllBackgroundThreads = true;
-
-            Thread bgDisconnect = new Thread(
-            new ThreadStart(delegate
+            Stopwatch timer = Stopwatch.StartNew();
+            try
             {
+                if (ConnectionStatus == ConnectionStatuses.Disconnecting || ConnectionStatus == ConnectionStatuses.Disconnected) return;
+
+                //  Initiate Shutdown
+                ConnectionStatus = ConnectionStatuses.Disconnecting;
+
+                //  Stop raising events when messages are received
+                try
+                {
+                    if (_asyncEventArgsReceive != null)
+                    {
+                        _asyncEventArgsReceive.Completed -= new EventHandler<SocketAsyncEventArgs>(ProcessSend);
+                        _asyncEventArgsReceive.Dispose();
+                        _asyncEventArgsReceive = null;
+                    }
+                }
+                catch { }
+
+
                 //  CLOSE UNRESPONDED MESSAGES
                 _unrespondedMessages.ResetToUnsent();
 
-                if (disconnectingEndPoint.Socket.Connected == true)
+                if (SocketHasErrored == false)
                 {
-                    //  ATTEMPT TO SEND A DISCONNECT MESSAGE TO THE SERVER.
-                    byte[] sendBytes = MessageEngine.GenerateSendBytes(new ClientDisconnectingNotificationV1(), false);
-                    using (SocketAsyncEventArgs sendDisconnectEventArgs = new SocketAsyncEventArgs())
+                    //  TRY AND SEND A DISCONNECTING MESSAGE TO THE SERVER
+                    try
                     {
-                        try
-                        {
-                            sendDisconnectEventArgs.SetBuffer(sendBytes, 0, sendBytes.Length);
-                            sendDisconnectEventArgs.RemoteEndPoint = disconnectingEndPoint.IPEndPoint;
-                            disconnectingEndPoint.Socket.SendAsync(sendDisconnectEventArgs);
-                        }
-                        catch { }
+                        byte[] sendBytes = MessageEngine.GenerateSendBytes(new ClientDisconnectingNotificationV1(), false);
+                        CurrentEndPoint.Socket.Send(sendBytes);
                     }
+                    catch { }
                 }
 
-                //  COMPLETE CLOSING ACTIVITIES AND START RECONNECTING IF REQUIRED
-                EnsureBackgroundThreadsHaveStopped();
-                CompleteSocketClosure(disconnectingEndPoint, false);
-            }));
-
-            bgDisconnect.IsBackground = true;
-            bgDisconnect.Start();
-
-            EnsureBackgroundThreadsHaveStopped();
-        }
-
-
-        private void EnsureBackgroundThreadsHaveStopped()
-        {
-            //  SHOULD NOT HAPPEN BUT JUST TO MAKE SURE
-            if (StopAllBackgroundThreads == false) StopAllBackgroundThreads = true;
-
-            //  WAIT UP TO 15 SECONDS FOR BACKGROUND THREADS TO STOP
-            DateTime maxWait = DateTime.Now.AddSeconds(15);
-            while ((IsBackgroundOperationsRunning == true || IsBackgroundConnectRunning == true) && DateTime.Now < maxWait) { Thread.Sleep(100); }
-        }
-
-
-        private void CompleteSocketClosure(SocketEndPoint EndPoint, bool CreateNewSocket)
-        {
-            //  CLEANUP _asyncEventArgsReceive
-            try
-            {
-                if (_asyncEventArgsReceive != null)
+                if (StopClientPermanently == true)
                 {
-                    _asyncEventArgsReceive.Completed -= new EventHandler<SocketAsyncEventArgs>(ProcessSend);
-                    _asyncEventArgsReceive.Dispose();
-                    _asyncEventArgsReceive = null;
+                    //  WAIT UP TO 15 SECONDS FOR BACKGROUND THREADS TO STOP
+                    DateTime maxWait = DateTime.Now.AddSeconds(15);
+                    while ((IsBackgroundWorkerRunning == true) && DateTime.Now < maxWait) { Thread.Sleep(100); }
                 }
-            }
-            catch { }
 
-            try
-            {
-                if (StopClientPermanently == true) EndPoint.Socket.Disconnect(false);
-                else if (CreateNewSocket == true) EndPoint.Socket.Disconnect(false);
-                else EndPoint.Socket.Disconnect(true);
-            }
-            catch { }
-
-            if (CreateNewSocket == true)
-            {
-#if !NET35
-                try { EndPoint.Socket.Dispose(); }
-                catch { }
-#endif
-                EndPoint.RecreateSocket();
-            }
-
-            //  CLOSE UNRESPONDED MESSAGES (AGAIN IN SOME CASES). UNDER LOAD THE CLIENT CAN SUBMIT A MESSAGE (BECAUSE OF CROSS THREADING)
-            _unrespondedMessages.ResetToUnsent();
-
-            //  FINALIZE AND RE-ATTEMPT CONNECTION IS WE ARE NOT STOPPING
-            ConnectionStatus = ConnectionStatuses.Disconnected;
-
-            //  RECONNECT
-            if (StopClientPermanently == false) BgConnectToServer();
-        }
-
-
-
-        /// <summary>
-        /// Background process which creates a connection with one of the servers specified
-        /// </summary>
-        private void BgConnectToServer()
-        {
-            lock (_lock)
-            {
-                if (_isBackgroundConnectThreadRunning == true) return;
-                _isBackgroundConnectThreadRunning = true;
-            }
-            ConnectionStatus = ConnectionStatuses.Connecting;
-
-            Thread bgConnect = new Thread(new ThreadStart(delegate
-            {
-                while (StopClientPermanently == false)
+                if (!SocketHasErrored && CurrentEndPoint.Socket.Connected)
                 {
                     try
                     {
-                        //  CHOOSE THE NEXT ENDPOINT TO TRY
-                        if (_endPoints.Count > 1)
-                        {
-                            SocketEndPoint bestEP = _endPoints[0];
-                            for (int i = 1; i < _endPoints.Count; i++)
-                            {
-                                if (_endPoints[i].DontReconnectUntil < bestEP.DontReconnectUntil) bestEP = _endPoints[i];
-                            }
-                            CurrentEndPoint = bestEP;
-                        }
-
-                        if (DateTime.Now > CurrentEndPoint.DontReconnectUntil)
-                        {
-                            //  TRY TO CONNECT
-                            _asyncEventArgsConnect.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
-                            if (!CurrentEndPoint.Socket.ConnectAsync(_asyncEventArgsConnect)) ProcessConnect(null, _asyncEventArgsConnect);
-                            if (StopClientPermanently == true) return;
-                            _autoResetConnectEvent.Reset();
-                            _autoResetConnectEvent.WaitOne(5000);
-
-                            if (ConnectionStatus == ConnectionStatuses.Connected)
-                            {
-                                ExecuteBackgroundOperations();
-                                break;
-                            }
-                            else
-                            {
-                                //  IMPORTANT!!! DON'T TRY THIS CONNECTION FOR AT LEAST 3 SECONDS
-                                CurrentEndPoint.DontReconnectUntil = DateTime.Now.AddMilliseconds(3000);
-                            }
-                        }
+                        CurrentEndPoint.Socket.Shutdown(SocketShutdown.Send);
                     }
                     catch { }
-                    Thread.Sleep(500);
                 }
-                IsBackgroundConnectRunning = false;
-#if DEBUG
-                Console.WriteLine("Exiting BgConnectToServer for client");
+
+                //  try another disconnect. It may already be disconnected, so the error will be ignored
+                try
+                {
+                    CurrentEndPoint.Socket.Disconnect(false);
+                }
+                catch { }
+
+                ConnectionStatus = ConnectionStatuses.Disconnected;
+
+                //  Prepare new socket and start reconnect process
+                if (StopClientPermanently == false)
+                {
+#if !NET35  // Compiler directive for code which will be compiled to .NET 3.5. This provides a less efficient but workable solution to the desired functional requirements.
+                    try { CurrentEndPoint.Socket.Dispose(); }
+                    catch { }
 #endif
-            }));
-            bgConnect.IsBackground = true;
-            bgConnect.Start();
-        }
-
-
-        /// <summary>
-        /// Background process which performas various operations
-        /// </summary>
-        private void ExecuteBackgroundOperations()
-        {
-            Thread backgroundOperationsThread = new Thread(new ThreadStart(delegate
+                    CurrentEndPoint.RecreateSocket();
+                }
+            }
+            catch (Exception ex)
             {
-                //  INITIALIZE
-                lock (_lock)
-                {
-                    if (_isBackgroundOperationsThreadRunning == true) return;
-                    _isBackgroundOperationsThreadRunning = true;
-                    _stopAllBackgroundThreads = false;
-                    _lastPollResponse = DateTime.Now;
-                    _nextPoll = DateTime.Now;
-                    _nextSendSubscriptions = DateTime.Now;
-                }
+                Debug.WriteLine(ex);
+            }
+            finally
+            {
+                timer.Stop();
+                Debug.WriteLine("PerformDisconnect() took " + timer.ElapsedMilliseconds + " milliseconds to execute.");
+            }
 
-                //  FLAG ALL SUBSCRIPTIONS (Tokens) FOR SENDING TO THE SERVER
-                _subscriptions.FlagAllAfterSocketConnect();
-
-                while (StopAllBackgroundThreads == false)
-                {
-                    //  POLLING
-                    if (DateTime.Now > NextPoll && CanExecuteBackgroundOperation())
-                    {
-                        try
-                        {
-                            NextPoll = DateTime.Now.AddSeconds(POLLING_FREQUENCY);
-                            byte[] sendBytes = MessageEngine.GenerateSendBytes(new PollingRequestV1(), false);
-                            _asyncEventArgsPolling.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
-                            _asyncEventArgsPolling.SetBuffer(sendBytes, 0, sendBytes.Length);
-                            if (!CurrentEndPoint.Socket.SendAsync(_asyncEventArgsPolling)) ProcessSendPollRequest(null, _asyncEventArgsPolling);
-                        }
-                        catch { }
-                    }
-
-                    if (CanExecuteBackgroundOperation() && LastPollResponse < (DateTime.Now.AddSeconds(-DISCONNECT_AFTER_NO_POLL_RESPONSE_SECONDS)))
-                    {
-                        IsBackgroundOperationsRunning = false;
-                        NotifyExceptionRaised(new Exception("Disconnecting: Server failed to reply to polling after " + DISCONNECT_AFTER_NO_POLL_RESPONSE_SECONDS + " seconds."));
-                        CloseSocketWithForce();
-                        return;
-                    }
-
-                    //  SEND SUBSCRIPTION CHANGES
-                    if (DateTime.Now > NextSendSubscriptions && CanExecuteBackgroundOperation())
-                    {
-                        try
-                        {
-                            byte[] changesBytes = _subscriptions.GetChangeBytes();
-                            if (changesBytes != null)
-                            {
-                                NextSendSubscriptions = DateTime.Now.AddSeconds(60);
-                                byte[] sendBytes = MessageEngine.GenerateSendBytes(new TokenChangesRequestV1(changesBytes), false);
-                                _asyncEventArgsSendSubscriptionChanges.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
-                                _asyncEventArgsSendSubscriptionChanges.SetBuffer(sendBytes, 0, sendBytes.Length);
-                                if (!CurrentEndPoint.Socket.SendAsync(_asyncEventArgsSendSubscriptionChanges)) ProcessSendSubscriptionChanges(null, _asyncEventArgsSendSubscriptionChanges);
-                            }
-                        }
-                        catch
-                        {
-                            NextSendSubscriptions = DateTime.Now.AddSeconds(15);
-                        }
-                    }
-
-                    Thread.Sleep(200);
-                }
-                IsBackgroundOperationsRunning = false;
-                Console.WriteLine("Exiting ExecuteBackgroundOperations for client");
-            }));
-            backgroundOperationsThread.IsBackground = true;
-            backgroundOperationsThread.Start();
         }
 
+
+        private void StartBackgroundWorker()
+        {
+            Thread bgWorker = new Thread(new ThreadStart(delegate
+            {
+                try
+                {
+                    IsBackgroundWorkerRunning = true;
+                    Stopwatch pollingTimer = Stopwatch.StartNew();
+                    Stopwatch sendSubscriptionsTimer = Stopwatch.StartNew();
+                    TriggerSendSubscriptions = true;
+                    LastPollResponse = DateTime.Now;
+
+                    //  FLAG ALL SUBSCRIPTIONS (Tokens) FOR SENDING TO THE SERVER
+                    _subscriptions.FlagAllAfterSocketConnect();
+
+                    while (!StopClientPermanently)
+                    {
+                        switch (ConnectionStatus)
+                        {
+                            case ConnectionStatuses.Disconnected:
+                            case ConnectionStatuses.Connecting:
+                                BgPerformAttemptConnect();
+                                break;
+                            case ConnectionStatuses.Connected:
+                                BgPerformPolling(pollingTimer);
+                                BgPerformSubscriptionSends(sendSubscriptionsTimer);
+                                break;
+                        }
+                        Thread.Sleep(200);
+                    }
+                }
+                catch (Exception e) { Debug.WriteLine(e); }
+                finally
+                {
+                    IsBackgroundWorkerRunning = false;
+                    Debug.WriteLine("SocketClient Background Worker Exited");
+                }
+            }));
+            bgWorker.IsBackground = true;
+            bgWorker.Start();
+        }
+
+
+
+        private void BgPerformAttemptConnect()
+        {
+            try
+            {
+                //  This provides visual asthetics that connect operations are in progress
+                if (DateTime.Now < CurrentEndPoint.DontReconnectUntil.AddMilliseconds(-1500)) ConnectionStatus = ConnectionStatuses.Connecting;
+
+                //  Exit is it's not time to actually attempt to reconnect
+                if (DateTime.Now < CurrentEndPoint.DontReconnectUntil) return;
+
+                //  CHOOSE THE NEXT ENDPOINT TO TRY
+                if (_endPoints.Count > 1)
+                {
+                    SocketEndPoint bestEP = _endPoints[0];
+                    for (int i = 1; i < _endPoints.Count; i++)
+                    {
+                        if (_endPoints[i].DontReconnectUntil < bestEP.DontReconnectUntil) bestEP = _endPoints[i];
+                    }
+                    CurrentEndPoint = bestEP;
+                    CurrentEndPointChanged?.Invoke(this, new EventArgs());
+                }
+
+                //  TRY TO CONNECT
+                _asyncEventArgsConnect.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
+                if (!CurrentEndPoint.Socket.ConnectAsync(_asyncEventArgsConnect)) ProcessConnect(null, _asyncEventArgsConnect);
+                if (StopClientPermanently == true) return;
+
+                if (ConnectionStatus != ConnectionStatuses.Connected)
+                {
+                    //  IMPORTANT!!! DON'T TRY THIS CONNECTION FOR AT LEAST 3 SECONDS
+                    CurrentEndPoint.DontReconnectUntil = DateTime.Now.AddMilliseconds(3000);
+                }
+                else
+                {
+                }
+            }
+            catch { }
+        }
+
+
+        private void BgPerformPolling(Stopwatch PollingTimer)
+        {
+            try
+            {
+                if (PollingTimer.Elapsed.TotalSeconds < POLLING_FREQUENCY) return;
+
+                if (LastPollResponse < (DateTime.Now.AddSeconds(-DISCONNECT_AFTER_NO_POLL_RESPONSE_SECONDS)))
+                {
+                    NotifyExceptionRaised(new Exception("Disconnecting: Server failed to reply to polling after " + DISCONNECT_AFTER_NO_POLL_RESPONSE_SECONDS + " seconds."));
+                    PerformDisconnect(SocketHasErrored: true);
+                    return;
+                }
+
+#if NET35   // Compiler directive for code which will be compiled to .NET 3.5. This provides a less efficient but workable solution to the desired functional requirements.
+                PollingTimer.Reset();
+                PollingTimer.Start();
+#else
+                PollingTimer.Restart();
+#endif
+                _asyncEventArgsPolling.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
+                _asyncEventArgsPolling.SetBuffer(_pollingBuffer, 0, _pollingBuffer.Length);
+                if (!CurrentEndPoint.Socket.SendAsync(_asyncEventArgsPolling)) ProcessSendPollRequest(null, _asyncEventArgsPolling);
+            }
+            catch { }
+        }
+
+
+        private void BgPerformSubscriptionSends(Stopwatch sendSubscriptionsTimer)
+        {
+            try
+            {
+                //  SEND SUBSCRIPTION CHANGES
+                if ((sendSubscriptionsTimer.Elapsed.TotalSeconds > SEND_SUBSCRIPTIONS_FREQUENCY || TriggerSendSubscriptions == true))
+                {
+#if NET35  // Compiler directive for code which will be compiled to .NET 3.5. This provides a less efficient but workable solution to the desired functional requirements.
+                    sendSubscriptionsTimer.Reset();
+                    sendSubscriptionsTimer.Start();
+#else
+                    sendSubscriptionsTimer.Restart();
+#endif
+                    TriggerSendSubscriptions = false;
+                    byte[] changesBytes = _subscriptions.GetChangeBytes();
+                    if (changesBytes != null)
+                    {
+                        byte[] sendBytes = MessageEngine.GenerateSendBytes(new TokenChangesRequestV1(changesBytes), false);
+                        _asyncEventArgsSendSubscriptionChanges.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
+                        _asyncEventArgsSendSubscriptionChanges.SetBuffer(sendBytes, 0, sendBytes.Length);
+                        if (!CurrentEndPoint.Socket.SendAsync(_asyncEventArgsSendSubscriptionChanges)) ProcessSendSubscriptionChanges(null, _asyncEventArgsSendSubscriptionChanges);
+                    }
+                }
+            }
+            catch { }
+        }
 
 
         /// <summary>
@@ -709,7 +629,7 @@ namespace SocketMeister
         {
             if (StopClientPermanently == true) return;
 
-            double pauseReconnect = 0;
+            double pauseReconnect = 2000;
             if (e.SocketError == SocketError.Success)
             {
                 //  ATTEMPT TO START RECEIVING
@@ -724,7 +644,6 @@ namespace SocketMeister
                 }
                 catch (Exception ex)
                 {
-                    pauseReconnect = 2000;
                     NotifyExceptionRaised(ex);
                 }
             }
@@ -732,25 +651,21 @@ namespace SocketMeister
             {
                 //  NOTE: WHEN FAILING OVER UNDER HIGH LOAD, SocketError.TimedOut OCCURS FOR UP TO 120 SECONDS (WORSE CASE)
                 //  BEFORE CONNECTION SUCCESSFULLY COMPLETES. IT'S A BIT ANNOYING BUT I HAVE FOUND NO WORK AROUND.
-                pauseReconnect = 2000;
+                Debug.WriteLine("Socket Timeout");
             }
             else if (e.SocketError == SocketError.AddressAlreadyInUse)
             {
-                pauseReconnect = 2000;
+                Debug.WriteLine("Socket Already in use");
             }
             else
             {
-                pauseReconnect = 2000;
+                Debug.WriteLine("Undefined Socket Error: " + e.SocketError.ToString());
             }
 
             //  RESET
             try
             {
-                if (pauseReconnect > 0)
-                {
-                    CurrentEndPoint.DontReconnectUntil = DateTime.Now.AddMilliseconds(pauseReconnect + _randomizer.Next(4000));
-                }
-                if (!StopClientPermanently) _autoResetConnectEvent.Set();
+                CurrentEndPoint.DontReconnectUntil = DateTime.Now.AddMilliseconds(pauseReconnect + _randomizer.Next(4000));
             }
             catch (Exception ex)
             {
@@ -762,47 +677,14 @@ namespace SocketMeister
         }
 
 
-
-
-        #endregion
-
-
-        #region Socket async Send
-
-
         /// <summary>
         /// Stops the client.
         /// </summary>
         public void Stop()
         {
             StopClientPermanently = true;
-
-            //  ENSURE BACKGROUND CONNECT HAS STOPPED
-            _autoResetConnectEvent.Set();
-
-            //  SHUTDOWN SOCKET
-            if (ConnectionStatus == ConnectionStatuses.Connected)
-            {
-                DisconnectSocketGracefully();
-            }
-            else
-            {
-                EnsureBackgroundThreadsHaveStopped();
-            }
-
-            if (ConnectionStatus == ConnectionStatuses.Disconnecting)
-            {
-                //  WAIT UNTIL DISCONNECT HAS FINISHED
-                DateTime maxWait = DateTime.Now.AddSeconds(15);
-                while (ConnectionStatus != ConnectionStatuses.Disconnected && DateTime.Now < maxWait) { Thread.Sleep(50); }
-            }
-
-            if (ConnectionStatus != ConnectionStatuses.Disconnected)
-            {
-                ConnectionStatus = ConnectionStatuses.Disconnected;
-            }
+            PerformDisconnect(SocketHasErrored: false);
         }
-
 
 
         private void SendResponse(MessageResponseV1 messageResponse, MessageV1 message)
@@ -855,7 +737,7 @@ namespace SocketMeister
         {
             byte[] sendBytes = MessageEngine.GenerateSendBytes(Message, false);
 
-            if (_connectionStatus != ConnectionStatuses.Connected || !CurrentEndPoint.Socket.Connected) return;
+            if (ConnectionStatus != ConnectionStatuses.Connected || !CurrentEndPoint.Socket.Connected) return;
 
             SocketAsyncEventArgs sendEventArgs = _sendEventArgsPool.Pop();
             if (sendEventArgs == null) return;
@@ -982,13 +864,13 @@ namespace SocketMeister
                 {
                     message.Status = MessageEngineDeliveryStatus.Unsent;
                     NotifyExceptionRaised(new Exception("Disconnecting: Connection was reset."));
-                    CloseSocketWithForce();
+                    PerformDisconnect(SocketHasErrored: true);
                 }
                 else if (result != SocketError.Success)
                 {
                     message.Status = MessageEngineDeliveryStatus.Unsent;
                     NotifyExceptionRaised(new Exception("Disconnecting: Send did not generate a success. Socket operation returned error code " + (int)e.SocketError));
-                    CloseSocketWithForce();
+                    PerformDisconnect(SocketHasErrored: true);
                 }
             }
             catch (Exception ex)
@@ -1009,11 +891,6 @@ namespace SocketMeister
 
 
 
-        #endregion
-
-        #region Socket async Receive
-
-
         /// <summary>
         /// A block of data has been received through the socket. It may contain part of a message, a message, or multiple messages. Process the incoming bytes and when a full message has been received, process the complete message.
         /// </summary>
@@ -1032,7 +909,8 @@ namespace SocketMeister
                 //  4. * The client A) reads the remaining data from the server and then receives 0 bytes(the server signals there is no more data from its side) B) calls Close on the socket
 
                 //  COMPLETE CLOSING ACTIVITIES AND START RECONNECTING IF REQUIRED
-                CompleteSocketClosure(CurrentEndPoint, true);
+                PerformDisconnect(SocketHasErrored: true);
+                //CompleteSocketClosure(CurrentEndPoint, true);
 
                 return;
             }
@@ -1040,7 +918,7 @@ namespace SocketMeister
             if (e.SocketError != SocketError.Success)
             {
                 NotifyExceptionRaised(new Exception("Disconnecting: ProcessReceive received socket error code " + (int)e.SocketError));
-                CloseSocketWithForce();
+                PerformDisconnect(SocketHasErrored: true);
                 return;
             }
 
@@ -1079,7 +957,7 @@ namespace SocketMeister
                         else if (_receiveEngine.MessageType == MessageEngineMessageType.MessageV1)
                         {
                             MessageV1 message = _receiveEngine.GetMessageV1();
-#if NET35
+#if NET35  // Compiler directive for code which will be compiled to .NET 3.5. This provides a less efficient but workable solution to the desired functional requirements.
                             new Thread(new ThreadStart(delegate
                             {
                                 ThreadPool.QueueUserWorkItem(BgProcessMessage, message);
@@ -1093,10 +971,17 @@ namespace SocketMeister
                         else if (_receiveEngine.MessageType == MessageEngineMessageType.ServerStoppingNotificationV1)
                         {
                             //  DON'T RECONNECT TO THIS SERVER FOR SOME NUMBER OF SECONDS
-                            CurrentEndPoint.DontReconnectUntil = DateTime.Now.AddSeconds(DONT_RECONNECT_DELAY_AFTER_SHUTDOWN);
+                            if (_endPoints.Count > 1)
+                            {
+                                CurrentEndPoint.DontReconnectUntil = DateTime.Now;
+                            }
+                            else
+                            {
+                                CurrentEndPoint.DontReconnectUntil = DateTime.Now.AddSeconds(RECONNECT_DELAY_AFTER_SERVER_SHUTDOWN_AND_ONE_ENDPOINT);
+                            }
 
                             NotifyServerStopping();
-                            DisconnectSocketGracefully();
+                            PerformDisconnect(SocketHasErrored: false);
                         }
                         else if (_receiveEngine.MessageType == MessageEngineMessageType.PollingResponseV1)
                         {
@@ -1107,7 +992,7 @@ namespace SocketMeister
                         {
                             TokenChangesResponseV1 response = _receiveEngine.GetSubscriptionChangesResponseV1();
                             _subscriptions.ImportTokenChangesResponseV1(response);
-                            NextSendSubscriptions = DateTime.Now;
+                            TriggerSendSubscriptions = true;
                         }
 
                         else if (_receiveEngine.MessageType == MessageEngineMessageType.BroadcastV1)
@@ -1126,12 +1011,12 @@ namespace SocketMeister
                 //  IF A LARGE CHUNK OF DATA WAS BEING RECEIVED WHEN THE CONNECTION WAS LOST, THE Disconnect() ROUTINE
                 //  MAY ALREADY HAVE BEEN RUN (WHICH DISPOSES OBJECTS). IF THIS IS THE CASE, SIMPLY EXIT
                 NotifyExceptionRaised(new Exception("Disconnecting: ObjectDisposedException running ProcessReceive: " + ee.Message));
-                CloseSocketWithForce();
+                PerformDisconnect(SocketHasErrored: true);
             }
             catch (Exception ex)
             {
                 NotifyExceptionRaised(new Exception("Disconnecting: Error running ProcessReceive: " + ex.Message));
-                CloseSocketWithForce();
+                PerformDisconnect(SocketHasErrored: true);
             }
         }
 
@@ -1176,48 +1061,22 @@ namespace SocketMeister
         }
 
 
-
-
-#endregion
-
-        #region Shared
-
-
-        private bool CanExecuteBackgroundOperation()
-        {
-            lock (_lock)
-            {
-                try
-                {
-                    if (_stopClientPermanently == true || _stopAllBackgroundThreads == true) return false;
-                    if (_connectionStatus != ConnectionStatuses.Connected) return false;
-                    if (_currentEndPoint == null || _currentEndPoint.Socket == null) return false;
-                    return _currentEndPoint.Socket.Connected;
-                }
-                catch
-                {
-                    return false;
-                }
-            }
-        }
-
-
         private bool CanSendReceive()
         {
+            if (ConnectionStatus != ConnectionStatuses.Connected) return false;
             lock (_lock)
             {
                 if (_stopClientPermanently == true) return false;
-                if (_connectionStatus != ConnectionStatuses.Connected) return false;
-                return _currentEndPoint.Socket.Connected;
             }
+            return CurrentEndPoint.Socket.Connected;
         }
 
 
         private void NotifyExceptionRaised(Exception ex)
         {
-            if (ExceptionRaised == null) return;    
+            if (ExceptionRaised == null) return;
 
-#if NET35
+#if NET35  // Compiler directive for code which will be compiled to .NET 3.5. This provides a less efficient but workable solution to the desired functional requirements.
             new Thread(new ThreadStart(delegate
             {
                 NotifyExceptionRaisedInThread(ex);
@@ -1247,7 +1106,7 @@ namespace SocketMeister
         private void NotifyBroadcastReceived(Messages.BroadcastV1 Message)
         {
             if (BroadcastReceived == null) return;
-#if NET35
+#if NET35  // Compiler directive for code which will be compiled to .NET 3.5. This provides a less efficient but workable solution to the desired functional requirements.
             new Thread(new ThreadStart(delegate
             {
                 try
@@ -1280,7 +1139,7 @@ namespace SocketMeister
         {
             if (ServerStopping == null) return;
 
-#if NET35
+#if NET35  // Compiler directive for code which will be compiled to .NET 3.5. This provides a less efficient but workable solution to the desired functional requirements.
             new Thread(new ThreadStart(delegate
             {
                 try
@@ -1307,14 +1166,10 @@ namespace SocketMeister
             });
 #endif
         }
-
-
-        #endregion
     }
 
 }
 
-#pragma warning restore CA2213 // Disposable fields should be disposed
 #pragma warning restore CA1805 // Do not initialize unnecessarily
 #pragma warning restore CA1031 // Do not catch general exception types
 #pragma warning restore CA1303 // Do not pass literals as localized parameters
