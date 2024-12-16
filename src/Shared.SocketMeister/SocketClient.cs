@@ -51,10 +51,20 @@ namespace SocketMeister
         /// </summary>
         private const int SEND_SUBSCRIPTIONS_FREQUENCY = 60;
 
-        private SocketAsyncEventArgs _asyncEventArgsConnect = null;
-        private SocketAsyncEventArgs _asyncEventArgsPolling = null;
-        private SocketAsyncEventArgs _asyncEventArgsReceive = null;
-        private SocketAsyncEventArgs _asyncEventArgsSendSubscriptionChanges = null;
+#if NET35
+        // ThreadStatic for .NET 3.5 to give each thread its own Random instance
+        [ThreadStatic]
+        private static Random _threadStaticRandom;
+#else
+        // ThreadLocal for .NET 4.0+
+        private static ThreadLocal<Random> _threadLocalRandom = new ThreadLocal<Random>(() => new Random(Guid.NewGuid().GetHashCode()));
+#endif
+
+
+        private SocketAsyncEventArgs _asyncEventArgsConnect;
+        private SocketAsyncEventArgs _asyncEventArgsPolling;
+        private SocketAsyncEventArgs _asyncEventArgsReceive;
+        private SocketAsyncEventArgs _asyncEventArgsSendSubscriptionChanges;
         private readonly TokenCollection _subscriptions = new TokenCollection();
         private ConnectionStatuses _connectionStatus = ConnectionStatuses.Disconnected;
         private readonly ReaderWriterLockSlim _connectionStatusLock = new ReaderWriterLockSlim();
@@ -63,14 +73,15 @@ namespace SocketMeister
         private readonly bool _enableCompression;
         private readonly List<SocketEndPoint> _endPoints = null;
         private bool _isBackgroundWorkerRunning;
-        private DateTime? _lastMessageFromServer = null;
+        private DateTime? _lastMessageFromServer;
         private DateTime _lastPollResponse = DateTime.Now;
         private readonly object _lock = new object();
         private readonly byte[] _pollingBuffer = new byte[Constants.SEND_RECEIVE_BUFFER_SIZE];
         private readonly Random _randomizer = new Random();
         private readonly MessageEngine _receiveEngine;
         private readonly SocketAsyncEventArgsPool _sendEventArgsPool;
-        private volatile bool _stopClientPermanently;
+        private bool _stopClientPermanently;
+        private readonly object _stopClientPermanentlyLock = new object();
         private bool _triggerSendSubscriptions;
         private readonly UnrespondedMessageCollection _unrespondedMessages = new UnrespondedMessageCollection();
 
@@ -129,7 +140,7 @@ namespace SocketMeister
             }
             else
             {
-                _currentEndPoint = _endPoints[_randomizer.Next(_endPoints.Count)];   // Safe to use direct access in class constructor
+                _currentEndPoint = _endPoints[GetThreadSafeRandomNumber(0, _endPoints.Count)];   // Safe to use direct access in class constructor
             }
             _currentEndPoint.DontReconnectUntil = DateTime.Now.AddYears(-1);   // Safe to use direct access in class constructor
 
@@ -365,7 +376,7 @@ namespace SocketMeister
 
         private bool TriggerSendSubscriptions { get { lock (_lock) { return _triggerSendSubscriptions; } } set { lock (_lock) { _triggerSendSubscriptions = value; } } }
 
-        private bool StopClientPermanently { get { lock (_lock) { return _stopClientPermanently; } } set { lock (_lock) { _stopClientPermanently = value; } } }
+        private bool StopClientPermanently { get { lock (_stopClientPermanentlyLock) { return _stopClientPermanently; } } set { lock (_stopClientPermanentlyLock) { _stopClientPermanently = value; } } }
 
         /// <summary>
         /// The number of subscriptions for this client
@@ -665,7 +676,7 @@ namespace SocketMeister
             //  RESET
             try
             {
-                CurrentEndPoint.DontReconnectUntil = DateTime.Now.AddMilliseconds(pauseReconnect + _randomizer.Next(4000));
+                CurrentEndPoint.DontReconnectUntil = DateTime.Now.AddMilliseconds(pauseReconnect + GetThreadSafeRandomNumber(1, 4000));
             }
             catch (Exception ex)
             {
@@ -692,7 +703,7 @@ namespace SocketMeister
             byte[] sendBytes = MessageEngine.GenerateSendBytes(messageResponse, false);
 
             SocketAsyncEventArgs sendEventArgs;
-            while (true == true)
+            while (true)
             {
                 if (message.IsTimeout)
                 {
@@ -785,7 +796,7 @@ namespace SocketMeister
 
         private byte[] SendReceive(MessageV1 message)
         {
-            if (_stopClientPermanently) return null;
+            if (StopClientPermanently) return null;
 
             DateTime startTime = DateTime.Now;
             _unrespondedMessages.Add(message);
@@ -795,7 +806,7 @@ namespace SocketMeister
 
 #if NET35
             // Legacy .NET 3.5 approach using Thread.Sleep
-            while (message.TrySendReceive && !_stopClientPermanently)
+            while (message.TrySendReceive && !StopClientPermanently)
             {
                 try
                 {
@@ -831,7 +842,7 @@ namespace SocketMeister
             {
                 message.ResponseReceivedEvent = messageWaitHandle;
 
-                while (message.TrySendReceive && !_stopClientPermanently)
+                while (message.TrySendReceive && !StopClientPermanently)
                 {
                     try
                     {
@@ -1089,7 +1100,7 @@ namespace SocketMeister
 
         private bool CanSendReceive()
         {
-            return !_stopClientPermanently && ConnectionStatus == ConnectionStatuses.Connected && CurrentEndPoint.Socket.Connected;
+            return !StopClientPermanently && ConnectionStatus == ConnectionStatuses.Connected && CurrentEndPoint.Socket.Connected;
         }
 
 
@@ -1184,6 +1195,29 @@ namespace SocketMeister
             });
 #endif
         }
+
+        private static Random ThreadSafeRandom
+        {
+            get
+            {
+#if NET35
+                // Initialize Random for the current thread if not already initialized
+                if (_threadStaticRandom == null)
+                {
+                    _threadStaticRandom = new Random(Guid.NewGuid().GetHashCode());
+                }
+                return _threadStaticRandom;
+#else
+            return _threadLocalRandom.Value;
+#endif
+            }
+        }
+
+        private static int GetThreadSafeRandomNumber(int min, int max)
+        {
+            return ThreadSafeRandom.Next(min, max);
+        }
+
     }
 
 }

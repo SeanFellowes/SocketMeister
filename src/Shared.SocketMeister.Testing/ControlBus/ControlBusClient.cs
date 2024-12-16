@@ -89,7 +89,7 @@ namespace SocketMeister.Testing.ControlBus
             //  WAIT UP TO 5 SECONDS FOR THE HarnessControlBusSocketClient TO CONNECT TO THE HarnessController
             DateTime maxWait = DateTime.Now.AddMilliseconds(5000);
 
-            while (true == true)
+            while (true)
             {
                 if (ControlBusSocketClient.ConnectionStatus == SocketClient.ConnectionStatuses.Connected)
                 {

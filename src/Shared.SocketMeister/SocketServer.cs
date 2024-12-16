@@ -300,7 +300,7 @@ namespace SocketMeister
 
             //  WAIT FOR CLIENTS TO DISCONNECT
             DateTime maxWaitClientDisconnect = DateTime.Now.AddMilliseconds(MAX_WAIT_FOR_CLIENT_DISCONNECT_WHEN_STOPPING);
-            while (true == true)
+            while (true)
             {
                 int connectedClients = _connectedClients.Count;
                 if (connectedClients == 0) break;

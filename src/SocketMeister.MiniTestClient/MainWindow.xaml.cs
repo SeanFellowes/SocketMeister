@@ -147,7 +147,7 @@ namespace SocketMeister.MiniTestClient
                 new ThreadStart(delegate
                 {
                     DateTime maxWait = DateTime.Now.AddSeconds(15);
-                    while (DateTime.Now < maxWait && true == true)
+                    while (DateTime.Now < maxWait && true)
                     {
                         bool allClosed = true;
 

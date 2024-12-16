@@ -102,7 +102,7 @@ namespace SocketMeister
 
         private void AutomaticMessageGenerator()
         {
-            while (true == true)
+            while (true)
             {
                 lock (_lock) { if (_stopAutomaticMessageGenerator == true) return; }
 
