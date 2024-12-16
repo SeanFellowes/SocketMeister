@@ -70,7 +70,7 @@ namespace SocketMeister
         private readonly Random _randomizer = new Random();
         private readonly MessageEngine _receiveEngine;
         private readonly SocketAsyncEventArgsPool _sendEventArgsPool;
-        private bool _stopClientPermanently;
+        private volatile bool _stopClientPermanently;
         private bool _triggerSendSubscriptions;
         private readonly UnrespondedMessageCollection _unrespondedMessages = new UnrespondedMessageCollection();
 
@@ -785,41 +785,36 @@ namespace SocketMeister
 
         private byte[] SendReceive(MessageV1 message)
         {
-            if (StopClientPermanently == true) return null;
+            if (_stopClientPermanently) return null;
 
             DateTime startTime = DateTime.Now;
             _unrespondedMessages.Add(message);
 
+            // Generate the sendBytes once outside the loop
             byte[] sendBytes = MessageEngine.GenerateSendBytes(message, false);
 
-            SocketAsyncEventArgs sendEventArgs;
-
-            while (message.TrySendReceive == true && StopClientPermanently == false)
+#if NET35
+            // Legacy .NET 3.5 approach using Thread.Sleep
+            while (message.TrySendReceive && !_stopClientPermanently)
             {
                 try
                 {
-                    if (message.Status == MessageEngineDeliveryStatus.Unsent && CanSendReceive() == true)
+                    if (message.Status == MessageEngineDeliveryStatus.Unsent && CanSendReceive())
                     {
-                        sendEventArgs = _sendEventArgsPool.Pop();
+                        var sendEventArgs = _sendEventArgsPool.Pop();
                         if (sendEventArgs != null)
                         {
                             message.Status = MessageEngineDeliveryStatus.InProgress;
                             sendEventArgs.UserToken = message;
                             sendEventArgs.SetBuffer(sendBytes, 0, sendBytes.Length);
-                            int remainingMilliseconds = message.TimeoutMilliseconds - Convert.ToInt32((DateTime.Now - startTime).TotalMilliseconds);
+                            sendEventArgs.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
 
-                            if (remainingMilliseconds > 0)
-                            {
-                                sendEventArgs.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
+                            if (!CurrentEndPoint.Socket.SendAsync(sendEventArgs))
+                                ProcessSend(null, sendEventArgs);
 
-                                if (!CurrentEndPoint.Socket.SendAsync(sendEventArgs)) ProcessSend(null, sendEventArgs);
-
-                                //  WAIT FOR RESPONSE
-                                while (message.WaitForResponse)
-                                {
-                                    Thread.Sleep(10);
-                                }
-                            }
+                            // Wait for response or timeout
+                            int remainingMilliseconds = message.TimeoutMilliseconds - (int)(DateTime.Now - startTime).TotalMilliseconds;
+                            if (remainingMilliseconds <= 0) break;
                         }
                     }
                 }
@@ -827,18 +822,52 @@ namespace SocketMeister
                 {
                     NotifyExceptionRaised(ex);
                 }
-                if (message.TrySendReceive == true) Thread.Sleep(200);
+
+                Thread.Sleep(10); // Poll for response
             }
+#else
+            // Improved implementation for .NET 4.0+
+            using (var messageWaitHandle = new ManualResetEventSlim(false))
+            {
+                message.ResponseReceivedEvent = messageWaitHandle;
+
+                while (message.TrySendReceive && !_stopClientPermanently)
+                {
+                    try
+                    {
+                        if (message.Status == MessageEngineDeliveryStatus.Unsent && CanSendReceive())
+                        {
+                            var sendEventArgs = _sendEventArgsPool.Pop();
+                            if (sendEventArgs != null)
+                            {
+                                message.Status = MessageEngineDeliveryStatus.InProgress;
+                                sendEventArgs.UserToken = message;
+                                sendEventArgs.SetBuffer(sendBytes, 0, sendBytes.Length);
+                                sendEventArgs.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
+
+                                if (!CurrentEndPoint.Socket.SendAsync(sendEventArgs))
+                                    ProcessSend(null, sendEventArgs);
+
+                                // Wait for response or timeout
+                                int remainingMilliseconds = message.TimeoutMilliseconds - (int)(DateTime.Now - startTime).TotalMilliseconds;
+                                if (!messageWaitHandle.Wait(remainingMilliseconds)) break; // Timeout
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        NotifyExceptionRaised(ex);
+                    }
+                }
+            }
+#endif
 
             _unrespondedMessages.Remove(message);
 
-            if (message.Response != null)
-            {
-                if (message.Response.Error != null) throw new Exception(message.Response.Error);
-                else return message.Response.ResponseData;
-            }
-            else throw new TimeoutException("SendReceive() timed out after " + message.TimeoutMilliseconds + " milliseconds");
+            if (message.Response?.Error != null) throw new Exception(message.Response.Error);
+            return message.Response?.ResponseData ?? throw new TimeoutException($"SendReceive() timed out after {message.TimeoutMilliseconds} ms");
         }
+
 
 
         private void ProcessSendPollRequest(object sender, SocketAsyncEventArgs e)
@@ -908,10 +937,7 @@ namespace SocketMeister
                 //  3.   The server A) sends its last data B) calls Shutdown(SocketShutdown.Send)) C) calls Close on the socket, optionally with a timeout to allow the data to be read from the client
                 //  4. * The client A) reads the remaining data from the server and then receives 0 bytes(the server signals there is no more data from its side) B) calls Close on the socket
 
-                //  COMPLETE CLOSING ACTIVITIES AND START RECONNECTING IF REQUIRED
                 PerformDisconnect(SocketHasErrored: true);
-                //CompleteSocketClosure(CurrentEndPoint, true);
-
                 return;
             }
 
@@ -1063,12 +1089,7 @@ namespace SocketMeister
 
         private bool CanSendReceive()
         {
-            if (ConnectionStatus != ConnectionStatuses.Connected) return false;
-            lock (_lock)
-            {
-                if (_stopClientPermanently == true) return false;
-            }
-            return CurrentEndPoint.Socket.Connected;
+            return !_stopClientPermanently && ConnectionStatus == ConnectionStatuses.Connected && CurrentEndPoint.Socket.Connected;
         }
 
 
@@ -1098,9 +1119,6 @@ namespace SocketMeister
             }
             catch { }
         }
-
-
-
 
 
         private void NotifyBroadcastReceived(Messages.BroadcastV1 Message)

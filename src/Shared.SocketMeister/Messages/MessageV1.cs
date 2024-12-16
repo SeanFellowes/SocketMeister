@@ -107,7 +107,13 @@ namespace SocketMeister.Messages
         public bool IsResponseReceived
         {
             get { lock (Lock) { return _isResponseReceived; } }
-            set { lock (Lock) { _isResponseReceived = value; } }
+            set 
+            { 
+                lock (Lock) 
+                { 
+                    _isResponseReceived = value;
+                }
+            }
         }
 
 

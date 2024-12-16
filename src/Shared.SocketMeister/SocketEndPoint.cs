@@ -21,7 +21,7 @@ namespace SocketMeister
     internal class SocketEndPoint : IDisposable
 #endif
     {
-        private DateTime _dontReconnectUntil = DateTime.Now;
+        private DateTime _dontReconnectUntil = DateTime.Now.AddYears(-1);
         private readonly IPEndPoint _ipEndPoint = null;
         private readonly string _iPAddress = null;
         private bool _isDisposed = false;

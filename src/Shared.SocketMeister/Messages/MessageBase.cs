@@ -1,6 +1,10 @@
 ﻿#pragma warning disable IDE0079 // Remove unnecessary suppression
 #pragma warning disable IDE0090 // Use 'new(...)'
 
+#if !NET35
+using System.Threading;
+#endif
+
 
 namespace SocketMeister.Messages
 {
@@ -10,6 +14,10 @@ namespace SocketMeister.Messages
         private readonly object _lock = new object();
         private readonly MessageEngineMessageType _messageType;
         private MessageEngineDeliveryStatus _messageStatus = MessageEngineDeliveryStatus.Unsent;
+#if !NET35
+        internal ManualResetEventSlim ResponseReceivedEvent { get; set; }
+#endif
+
 
         internal MessageBase(MessageEngineMessageType MessageType)
         {
@@ -31,7 +39,17 @@ namespace SocketMeister.Messages
         public MessageEngineDeliveryStatus Status
         {
             get { lock (_lock) { return _messageStatus; } }
-            set { lock (_lock) { _messageStatus = value; } }
+            set 
+            { 
+                lock (_lock) 
+                { 
+                    _messageStatus = value;
+#if !NET35
+                    if (value ==  MessageEngineDeliveryStatus.ResponseReceived) ResponseReceivedEvent?.Set();
+#endif
+
+                }
+            }
         }
 
     }
