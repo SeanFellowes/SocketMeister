@@ -4,6 +4,312 @@
         <name>SocketMeister</name>
     </assembly>
     <members>
+        <member name="T:SocketMeister.Messages.MessageEngine">
+            <summary>
+            This is the core engine for creating bytes to send down a socket and to receive bytes from a socket.
+            </summary>
+            <summary>
+            This is the core engine for creating bytes to send down a socket and to receive bytes from a socket.
+            </summary>
+        </member>
+        <member name="T:SocketMeister.Messages.MessageEngine.CLZF2">
+            <summary>
+            Improved C# LZF Compressor, a very small data compression library. The compression algorithm is extremely fast.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Messages.MessageEngine.CLZF2.BUFFER_SIZE_ESTIMATE">
+            <summary>
+            Multiple of input size used to estimate work/output buffer size.
+            Larger values increase initial memory usage but potentially reduces number of allocations.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Messages.MessageEngine.CLZF2.HLOG">
+            <summary>
+            Size of hashtable is 2^HLOG bytes. 
+            Decompression is independent of the hash table size.
+            The difference between 15 and 14 is very small
+            for small blocks (and 14 is usually a bit faster).
+            For a low-memory/faster configuration, use HLOG == 13;
+            For best compression, use 15 or 16 (or more, up to 22).
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Messages.MessageEngine.CLZF2.HashTable">
+            <summary>
+            Hashtable, that can be allocated only once.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Messages.MessageEngine.CLZF2.locker">
+            <summary>
+            Lock object for access to hashtable so that we can keep things thread safe.
+            Still up to the caller to make sure any shared outputBuffer use is thread safe.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageEngine.CLZF2.Compress(System.Byte[])">
+            <summary>
+            Compress input bytes.
+            </summary>
+            <param name="inputBytes">Bytes to compress.</param>
+            <returns>Compressed bytes.</returns>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageEngine.CLZF2.Compress(System.Byte[],System.Int32)">
+            <summary>
+            Compress input bytes.
+            </summary>
+            <param name="inputBytes">Bytes to compress.</param>
+            <param name="inputLength">Length of data in inputBytes to decompress.</param>
+            <returns>Compressed bytes.</returns>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageEngine.CLZF2.Compress(System.Byte[],System.Byte[]@)">
+            <summary>
+            Compress input bytes.
+            </summary>
+            <param name="inputBytes">Bytes to compress.</param>
+            <param name="outputBuffer">Output/work buffer. Upon completion, will contain the output.</param>
+            <returns>Length of output.</returns>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageEngine.CLZF2.Compress(System.Byte[],System.Byte[]@,System.Int32)">
+            <summary>
+            Compress input bytes.
+            </summary>
+            <param name="inputBytes">Bytes to compress.</param>
+            <param name="outputBuffer">Output/work buffer. Upon completion, will contain the output.</param>
+            <param name="inputLength">Length of data in inputBytes.</param>
+            <returns>Length of output.</returns>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageEngine.CLZF2.Decompress(System.Byte[])">
+            <summary>
+            Decompress input bytes.
+            </summary>
+            <param name="inputBytes">Bytes to decompress.</param>
+            <returns>Decompressed bytes.</returns>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageEngine.CLZF2.Decompress(System.Byte[],System.Int32)">
+            <summary>
+            Decompress input bytes.
+            </summary>
+            <param name="inputBytes">Bytes to decompress.</param>
+            <param name="inputLength">Length of data in inputBytes to decompress.</param>
+            <returns>Decompressed bytes.</returns>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageEngine.CLZF2.Decompress(System.Byte[],System.Byte[]@)">
+            <summary>
+            Decompress input bytes.
+            </summary>
+            <param name="inputBytes">Bytes to decompress.</param>
+            <param name="outputBuffer">Output/work buffer. Upon completion, will contain the output.</param>
+            <returns>Length of output.</returns>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageEngine.CLZF2.Decompress(System.Byte[],System.Byte[]@,System.Int32)">
+            <summary>
+            Decompress input bytes.
+            </summary>
+            <param name="inputBytes">Bytes to decompress.</param>
+            <param name="outputBuffer">Output/work buffer. Upon completion, will contain the output.</param>
+            <param name="inputLength">Length of data in inputBytes.</param>
+            <returns>Length of output.</returns>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageEngine.CLZF2.Lzf_compress(System.Byte[],System.Byte[]@,System.Int32)">
+            <summary>
+            Compresses the data using LibLZF algorithm.
+            </summary>
+            <param name="input">Reference to the data to compress.</param>
+            <param name="output">Reference to a buffer which will contain the compressed data.</param>
+            <param name="inputLength">Length of input bytes to process.</param>
+            <returns>The size of the compressed archive in the output buffer.</returns>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageEngine.CLZF2.Lzf_decompress(System.Byte[],System.Byte[]@,System.Int32)">
+            <summary>
+            Decompresses the data using LibLZF algorithm.
+            </summary>
+            <param name="input">Reference to the data to decompress.</param>
+            <param name="output">Reference to a buffer which will contain the decompressed data.</param>
+            <param name="inputLength">Length of input bytes to process.</param>
+            <returns>The size of the decompressed archive in the output buffer.</returns>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageEngine.GenerateSendBytes(SocketMeister.Messages.IMessage,System.Boolean)">
+            <summary>
+            Generate send bytes for a transmit operation.
+            </summary>
+            <param name = "SendObject" > Object to be sent</param>
+            <param name = "Compress" > Compress the data</param>
+            <returns>Byte array of the data to be sent</returns>
+        </member>
+        <member name="P:SocketMeister.Messages.MessageEngine.MessageType">
+            <summary>
+            The type of message. 
+            </summary>
+        </member>
+        <member name="T:SocketMeister.Messages.BroadcastV1">
+            <summary>
+            SocketServer sends broadcasts to clients.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Messages.BroadcastV1.#ctor(System.String,System.Object[])">
+            <summary>
+            Broadcast constructor
+            </summary>
+            <param name="Name">Optional Name/Tag/Identifier for the broadcast.</param>
+            <param name="Parameters">Array of parameters to send with the broadcast. There must be at least 1 parameter.</param>
+        </member>
+        <member name="P:SocketMeister.Messages.BroadcastV1.Parameters">
+            <summary>
+            Parameters provided with this broadcast
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.BroadcastV1.Name">
+            <summary>
+            Optional Name/Tag/Identifier given to the broadcast
+            </summary>
+        </member>
+        <member name="T:SocketMeister.Messages.TokenChangesRequestV1">
+            <summary>
+            Internal Message: Response when tokens are changed. Contains ChangeIds of token changes.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Messages.TokenChangesRequestV1.#ctor(System.IO.BinaryReader)">
+            <summary>
+            Fastest was to build this is to create it directly from the SocketEnvelope buffer.
+            </summary>
+            <param name="Reader">Binary Reader</param>
+        </member>
+        <member name="T:SocketMeister.Messages.TokenChangesResponseV1">
+            <summary>
+            Internal Message: COntains information related to changed tokens.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Messages.TokenChangesResponseV1.#ctor(System.IO.BinaryReader)">
+            <summary>
+            Fastest was to build this is to create it directly from the SocketEnvelope buffer.
+            </summary>
+            <param name="Reader">Binary Reader</param>
+        </member>
+        <member name="T:SocketMeister.Messages.ClientDisconnectingNotificationV1">
+            <summary>
+            Sent when a client is disconnecting
+            </summary>
+        </member>
+        <member name="T:SocketMeister.Messages.IMessage">
+            <summary>
+            Interface for internal messages, sent between socket clients and the socket server. Internal messages are not visible outside the socket library.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.IMessage.MessageType">
+            <summary>
+            Type of message
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.IMessage.Status">
+            <summary>
+            Status of the message. 
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Messages.IMessage.AppendBytes(System.IO.BinaryWriter)">
+            <summary>
+            Mandatory method to append binary data to the IMessage object,
+            </summary>
+            <param name="Writer"></param>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageBase.Dispose">
+            <summary>
+            Dispose of the class
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageBase.Dispose(System.Boolean)">
+            <summary>
+            Dispose of the class
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="T:SocketMeister.Messages.PollingRequestV1">
+            <summary>
+            Internal Message: Socket client regulary sends a poll request to the server to check that the server is alive.
+            </summary>
+        </member>
+        <member name="T:SocketMeister.Messages.PollingResponseV1">
+            <summary>
+            Internal Message: Socket server sends a response to a 'PollRequest' message to indicate (to the client) that the server is alive.
+            </summary>
+        </member>
+        <member name="T:SocketMeister.Messages.MessageV1">
+            <summary>
+            A message, sent from socket client to socket server. A response is expected and will cause problems if it is not sent.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.MessageV1.RemoteClient">
+            <summary>
+            The remote client which sent this Message (value null on SocketClient)
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageV1.#ctor(System.Object[],System.Int32,System.Boolean)">
+            <summary>
+            Message constructor
+            </summary>
+            <param name="Parameters">Array of parameters to send with the message. There must be at least 1 parameter.</param>
+            <param name="TimeoutMilliseconds">The maximum number of milliseconds to wait for a response before timing out.</param>
+            <param name="IsLongPolling">The maximum number of milliseconds to wait for a response before timing out.</param>
+        </member>
+        <member name="P:SocketMeister.Messages.MessageV1.Parameters">
+            <summary>
+            Parameters provided with this message
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.MessageV1.IsLongPolling">
+            <summary>
+            True is this message is long polling on the server side. Long polling messages will be closed immediately in the event of a close from either the client or server side.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.MessageV1.IsTimeout">
+            <summary>
+            Whether the Message has timed out
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.MessageV1.MessageId">
+            <summary>
+            Identifier assigned to this message when it was created
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.MessageV1.TimeoutMilliseconds">
+            <summary>
+            Number of milliseconds to wait before a timeout will occur.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.MessageV1.TrySendReceive">
+            <summary>
+            Whether the method SendReceive(Message Message) should continute trying
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.MessageV1.WaitForResponse">
+            <summary>
+            Whether a SendReceive process should continue waiting for a response
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.MessageResponseV1.RemoteClient">
+            <summary>
+            The remote client which sent this Message (value null on SocketClient)
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageResponseV1.#ctor(System.IO.BinaryReader)">
+            <summary>
+            Fastest was to build this is to create it directly from the SocketEnvelope buffer.
+            </summary>
+            <param name="Reader">Binary Reader</param>
+        </member>
+        <member name="P:SocketMeister.Messages.MessageResponseV1.MessageId">
+            <summary>
+            The message that this response refers to
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Messages.ServerStoppingNotificationV1.#ctor(System.IO.BinaryReader)">
+            <summary>
+            Fastest was to build this is to create it directly from the SocketEnvelope buffer.
+            </summary>
+            <param name="Reader">Binary Reader</param>
+        </member>
+        <member name="P:SocketMeister.Messages.ServerStoppingNotificationV1.MaxWaitMilliseconds">
+            <summary>
+            The maximum number of milliseconds the client should wait for unresponded messages to be completed. The server will not send back responses for unresponded messages after this time.
+            </summary>
+        </member>
         <member name="F:SocketMeister.Constants.SEND_RECEIVE_BUFFER_SIZE">
             <summary>
             The buffer size to use for sending and receiving data. Note: This value is also used by the 'SocketServer' class.
@@ -306,305 +612,37 @@
             Optional stack trace information.
             </summary>
         </member>
-        <member name="T:SocketMeister.Messages.BroadcastV1">
+        <member name="M:SocketMeister.UnrespondedMessageCollection.TryGetMessage(System.Int64,SocketMeister.Messages.MessageV1@)">
             <summary>
-            SocketServer sends broadcasts to clients.
+            Safely retrieves a message if it exists.
             </summary>
         </member>
-        <member name="M:SocketMeister.Messages.BroadcastV1.#ctor(System.String,System.Object[])">
+        <member name="M:SocketMeister.UnrespondedMessageCollection.Add(SocketMeister.Messages.MessageV1)">
             <summary>
-            Broadcast constructor
-            </summary>
-            <param name="Name">Optional Name/Tag/Identifier for the broadcast.</param>
-            <param name="Parameters">Array of parameters to send with the broadcast. There must be at least 1 parameter.</param>
-        </member>
-        <member name="P:SocketMeister.Messages.BroadcastV1.Parameters">
-            <summary>
-            Parameters provided with this broadcast
+            Adds a new message to the collection.
             </summary>
         </member>
-        <member name="P:SocketMeister.Messages.BroadcastV1.Name">
+        <member name="M:SocketMeister.UnrespondedMessageCollection.Remove(SocketMeister.Messages.MessageV1)">
             <summary>
-            Optional Name/Tag/Identifier given to the broadcast
+            Removes a message from the collection.
             </summary>
         </member>
-        <member name="T:SocketMeister.Messages.TokenChangesRequestV1">
+        <member name="P:SocketMeister.UnrespondedMessageCollection.Count">
             <summary>
-            Internal Message: Response when tokens are changed. Contains ChangeIds of token changes.
+            Gets the total count of messages.
             </summary>
         </member>
-        <member name="M:SocketMeister.Messages.TokenChangesRequestV1.#ctor(System.IO.BinaryReader)">
+        <member name="M:SocketMeister.UnrespondedMessageCollection.ResetToUnsent">
             <summary>
-            Fastest was to build this is to create it directly from the SocketEnvelope buffer.
-            </summary>
-            <param name="Reader">Binary Reader</param>
-        </member>
-        <member name="T:SocketMeister.Messages.TokenChangesResponseV1">
-            <summary>
-            Internal Message: COntains information related to changed tokens.
+            Resets messages to 'Unsent' status.
             </summary>
         </member>
-        <member name="M:SocketMeister.Messages.TokenChangesResponseV1.#ctor(System.IO.BinaryReader)">
+        <member name="M:SocketMeister.UnrespondedMessageCollection.FindMessageAndSetResponse(SocketMeister.Messages.MessageResponseV1)">
             <summary>
-            Fastest was to build this is to create it directly from the SocketEnvelope buffer.
+            Finds a original message from the MessageId included in a response and sets the ResponseMessage to the original message to the ResponseMessage 
             </summary>
-            <param name="Reader">Binary Reader</param>
-        </member>
-        <member name="T:SocketMeister.Messages.MessageEngine">
-            <summary>
-            This is the core engine for creating bytes to send down a socket and to receive bytes from a socket.
-            </summary>
-            <summary>
-            This is the core engine for creating bytes to send down a socket and to receive bytes from a socket.
-            </summary>
-        </member>
-        <member name="T:SocketMeister.Messages.MessageEngine.CLZF2">
-            <summary>
-            Improved C# LZF Compressor, a very small data compression library. The compression algorithm is extremely fast.
-            </summary>
-        </member>
-        <member name="F:SocketMeister.Messages.MessageEngine.CLZF2.BUFFER_SIZE_ESTIMATE">
-            <summary>
-            Multiple of input size used to estimate work/output buffer size.
-            Larger values increase initial memory usage but potentially reduces number of allocations.
-            </summary>
-        </member>
-        <member name="F:SocketMeister.Messages.MessageEngine.CLZF2.HLOG">
-            <summary>
-            Size of hashtable is 2^HLOG bytes. 
-            Decompression is independent of the hash table size.
-            The difference between 15 and 14 is very small
-            for small blocks (and 14 is usually a bit faster).
-            For a low-memory/faster configuration, use HLOG == 13;
-            For best compression, use 15 or 16 (or more, up to 22).
-            </summary>
-        </member>
-        <member name="F:SocketMeister.Messages.MessageEngine.CLZF2.HashTable">
-            <summary>
-            Hashtable, that can be allocated only once.
-            </summary>
-        </member>
-        <member name="F:SocketMeister.Messages.MessageEngine.CLZF2.locker">
-            <summary>
-            Lock object for access to hashtable so that we can keep things thread safe.
-            Still up to the caller to make sure any shared outputBuffer use is thread safe.
-            </summary>
-        </member>
-        <member name="M:SocketMeister.Messages.MessageEngine.CLZF2.Compress(System.Byte[])">
-            <summary>
-            Compress input bytes.
-            </summary>
-            <param name="inputBytes">Bytes to compress.</param>
-            <returns>Compressed bytes.</returns>
-        </member>
-        <member name="M:SocketMeister.Messages.MessageEngine.CLZF2.Compress(System.Byte[],System.Int32)">
-            <summary>
-            Compress input bytes.
-            </summary>
-            <param name="inputBytes">Bytes to compress.</param>
-            <param name="inputLength">Length of data in inputBytes to decompress.</param>
-            <returns>Compressed bytes.</returns>
-        </member>
-        <member name="M:SocketMeister.Messages.MessageEngine.CLZF2.Compress(System.Byte[],System.Byte[]@)">
-            <summary>
-            Compress input bytes.
-            </summary>
-            <param name="inputBytes">Bytes to compress.</param>
-            <param name="outputBuffer">Output/work buffer. Upon completion, will contain the output.</param>
-            <returns>Length of output.</returns>
-        </member>
-        <member name="M:SocketMeister.Messages.MessageEngine.CLZF2.Compress(System.Byte[],System.Byte[]@,System.Int32)">
-            <summary>
-            Compress input bytes.
-            </summary>
-            <param name="inputBytes">Bytes to compress.</param>
-            <param name="outputBuffer">Output/work buffer. Upon completion, will contain the output.</param>
-            <param name="inputLength">Length of data in inputBytes.</param>
-            <returns>Length of output.</returns>
-        </member>
-        <member name="M:SocketMeister.Messages.MessageEngine.CLZF2.Decompress(System.Byte[])">
-            <summary>
-            Decompress input bytes.
-            </summary>
-            <param name="inputBytes">Bytes to decompress.</param>
-            <returns>Decompressed bytes.</returns>
-        </member>
-        <member name="M:SocketMeister.Messages.MessageEngine.CLZF2.Decompress(System.Byte[],System.Int32)">
-            <summary>
-            Decompress input bytes.
-            </summary>
-            <param name="inputBytes">Bytes to decompress.</param>
-            <param name="inputLength">Length of data in inputBytes to decompress.</param>
-            <returns>Decompressed bytes.</returns>
-        </member>
-        <member name="M:SocketMeister.Messages.MessageEngine.CLZF2.Decompress(System.Byte[],System.Byte[]@)">
-            <summary>
-            Decompress input bytes.
-            </summary>
-            <param name="inputBytes">Bytes to decompress.</param>
-            <param name="outputBuffer">Output/work buffer. Upon completion, will contain the output.</param>
-            <returns>Length of output.</returns>
-        </member>
-        <member name="M:SocketMeister.Messages.MessageEngine.CLZF2.Decompress(System.Byte[],System.Byte[]@,System.Int32)">
-            <summary>
-            Decompress input bytes.
-            </summary>
-            <param name="inputBytes">Bytes to decompress.</param>
-            <param name="outputBuffer">Output/work buffer. Upon completion, will contain the output.</param>
-            <param name="inputLength">Length of data in inputBytes.</param>
-            <returns>Length of output.</returns>
-        </member>
-        <member name="M:SocketMeister.Messages.MessageEngine.CLZF2.Lzf_compress(System.Byte[],System.Byte[]@,System.Int32)">
-            <summary>
-            Compresses the data using LibLZF algorithm.
-            </summary>
-            <param name="input">Reference to the data to compress.</param>
-            <param name="output">Reference to a buffer which will contain the compressed data.</param>
-            <param name="inputLength">Length of input bytes to process.</param>
-            <returns>The size of the compressed archive in the output buffer.</returns>
-        </member>
-        <member name="M:SocketMeister.Messages.MessageEngine.CLZF2.Lzf_decompress(System.Byte[],System.Byte[]@,System.Int32)">
-            <summary>
-            Decompresses the data using LibLZF algorithm.
-            </summary>
-            <param name="input">Reference to the data to decompress.</param>
-            <param name="output">Reference to a buffer which will contain the decompressed data.</param>
-            <param name="inputLength">Length of input bytes to process.</param>
-            <returns>The size of the decompressed archive in the output buffer.</returns>
-        </member>
-        <member name="M:SocketMeister.Messages.MessageEngine.GenerateSendBytes(SocketMeister.Messages.IMessage,System.Boolean)">
-            <summary>
-            Generate send bytes for a transmit operation.
-            </summary>
-            <param name = "SendObject" > Object to be sent</param>
-            <param name = "Compress" > Compress the data</param>
-            <returns>Byte array of the data to be sent</returns>
-        </member>
-        <member name="P:SocketMeister.Messages.MessageEngine.MessageType">
-            <summary>
-            The type of message. 
-            </summary>
-        </member>
-        <member name="M:SocketMeister.Messages.MessageEngine.Reset">
-            <summary>
-            Resets the envelope for a fresh receive operation. Warning: should not be done in the middle of a receive operation.
-            </summary>
-        </member>
-        <member name="T:SocketMeister.Messages.ClientDisconnectingNotificationV1">
-            <summary>
-            Sent when a client is disconnecting
-            </summary>
-        </member>
-        <member name="T:SocketMeister.Messages.IMessage">
-            <summary>
-            Interface for internal messages, sent between socket clients and the socket server. Internal messages are not visible outside the socket library.
-            </summary>
-        </member>
-        <member name="P:SocketMeister.Messages.IMessage.MessageType">
-            <summary>
-            Type of message
-            </summary>
-        </member>
-        <member name="P:SocketMeister.Messages.IMessage.Status">
-            <summary>
-            Status of the message. 
-            </summary>
-        </member>
-        <member name="M:SocketMeister.Messages.IMessage.AppendBytes(System.IO.BinaryWriter)">
-            <summary>
-            Mandatory method to append binary data to the IMessage object,
-            </summary>
-            <param name="Writer"></param>
-        </member>
-        <member name="T:SocketMeister.Messages.PollingRequestV1">
-            <summary>
-            Internal Message: Socket client regulary sends a poll request to the server to check that the server is alive.
-            </summary>
-        </member>
-        <member name="T:SocketMeister.Messages.PollingResponseV1">
-            <summary>
-            Internal Message: Socket server sends a response to a 'PollRequest' message to indicate (to the client) that the server is alive.
-            </summary>
-        </member>
-        <member name="T:SocketMeister.Messages.MessageV1">
-            <summary>
-            A message, sent from socket client to socket server. A response is expected and will cause problems if it is not sent.
-            </summary>
-        </member>
-        <member name="P:SocketMeister.Messages.MessageV1.RemoteClient">
-            <summary>
-            The remote client which sent this Message (value null on SocketClient)
-            </summary>
-        </member>
-        <member name="M:SocketMeister.Messages.MessageV1.#ctor(System.Object[],System.Int32,System.Boolean)">
-            <summary>
-            Message constructor
-            </summary>
-            <param name="Parameters">Array of parameters to send with the message. There must be at least 1 parameter.</param>
-            <param name="TimeoutMilliseconds">The maximum number of milliseconds to wait for a response before timing out.</param>
-            <param name="IsLongPolling">The maximum number of milliseconds to wait for a response before timing out.</param>
-        </member>
-        <member name="P:SocketMeister.Messages.MessageV1.Parameters">
-            <summary>
-            Parameters provided with this message
-            </summary>
-        </member>
-        <member name="P:SocketMeister.Messages.MessageV1.IsLongPolling">
-            <summary>
-            True is this message is long polling on the server side. Long polling messages will be closed immediately in the event of a close from either the client or server side.
-            </summary>
-        </member>
-        <member name="P:SocketMeister.Messages.MessageV1.IsTimeout">
-            <summary>
-            Whether the Message has timed out
-            </summary>
-        </member>
-        <member name="P:SocketMeister.Messages.MessageV1.MessageId">
-            <summary>
-            Identifier assigned to this message when it was created
-            </summary>
-        </member>
-        <member name="P:SocketMeister.Messages.MessageV1.TimeoutMilliseconds">
-            <summary>
-            Number of milliseconds to wait before a timeout will occur.
-            </summary>
-        </member>
-        <member name="P:SocketMeister.Messages.MessageV1.TrySendReceive">
-            <summary>
-            Whether the method SendReceive(Message Message) should continute trying
-            </summary>
-        </member>
-        <member name="P:SocketMeister.Messages.MessageV1.WaitForResponse">
-            <summary>
-            Whether a SendReceive process should continue waiting for a response
-            </summary>
-        </member>
-        <member name="P:SocketMeister.Messages.MessageResponseV1.RemoteClient">
-            <summary>
-            The remote client which sent this Message (value null on SocketClient)
-            </summary>
-        </member>
-        <member name="M:SocketMeister.Messages.MessageResponseV1.#ctor(System.IO.BinaryReader)">
-            <summary>
-            Fastest was to build this is to create it directly from the SocketEnvelope buffer.
-            </summary>
-            <param name="Reader">Binary Reader</param>
-        </member>
-        <member name="P:SocketMeister.Messages.MessageResponseV1.MessageId">
-            <summary>
-            The message that this response refers to
-            </summary>
-        </member>
-        <member name="M:SocketMeister.Messages.ServerStoppingNotificationV1.#ctor(System.IO.BinaryReader)">
-            <summary>
-            Fastest was to build this is to create it directly from the SocketEnvelope buffer.
-            </summary>
-            <param name="Reader">Binary Reader</param>
-        </member>
-        <member name="P:SocketMeister.Messages.ServerStoppingNotificationV1.MaxWaitMilliseconds">
-            <summary>
-            The maximum number of milliseconds the client should wait for unresponded messages to be completed. The server will not send back responses for unresponded messages after this time.
-            </summary>
+            <param name="ResponseMessage"></param>
+            <returns></returns>
         </member>
         <member name="T:SocketMeister.Serializer">
             <summary>
@@ -1060,6 +1098,16 @@
             Remote client which has connected to the socket server
             </summary>
         </member>
+        <member name="M:SocketMeister.SocketServer.Client.Dispose">
+            <summary>
+            Dispose of the class
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketServer.Client.Finalize">
+            <summary>
+            Dispose of the class
+            </summary>
+        </member>
         <member name="P:SocketMeister.SocketServer.Client.ClientId">
             <summary>
             Unique GUID assigned to each client
@@ -1102,6 +1150,12 @@
             Get a list of subscription names
             </summary>
             <returns>List of subscription names</returns>
+        </member>
+        <member name="M:SocketMeister.SocketServer.Client.SetMessageResponseInUnrespondedMessages(SocketMeister.Messages.MessageResponseV1)">
+            <summary>
+            When a response is received for a sent message the received respons needs to attached to the original message. SocketServer class calls this
+            </summary>
+            <param name="ResponseMessage"></param>
         </member>
         <member name="M:SocketMeister.SocketServer.Client.SendMessage(System.Object[],System.Int32,System.Boolean)">
             <summary>
@@ -1180,6 +1234,17 @@
             </summary>
             <param name="Port">Port that this socket server will listen on</param>
             <param name="CompressSentData">Enable compression on message data</param>
+        </member>
+        <member name="M:SocketMeister.SocketServer.Dispose">
+            <summary>
+            Dispose of the class
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketServer.Dispose(System.Boolean)">
+            <summary>
+            Dispose of the class
+            </summary>
+            <param name="disposing"></param>
         </member>
         <member name="P:SocketMeister.SocketServer.EndPoint">
             <summary>
@@ -1347,6 +1412,16 @@
             Returns a string list of names
             </summary>
             <returns>List of names</returns>
+        </member>
+        <member name="M:SocketMeister.TokenCollectionReadOnly.Dispose">
+            <summary>
+            IDisposable implementation to clean up resources.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.TokenCollectionReadOnly.Finalize">
+            <summary>
+            IDisposable implementation to clean up resources.
+            </summary>
         </member>
         <member name="T:SocketMeister.Token">
             <summary>

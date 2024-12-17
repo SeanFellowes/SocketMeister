@@ -870,6 +870,7 @@ namespace SocketMeister
                         NotifyExceptionRaised(ex);
                     }
                 }
+                message.ResponseReceivedEvent?.Dispose();
             }
 #endif
 
@@ -975,7 +976,7 @@ namespace SocketMeister
                             MessageResponseV1 response = _receiveEngine.GetMessageResponseV1();
 
                             //  CHECK TO SEE IS THE MESSAGE IS IN THE LIST OF OPEN SendReceive ITEMS.
-                            MessageV1 foundUnrespondedMessage = _unrespondedMessages[response.MessageId];
+                            _unrespondedMessages.TryGetMessage(response.MessageId, out MessageV1 foundUnrespondedMessage);
                             if (foundUnrespondedMessage != null)
                             {
                                 if (response.ProcessingResult == MessageEngineDeliveryResult.Stopping)

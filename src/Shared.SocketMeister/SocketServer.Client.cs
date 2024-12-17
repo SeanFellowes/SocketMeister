@@ -23,12 +23,13 @@ namespace SocketMeister
         /// <summary>
         /// Remote client which has connected to the socket server
         /// </summary>
-        public class Client
+        public class Client : IDisposable
         {
             private readonly Guid _clientId = Guid.NewGuid();
             private readonly Socket _clientSocket;
             private readonly bool _compressSentData;
             private readonly DateTime _connectTimestamp = DateTime.Now;
+            private bool _disposed;
             private readonly UnrespondedMessageCollection _unrespondedMessages = new UnrespondedMessageCollection();
             private readonly MessageEngine _receivedEnvelope;
             private readonly SocketServer _socketServer;
@@ -41,6 +42,31 @@ namespace SocketMeister
                 _compressSentData = CompressSentData;
                 _receivedEnvelope = new MessageEngine(CompressSentData);
             }
+
+            /// <summary>
+            /// Dispose of the class
+            /// </summary>
+            public void Dispose()
+            {
+                if (_disposed) return;
+
+                _disposed = true;
+
+                //_receivedEnvelope?.Dispose();
+                _clientSocket?.Dispose();
+                _subscriptions?.Dispose();
+
+                GC.SuppressFinalize(this);
+            }
+
+            /// <summary>
+            /// Dispose of the class
+            /// </summary>
+            ~Client()
+            {
+                Dispose();
+            }
+
 
             /// <summary>
             /// Unique GUID assigned to each client
@@ -93,11 +119,13 @@ namespace SocketMeister
                return _subscriptions.ToListOfNames();
             }
 
-            internal void SetMessageResponseInUnrespondedMessages(MessageResponseV1 Message)
+            /// <summary>
+            /// When a response is received for a sent message the received respons needs to attached to the original message. SocketServer class calls this
+            /// </summary>
+            /// <param name="ResponseMessage"></param>
+            internal void SetMessageResponseInUnrespondedMessages(MessageResponseV1 ResponseMessage)
             {
-                MessageV1 request = _unrespondedMessages[Message.MessageId];
-                if (request == null) return;
-                request.Response = Message;
+                _unrespondedMessages.FindMessageAndSetResponse(ResponseMessage); //  Locking performed inside the class so not required here
             }
 
             internal TokenChangesResponseV1 ImportSubscriptionChanges(TokenChangesRequestV1 request)
@@ -155,7 +183,6 @@ namespace SocketMeister
 
 
 
-
             /// <summary>
             /// Send a message to the client and wait for a response. 
             /// </summary>
@@ -165,59 +192,67 @@ namespace SocketMeister
             /// <returns>Nullable array of bytes which was returned from the socket server</returns>
             public byte[] SendMessage(object[] Parameters, int TimeoutMilliseconds = 60000, bool IsLongPolling = false)
             {
-                if (Parameters == null) throw new ArgumentException("Message parameters cannot be null.", nameof(Parameters));
-                if (Parameters.Length == 0) throw new ArgumentException("At least 1 parameter is required because it will be meaningless at the other end.", nameof(Parameters));
-                DateTime startTime = DateTime.Now;
-                DateTime maxWait = startTime.AddMilliseconds(TimeoutMilliseconds);
-                while (_socketServer.Status == SocketServerStatus.Starting)
+                if (Parameters == null || Parameters.Length == 0)
+                    throw new ArgumentException("Message parameters cannot be null or empty.", nameof(Parameters));
+
+                // Wait for the server to start or timeout
+                if (_socketServer.Status == SocketServerStatus.Starting)
                 {
-                    Thread.Sleep(200);
-                    if (DateTime.Now > maxWait) throw new TimeoutException();
-                }
-                if (_socketServer.Status != SocketServerStatus.Started) throw new Exception("Message cannot be sent. The socket server is not running");
-                int remainingMilliseconds = TimeoutMilliseconds - Convert.ToInt32((DateTime.Now - startTime).TotalMilliseconds);
-                return SendReceive(new MessageV1(Parameters, remainingMilliseconds, IsLongPolling));
-            }
-
-
-            private byte[] SendReceive(MessageV1 message)
-            {
-                if (_socketServer.Status != SocketServerStatus.Started) return null;
-
-                DateTime nowTs = DateTime.Now;
-                _unrespondedMessages.Add(message);
-
-                byte[] sendBytes = MessageEngine.GenerateSendBytes(message, false);
-
-                while (message.TrySendReceive == true)
-                {
-                    if (_socketServer.Status != SocketServerStatus.Started) return null;
-
-                    if (message.Status == MessageEngineDeliveryStatus.Unsent)
+                    bool serverStarted = _socketServer.ServerStarted.Wait(TimeoutMilliseconds);
+                    if (!serverStarted)
                     {
-                        SendIMessage(message, true);
-                        message.Status = MessageEngineDeliveryStatus.InProgress;
+                        throw new TimeoutException($"The server did not finish starting within the timeout of {TimeoutMilliseconds} milliseconds. Please check the server logs for potential issues.");
+                    }
+                }
 
-                        //  WAIT FOR RESPONSE
-                        while (message.WaitForResponse)
-                        {
-                            Thread.Sleep(5);
-                        }
+                // Validate server state again after waiting
+                if (_socketServer.Status != SocketServerStatus.Started)
+                    throw new InvalidOperationException("The socket server is not in the 'Started' state.");
+
+                // Create and initialize the message
+                var message = new MessageV1(Parameters, TimeoutMilliseconds, IsLongPolling);
+                message.ResponseReceivedEvent = new ManualResetEventSlim(false);
+
+                try
+                {
+                    _unrespondedMessages.Add(message);   //  Locking performed inside the class so not required here
+
+                    // Generate bytes and prepare to send
+                    byte[] sendBytes = MessageEngine.GenerateSendBytes(message, false);
+
+                    DateTime startTime = DateTime.UtcNow;
+                    if (_socketServer.Status != SocketServerStatus.Started)
+                        return null;
+
+                    SendIMessage(message, true); // Attempt to send the message
+                    message.Status = MessageEngineDeliveryStatus.InProgress;
+
+                    // Wait for response or timeout
+                    int remainingTimeout = TimeoutMilliseconds - (int)(DateTime.UtcNow - startTime).TotalMilliseconds;
+                    if (remainingTimeout <= 0 || !message.ResponseReceivedEvent.Wait(remainingTimeout))
+                    {
+                        // Timeout occurred
+                        throw new TimeoutException($"SendMessage() timed out after {TimeoutMilliseconds} milliseconds.");
                     }
 
-                    if (message.TrySendReceive == true) Thread.Sleep(200);
+                    // Handle the response
+                    if (message.Response != null)
+                    {
+                        if (message.Response.Error != null)
+                            throw new Exception(message.Response.Error);
+
+                        return message.Response.ResponseData;
+                    }
+
+                    throw new TimeoutException($"SendMessage() timed out after {TimeoutMilliseconds} milliseconds.");
                 }
-
-                _unrespondedMessages.Remove(message);
-
-                if (message.Response != null)
+                finally
                 {
-                    if (message.Response.Error != null) throw new Exception(message.Response.Error);
-                    else return message.Response.ResponseData;
+                    // Clean up message and associated resources
+                    _unrespondedMessages.Remove(message);   //  Locking performed inside the class so not required here
+                    message.ResponseReceivedEvent?.Dispose();
                 }
-                else throw new TimeoutException("SendReceive() timed out after " + message.TimeoutMilliseconds + " milliseconds");
             }
-
         }
     }
 }

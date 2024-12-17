@@ -23,7 +23,7 @@ namespace SocketMeister
     /// TCP/IP socket server which listens for client connections and raises events when messages are received
     /// </summary>
 #if SMISPUBLIC
-    public partial class SocketServer
+    public partial class SocketServer : IDisposable
 #else
     internal partial class SocketServer
 #endif
@@ -33,12 +33,14 @@ namespace SocketMeister
         /// </summary>
         private const int MAX_WAIT_FOR_CLIENT_DISCONNECT_WHEN_STOPPING = 30000;
 
-        private readonly ManualResetEvent _allDone = new ManualResetEvent(false);
+        internal ManualResetEventSlim ServerStarted { get; set; } = new ManualResetEventSlim(false);
+
+        internal ManualResetEvent _allDone { get; set; } = new ManualResetEvent(false);
         private readonly Clients _connectedClients = new Clients();
         private readonly bool _compressSentData;
         private readonly string _endPoint;
         private readonly Socket _listener = null;
-        private SocketServerStatus _listenerStatus;
+        private SocketServerStatus _status;
         private readonly IPEndPoint _localEndPoint = null;
         private readonly object _lock = new object();
         private readonly object _lockTotals = new object();
@@ -83,33 +85,68 @@ namespace SocketMeister
         public SocketServer(int Port, bool CompressSentData)
         {
             _compressSentData = CompressSentData;
-
-            //  CONNECT TO ALL INTERFACES (I.P. 0.0.0.0 IS ALL)
-            IPAddress ipAddress = IPAddress.Parse("0.0.0.0");
-            _localEndPoint = new IPEndPoint(ipAddress, Port);
-
-            //  LOCAL IP ADDRESS AND PORT (USED FOR DIAGNOSTIC MESSAGES)
-            _endPoint = GetLocalIPAddress().ToString() + ":" + Port.ToString(CultureInfo.InvariantCulture);
-
-            // Create a TCP/IP socket.  
-            _listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            _listener.Bind(_localEndPoint);
-
-            //  WARNING - DO NOT USE SocketOptionName.ReceiveTimeout OR SocketOptionName.SendTimeout. TRIED THIS AND IT COMPLETELY BROKE THIS FOR BIG DATA TRANSFERS
-            _listener.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
-            _listener.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, 0);
-
-            //  REGISTER FOR EVENTS
-            _connectedClients.ClientDisconnected += ConnectedClients_ClientDisconnected;
-            _connectedClients.ClientConnected += ConnectedClients_ClientConnected;
-            _connectedClients.TraceEventRaised += ConnectedClients_ExceptionRaised;
-
-            //  SETUP BACKGROUND PROCESS TO FOR LISTENING
-            _threadListener = new Thread(new ThreadStart(BgListen))
+            _status = SocketServerStatus.Starting;
+            try
             {
-                IsBackground = true
-            };
+
+                //  CONNECT TO ALL INTERFACES (I.P. 0.0.0.0 IS ALL)
+                IPAddress ipAddress = IPAddress.Parse("0.0.0.0");
+                _localEndPoint = new IPEndPoint(ipAddress, Port);
+
+                //  LOCAL IP ADDRESS AND PORT (USED FOR DIAGNOSTIC MESSAGES)
+                _endPoint = GetLocalIPAddress().ToString() + ":" + Port.ToString(CultureInfo.InvariantCulture);
+
+                // Create a TCP/IP socket.  
+                _listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                _listener.Bind(_localEndPoint);
+
+                //  WARNING - DO NOT USE SocketOptionName.ReceiveTimeout OR SocketOptionName.SendTimeout. TRIED THIS AND IT COMPLETELY BROKE THIS FOR BIG DATA TRANSFERS
+                _listener.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
+                _listener.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, 0);
+
+                //  REGISTER FOR EVENTS
+                _connectedClients.ClientDisconnected += ConnectedClients_ClientDisconnected;
+                _connectedClients.ClientConnected += ConnectedClients_ClientConnected;
+                _connectedClients.TraceEventRaised += ConnectedClients_ExceptionRaised;
+
+                //  SETUP BACKGROUND PROCESS TO FOR LISTENING
+                _threadListener = new Thread(new ThreadStart(BgListen))
+                {
+                    IsBackground = true
+                };
+            }
+            catch 
+            {
+                _status = SocketServerStatus.Stopped;
+                throw; 
+            }
+
         }
+
+        /// <summary>
+        /// Dispose of the class
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Dispose of the class
+        /// </summary>
+        /// <param name="disposing"></param>
+        protected virtual void Dispose(bool disposing)
+        {
+            //  Note. THis is incomplete. Ask ChatGPT to help look for missing things
+            if (disposing)
+            {
+                Stop();
+
+                ServerStarted?.Dispose();
+            }
+        }
+
 
 
         internal Clients ConnectedClients => _connectedClients;
@@ -125,13 +162,13 @@ namespace SocketMeister
         /// </summary>
         public SocketServerStatus Status
         {
-            get { lock (_lock) { return _listenerStatus; } }
+            get { lock (_lock) { return _status; } }
             private set
             {
                 lock (_lock)
                 {
-                    if (_listenerStatus == value) return;
-                    _listenerStatus = value;
+                    if (_status == value) return;
+                    _status = value;
                 }
                 StatusChanged?.Invoke(null, new EventArgs());
             }
@@ -574,9 +611,11 @@ namespace SocketMeister
             // Bind the socket to the local endpoint and listen for incoming connections.  
             try
             {
-                Status = SocketServerStatus.Starting;
                 _listener.Listen(500);
                 Status = SocketServerStatus.Started;
+
+                // Signal all clear to waiting socket server clients which may try to send data before service startup is complete
+                ServerStarted.Set();
 
                 while (Status != SocketServerStatus.Stopped && Status != SocketServerStatus.Stopping)
                 {

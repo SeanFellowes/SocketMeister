@@ -1,10 +1,4 @@
-﻿#pragma warning disable IDE0079 // Remove unnecessary suppression
-#pragma warning disable IDE0090 // Use 'new(...)'
-#pragma warning disable IDE0018 // Inline variable declaration
-#pragma warning disable IDE1005 // Delegate invocation can be simplified.
-#pragma warning disable IDE0063 // Use simple 'using' statement
-
-using SocketMeister.Messages;
+﻿using SocketMeister.Messages;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -17,13 +11,14 @@ namespace SocketMeister
     /// Dictionary based collection of tokens. Data is readonly.
     /// </summary>
 #if SMISPUBLIC
-    public class TokenCollectionReadOnly
+    public class TokenCollectionReadOnly : IDisposable
 #else
-    internal class TokenCollectionReadOnly
+    internal class TokenCollectionReadOnly : IDisposable
 #endif
     {
         private readonly Dictionary<string, Token> _dict = new Dictionary<string, Token>();
         private readonly object _lock = new object();
+        private bool _disposed = false;
 
         /// <summary>
         /// Raised when a token value was added after synchronization with the master collection. Token is the 'Sender' in the event.
@@ -50,76 +45,77 @@ namespace SocketMeister
             get
             {
                 if (string.IsNullOrEmpty(Name)) throw new ArgumentException("Name cannot be null or empty", nameof(Name));
+                string key = Name.ToUpper(CultureInfo.InvariantCulture);
 
                 lock (_lock)
                 {
-                    Token fnd;
-                    _dict.TryGetValue(Name.ToUpper(CultureInfo.InvariantCulture), out fnd);
-                    return fnd;
+                    return _dict.TryGetValue(key, out var token) ? token : null;
                 }
             }
         }
 
-
         /// <summary>
         /// Number of tokens in the token collection
         /// </summary>
-        public int Count { get { lock (_lock) { return _dict.Count; } } }
+        public int Count
+        {
+            get
+            {
+                lock (_lock) { return _dict.Count; }
+            }
+        }
 
         internal TokenChangesResponseV1 ImportTokenChangesV1(byte[] changeBytes)
         {
             if (changeBytes == null) throw new ArgumentNullException(nameof(changeBytes));
 
-            List<TokenChange> tokenChanges = new List<TokenChange>();
-            using (MemoryStream stream = new MemoryStream(changeBytes))
-            {
-                using (BinaryReader reader = new BinaryReader(stream))
-                {
-                    int itemCount = reader.ReadInt32();
+            var tokenChanges = new List<TokenChange>();
 
+            using (var stream = new MemoryStream(changeBytes))
+            using (var reader = new BinaryReader(stream))
+            {
+                int itemCount = reader.ReadInt32();
+
+                lock (_lock)
+                {
                     for (int i = 0; i < itemCount; i++)
                     {
                         string name = reader.ReadString().ToUpper(CultureInfo.InvariantCulture);
                         int changeId = reader.ReadInt32();
                         TokenAction action = (TokenAction)reader.ReadInt16();
 
-                        Token fnd = null;
-                        lock (_lock) { _dict.TryGetValue(name, out fnd); }
+                        _dict.TryGetValue(name, out var existingToken);
 
                         if (action == TokenAction.Delete || action == TokenAction.Unknown)
                         {
-                            //  DELETE TOKEN
-                            if (fnd != null)
+                            if (existingToken != null)
                             {
-                                lock (_lock) { _dict.Remove(name); }
-                                fnd.Changed -= Token_Changed;
-                                if (TokenDeleted != null) TokenDeleted(fnd, new EventArgs());
+                                _dict.Remove(name);
+                                existingToken.Changed -= Token_Changed;
+                                TokenDeleted?.Invoke(existingToken, EventArgs.Empty);
                             }
                             tokenChanges.Add(new TokenChange(changeId, action, name, null));
                         }
                         else
                         {
-                            if (fnd == null)
+                            if (existingToken == null)
                             {
-                                //  ADD NEW TOKEN
-                                Token newToken = new Token(reader);
-                                lock (_lock) { _dict.Add(name, newToken); }
+                                var newToken = new Token(reader);
+                                _dict.Add(name, newToken);
                                 newToken.Changed += Token_Changed;
                                 tokenChanges.Add(new TokenChange(changeId, action, name, newToken));
-                                TokenAdded?.Invoke(fnd, new EventArgs());
+                                TokenAdded?.Invoke(newToken, EventArgs.Empty);
                             }
                             else
                             {
-                                //  UPDATE VALUE
-                                fnd.Deserialize(reader);
-                                tokenChanges.Add(new TokenChange(changeId, action, name, fnd));
+                                existingToken.Deserialize(reader);
+                                tokenChanges.Add(new TokenChange(changeId, action, name, existingToken));
                             }
                         }
                     }
                 }
             }
 
-            //  RETURN A SubscriptionResponseV1
             return new TokenChangesResponseV1(tokenChanges);
         }
 
@@ -131,7 +127,7 @@ namespace SocketMeister
         {
             lock (_lock)
             {
-                return _dict.Values.ToList();
+                return new List<Token>(_dict.Values);
             }
         }
 
@@ -143,7 +139,12 @@ namespace SocketMeister
         {
             lock (_lock)
             {
-                return _dict.Values.ToList().Select(t => t.Name).ToList();
+                var result = new List<string>(_dict.Count);
+                foreach (var token in _dict.Values)
+                {
+                    result.Add(token.Name);
+                }
+                return result;
             }
         }
 
@@ -151,12 +152,37 @@ namespace SocketMeister
         {
             TokenChanged?.Invoke(sender, e);
         }
+
+        /// <summary>
+        /// IDisposable implementation to clean up resources.
+        /// </summary>
+        public void Dispose()
+        {
+            if (_disposed) return;
+
+            lock (_lock)
+            {
+                foreach (var token in _dict.Values)
+                {
+                    token.Changed -= Token_Changed; // Unsubscribe from events
+                }
+
+                _dict.Clear(); // Clear the dictionary
+                TokenAdded = null;
+                TokenChanged = null;
+                TokenDeleted = null;
+            }
+
+            _disposed = true;
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// IDisposable implementation to clean up resources.
+        /// </summary>
+        ~TokenCollectionReadOnly()
+        {
+            Dispose();
+        }
     }
 }
-
-#pragma warning restore IDE0063 // Use simple 'using' statement
-#pragma warning restore IDE1005 // Delegate invocation can be simplified.
-#pragma warning restore IDE0018 // Inline variable declaration
-#pragma warning restore IDE0090 // Use 'new(...)'
-#pragma warning restore IDE0079 // Remove unnecessary suppression
-

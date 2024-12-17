@@ -1,49 +1,162 @@
 ﻿using SocketMeister.Messages;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace SocketMeister
 {
     internal class UnrespondedMessageCollection
     {
         private readonly Dictionary<long, MessageV1> _messages = new Dictionary<long, MessageV1>();
+#if !NET35
+        private readonly ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
+#else
         private readonly object _lock = new object();
+#endif
 
-        public MessageV1 this[long RequestID]
+        /// <summary>
+        /// Safely retrieves a message if it exists.
+        /// </summary>
+        internal bool TryGetMessage(long RequestID, out MessageV1 message)
+        {
+#if !NET35
+            _lock.EnterReadLock();
+            try
+            {
+                return _messages.TryGetValue(RequestID, out message);
+            }
+            finally
+            {
+                _lock.ExitReadLock();
+            }
+#else
+            lock (_lock)
+            {
+                return _messages.TryGetValue(RequestID, out message);
+            }
+#endif
+        }
+
+        /// <summary>
+        /// Adds a new message to the collection.
+        /// </summary>
+        internal void Add(MessageV1 AddItem)
+        {
+#if !NET35
+            _lock.EnterWriteLock();
+            try
+            {
+                _messages.Add(AddItem.MessageId, AddItem);
+            }
+            finally
+            {
+                _lock.ExitWriteLock();
+            }
+#else
+            lock (_lock)
+            {
+                _messages.Add(AddItem.MessageId, AddItem);
+            }
+#endif
+        }
+
+        /// <summary>
+        /// Removes a message from the collection.
+        /// </summary>
+        internal void Remove(MessageV1 RemoveItem)
+        {
+#if !NET35
+            _lock.EnterWriteLock();
+            try
+            {
+                _messages.Remove(RemoveItem.MessageId);
+            }
+            finally
+            {
+                _lock.ExitWriteLock();
+            }
+#else
+            lock (_lock)
+            {
+                _messages.Remove(RemoveItem.MessageId);
+            }
+#endif
+        }
+
+        /// <summary>
+        /// Gets the total count of messages.
+        /// </summary>
+        public int Count
         {
             get
             {
+#if !NET35
+                _lock.EnterReadLock();
+                try
+                {
+                    return _messages.Count;
+                }
+                finally
+                {
+                    _lock.ExitReadLock();
+                }
+#else
                 lock (_lock)
                 {
-                    _messages.TryGetValue(RequestID, out MessageV1 message);
-                    return message;
+                    return _messages.Count;
                 }
+#endif
             }
         }
 
-        internal void Add(MessageV1 AddItem)
-        {
-            lock (_lock) { _messages.Add(AddItem.MessageId, AddItem); }
-        }
-
-        public int Count
-        {
-            get { lock (_lock) { return _messages.Count; } }
-        }
-
-        internal void Remove(MessageV1 RemoveItem)
-        {
-            lock (_lock) { _messages.Remove(RemoveItem.MessageId); }
-        }
-
+        /// <summary>
+        /// Resets messages to 'Unsent' status.
+        /// </summary>
         internal void ResetToUnsent()
         {
+            List<MessageV1> messagesCopy;
+
+#if !NET35
+            _lock.EnterReadLock();
+            try
+            {
+                messagesCopy = new List<MessageV1>(_messages.Values);
+            }
+            finally
+            {
+                _lock.ExitReadLock();
+            }
+#else
             lock (_lock)
             {
-                foreach (var message in _messages.Values)
-                {
-                    if (message.WaitForResponse) message.Status = MessageEngineDeliveryStatus.Unsent;
-                }
+                messagesCopy = new List<MessageV1>(_messages.Values);
             }
+#endif
+
+            // Process outside the lock
+            foreach (var message in messagesCopy)
+            {
+                if (message.WaitForResponse)
+                    message.Status = MessageEngineDeliveryStatus.Unsent;
+            }
+        }
+
+
+        /// <summary>
+        /// Finds a original message from the MessageId included in a response and sets the ResponseMessage to the original message to the ResponseMessage 
+        /// </summary>
+        /// <param name="ResponseMessage"></param>
+        /// <returns></returns>
+        internal bool FindMessageAndSetResponse(MessageResponseV1 ResponseMessage)
+        {
+            if (!TryGetMessage(ResponseMessage.MessageId, out var message))
+                return false;
+
+            // Update response outside the lock
+            message.Response = ResponseMessage;
+#if !NET35
+            message.ResponseReceivedEvent?.Set();
+#endif
+            return true;
         }
     }
 }
