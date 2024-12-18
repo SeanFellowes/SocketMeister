@@ -1,12 +1,4 @@
-﻿#pragma warning disable IDE0079 // Remove unnecessary suppression
-#pragma warning disable IDE0090 // Use 'new(...)'
-#pragma warning disable IDE0052 // Remove unread private members
-#pragma warning disable CA1031 // Do not catch general exception types
-#pragma warning disable CA1303 // Do not pass literals as localized parameters
-#pragma warning disable CA1805 // Do not initialize unnecessarily
-#pragma warning disable CA1001 // Types that own disposable fields should be disposable
-
-#if !SMNOSERVER && !NET35
+﻿#if !SMNOSERVER && !NET35
 using SocketMeister.Messages;
 using System;
 using System.Collections.Generic;
@@ -35,9 +27,10 @@ namespace SocketMeister
 
         internal ManualResetEventSlim ServerStarted { get; set; } = new ManualResetEventSlim(false);
 
-        internal ManualResetEvent _allDone { get; set; } = new ManualResetEvent(false);
+        internal ManualResetEventSlim _allDone { get; set; } = new ManualResetEventSlim(false);
         private readonly Clients _connectedClients = new Clients();
         private readonly bool _compressSentData;
+        private bool _disposed;
         private readonly string _endPoint;
         private readonly Socket _listener = null;
         private SocketServerStatus _status;
@@ -135,16 +128,27 @@ namespace SocketMeister
         /// <summary>
         /// Dispose of the class
         /// </summary>
-        /// <param name="disposing"></param>
         protected virtual void Dispose(bool disposing)
         {
-            //  Note. THis is incomplete. Ask ChatGPT to help look for missing things
+            if (_disposed) return; // Prevent double dispose
+            _disposed = true;
+
             if (disposing)
             {
-                Stop();
-
+                Stop(); // Safely stop the server
+                _listener?.Dispose(); // Clean up socket
+                _allDone?.Dispose();
                 ServerStarted?.Dispose();
+               // _connectedClients?.Dispose(); // Ensure clients are disposed
             }
+        }
+
+        /// <summary>
+        /// Dispose of the class
+        /// </summary>
+        ~SocketServer()
+        {
+            Dispose(false);
         }
 
 
@@ -186,20 +190,13 @@ namespace SocketMeister
         /// <summary>
         /// The total number of bytes which have been sent through the socket server since it started
         /// </summary>
-        public long TotalBytesSent
-        {
-            get { lock (_lockTotals) { return _totalBytesSent; } }
-        }
+        public long TotalBytesSent => Interlocked.Read(ref _totalBytesSent);
 
 
         /// <summary>
         /// The total number of messages that have been sent through the socket server since it started;
         /// </summary>
-        public int TotalMessagesSent
-        {
-            get { lock (_lockTotals) { return _totalMessagesSent; } }
-        }
-
+        public int TotalMessagesSent => Interlocked.CompareExchange(ref _totalMessagesSent, 0, 0);
 
 
         /// <summary>
@@ -253,12 +250,10 @@ namespace SocketMeister
             if (string.IsNullOrEmpty(Name) == true) throw new ArgumentNullException(nameof(Name));
 
             BroadcastV1 message = null;
-            List<Client> clients = _connectedClients.ToList();
+            List<Client> clients = _connectedClients.GetClientsWithSubscriptions(Name);
             foreach (Client client in clients)
             {
-                if (client.DoesSubscriptionExist(Name) == false) continue;
-
-                if (message == null) message = new BroadcastV1(Name, Parameters);
+                message = new BroadcastV1(Name, Parameters);
                 try
                 {
                     client.SendIMessage(message, true);
@@ -323,53 +318,36 @@ namespace SocketMeister
         /// </summary>
         public void Stop()
         {
-            if (Status != SocketServerStatus.Started) throw new Exception("Socket server is stopped, or in the process of starting or stopping.");
+            if (Status != SocketServerStatus.Started)
+                throw new InvalidOperationException("Socket server is not currently running.");
 
             Status = SocketServerStatus.Stopping;
             _allDone.Set();
 
-            //  SEND ServerStoppingMessage TO CLIENTS
-            List<Client> toProcess = _connectedClients.ToList();
-            foreach (Client remoteClient in toProcess)
-            {
-                SendServerStoppingMessage(remoteClient);
-            }
+            var toProcess = _connectedClients.ToList();
 
-            //  WAIT FOR CLIENTS TO DISCONNECT
-            DateTime maxWaitClientDisconnect = DateTime.Now.AddMilliseconds(MAX_WAIT_FOR_CLIENT_DISCONNECT_WHEN_STOPPING);
-            while (true)
+            // Send ServerStoppingNotification concurrently
+            Parallel.ForEach(toProcess, remoteClient =>
             {
-                int connectedClients = _connectedClients.Count;
-                if (connectedClients == 0) break;
-                if (DateTime.Now > maxWaitClientDisconnect)
+                try
                 {
-                    if (connectedClients == 1)
-                    {
-                        NotifyTraceEventRaised(new Exception("There was 1 client connected after attempting to gracefully close all clients. It will be forced closed"), 5013);
-                    }
-                    else
-                    {
-                        NotifyTraceEventRaised(new Exception("There were " + _connectedClients.Count + " clients connected after attempting to gracefully close all clients. They will be forced closed"), 5013);
-                    }
-                    break;
+                    SendServerStoppingMessage(remoteClient);
                 }
-                Thread.Sleep(200);
-            }
+                catch (Exception ex)
+                {
+                    NotifyTraceEventRaised(ex, 5013);
+                }
+            });
 
-            //  STOP BACKGROUND THREADS
-            StopSocketServer = true;
-
-            //  CLOSE AND REMAINING CONNECTED CLIENTS (THERE SHOULD NORMALLY BE NONE)
-            _connectedClients.DisconnectAll();
-
-            try { _listener.Close(10); }
-            catch (Exception ex)
+            // Wait for clients to disconnect with timeout
+            DateTime maxWait = DateTime.UtcNow.AddMilliseconds(MAX_WAIT_FOR_CLIENT_DISCONNECT_WHEN_STOPPING);
+            while (_connectedClients.Count > 0 && DateTime.UtcNow < maxWait)
             {
-                NotifyTraceEventRaised(ex, 5013);
+                Thread.Sleep(50); // Reduced sleep interval for responsiveness
             }
 
-            _listener.Dispose();
-
+            _connectedClients.DisconnectAll(); // Force disconnect remaining clients
+            _listener?.Close();
 
             Status = SocketServerStatus.Stopped;
         }
@@ -377,66 +355,6 @@ namespace SocketMeister
         #endregion
 
 
-
-
-
-
-        //private void AcceptCallback(IAsyncResult ar)
-        //{
-        //    // Signal the main thread to continue.  
-        //    _allDone.Set();
-
-        //    if (Status == SocketServerStatus.Stopped)
-        //    {
-        //        return;
-        //    }
-        //    else if (Status == SocketServerStatus.Stopping)
-        //    {
-        //        //  ACCEPT THE CONNECTION BUT DISCONNECT THE CLIENT
-        //        Thread bgReceive = new Thread(
-        //        new ThreadStart(delegate
-        //        {
-        //            Socket listener = (Socket)ar.AsyncState;
-        //            Socket handler = null;
-        //            try { handler = listener.EndAccept(ar); }
-        //            catch { return; }
-
-        //            //  SHUTDOWN THE CLIENT'S SOCKET
-        //            try { handler.Shutdown(SocketShutdown.Both); }
-        //            catch { }
-        //            try { handler.Close(); }
-        //            catch { }
-        //            return;
-        //        }))
-        //        {
-        //            IsBackground = true
-        //        };
-        //        bgReceive.Start();
-        //    }
-        //    else
-        //    {
-        //        //  RECEIVE DATA ON A DEDICATED BACKGROUND THREAD
-        //        Thread bgReceive = new Thread(
-        //        new ThreadStart(delegate
-        //        {
-        //            // Get the socket that handles the client. 
-        //            Socket listener = (Socket)ar.AsyncState;
-        //            Socket handler = null;
-        //            try { handler = listener.EndAccept(ar); }
-        //            catch { return; }
-        //            handler.SendTimeout = 30000;
-        //            // Create the state object.  
-        //            Client remoteClient = new Client(this, handler, _compressSentData);
-        //            _connectedClients.Add(remoteClient);
-        //            handler.BeginReceive(remoteClient.ReceiveBuffer, 0, Constants.SEND_RECEIVE_BUFFER_SIZE, 0, new AsyncCallback(ReadCallback), remoteClient);
-        //        }))
-        //        {
-        //            IsBackground = true
-        //        };
-        //        bgReceive.Start();
-        //    }
-
-        //}
 
         private void AcceptCallback(IAsyncResult ar)
         {
@@ -450,7 +368,7 @@ namespace SocketMeister
             else if (Status == SocketServerStatus.Stopping)
             {
                 // Accept the connection but disconnect the client
-                new Thread(() =>
+                Task.Run(() =>
                 {
                     Socket listener = (Socket)ar.AsyncState;
                     Socket handler = null;
@@ -463,14 +381,13 @@ namespace SocketMeister
                     try { handler.Close(); }
                     catch { }
                     return;
-                })
-                { IsBackground = true }.Start(); // Optionally set as a background thread
+                });
 
             }
             else
             {
                 // Receive data on a dedicated background task
-                new Thread(() =>
+                Task.Run(() =>
                 {
                     // Get the socket that handles the client. 
                     Socket listener = (Socket)ar.AsyncState;
@@ -482,8 +399,7 @@ namespace SocketMeister
                     Client remoteClient = new Client(this, handler, _compressSentData);
                     _connectedClients.Add(remoteClient);
                     handler.BeginReceive(remoteClient.ReceiveBuffer, 0, Constants.SEND_RECEIVE_BUFFER_SIZE, 0, new AsyncCallback(ReadCallback), remoteClient);
-                })
-                { IsBackground = true }.Start(); // Optionally set as a background thread
+                });
             }
         }
 
@@ -515,6 +431,7 @@ namespace SocketMeister
                     _connectedClients.Remove(remoteClient);
                     remoteClient.ClientSocket.Shutdown(SocketShutdown.Send);
                     remoteClient.ClientSocket.Close(15);
+                    return;
                 }
 
                 while (receiveBufferPtr < receivedBytesCount)
@@ -606,6 +523,17 @@ namespace SocketMeister
             }
         }
 
+        private async Task ProcessMessageAsync(Client remoteClient, MessageEngine receiveEnvelope)
+        {
+            if (receiveEnvelope.MessageType == MessageEngineMessageType.MessageV1)
+            {
+                var message = receiveEnvelope.GetMessageV1();
+                await Task.Run(() => BgProcessMessage(message));
+            }
+            // Add similar async handling for other message types
+        }
+
+
         private void BgListen()
         {
             // Bind the socket to the local endpoint and listen for incoming connections.  
@@ -626,7 +554,7 @@ namespace SocketMeister
                     _listener.BeginAccept(new AsyncCallback(AcceptCallback), _listener);
 
                     // Wait until a connection is made before continuing.  
-                    _allDone.WaitOne();
+                    _allDone.Wait();
                 }
             }
             catch (Exception ex)
@@ -757,14 +685,8 @@ namespace SocketMeister
 
         internal void IncrementSentTotals(int BytesSent)
         {
-            lock (_lockTotals)
-            {
-                if (_totalBytesSent > (long.MaxValue * 0.9)) _totalBytesSent = 0;
-                _totalBytesSent += BytesSent;
-
-                if (_totalMessagesSent == int.MaxValue) _totalMessagesSent = 0;
-                _totalMessagesSent++;
-            }
+            Interlocked.Add(ref _totalBytesSent, BytesSent);
+            Interlocked.Increment(ref _totalMessagesSent);
         }
 
         private void ConnectedClients_ClientConnected(object sender, ClientEventArgs e)
@@ -808,11 +730,3 @@ namespace SocketMeister
     }
 }
 #endif
-
-#pragma warning restore CA1001 // Types that own disposable fields should be disposable
-#pragma warning restore CA1805 // Do not initialize unnecessarily
-#pragma warning restore CA1031 // Do not catch general exception types
-#pragma warning restore CA1303 // Do not pass literals as localized parameters
-#pragma warning restore IDE0052 // Remove unread private members
-#pragma warning restore IDE0090 // Use 'new(...)'
-#pragma warning restore IDE0079 // Remove unnecessary suppression

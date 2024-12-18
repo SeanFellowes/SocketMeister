@@ -46,11 +46,6 @@ namespace SocketMeister
         /// </summary>
         private const int POLLING_FREQUENCY = 15;
 
-        /// <summary>
-        /// The frequency, in seconds, that the client will send subscriptions to the server
-        /// </summary>
-        private const int SEND_SUBSCRIPTIONS_FREQUENCY = 60;
-
 #if NET35
         // ThreadStatic for .NET 3.5 to give each thread its own Random instance
         [ThreadStatic]
@@ -130,6 +125,10 @@ namespace SocketMeister
             _enableCompression = EnableCompression;
             _receiveEngine = new MessageEngine(EnableCompression);
 
+            _subscriptions.TokenAdded += _subscriptions_AddChangedDeleted;
+            _subscriptions.TokenChanged += _subscriptions_AddChangedDeleted;
+            _subscriptions.TokenDeleted += _subscriptions_AddChangedDeleted;
+
             //  STATIC BUFFERS
             _pollingBuffer = MessageEngine.GenerateSendBytes(new PollingRequestV1(), false);
 
@@ -145,7 +144,7 @@ namespace SocketMeister
             _currentEndPoint.DontReconnectUntil = DateTime.Now.AddYears(-1);   // Safe to use direct access in class constructor
 
             //  Setup a pool of SocketAsyncEventArgs for sending messages
-            _sendEventArgsPool = new SocketAsyncEventArgsPool(Constants.SocketAsyncEventArgsPoolSize);
+            _sendEventArgsPool = new SocketAsyncEventArgsPool();
             _sendEventArgsPool.Completed += ProcessSend;
 
             _asyncEventArgsConnect = new SocketAsyncEventArgs();
@@ -160,6 +159,11 @@ namespace SocketMeister
             _asyncEventArgsSendSubscriptionChanges.Completed += ProcessSendSubscriptionChanges;
 
             StartBackgroundWorker();
+        }
+
+        private void _subscriptions_AddChangedDeleted(object sender, EventArgs e)
+        {
+            TriggerSendSubscriptions = true;
         }
 
         /// <summary>
@@ -223,8 +227,12 @@ namespace SocketMeister
                 _asyncEventArgsReceive?.Dispose();
                 _asyncEventArgsReceive = null;
 
+                _sendEventArgsPool?.Dispose();
+
                 _asyncEventArgsSendSubscriptionChanges?.Dispose();
                 _asyncEventArgsSendSubscriptionChanges = null;
+
+                _unrespondedMessages.Clear();
 
                 foreach (SocketEndPoint ep in _endPoints)
                 {
@@ -501,7 +509,6 @@ namespace SocketMeister
                     IsBackgroundWorkerRunning = true;
                     Stopwatch pollingTimer = Stopwatch.StartNew();
                     Stopwatch sendSubscriptionsTimer = Stopwatch.StartNew();
-                    TriggerSendSubscriptions = true;
                     LastPollResponse = DateTime.Now;
 
                     //  FLAG ALL SUBSCRIPTIONS (Tokens) FOR SENDING TO THE SERVER
@@ -599,7 +606,10 @@ namespace SocketMeister
                 _asyncEventArgsPolling.SetBuffer(_pollingBuffer, 0, _pollingBuffer.Length);
                 if (!CurrentEndPoint.Socket.SendAsync(_asyncEventArgsPolling)) ProcessSendPollRequest(null, _asyncEventArgsPolling);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                NotifyExceptionRaised(ex);
+            }
         }
 
 
@@ -608,7 +618,7 @@ namespace SocketMeister
             try
             {
                 //  SEND SUBSCRIPTION CHANGES
-                if ((sendSubscriptionsTimer.Elapsed.TotalSeconds > SEND_SUBSCRIPTIONS_FREQUENCY || TriggerSendSubscriptions == true))
+                if (TriggerSendSubscriptions == true)
                 {
 #if NET35  // Compiler directive for code which will be compiled to .NET 3.5. This provides a less efficient but workable solution to the desired functional requirements.
                     sendSubscriptionsTimer.Reset();
@@ -627,7 +637,10 @@ namespace SocketMeister
                     }
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                NotifyExceptionRaised(ex);
+            }
         }
 
 
@@ -652,6 +665,8 @@ namespace SocketMeister
                     if (!CurrentEndPoint.Socket.ReceiveAsync(_asyncEventArgsReceive)) ProcessReceive(null, _asyncEventArgsReceive);
                     //  CONNECTED
                     ConnectionStatus = ConnectionStatuses.Connected;
+                    //  IF SUBSCRIPTIONS EXIST, SEND THEM
+                    if (SubscriptionCount > 0) TriggerSendSubscriptions = true;
                 }
                 catch (Exception ex)
                 {
@@ -689,10 +704,14 @@ namespace SocketMeister
 
 
         /// <summary>
-        /// Stops the client.
+        /// Stops the client permenently. There is no option from here to restart without creating a new instance of SocketClient.
         /// </summary>
         public void Stop()
         {
+            _subscriptions.TokenAdded -= _subscriptions_AddChangedDeleted;
+            _subscriptions.TokenChanged -= _subscriptions_AddChangedDeleted;
+            _subscriptions.TokenDeleted -= _subscriptions_AddChangedDeleted;
+
             StopClientPermanently = true;
             PerformDisconnect(SocketHasErrored: false);
         }

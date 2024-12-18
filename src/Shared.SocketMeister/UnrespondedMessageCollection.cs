@@ -36,6 +36,31 @@ namespace SocketMeister
 #endif
         }
 
+
+        /// <summary>
+        /// Clears the collection. Called during parent Dispose
+        /// </summary>
+        internal void Clear()
+        {
+#if !NET35
+            _lock.EnterWriteLock();
+            try
+            {
+                _messages.Clear();
+            }
+            finally
+            {
+                _lock.ExitWriteLock();
+            }
+#else
+            lock (_lock)
+            {
+                _messages.Clear();
+            }
+#endif
+        }
+
+
         /// <summary>
         /// Adds a new message to the collection.
         /// </summary>

@@ -1,15 +1,9 @@
-﻿#pragma warning disable IDE0079 // Remove unnecessary suppression
-#pragma warning disable IDE0090 // Use 'new(...)'
-#pragma warning disable CA1031 // Do not catch general exception types
-#pragma warning disable CA1001 // Types that own disposable fields should be disposable
-
-#if !SMNOSERVER && !NET35
+﻿#if !SMNOSERVER && !NET35
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace SocketMeister
@@ -22,9 +16,7 @@ namespace SocketMeister
     {
         internal class Clients
         {
-            private readonly List<Client> _list = new List<Client>();
-            private readonly object _lock = new object();
-
+            private readonly ConcurrentDictionary<Guid, Client> _clientDictionary = new ConcurrentDictionary<Guid, Client>();
             /// <summary>
             /// Event raised when a client connects to the socket server (Raised in a seperate thread)
             /// </summary>
@@ -45,99 +37,70 @@ namespace SocketMeister
             /// </summary>
             public int Count
             {
-                get { lock (_lock) { return _list.Count; } }
+                get { return _clientDictionary.Count; }
             }
 
-            public void Add(Client Client)
+            public void Add(Client client)
             {
-                if (Client == null) return;
-
-                lock (_lock)
-                {
-                    _list.Add(Client);
-                }
-                NotifyClientConnected(Client);
+                if (client == null) return;
+                _clientDictionary.TryAdd(client.ClientId, client);
+                NotifyClientConnected(client);
             }
 
-            public void Disconnect(Client Client)
+            public void Disconnect(Client client)
             {
-                if (Client == null) return;
+                if (client == null) return;
+                _ = _clientDictionary.TryRemove(client.ClientId, out Client deletedClient);
 
-                lock (_lock)
-                {
-                    _list.Remove(Client);
-                }
+                try { client.ClientSocket.Shutdown(SocketShutdown.Both); }
+                catch (Exception ex) { NotifyTraceEventRaised(ex); }
 
-                try { Client.ClientSocket.Shutdown(SocketShutdown.Both); }
-                catch (Exception ex)
-                {
-                    NotifyTraceEventRaised(ex);
-                }
-                try { Client.ClientSocket.Close(); }
-                catch (Exception ex)
-                {
-                    NotifyTraceEventRaised(ex);
-                }
+                try { client.ClientSocket.Close(); }
+                catch (Exception ex) { NotifyTraceEventRaised(ex); }
 
-                NotifyClientDisconnected(Client);
+                NotifyClientDisconnected(client);
             }
 
             /// <summary>
             /// Remove a client from the list
             /// </summary>
-            /// <param name="Client">Client to remove</param>
-            public void Remove(Client Client)
+            /// <param name="client">Client to remove</param>
+            public void Remove(Client client)
             {
-                if (Client == null) return;
-
-                lock (_lock)
-                {
-                    _list.Remove(Client);
-                }
-
-                NotifyClientDisconnected(Client);
+                if (client == null) return;
+                _clientDictionary.TryRemove(client.ClientId, out Client deletedClient);
+                NotifyClientDisconnected(client);
             }
-
 
             public void DisconnectAll()
             {
-                List<Client> clients = ToList();
-                foreach (Client client in clients)
+                Parallel.ForEach(ToList(), client =>
                 {
-                    Disconnect(client);
-                }
+                    try
+                    {
+                        Disconnect(client);
+                    }
+                    catch (Exception ex)
+                    {
+                        NotifyTraceEventRaised(ex);
+                    }
+                });
             }
 
             private void NotifyClientConnected(Client client)
             {
-                if (ClientConnected != null)
-                {
-                    Task.Run(() => ClientConnected?.Invoke(null, new ClientEventArgs(client)));
-                }
+                Task.Run(() => ClientConnected?.Invoke(null, new ClientEventArgs(client)));
             }
 
             private void NotifyClientDisconnected(Client client)
             {
-                if (ClientDisconnected != null)
-                {
-                    Task.Run(() => ClientDisconnected?.Invoke(null, new ClientEventArgs(client)));
-                }
+                Task.Run(() => ClientDisconnected?.Invoke(null, new ClientEventArgs(client)));
             }
 
             private void NotifyTraceEventRaised(Exception error)
             {
-                if (TraceEventRaised != null)
-                {
-                    string msg = error.Message;
-                    if (error.StackTrace != null) msg += Environment.NewLine + Environment.NewLine + error.StackTrace;
-                    if (error.InnerException != null) msg += Environment.NewLine + Environment.NewLine + "Inner Exception: " + error.InnerException.Message;
-
-                    // Raise event in the background using a Task
-                    Task.Run(() =>
-                    {
-                        TraceEventRaised?.Invoke(this, new TraceEventArgs(error, 5008));
-                    });
-                }
+                var msg = error.ToString(); // Includes message, stack trace, and inner exception details.
+                Task.Run(() => TraceEventRaised?.Invoke(this, new TraceEventArgs(error, 5008)));
             }
 
             /// <summary>
@@ -146,17 +109,24 @@ namespace SocketMeister
             /// <returns>List of clients</returns>
             public List<Client> ToList()
             {
-                lock (_lock)
+                return _clientDictionary.Values.ToList();
+            }
+
+            internal List<Client> GetClientsWithSubscriptions(string subscriptionName)
+            {
+                List<Client> rVal = new List<Client>();
+                ICollection<Client> clients = _clientDictionary.Values;
+                foreach (var client in clients)
                 {
-                    return _list.ToList();
+                    if (client != null && client.SubscriptionCount == 0) continue;
+                    
+                    if (client.DoesSubscriptionExist(subscriptionName))
+                        rVal.Add(client);
                 }
+                return rVal;
             }
         }
     }
 }
 #endif
 
-#pragma warning restore CA1031 // Do not catch general exception types
-#pragma warning restore CA1001 // Types that own disposable fields should be disposable
-#pragma warning restore IDE0090 // Use 'new(...)'
-#pragma warning restore IDE0079 // Remove unnecessary suppression

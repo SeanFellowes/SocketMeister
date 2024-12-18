@@ -1,9 +1,4 @@
-﻿#pragma warning disable IDE0079 // Remove unnecessary suppression
-#pragma warning disable IDE0063 // Use simple 'using' statement
-#pragma warning disable IDE0090 // Use 'new(...)'
-
-
-using System;
+﻿using System;
 using System.IO;
 
 namespace SocketMeister
@@ -105,25 +100,63 @@ namespace SocketMeister
 
             int paramCount = Reader.ReadInt32();
             object[] parameters = new object[paramCount];
+
             for (int ptr = 0; ptr < paramCount; ptr++)
             {
-                ParameterType ParamType = (Serializer.ParameterType)Reader.ReadInt16();
+                ParameterType ParamType = (ParameterType)Reader.ReadInt16();
 
-                if (ParamType == ParameterType.Null) parameters[ptr] = null;
-                else if (ParamType == ParameterType.BoolParam) parameters[ptr] = Reader.ReadBoolean();
-                else if (ParamType == ParameterType.Int16Param) parameters[ptr] = Reader.ReadInt16();
-                else if (ParamType == ParameterType.Int32Param) parameters[ptr] = Reader.ReadInt32();
-                else if (ParamType == ParameterType.Int64Param) parameters[ptr] = Reader.ReadInt64();
-                else if (ParamType == ParameterType.UInt16Param) parameters[ptr] = Reader.ReadUInt16();
-                else if (ParamType == ParameterType.UInt32Param) parameters[ptr] = Reader.ReadUInt32();
-                else if (ParamType == ParameterType.UInt64Param) parameters[ptr] = Reader.ReadUInt64();
-                else if (ParamType == ParameterType.StringParam) parameters[ptr] = Reader.ReadString();
-                else if (ParamType == ParameterType.DateTimeParam) parameters[ptr] = new DateTime(Reader.ReadInt64());
-                else if (ParamType == ParameterType.DoubleParam) parameters[ptr] = Reader.ReadDouble();
-                else if (ParamType == ParameterType.ByteParam) parameters[ptr] = Reader.ReadByte();
-                else if (ParamType == ParameterType.ByteArrayParam) parameters[ptr] = Reader.ReadBytes(Reader.ReadInt32());
-                else throw new NotSupportedException("Cannot deserialize parameter[" + ptr + "] because there is no deserialize code for type " + ParamType.ToString());
+                switch (ParamType)
+                {
+                    case ParameterType.Null:
+                        parameters[ptr] = null;
+                        break;
+                    case ParameterType.BoolParam:
+                        parameters[ptr] = Reader.ReadBoolean();
+                        break;
+                    case ParameterType.Int16Param:
+                        parameters[ptr] = Reader.ReadInt16();
+                        break;
+                    case ParameterType.Int32Param:
+                        parameters[ptr] = Reader.ReadInt32();
+                        break;
+                    case ParameterType.Int64Param:
+                        parameters[ptr] = Reader.ReadInt64();
+                        break;
+                    case ParameterType.UInt16Param:
+                        parameters[ptr] = Reader.ReadUInt16();
+                        break;
+                    case ParameterType.UInt32Param:
+                        parameters[ptr] = Reader.ReadUInt32();
+                        break;
+                    case ParameterType.UInt64Param:
+                        parameters[ptr] = Reader.ReadUInt64();
+                        break;
+                    case ParameterType.StringParam:
+                        parameters[ptr] = Reader.ReadString();
+                        break;
+                    case ParameterType.DateTimeParam:
+                        parameters[ptr] = new DateTime(Reader.ReadInt64());
+                        break;
+                    case ParameterType.DoubleParam:
+                        parameters[ptr] = Reader.ReadDouble();
+                        break;
+                    case ParameterType.ByteParam:
+                        parameters[ptr] = Reader.ReadByte();
+                        break;
+                    case ParameterType.ByteArrayParam:
+                        int length = Reader.ReadInt32();
+                        long remainingBytes = Reader.BaseStream.Length - Reader.BaseStream.Position;
+
+                        if (length < 0 || length > remainingBytes)
+                            throw new InvalidDataException($"Invalid byte array length: {length}. Remaining bytes: {remainingBytes}.");
+
+                        parameters[ptr] = Reader.ReadBytes(length);
+                        break;
+                    default:
+                        throw new NotSupportedException($"Cannot deserialize parameter[{ptr}] of type {ParamType}");
+                }
             }
+
             return parameters;
         }
 
@@ -136,16 +169,14 @@ namespace SocketMeister
         {
             if (Parameters == null) throw new ArgumentNullException(nameof(Parameters));
 
-            using (BinaryWriter writer = new BinaryWriter(new MemoryStream()))
+            using (MemoryStream stream = new MemoryStream())
+            using (BinaryWriter writer = new BinaryWriter(stream))
             {
                 SerializeParameters(writer, Parameters);
-                using (BinaryReader reader = new BinaryReader(writer.BaseStream))
-                {
-                    reader.BaseStream.Position = 0;
-                    return reader.ReadBytes((Convert.ToInt32(reader.BaseStream.Length)));
-                }
+                return stream.ToArray(); // Directly retrieve byte array
             }
         }
+
 
         /// <summary>
         /// Serializes an array of parameters 
@@ -158,6 +189,7 @@ namespace SocketMeister
             if (Parameters == null) throw new ArgumentNullException(nameof(Parameters));
 
             Writer.Write(Parameters.Length);
+
 
             for (int ptr = 0; ptr < Parameters.Length; ptr++)
             {
@@ -242,8 +274,3 @@ namespace SocketMeister
 
     }
 }
-
-#pragma warning restore IDE0063 // Use simple 'using' statement
-#pragma warning restore IDE0090 // Use 'new(...)'
-#pragma warning restore IDE0079 // Remove unnecessary suppression
-

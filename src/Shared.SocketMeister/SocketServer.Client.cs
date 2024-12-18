@@ -1,11 +1,4 @@
-﻿#pragma warning disable IDE0079 // Remove unnecessary suppression
-#pragma warning disable IDE0059 // Unnecessary assignment of a value
-#pragma warning disable IDE0090 // Use 'new(...)'
-#pragma warning disable CA1001 // Types that own disposable fields should be disposable
-#pragma warning disable CA1031 // Do not catch general exception types
-#pragma warning disable CA1034 // Nested types should not be visible
-
-#if !SMNOSERVER && !NET35
+﻿#if !SMNOSERVER && !NET35
 using SocketMeister.Messages;
 using System;
 using System.Collections.Generic;
@@ -32,6 +25,7 @@ namespace SocketMeister
             private bool _disposed;
             private readonly UnrespondedMessageCollection _unrespondedMessages = new UnrespondedMessageCollection();
             private readonly MessageEngine _receivedEnvelope;
+            private readonly AsyncCallback _sendCallback;
             private readonly SocketServer _socketServer;
             private readonly TokenCollectionReadOnly _subscriptions = new TokenCollectionReadOnly();
 
@@ -41,6 +35,7 @@ namespace SocketMeister
                 _clientSocket = ClientSocket;
                 _compressSentData = CompressSentData;
                 _receivedEnvelope = new MessageEngine(CompressSentData);
+                _sendCallback = SendCallback; // Cache the delegate
             }
 
             /// <summary>
@@ -48,25 +43,33 @@ namespace SocketMeister
             /// </summary>
             public void Dispose()
             {
-                if (_disposed) return;
-
-                _disposed = true;
-
-                //_receivedEnvelope?.Dispose();
-                _clientSocket?.Dispose();
-                _subscriptions?.Dispose();
-
+                Dispose(true);
                 GC.SuppressFinalize(this);
             }
 
+            private void Dispose(bool disposing)
+            {
+                if (_disposed) return;
+
+                if (disposing)
+                {
+                    // Dispose managed resources
+                    _clientSocket.Dispose();
+                    _subscriptions.Dispose();
+                    _unrespondedMessages.Clear(); // Explicitly clear any remaining references
+                }
+
+                // Unmanaged resources would be cleaned here (none in this case)
+                _disposed = true;
+            }
+
             /// <summary>
-            /// Dispose of the class
+            /// Finalizer
             /// </summary>
             ~Client()
             {
-                Dispose();
+                Dispose(false);
             }
-
 
             /// <summary>
             /// Unique GUID assigned to each client
@@ -105,9 +108,7 @@ namespace SocketMeister
             /// <returns>True if exists, false if the subscription does not exist</returns>
             public bool DoesSubscriptionExist(string SubscriptionName)
             {
-                if (string.IsNullOrEmpty(SubscriptionName) == true) return false;
-                else if (_subscriptions[SubscriptionName] != null) return true;
-                else return false;
+                return !string.IsNullOrEmpty(SubscriptionName) && _subscriptions[SubscriptionName] != null;
             }
 
             /// <summary>
@@ -135,8 +136,8 @@ namespace SocketMeister
 
             internal void SendIMessage(IMessage Message, bool Async = true)
             {
-                if (ClientSocket == null ||
-                    ClientSocket.Connected == false || ClientSocket.Poll(200000, SelectMode.SelectWrite) == false) return;
+                if (_clientSocket?.Connected != true || !_clientSocket.Poll(200000, SelectMode.SelectWrite))
+                    return;
 
                 try
                 {
@@ -145,7 +146,7 @@ namespace SocketMeister
 
                     if (Async == true)
                     {
-                        ClientSocket.BeginSend(sendBytes, 0, sendBytes.Length, 0, new AsyncCallback(SendCallback), this);
+                        ClientSocket.BeginSend(sendBytes, 0, sendBytes.Length, 0, _sendCallback, this);
                     }
                     else
                     {
@@ -257,10 +258,3 @@ namespace SocketMeister
     }
 }
 #endif
-
-#pragma warning restore CA1034 // Nested types should not be visible
-#pragma warning restore CA1031 // Do not catch general exception types
-#pragma warning restore CA1001 // Types that own disposable fields should be disposable
-#pragma warning restore IDE0059 // Unnecessary assignment of a value
-#pragma warning restore IDE0090 // Use 'new(...)'
-#pragma warning restore IDE0079 // Remove unnecessary suppression

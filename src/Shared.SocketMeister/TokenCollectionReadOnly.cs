@@ -1,5 +1,8 @@
-﻿using SocketMeister.Messages;
+﻿#if !SMNOSERVER && !NET35
+
+using SocketMeister.Messages;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -8,7 +11,7 @@ using System.Linq;
 namespace SocketMeister
 {
     /// <summary>
-    /// Dictionary based collection of tokens. Data is readonly.
+    /// Dictionary-based collection of tokens. Data is readonly.
     /// </summary>
 #if SMISPUBLIC
     public class TokenCollectionReadOnly : IDisposable
@@ -16,24 +19,8 @@ namespace SocketMeister
     internal class TokenCollectionReadOnly : IDisposable
 #endif
     {
-        private readonly Dictionary<string, Token> _dict = new Dictionary<string, Token>();
-        private readonly object _lock = new object();
+        private readonly ConcurrentDictionary<string, Token> _tokenDictionary = new ConcurrentDictionary<string, Token>(StringComparer.OrdinalIgnoreCase);
         private bool _disposed = false;
-
-        /// <summary>
-        /// Raised when a token value was added after synchronization with the master collection. Token is the 'Sender' in the event.
-        /// </summary>
-        public event EventHandler<EventArgs> TokenAdded;
-
-        /// <summary>
-        /// Raised when a token value was deleted after synchronization with the master collection. Token is the 'Sender' in the event.
-        /// </summary>
-        public event EventHandler<EventArgs> TokenChanged;
-
-        /// <summary>
-        /// Raised when a token value was changed after synchronization with the master collection. Token is the 'Sender' in the event.
-        /// </summary>
-        public event EventHandler<EventArgs> TokenDeleted;
 
         /// <summary>
         /// Indexed search returning the token or null, for a given token name.
@@ -44,26 +31,14 @@ namespace SocketMeister
         {
             get
             {
-                if (string.IsNullOrEmpty(Name)) throw new ArgumentException("Name cannot be null or empty", nameof(Name));
-                string key = Name.ToUpper(CultureInfo.InvariantCulture);
-
-                lock (_lock)
-                {
-                    return _dict.TryGetValue(key, out var token) ? token : null;
-                }
+                return _tokenDictionary.TryGetValue(Name, out var token) ? token : null;
             }
         }
 
         /// <summary>
         /// Number of tokens in the token collection
         /// </summary>
-        public int Count
-        {
-            get
-            {
-                lock (_lock) { return _dict.Count; }
-            }
-        }
+        public int Count => _tokenDictionary.Count;
 
         internal TokenChangesResponseV1 ImportTokenChangesV1(byte[] changeBytes)
         {
@@ -76,41 +51,33 @@ namespace SocketMeister
             {
                 int itemCount = reader.ReadInt32();
 
-                lock (_lock)
+                while (reader.BaseStream.Position < reader.BaseStream.Length)
                 {
-                    for (int i = 0; i < itemCount; i++)
+                    string name = reader.ReadString();  // _tokenDictionary is case insensitive so we don't care about case 
+                    int changeId = reader.ReadInt32();
+                    TokenAction action = (TokenAction)reader.ReadInt16();
+
+                    _tokenDictionary.TryGetValue(name, out var existingToken);
+
+                    if (action == TokenAction.Delete || action == TokenAction.Unknown)
                     {
-                        string name = reader.ReadString().ToUpper(CultureInfo.InvariantCulture);
-                        int changeId = reader.ReadInt32();
-                        TokenAction action = (TokenAction)reader.ReadInt16();
-
-                        _dict.TryGetValue(name, out var existingToken);
-
-                        if (action == TokenAction.Delete || action == TokenAction.Unknown)
+                        if (existingToken != null && _tokenDictionary.TryRemove(name, out _))
                         {
-                            if (existingToken != null)
-                            {
-                                _dict.Remove(name);
-                                existingToken.Changed -= Token_Changed;
-                                TokenDeleted?.Invoke(existingToken, EventArgs.Empty);
-                            }
                             tokenChanges.Add(new TokenChange(changeId, action, name, null));
+                        }
+                    }
+                    else
+                    {
+                        if (existingToken == null)
+                        {
+                            var newToken = new Token(reader);
+                            _tokenDictionary.TryAdd(name, newToken);
+                            tokenChanges.Add(new TokenChange(changeId, action, name, newToken));
                         }
                         else
                         {
-                            if (existingToken == null)
-                            {
-                                var newToken = new Token(reader);
-                                _dict.Add(name, newToken);
-                                newToken.Changed += Token_Changed;
-                                tokenChanges.Add(new TokenChange(changeId, action, name, newToken));
-                                TokenAdded?.Invoke(newToken, EventArgs.Empty);
-                            }
-                            else
-                            {
-                                existingToken.Deserialize(reader);
-                                tokenChanges.Add(new TokenChange(changeId, action, name, existingToken));
-                            }
+                            existingToken.Deserialize(reader);
+                            tokenChanges.Add(new TokenChange(changeId, action, name, existingToken));
                         }
                     }
                 }
@@ -119,17 +86,6 @@ namespace SocketMeister
             return new TokenChangesResponseV1(tokenChanges);
         }
 
-        /// <summary>
-        /// Returns a list of all the tokens in the collection
-        /// </summary>
-        /// <returns></returns>
-        public List<Token> ToList()
-        {
-            lock (_lock)
-            {
-                return new List<Token>(_dict.Values);
-            }
-        }
 
         /// <summary>
         /// Returns a string list of names
@@ -137,20 +93,34 @@ namespace SocketMeister
         /// <returns>List of names</returns>
         public List<string> ToListOfNames()
         {
-            lock (_lock)
+            // Take a snapshot of the current values
+            var tokensSnapshot = _tokenDictionary.Values.ToArray();
+
+            // Create a new list based on the snapshot
+            var result = new List<string>(tokensSnapshot.Length);
+            foreach (var token in tokensSnapshot)
             {
-                var result = new List<string>(_dict.Count);
-                foreach (var token in _dict.Values)
-                {
-                    result.Add(token.Name);
-                }
-                return result;
+                result.Add(token.Name);
             }
+
+            return result;
         }
 
-        private void Token_Changed(object sender, EventArgs e)
+        /// <summary>
+        /// IDisposable implementation to clean up resources.
+        /// </summary>
+        protected virtual void Dispose(bool disposing)
         {
-            TokenChanged?.Invoke(sender, e);
+            if (_disposed) return;
+
+            if (disposing)
+            {
+                // Free managed resources
+                _tokenDictionary.Clear();
+            }
+
+            // Free unmanaged resources (if any)
+            _disposed = true;
         }
 
         /// <summary>
@@ -158,22 +128,7 @@ namespace SocketMeister
         /// </summary>
         public void Dispose()
         {
-            if (_disposed) return;
-
-            lock (_lock)
-            {
-                foreach (var token in _dict.Values)
-                {
-                    token.Changed -= Token_Changed; // Unsubscribe from events
-                }
-
-                _dict.Clear(); // Clear the dictionary
-                TokenAdded = null;
-                TokenChanged = null;
-                TokenDeleted = null;
-            }
-
-            _disposed = true;
+            Dispose(true);
             GC.SuppressFinalize(this);
         }
 
@@ -182,7 +137,9 @@ namespace SocketMeister
         /// </summary>
         ~TokenCollectionReadOnly()
         {
-            Dispose();
+            Dispose(false);
         }
     }
 }
+
+#endif

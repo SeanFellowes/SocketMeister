@@ -77,8 +77,6 @@ namespace SocketMeister.Messages
         private int _receiveBufferPtr = 0;
         private long _statMessageNumber = 1;
         private bool _statMessageReceived;
-        private int _statSocketBufferLength;
-        private int _statSocketBytesRead;
         private byte[] _uncompressedBuffer = new byte[1024];
 
         internal MessageEngine(bool EnableCompression)

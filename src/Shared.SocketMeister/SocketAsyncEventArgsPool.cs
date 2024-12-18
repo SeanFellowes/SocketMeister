@@ -1,84 +1,67 @@
-﻿#pragma warning disable IDE0079 // Remove unnecessary suppression
-#pragma warning disable IDE0090 // Use 'new(...)'
-#pragma warning disable CA2000 // Dispose objects before losing scope
-
-using System;
+﻿using SocketMeister;
 using System.Collections.Generic;
 using System.Net.Sockets;
+using System;
 
-namespace SocketMeister
+internal sealed class SocketAsyncEventArgsPool : IDisposable
 {
-    /// <summary>
-    /// Based on example from http://msdn2.microsoft.com/en-us/library/system.net.sockets.socketasynceventargs.socketasynceventargs.aspx
-    /// Represents a collection of reusable SocketAsyncEventArgs objects.  
-    /// </summary>
-    internal sealed class SocketAsyncEventArgsPool
+    private readonly Stack<SocketAsyncEventArgs> _pool;
+    private readonly byte[] _sharedBuffer; // Reference to the shared buffer
+    private bool _disposed = false;
+
+    public event EventHandler<SocketAsyncEventArgs> Completed;
+
+    internal SocketAsyncEventArgsPool()
     {
-        /// <summary>
-        /// Pool of SocketAsyncEventArgs.
-        /// </summary>
-        private readonly Stack<SocketAsyncEventArgs> _pool;
+        _pool = new Stack<SocketAsyncEventArgs>(Constants.SocketAsyncEventArgsPoolSize);
+        _sharedBuffer = new byte[Constants.SocketAsyncEventArgsPoolSize * Constants.SEND_RECEIVE_BUFFER_SIZE];
 
-        /// <summary>
-        /// The event used to complete an asynchronous operation.
-        /// </summary>
-        public event EventHandler<SocketAsyncEventArgs> Completed;
-
-        /// <summary>
-        /// Initializes the object pool to the specified size.
-        /// </summary>
-        /// <param name="Capacity">Maximum number of SocketAsyncEventArgs objects the pool can hold.</param>
-        internal SocketAsyncEventArgsPool(int Capacity)
+        for (int i = 0; i < Constants.SocketAsyncEventArgsPoolSize; i++)
         {
-            _pool = new Stack<SocketAsyncEventArgs>(Capacity);
-            for (int i = 0; i < Capacity; i++)
+            var eventArgs = new SocketAsyncEventArgs();
+            eventArgs.SetBuffer(_sharedBuffer, i * Constants.SEND_RECEIVE_BUFFER_SIZE, Constants.SEND_RECEIVE_BUFFER_SIZE);
+            eventArgs.Completed += EventArgs_Completed;
+            _pool.Push(eventArgs);
+        }
+    }
+
+    private void EventArgs_Completed(object sender, SocketAsyncEventArgs e)
+    {
+        Completed?.Invoke(sender, e);
+    }
+
+    internal SocketAsyncEventArgs Pop()
+    {
+        lock (_pool)
+        {
+            return _pool.Count > 0 ? _pool.Pop() : null;
+        }
+    }
+
+    internal void Push(SocketAsyncEventArgs item)
+    {
+        if (item == null) return;
+
+        lock (_pool)
+        {
+            _pool.Push(item);
+        }
+    }
+
+    public void Dispose()
+    {
+        if (_disposed) return;
+
+        lock (_pool)
+        {
+            while (_pool.Count > 0)
             {
-                SocketAsyncEventArgs EventArgs = new SocketAsyncEventArgs();
-                EventArgs.SetBuffer(new byte[Constants.SEND_RECEIVE_BUFFER_SIZE], 0, Constants.SEND_RECEIVE_BUFFER_SIZE);
-                EventArgs.Completed += EventArgs_Completed; ;
-                _pool.Push(EventArgs);
+                var eventArgs = _pool.Pop();
+                eventArgs.Completed -= EventArgs_Completed; // Remove handler
+                eventArgs.Dispose(); // Dispose of unmanaged resources
             }
         }
 
-        private void EventArgs_Completed(object sender, SocketAsyncEventArgs e)
-        {
-            Completed?.Invoke(sender, e);
-        }
-
-
-
-        /// <summary>
-        /// Removes a SocketAsyncEventArgs instance from the pool.
-        /// </summary>
-        /// <returns>SocketAsyncEventArgs removed from the pool.</returns>
-        internal SocketAsyncEventArgs Pop()
-        {
-            lock (_pool)
-            {
-                //  ENSURE THERE IS ALWAYS AT LEAST ONE ITEM
-                if (_pool.Count > 0) return _pool.Pop();
-                return null;
-            }
-        }
-
-
-        /// <summary>
-        /// Add a SocketAsyncEventArg instance to the pool. 
-        /// </summary>
-        /// <param name="item">SocketAsyncEventArgs instance to add to the pool.</param>
-        internal void Push(SocketAsyncEventArgs item)
-        {
-            if (item == null) return;
-            lock (_pool)
-            {
-                if (_pool.Contains(item) == false) _pool.Push(item);
-            }
-        }
-
+        _disposed = true;
     }
 }
-
-#pragma warning restore CA2000 // Dispose objects before losing scope
-#pragma warning restore IDE0090 // Use 'new(...)'
-#pragma warning restore IDE0079 // Remove unnecessary suppression
-
