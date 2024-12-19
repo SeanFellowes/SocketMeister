@@ -1,8 +1,5 @@
-﻿#pragma warning disable IDE0079 // Remove unnecessary suppression
-#pragma warning disable IDE0090 // Use 'new(...)'
-
+﻿using System;
 #if !NET35
-using System;
 using System.Threading;
 #endif
 
@@ -17,16 +14,28 @@ namespace SocketMeister.Messages
     {
         private bool _isAborted;
         private readonly object _lock = new object();
-        private readonly MessageEngineMessageType _messageType;
-        private MessageEngineDeliveryStatus _messageStatus = MessageEngineDeliveryStatus.Unsent;
+        private readonly MessageType _messageType;
+        private MessageStatus _messageStatus = MessageStatus.Unsent;
+
+        //  After sending this message, wait for a response.
+        public bool WaitForResponse { get; }
+
+        public DateTime CreatedDateTime { get;}
+
+        public IMessage Response { get; set; }
+
+
 #if !NET35
-        internal ManualResetEventSlim ResponseReceivedEvent { get; set; }
+        //  This is only used by some message types, so is null by default
+        public ManualResetEventSlim ResponseReceivedEvent { get; set; }
 #endif
 
 
-        internal MessageBase(MessageEngineMessageType MessageType)
+        internal MessageBase(MessageType MessageType, bool waitForResponse)
         {
             _messageType = MessageType;
+            CreatedDateTime = DateTime.UtcNow;
+            WaitForResponse = waitForResponse;
         }
 
 
@@ -46,7 +55,6 @@ namespace SocketMeister.Messages
         /// <param name="disposing"></param>
         protected virtual void Dispose(bool disposing)
         {
-            //  Note. THis is incomplete. Ask ChatGPT to help look for missing things
             if (disposing)
             {
                 ResponseReceivedEvent?.Dispose();
@@ -67,14 +75,17 @@ namespace SocketMeister.Messages
         /// </summary>
         public void Abort()
         {
-
+            lock (_lock) 
+            { 
+                _isAborted = true; 
+            } 
         }
 
 
-        public MessageEngineMessageType MessageType => _messageType;
+        public MessageType MessageType => _messageType;
 
 
-        public MessageEngineDeliveryStatus Status
+        public MessageStatus Status
         {
             get { lock (_lock) { return _messageStatus; } }
             set 
@@ -83,7 +94,7 @@ namespace SocketMeister.Messages
                 { 
                     _messageStatus = value;
 #if !NET35
-                    if (value ==  MessageEngineDeliveryStatus.ResponseReceived) ResponseReceivedEvent?.Set();
+                    if (value == MessageStatus.Completed) ResponseReceivedEvent?.Set();
 #endif
 
                 }
@@ -92,6 +103,3 @@ namespace SocketMeister.Messages
 
     }
 }
-
-#pragma warning restore IDE0090 // Use 'new(...)'
-#pragma warning restore IDE0079 // Remove unnecessary suppression

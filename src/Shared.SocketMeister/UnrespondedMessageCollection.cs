@@ -6,7 +6,7 @@ namespace SocketMeister
 {
     internal class UnrespondedMessageCollection
     {
-        private readonly Dictionary<long, MessageV1> _messages = new Dictionary<long, MessageV1>();
+        private readonly Dictionary<long, IMessage> _messages = new Dictionary<long, IMessage>();
 #if !NET35
         private readonly ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
 #else
@@ -16,7 +16,7 @@ namespace SocketMeister
         /// <summary>
         /// Safely retrieves a message if it exists.
         /// </summary>
-        internal bool TryGetMessage(long RequestID, out MessageV1 message)
+        internal bool TryGetMessage(long RequestID, out IMessage message)
         {
 #if !NET35
             _lock.EnterReadLock();
@@ -138,13 +138,13 @@ namespace SocketMeister
         /// </summary>
         internal void ResetToUnsent()
         {
-            List<MessageV1> messagesCopy;
+            List<IMessage> messagesCopy;
 
 #if !NET35
             _lock.EnterReadLock();
             try
             {
-                messagesCopy = new List<MessageV1>(_messages.Values);
+                messagesCopy = new List<IMessage>(_messages.Values);
             }
             finally
             {
@@ -153,7 +153,7 @@ namespace SocketMeister
 #else
             lock (_lock)
             {
-                messagesCopy = new List<MessageV1>(_messages.Values);
+                messagesCopy = new List<IMessage>(_messages.Values);
             }
 #endif
 
@@ -161,7 +161,7 @@ namespace SocketMeister
             foreach (var message in messagesCopy)
             {
                 if (message.WaitForResponse)
-                    message.Status = MessageEngineDeliveryStatus.Unsent;
+                    message.Status = MessageStatus.Unsent;
             }
         }
 

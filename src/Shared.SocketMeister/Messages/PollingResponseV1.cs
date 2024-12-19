@@ -11,7 +11,7 @@ namespace SocketMeister.Messages
     /// </summary>
     internal class PollingResponseV1 : MessageBase, IMessage
     {
-        public PollingResponseV1() : base(MessageEngineMessageType.PollingResponseV1) { }
+        public PollingResponseV1() : base(MessageType.PollingResponseV1, waitForResponse: false) { }
 
         ///// <summary>
         ///// Fastest was to build this is to create it directly from the SocketEnvelope buffer.

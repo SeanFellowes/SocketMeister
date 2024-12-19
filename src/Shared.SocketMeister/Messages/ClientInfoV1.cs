@@ -3,11 +3,11 @@
 namespace SocketMeister.Messages
 {
     /// <summary>
-    /// Internal Message: Socket client regulary sends a poll request to the server to check that the server is alive.
+    /// Internal Message: Socket client sends client info to the server after connection.
     /// </summary>
-    internal class PollingRequestV1 : MessageBase, IMessage
+    internal class ClientInfoV1 : MessageBase, IMessage
     {
-        public PollingRequestV1() : base(MessageType.PollingRequestV1, waitForResponse: false) { }
+        public ClientInfoV1() : base(MessageType.ClientInfoV1, waitForResponse: false) { }
 
         ///// <summary>
         ///// Fastest was to build this is to create it directly from the SocketEnvelope buffer.

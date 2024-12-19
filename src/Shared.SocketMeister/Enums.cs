@@ -32,9 +32,9 @@ namespace SocketMeister
 
 
     /// <summary>
-    /// The progress of a message from creation to receiving a response.
+    /// The status of the message.
     /// </summary>
-    internal enum MessageEngineDeliveryStatus
+    internal enum MessageStatus
     {
         /// <summary>
         /// Message has not been sent or is flagged to resent (because socket connection failed)
@@ -52,16 +52,21 @@ namespace SocketMeister
         Aborted = 100,
 
         /// <summary>
+        /// Message has times out
+        /// </summary>
+        Timeout = 101,
+
+        /// <summary>
         /// Send operation finished (Could be unsuccessful or successful)
         /// </summary>
-        ResponseReceived = short.MaxValue
+        Completed = short.MaxValue
     }
 
 
     /// <summary>
     /// Internal message types
     /// </summary>
-    internal enum MessageEngineMessageType
+    internal enum MessageType
     {
         /// <summary>
         /// Unknown message type, usually associated with an error
@@ -116,7 +121,17 @@ namespace SocketMeister
         /// <summary>
         /// Server sends a poll response when a poll request is received from a client
         /// </summary>
-        PollingResponseV1 = 310
+        PollingResponseV1 = 310,
+
+        /// <summary>
+        /// Client sends client information to the server after connecting
+        /// </summary>
+        ClientInfoV1 = 400,
+
+        /// <summary>
+        /// Server sends acknowledgement to client after it sends client information after connecting to the server
+        /// </summary>
+        ClientInfoV1Ack = 410
     }
 
 

@@ -42,16 +42,13 @@ namespace SocketMeister.Messages
         private readonly DateTime _timeout;
         private readonly int _timeoutMilliseconds;
 
-        //  INTERNAL (NOT SENT IN MESSAGE DATA)
-        private MessageResponseV1 _response = null;
-
         /// <summary>
         /// Message constructor
         /// </summary>
         /// <param name="Parameters">Array of parameters to send with the message. There must be at least 1 parameter.</param>
         /// <param name="TimeoutMilliseconds">The maximum number of milliseconds to wait for a response before timing out.</param>
         /// <param name="IsLongPolling">The maximum number of milliseconds to wait for a response before timing out.</param>
-        public MessageV1(object[] Parameters, int TimeoutMilliseconds, bool IsLongPolling = false) : base(MessageEngineMessageType.MessageV1)
+        public MessageV1(object[] Parameters, int TimeoutMilliseconds, bool IsLongPolling = false) : base(MessageType.MessageV1, waitForResponse: true)
         {
             _parameters = Parameters;
             _timeoutMilliseconds = TimeoutMilliseconds;
@@ -82,7 +79,7 @@ namespace SocketMeister.Messages
         }
 
 
-        internal MessageV1(BinaryReader bR) : base(MessageEngineMessageType.MessageV1)
+        internal MessageV1(BinaryReader bR) : base(MessageType.MessageV1, waitForResponse: true)
         {
             _messageId = bR.ReadInt64();
             _timeoutMilliseconds = bR.ReadInt32();
@@ -135,10 +132,15 @@ namespace SocketMeister.Messages
         /// </summary>
         public long MessageId => _messageId;
 
-        public MessageResponseV1 Response
+
+        public new MessageResponseV1 Response
         {
-            get { lock (Lock) { return _response; } }
-            set { lock (Lock) { _response = value; } }
+            get 
+            { 
+                if (base.Response == null) return null;
+                return (MessageResponseV1)base.Response; 
+            }
+            set { base.Response = value; }
         }
 
 
@@ -154,7 +156,7 @@ namespace SocketMeister.Messages
         {
             get
             {
-                if (Status == MessageEngineDeliveryStatus.Unsent) return true;
+                if (Status == MessageStatus.Unsent) return true;
                 else return WaitForResponse;
             }
         }
@@ -169,7 +171,7 @@ namespace SocketMeister.Messages
                 if (IsAborted) return false;
                 if (IsTimeout) return false;
                 else if (Response != null) return false;
-                else if (Status == MessageEngineDeliveryStatus.InProgress) return true;
+                else if (Status == MessageStatus.InProgress) return true;
                 else return false;
             }
         }

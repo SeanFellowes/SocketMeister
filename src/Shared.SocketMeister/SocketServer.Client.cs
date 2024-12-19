@@ -226,7 +226,7 @@ namespace SocketMeister
                         return null;
 
                     SendIMessage(message, true); // Attempt to send the message
-                    message.Status = MessageEngineDeliveryStatus.InProgress;
+                    message.Status = MessageStatus.InProgress;
 
                     // Wait for response or timeout
                     int remainingTimeout = TimeoutMilliseconds - (int)(DateTime.UtcNow - startTime).TotalMilliseconds;

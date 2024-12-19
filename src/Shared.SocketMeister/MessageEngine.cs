@@ -69,7 +69,7 @@ namespace SocketMeister.Messages
         private bool _messageIsCompressed = false;
         private int _messageLength = 0;
         private int _messageLengthUncompressed = 0;
-        private MessageEngineMessageType _messageType = MessageEngineMessageType.Unknown;
+        private MessageType _messageType = MessageType.Unknown;
         private readonly byte[] _headerBuffer = new byte[HEADERLENGTH];
         private int _headerBufferPtr = 0;
         private bool _headerReceived = false;
@@ -271,7 +271,7 @@ namespace SocketMeister.Messages
         /// <summary>
         /// The type of message. 
         /// </summary>
-        internal MessageEngineMessageType MessageType => _messageType;
+        internal MessageType MessageType => _messageType;
 
         internal int MessageLength => _messageLength;
 
@@ -363,12 +363,12 @@ namespace SocketMeister.Messages
 
         private void ParseHeader()
         {
-            _messageType = (MessageEngineMessageType)BitConverter.ToInt16(_headerBuffer, 0);
+            _messageType = (MessageType)BitConverter.ToInt16(_headerBuffer, 0);
             _messageIsCompressed = BitConverter.ToBoolean(_headerBuffer, 2);
             _messageLength = BitConverter.ToInt32(_headerBuffer, 3);
             _messageLengthUncompressed = BitConverter.ToInt32(_headerBuffer, 7);
 
-            if (!Enum.IsDefined(typeof(MessageEngineMessageType), _messageType))
+            if (!Enum.IsDefined(typeof(MessageType), _messageType))
                 throw new Exception("Invalid Message Type");
 
             if (_messageLength > _receiveBuffer.Length)

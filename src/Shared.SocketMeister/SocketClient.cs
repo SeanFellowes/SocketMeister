@@ -465,7 +465,6 @@ namespace SocketMeister
                         NotifyExceptionRaised(innerException);
                     }
                 }
-                _cancellationTokenSource.Dispose();
 #endif
 
                 //  Deal with unresponded messages
@@ -691,6 +690,12 @@ namespace SocketMeister
                     if (!CurrentEndPoint.Socket.ReceiveAsync(_asyncEventArgsReceive)) ProcessReceive(null, _asyncEventArgsReceive);
                     //  CONNECTED
                     ConnectionStatus = ConnectionStatuses.Connected;
+#if !NET35
+                    //  SEND CLIENT INFO AND WAIT FOR A RESPONSE
+                    ClientInfoV1 clientInfo = new ClientInfoV1();
+                    SendFastMessage(clientInfo);
+#endif
+
                     //  IF SUBSCRIPTIONS EXIST, SEND THEM
                     if (SubscriptionCount > 0) TriggerSendSubscriptions = true;
                 }
@@ -737,10 +742,11 @@ namespace SocketMeister
             if (StopClientPermanently == true) return;  //  Don't allow this to run more than once
             StopClientPermanently = true;
 
-#if !NET35
-            // Signal cancellation
-            _cancellationTokenSource.Cancel();
-#endif
+            //  NOTE. This is taken care of in DisconnectGracefully()
+//#if !NET35
+//            // Signal cancellation
+//            _cancellationTokenSource.Cancel();
+//#endif
 
             _subscriptions.TokenAdded -= _subscriptions_AddChangedDeleted;
             _subscriptions.TokenChanged -= _subscriptions_AddChangedDeleted;
@@ -775,12 +781,12 @@ namespace SocketMeister
                     return;
                 }
 
-                if (messageResponse.Status == MessageEngineDeliveryStatus.Unsent && CanSendReceive() == true)
+                if (messageResponse.Status == MessageStatus.Unsent && CanSendReceive() == true)
                 {
                     sendEventArgs = _sendEventArgsPool.Pop();
                     if (sendEventArgs != null)
                     {
-                        messageResponse.Status = MessageEngineDeliveryStatus.InProgress;
+                        messageResponse.Status = MessageStatus.InProgress;
                         sendEventArgs.UserToken = messageResponse;
                         sendEventArgs.SetBuffer(sendBytes, 0, sendBytes.Length);
                         sendEventArgs.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
@@ -816,7 +822,7 @@ namespace SocketMeister
 
             sendEventArgs.UserToken = Message;
             sendEventArgs.SetBuffer(sendBytes, 0, sendBytes.Length);
-            Message.Status = MessageEngineDeliveryStatus.InProgress;
+            Message.Status = MessageStatus.InProgress;
             sendEventArgs.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
             try
             {
@@ -873,12 +879,12 @@ namespace SocketMeister
             {
                 try
                 {
-                    if (message.Status == MessageEngineDeliveryStatus.Unsent && CanSendReceive())
+                    if (message.Status == MessageStatus.Unsent && CanSendReceive())
                     {
                         var sendEventArgs = _sendEventArgsPool.Pop();
                         if (sendEventArgs != null)
                         {
-                            message.Status = MessageEngineDeliveryStatus.InProgress;
+                            message.Status = MessageStatus.InProgress;
                             sendEventArgs.UserToken = message;
                             sendEventArgs.SetBuffer(sendBytes, 0, sendBytes.Length);
                             sendEventArgs.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
@@ -909,12 +915,12 @@ namespace SocketMeister
                 {
                     try
                     {
-                        if (message.Status == MessageEngineDeliveryStatus.Unsent && CanSendReceive())
+                        if (message.Status == MessageStatus.Unsent && CanSendReceive())
                         {
                             var sendEventArgs = _sendEventArgsPool.Pop();
                             if (sendEventArgs != null)
                             {
-                                message.Status = MessageEngineDeliveryStatus.InProgress;
+                                message.Status = MessageStatus.InProgress;
                                 sendEventArgs.UserToken = message;
                                 sendEventArgs.SetBuffer(sendBytes, 0, sendBytes.Length);
                                 sendEventArgs.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
@@ -966,20 +972,20 @@ namespace SocketMeister
             {
                 if (result == SocketError.ConnectionReset)
                 {
-                    message.Status = MessageEngineDeliveryStatus.Unsent;
+                    message.Status = MessageStatus.Unsent;
                     NotifyExceptionRaised(new Exception("Disconnecting: Connection was reset."));
                     DisconnectGracefully(SocketHasErrored: true);
                 }
                 else if (result != SocketError.Success)
                 {
-                    message.Status = MessageEngineDeliveryStatus.Unsent;
+                    message.Status = MessageStatus.Unsent;
                     NotifyExceptionRaised(new Exception("Disconnecting: Send did not generate a success. Socket operation returned error code " + (int)e.SocketError));
                     DisconnectGracefully(SocketHasErrored: true);
                 }
             }
             catch (Exception ex)
             {
-                message.Status = MessageEngineDeliveryStatus.Unsent;
+                message.Status = MessageStatus.Unsent;
                 NotifyExceptionRaised(ex);
             }
         }
@@ -1033,35 +1039,35 @@ namespace SocketMeister
                     {
                         LastMessageFromServer = DateTime.Now;
 
-                        if (_receiveEngine.MessageType == MessageEngineMessageType.MessageResponseV1)
+                        if (_receiveEngine.MessageType == MessageType.MessageResponseV1)
                         {
                             //  SyncEndPointSubscriptionsWithServer() IS WAITING. COMPLETE THE SYNCRONOUS OPERATION SO IT CAN CONTINUE
                             MessageResponseV1 response = _receiveEngine.GetMessageResponseV1();
 
                             //  CHECK TO SEE IS THE MESSAGE IS IN THE LIST OF OPEN SendReceive ITEMS.
-                            _unrespondedMessages.TryGetMessage(response.MessageId, out MessageV1 foundUnrespondedMessage);
+                            _unrespondedMessages.TryGetMessage(response.MessageId, out IMessage foundUnrespondedMessage);
                             if (foundUnrespondedMessage != null)
                             {
                                 if (response.ProcessingResult == MessageEngineDeliveryResult.Stopping)
                                 {
                                     //  SOCKET SERVER IS SHUTTING DOWN. WE WILL RETRY
-                                    foundUnrespondedMessage.Status = MessageEngineDeliveryStatus.Unsent;
+                                    foundUnrespondedMessage.Status = MessageStatus.Unsent;
                                 }
                                 else
                                 {
                                     foundUnrespondedMessage.Response = response;
-                                    foundUnrespondedMessage.Status = MessageEngineDeliveryStatus.ResponseReceived;
+                                    foundUnrespondedMessage.Status = MessageStatus.Completed;
                                 }
                             }
                         }
 
-                        else if (_receiveEngine.MessageType == MessageEngineMessageType.MessageV1)
+                        else if (_receiveEngine.MessageType == MessageType.MessageV1)
                         {
                             MessageV1 message = _receiveEngine.GetMessageV1();
                             BgProcessMessageV1(message);
                         }
 
-                        else if (_receiveEngine.MessageType == MessageEngineMessageType.ServerStoppingNotificationV1)
+                        else if (_receiveEngine.MessageType == MessageType.ServerStoppingNotificationV1)
                         {
                             //  DON'T RECONNECT TO THIS SERVER FOR SOME NUMBER OF SECONDS
                             if (_endPoints.Count > 1)
@@ -1076,21 +1082,28 @@ namespace SocketMeister
                             NotifyServerStopping();
                             DisconnectGracefully(SocketHasErrored: false);
                         }
-                        else if (_receiveEngine.MessageType == MessageEngineMessageType.PollingResponseV1)
+                        else if (_receiveEngine.MessageType == MessageType.PollingResponseV1)
                         {
                             LastPollResponse = DateTime.Now;
                         }
 
-                        else if (_receiveEngine.MessageType == MessageEngineMessageType.SubscriptionChangesResponseV1)
+                        else if (_receiveEngine.MessageType == MessageType.SubscriptionChangesResponseV1)
                         {
                             TokenChangesResponseV1 response = _receiveEngine.GetSubscriptionChangesResponseV1();
                             _subscriptions.ImportTokenChangesResponseV1(response);
                             TriggerSendSubscriptions = true;
                         }
 
-                        else if (_receiveEngine.MessageType == MessageEngineMessageType.BroadcastV1)
+                        else if (_receiveEngine.MessageType == MessageType.BroadcastV1)
                         {
                             NotifyBroadcastReceived(_receiveEngine.GetBroadcastV1());
+                        }
+
+                        else
+                        {
+                            //  An unknown message was received. The server may be a more recent version of SocketMeister.
+                            //  Raise an exception and ignore the message. The server will have to factor this into consideration.
+                            NotifyExceptionRaised(new Exception("Unknown message type received (" + _receiveEngine.MessageType.ToString() + "). The server may be running a newer version of SocketMeister"));
                         }
                     }
                 }

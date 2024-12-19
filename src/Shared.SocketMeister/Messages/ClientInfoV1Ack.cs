@@ -3,17 +3,17 @@
 namespace SocketMeister.Messages
 {
     /// <summary>
-    /// Internal Message: Socket client regulary sends a poll request to the server to check that the server is alive.
+    /// Internal Message: Socket server acknowledgement that client info was received from a newly connected client.
     /// </summary>
-    internal class PollingRequestV1 : MessageBase, IMessage
+    internal class ClientInfoV1Ack : MessageBase, IMessage
     {
-        public PollingRequestV1() : base(MessageType.PollingRequestV1, waitForResponse: false) { }
+        public ClientInfoV1Ack() : base(MessageType.ClientInfoV1Ack, waitForResponse: false) { }
 
         ///// <summary>
         ///// Fastest was to build this is to create it directly from the SocketEnvelope buffer.
         ///// </summary>
         ///// <param name="Reader">Binary Reader</param>
-        //public PollRequest(BinaryReader Reader) : base(MessageTypes.PollRequest)
+        //public PollResponse(BinaryReader Reader) : base(MessageTypes.PollResponse)
         //{
         //}
 
@@ -22,3 +22,4 @@ namespace SocketMeister.Messages
         }
     }
 }
+

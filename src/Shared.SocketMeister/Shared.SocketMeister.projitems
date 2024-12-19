@@ -14,6 +14,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Enums.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\BroadcastV1.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Messages\ClientInfoV1Ack.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Messages\ClientInfoV1.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\MessageDeliveredAckV1.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\TokenChangesRequestV1.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\TokenChangesResponseV1.cs" />

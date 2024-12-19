@@ -2,6 +2,7 @@
 using SocketMeister.Messages;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Globalization;
 using System.Net;
 using System.Net.Sockets;
@@ -444,7 +445,7 @@ namespace SocketMeister
                             _totalBytesReceived += receiveEnvelope.MessageLength;
                         }
 
-                        if (receiveEnvelope.MessageType == MessageEngineMessageType.MessageV1)
+                        if (receiveEnvelope.MessageType == MessageType.MessageV1)
                         {
                             lock (_lockTotals)
                             {
@@ -466,7 +467,7 @@ namespace SocketMeister
                                 Task.Run(() => BgProcessMessage(message));
                             }
                         }
-                        else if (receiveEnvelope.MessageType == MessageEngineMessageType.MessageResponseV1)
+                        else if (receiveEnvelope.MessageType == MessageType.MessageResponseV1)
                         {
                             if (Status == SocketServerStatus.Started)
                             {
@@ -474,7 +475,7 @@ namespace SocketMeister
                                 remoteClient.SetMessageResponseInUnrespondedMessages(receiveEnvelope.GetMessageResponseV1());
                             }
                         }
-                        else if (receiveEnvelope.MessageType == MessageEngineMessageType.ClientDisconnectingNotificationV1)
+                        else if (receiveEnvelope.MessageType == MessageType.ClientDisconnectingNotificationV1)
                         {
                             try
                             {
@@ -485,7 +486,7 @@ namespace SocketMeister
                                 NotifyTraceEventRaised(ex, 5008);
                             }
                         }
-                        else if (receiveEnvelope.MessageType == MessageEngineMessageType.PollingRequestV1)
+                        else if (receiveEnvelope.MessageType == MessageType.PollingRequestV1)
                         {
                             if (Status == SocketServerStatus.Started)
                             {
@@ -493,13 +494,30 @@ namespace SocketMeister
                             }
                         }
 
-                        else if (receiveEnvelope.MessageType == MessageEngineMessageType.SubscriptionChangesNotificationV1)
+                        else if (receiveEnvelope.MessageType == MessageType.SubscriptionChangesNotificationV1)
                         {
                             if (Status == SocketServerStatus.Started)
                             {
                                 TokenChangesRequestV1 request = receiveEnvelope.GetSubscriptionChangesNotificationV1();
                                 Task.Run(() => BgProcessSubscriptionChanges(remoteClient, request));
                             }
+                        }
+
+                        else
+                        {
+                            string msg = "ReadCallback() ";
+                            if (!Enum.IsDefined(typeof(MessageType), receiveEnvelope.MessageType))
+                            {
+                                msg += "encountered an undefined MessageType, " + (int)receiveEnvelope.MessageType;
+                            }
+                            else
+                            {
+                                msg += "has no message handling code for the MessageType, " + receiveEnvelope.MessageType.ToString();
+                            }
+
+                            //  Unknown message received. The client may be a newer version of SocketMeister. Raise a message and ignore
+                            NotifyTraceEventRaised(new Exception("ReadCallback() encountered an Unknown message type received (" + receiveEnvelope.MessageType.ToString() + "). The server may be running a newer version of SocketMeister"), 4665);
+
                         }
 
                     }
@@ -525,7 +543,7 @@ namespace SocketMeister
 
         private async Task ProcessMessageAsync(Client remoteClient, MessageEngine receiveEnvelope)
         {
-            if (receiveEnvelope.MessageType == MessageEngineMessageType.MessageV1)
+            if (receiveEnvelope.MessageType == MessageType.MessageV1)
             {
                 var message = receiveEnvelope.GetMessageV1();
                 await Task.Run(() => BgProcessMessage(message));

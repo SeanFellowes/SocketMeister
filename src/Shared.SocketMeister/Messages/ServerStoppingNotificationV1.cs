@@ -7,7 +7,7 @@ namespace SocketMeister.Messages
         //  INTERNAL (NOT SENT IN MESSAGE DATA)
         private readonly int _maxWaitMilliseconds;
 
-        public ServerStoppingNotificationV1(int MaxWaitMilliseconds) : base(MessageEngineMessageType.ServerStoppingNotificationV1)
+        public ServerStoppingNotificationV1(int MaxWaitMilliseconds) : base(MessageType.ServerStoppingNotificationV1, waitForResponse: false)
         {
             _maxWaitMilliseconds = MaxWaitMilliseconds;
         }
@@ -16,7 +16,7 @@ namespace SocketMeister.Messages
         /// Fastest was to build this is to create it directly from the SocketEnvelope buffer.
         /// </summary>
         /// <param name="Reader">Binary Reader</param>
-        public ServerStoppingNotificationV1(BinaryReader Reader) : base(MessageEngineMessageType.ServerStoppingNotificationV1)
+        public ServerStoppingNotificationV1(BinaryReader Reader) : base(MessageType.ServerStoppingNotificationV1, waitForResponse: false)
         {
             _maxWaitMilliseconds = Reader.ReadInt32();
         }
