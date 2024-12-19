@@ -50,6 +50,10 @@ namespace SocketMeister
             public void Disconnect(Client client)
             {
                 if (client == null) return;
+
+                //  Abort any outbound messages where a response has not been received
+               
+
                 _ = _clientDictionary.TryRemove(client.ClientId, out Client deletedClient);
 
                 try { client.ClientSocket.Shutdown(SocketShutdown.Both); }

@@ -282,7 +282,14 @@ namespace SocketMeister
             {
                 object[] parms = new object[1];
                 parms[0] = Bytes;
-                i.SendMessage(parms);
+                try
+                {
+                    i.SendMessage(parms);
+                }
+                catch (Exception e)
+                {
+                    LogEventRaised?.Invoke(this, new LogEventArgs(SeverityType.Warning, "Server #" + ServerId.ToString(), "Client", "Error: " + e.ToString()));
+                }
             }
             SetLabelText(lblTotalMessagesSent, Server.TotalMessagesSent.ToString("N0"));
             SetLabelText(lblBytesSent, Server.TotalBytesSent.ToString("N0"));

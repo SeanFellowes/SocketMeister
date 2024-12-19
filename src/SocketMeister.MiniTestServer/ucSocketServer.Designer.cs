@@ -50,10 +50,10 @@ namespace SocketMeister
             this.rbAutoBCLarge = new System.Windows.Forms.RadioButton();
             this.rbAutoBCOff = new System.Windows.Forms.RadioButton();
             this.pnlMain = new System.Windows.Forms.GroupBox();
+            this.btnBroadcastToSubscribers = new System.Windows.Forms.Button();
             this.lbPort = new System.Windows.Forms.Label();
             this.btnSendMessage = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
-            this.btnBroadcastToSubscribers = new System.Windows.Forms.Button();
             this.pnlMain.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -299,6 +299,17 @@ namespace SocketMeister
             this.pnlMain.TabStop = false;
             this.pnlMain.Text = "Socket Server 1";
             // 
+            // btnBroadcastToSubscribers
+            // 
+            this.btnBroadcastToSubscribers.Enabled = false;
+            this.btnBroadcastToSubscribers.Location = new System.Drawing.Point(177, 84);
+            this.btnBroadcastToSubscribers.Name = "btnBroadcastToSubscribers";
+            this.btnBroadcastToSubscribers.Size = new System.Drawing.Size(193, 26);
+            this.btnBroadcastToSubscribers.TabIndex = 88;
+            this.btnBroadcastToSubscribers.Text = "Broadcast to Subscribers";
+            this.btnBroadcastToSubscribers.UseVisualStyleBackColor = true;
+            this.btnBroadcastToSubscribers.Click += new System.EventHandler(this.BtnBroadcastToSubscribers_Click);
+            // 
             // lbPort
             // 
             this.lbPort.AutoSize = true;
@@ -313,11 +324,11 @@ namespace SocketMeister
             // btnSendMessage
             // 
             this.btnSendMessage.Enabled = false;
-            this.btnSendMessage.Location = new System.Drawing.Point(231, 55);
+            this.btnSendMessage.Location = new System.Drawing.Point(177, 55);
             this.btnSendMessage.Name = "btnSendMessage";
-            this.btnSendMessage.Size = new System.Drawing.Size(139, 26);
+            this.btnSendMessage.Size = new System.Drawing.Size(193, 26);
             this.btnSendMessage.TabIndex = 87;
-            this.btnSendMessage.Text = "Send Message";
+            this.btnSendMessage.Text = "Send Message (Wait for Response)";
             this.btnSendMessage.UseVisualStyleBackColor = true;
             this.btnSendMessage.Click += new System.EventHandler(this.BtnSendMessage_Click);
             // 
@@ -331,23 +342,12 @@ namespace SocketMeister
             this.label5.Text = "Automatic Message Generator:";
             this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // btnBroadcastToSubscribers
-            // 
-            this.btnBroadcastToSubscribers.Enabled = false;
-            this.btnBroadcastToSubscribers.Location = new System.Drawing.Point(231, 84);
-            this.btnBroadcastToSubscribers.Name = "btnBroadcastToSubscribers";
-            this.btnBroadcastToSubscribers.Size = new System.Drawing.Size(139, 26);
-            this.btnBroadcastToSubscribers.TabIndex = 88;
-            this.btnBroadcastToSubscribers.Text = "Broadcast to Subscribers";
-            this.btnBroadcastToSubscribers.UseVisualStyleBackColor = true;
-            this.btnBroadcastToSubscribers.Click += new System.EventHandler(this.BtnBroadcastToSubscribers_Click);
-            // 
-            // ucSocketServer
+            // UcSocketServer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.pnlMain);
-            this.Name = "ucSocketServer";
+            this.Name = "UcSocketServer";
             this.Size = new System.Drawing.Size(384, 198);
             this.pnlMain.ResumeLayout(false);
             this.pnlMain.PerformLayout();

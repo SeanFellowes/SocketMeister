@@ -1,23 +1,14 @@
-﻿#pragma warning disable IDE0079 // Remove unnecessary suppression
-#pragma warning disable IDE0090 // Use 'new(...)'
-#pragma warning disable IDE0017 // Simplify object initialization
-#pragma warning disable IDE0052 // Remove unread private members
-#pragma warning disable IDE0063 // Use simple 'using' statement
-#pragma warning disable IDE0028 // Simplify collection initialization
-#pragma warning disable CA1303 // Do not pass literals as localized parameters
-#pragma warning disable CA1031 // Do not catch general exception types
-#pragma warning disable CA1805 // Do not initialize unnecessarily
-
-
-using SocketMeister.Messages;
+﻿using SocketMeister.Messages;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Net.Sockets;
-using System.Threading;
-#if ! NET35 // Compiler directive for code which will be compiled to .NET 3.5. This provides a less efficient but workable solution to the desired functional requirements.
+#if !NET35
+using System.Collections.Concurrent;
 using System.Threading.Tasks;
 #endif
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Net.Sockets;
+using System.Threading;
 
 namespace SocketMeister
 {
@@ -53,7 +44,10 @@ namespace SocketMeister
 #else
         // ThreadLocal for .NET 4.0+
         private static ThreadLocal<Random> _threadLocalRandom = new ThreadLocal<Random>(() => new Random(Guid.NewGuid().GetHashCode()));
+        private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+        private readonly ConcurrentDictionary<Task, bool> _backgroundTasks = new ConcurrentDictionary<Task, bool>();
 #endif
+
 
 
         private SocketAsyncEventArgs _asyncEventArgsConnect;
@@ -241,6 +235,7 @@ namespace SocketMeister
 
                 _endPoints.Clear();
             }
+
         }
 
         /// <summary>
@@ -283,9 +278,7 @@ namespace SocketMeister
             get
             {
                 if (_connectionStatusLock == null)
-                {
                     return ConnectionStatuses.Disconnected;
-                }
 
                 bool lockAcquired = false;
                 try
@@ -413,14 +406,27 @@ namespace SocketMeister
             return _subscriptions.ToListOfStrings();
         }
 
-
-
-        private void PerformDisconnect(bool SocketHasErrored)
+        private void DisconnectGracefully(bool SocketHasErrored)
         {
             Stopwatch timer = Stopwatch.StartNew();
             try
             {
                 if (ConnectionStatus == ConnectionStatuses.Disconnecting || ConnectionStatus == ConnectionStatuses.Disconnected) return;
+
+                if (SocketHasErrored == false)
+                {
+                    //  Attempt to send a disconnecting message  to the server
+                    try
+                    {
+                        byte[] sendBytes = MessageEngine.GenerateSendBytes(new ClientDisconnectingNotificationV1(), false);
+                        CurrentEndPoint.Socket.Send(sendBytes);
+                        SendFastMessage(new ClientDisconnectingNotificationV1());
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("Error sending disconnect message to server: " + ex.ToString());
+                    }
+                }
 
                 //  Initiate Shutdown
                 ConnectionStatus = ConnectionStatuses.Disconnecting;
@@ -438,19 +444,40 @@ namespace SocketMeister
                 catch { }
 
 
-                //  CLOSE UNRESPONDED MESSAGES
-                _unrespondedMessages.ResetToUnsent();
+#if !NET35
+                
 
-                if (SocketHasErrored == false)
+                // Wait for calling program to progress inbound messages, with a timeout
+                _cancellationTokenSource.Cancel();  // Signal cancellation
+                try
                 {
-                    //  TRY AND SEND A DISCONNECTING MESSAGE TO THE SERVER
-                    try
+                    Task allTasks = Task.WhenAll(_backgroundTasks.Keys);
+                    if (!allTasks.Wait(TimeSpan.FromSeconds(20)))
                     {
-                        byte[] sendBytes = MessageEngine.GenerateSendBytes(new ClientDisconnectingNotificationV1(), false);
-                        CurrentEndPoint.Socket.Send(sendBytes);
+                        Debug.WriteLine("Timeout occurred while waiting for background tasks to complete.");
                     }
-                    catch { }
                 }
+                catch (AggregateException ex)
+                {
+                    // Handle any task exceptions here
+                    foreach (var innerException in ex.InnerExceptions)
+                    {
+                        NotifyExceptionRaised(innerException);
+                    }
+                }
+                _cancellationTokenSource.Dispose();
+#endif
+
+                //  Deal with unresponded messages
+                if (StopClientPermanently == true)
+                {
+                    _unrespondedMessages.Clear();
+                }
+                else
+                {
+                    _unrespondedMessages.ResetToUnsent();
+                }
+
 
                 if (StopClientPermanently == true)
                 {
@@ -496,7 +523,6 @@ namespace SocketMeister
                 timer.Stop();
                 Debug.WriteLine("PerformDisconnect() took " + timer.ElapsedMilliseconds + " milliseconds to execute.");
             }
-
         }
 
 
@@ -592,7 +618,7 @@ namespace SocketMeister
                 if (LastPollResponse < (DateTime.Now.AddSeconds(-DISCONNECT_AFTER_NO_POLL_RESPONSE_SECONDS)))
                 {
                     NotifyExceptionRaised(new Exception("Disconnecting: Server failed to reply to polling after " + DISCONNECT_AFTER_NO_POLL_RESPONSE_SECONDS + " seconds."));
-                    PerformDisconnect(SocketHasErrored: true);
+                    DisconnectGracefully(SocketHasErrored: true);
                     return;
                 }
 
@@ -708,12 +734,24 @@ namespace SocketMeister
         /// </summary>
         public void Stop()
         {
+            if (StopClientPermanently == true) return;  //  Don't allow this to run more than once
+            StopClientPermanently = true;
+
+#if !NET35
+            // Signal cancellation
+            _cancellationTokenSource.Cancel();
+#endif
+
             _subscriptions.TokenAdded -= _subscriptions_AddChangedDeleted;
             _subscriptions.TokenChanged -= _subscriptions_AddChangedDeleted;
             _subscriptions.TokenDeleted -= _subscriptions_AddChangedDeleted;
 
-            StopClientPermanently = true;
-            PerformDisconnect(SocketHasErrored: false);
+            DisconnectGracefully(SocketHasErrored: false);
+
+#if !NET35
+            _cancellationTokenSource.Dispose();
+#endif
+
         }
 
 
@@ -733,7 +771,7 @@ namespace SocketMeister
                 else if (StopClientPermanently)
                 {
                     //  SHUTDOWN: CLIENT IS SHUTTING DOWN. A SHUTDOWN MESSAGE SHOULD HAVE ALREADY BEEN SENT SO EXIT
-                    SendResponseQuickly(new MessageResponseV1(message.MessageId, MessageEngineDeliveryResult.Stopping));
+                    SendFastMessage(new MessageResponseV1(message.MessageId, MessageEngineDeliveryResult.Stopping));
                     return;
                 }
 
@@ -763,7 +801,11 @@ namespace SocketMeister
         }
 
 
-        private void SendResponseQuickly(MessageResponseV1 Message)
+        /// <summary>
+        /// Used for system messages where the normal checks and balances do not apply.
+        /// </summary>
+        /// <param name="Message">Message to be sent</param>
+        private void SendFastMessage(IMessage Message)
         {
             byte[] sendBytes = MessageEngine.GenerateSendBytes(Message, false);
 
@@ -785,6 +827,8 @@ namespace SocketMeister
                 NotifyExceptionRaised(ex);
             }
         }
+
+
 
 
         /// <summary>
@@ -924,13 +968,13 @@ namespace SocketMeister
                 {
                     message.Status = MessageEngineDeliveryStatus.Unsent;
                     NotifyExceptionRaised(new Exception("Disconnecting: Connection was reset."));
-                    PerformDisconnect(SocketHasErrored: true);
+                    DisconnectGracefully(SocketHasErrored: true);
                 }
                 else if (result != SocketError.Success)
                 {
                     message.Status = MessageEngineDeliveryStatus.Unsent;
                     NotifyExceptionRaised(new Exception("Disconnecting: Send did not generate a success. Socket operation returned error code " + (int)e.SocketError));
-                    PerformDisconnect(SocketHasErrored: true);
+                    DisconnectGracefully(SocketHasErrored: true);
                 }
             }
             catch (Exception ex)
@@ -968,14 +1012,14 @@ namespace SocketMeister
                 //  3.   The server A) sends its last data B) calls Shutdown(SocketShutdown.Send)) C) calls Close on the socket, optionally with a timeout to allow the data to be read from the client
                 //  4. * The client A) reads the remaining data from the server and then receives 0 bytes(the server signals there is no more data from its side) B) calls Close on the socket
 
-                PerformDisconnect(SocketHasErrored: true);
+                DisconnectGracefully(SocketHasErrored: true);
                 return;
             }
 
             if (e.SocketError != SocketError.Success)
             {
                 NotifyExceptionRaised(new Exception("Disconnecting: ProcessReceive received socket error code " + (int)e.SocketError));
-                PerformDisconnect(SocketHasErrored: true);
+                DisconnectGracefully(SocketHasErrored: true);
                 return;
             }
 
@@ -1014,15 +1058,7 @@ namespace SocketMeister
                         else if (_receiveEngine.MessageType == MessageEngineMessageType.MessageV1)
                         {
                             MessageV1 message = _receiveEngine.GetMessageV1();
-#if NET35  // Compiler directive for code which will be compiled to .NET 3.5. This provides a less efficient but workable solution to the desired functional requirements.
-                            new Thread(new ThreadStart(delegate
-                            {
-                                ThreadPool.QueueUserWorkItem(BgProcessMessage, message);
-                            }))
-                            { IsBackground = true }.Start();
-#else
-                            Task.Run(() => BgProcessMessage(message));
-#endif
+                            BgProcessMessageV1(message);
                         }
 
                         else if (_receiveEngine.MessageType == MessageEngineMessageType.ServerStoppingNotificationV1)
@@ -1038,7 +1074,7 @@ namespace SocketMeister
                             }
 
                             NotifyServerStopping();
-                            PerformDisconnect(SocketHasErrored: false);
+                            DisconnectGracefully(SocketHasErrored: false);
                         }
                         else if (_receiveEngine.MessageType == MessageEngineMessageType.PollingResponseV1)
                         {
@@ -1068,54 +1104,126 @@ namespace SocketMeister
                 //  IF A LARGE CHUNK OF DATA WAS BEING RECEIVED WHEN THE CONNECTION WAS LOST, THE Disconnect() ROUTINE
                 //  MAY ALREADY HAVE BEEN RUN (WHICH DISPOSES OBJECTS). IF THIS IS THE CASE, SIMPLY EXIT
                 NotifyExceptionRaised(new Exception("Disconnecting: ObjectDisposedException running ProcessReceive: " + ee.Message));
-                PerformDisconnect(SocketHasErrored: true);
+                DisconnectGracefully(SocketHasErrored: true);
             }
             catch (Exception ex)
             {
                 NotifyExceptionRaised(new Exception("Disconnecting: Error running ProcessReceive: " + ex.Message));
-                PerformDisconnect(SocketHasErrored: true);
+                DisconnectGracefully(SocketHasErrored: true);
             }
         }
 
-
-        private void BgProcessMessage(object state)
+#if !NET35
+#pragma warning disable CS1998  //  The await is intentionally delayed so the task can be added to _background tasks first, so ignore the warming from Visual Studio
+        private async void BgProcessMessageV1(object state)
         {
-            MessageV1 message = (MessageV1)state;
+            var message = (MessageV1)state;
+
+            var cancellationToken = _cancellationTokenSource.Token;
+            var task = Task.Run(async () =>
+            {
+                try
+                {
+                    // Check for cancellation
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    //  Sent a receipt acknowlegement to the sender
+                    SendFastMessage(new MessageDeliveredAckV1(message.MessageId));
+
+                    if (MessageReceived == null)
+                    {
+                        //  The parent program using this SocketClient is ignoring MessageReceived events so incoming messages are not being processed.
+                        SendFastMessage(new MessageResponseV1(message.MessageId, MessageEngineDeliveryResult.NoMessageReceivedEventListener));
+                    }
+                    else if (StopClientPermanently)
+                    {
+                        //  This SocketClient is shuting down. A shutdown message should have already been sent
+                        //  but we'll also send a quick response to the sender for this particular message.
+                        SendFastMessage(new MessageResponseV1(message.MessageId, MessageEngineDeliveryResult.Stopping));
+                    }
+                    else
+                    {
+                        //  Deserialize the message and raise a MessageReceived event for the parent program to process.
+                        MessageReceivedEventArgs args = new MessageReceivedEventArgs(message.Parameters);
+                        MessageReceived(this, args);
+
+                        //  There could be significant delay waiting for the calling program to process the MessageReceived event.
+                        //  Respond to the sender, including optional response data (args.Response) the calling program provided.
+                        MessageResponseV1 response = new MessageResponseV1(message.MessageId, args.Response);
+                        SendResponse(response, message);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    NotifyExceptionRaised(ex);
+                    SendFastMessage(new MessageResponseV1(message.MessageId, ex));
+                }
+
+            }, cancellationToken);
+
+            // Add the task to the dictionary and remove it upon completion
+            _backgroundTasks.TryAdd(task, true);
             try
             {
-                if (MessageReceived == null)
-                {
-                    //  THERE IS NO CODE LISTENING TO MessageReceived EVENTS. CANNOT PROCESS THIS MESSAGE
-                    SendResponseQuickly(new MessageResponseV1(message.MessageId, MessageEngineDeliveryResult.NoMessageReceivedEventListener));
-                }
-                else if (StopClientPermanently)
-                {
-                    //  SHUTDOWN: CLIENT IS SHUTTING DOWN. A SHUTDOWN MESSAGE SHOULD HAVE ALREADY BEEN SENT SO EXIT
-                    SendResponseQuickly(new MessageResponseV1(message.MessageId, MessageEngineDeliveryResult.Stopping));
-                }
-                else if (message.IsTimeout)
-                {
-                    //  IF TIMEOUT, NO POINT SENDING THE RESPONSE
-                    NotifyExceptionRaised(new TimeoutException("Message " + message.MessageId + ", timed out after " + message.TimeoutMilliseconds + " milliseconds."));
-                }
-                else
-                {
-                    //  DESERIALIZE THE MESSAGE FROM THE CLIENT
-                    //  WE HAVE A MESSAGE IN FULL. UNPACK, (RESETS COUNTERS) AND RAISE AN EVENT
-                    MessageReceivedEventArgs args = new MessageReceivedEventArgs(message.Parameters);
-                    MessageReceived(this, args);
-
-                    //  SEND RESPONSE
-                    MessageResponseV1 response = new MessageResponseV1(message.MessageId, args.Response);
-                    SendResponse(response, message);
-                }
+                await task.ConfigureAwait(false);
             }
-            catch (Exception ex)
+            finally
             {
-                NotifyExceptionRaised(ex);
-                SendResponseQuickly(new MessageResponseV1(message.MessageId, ex));
+                _backgroundTasks.TryRemove(task, out _);
             }
         }
+#pragma warning restore CS1998
+#endif
+
+
+#if NET35
+        private void BgProcessMessageV1(object state)
+        {
+            var message = (MessageV1)state;
+
+            new Thread(new ThreadStart(delegate
+            {
+                ThreadPool.QueueUserWorkItem(BgProcessMessageV1, message);
+                try
+                {
+                    //  Sent a receipt acknowlegement to the sender
+                    SendFastMessage(new MessageDeliveredAckV1(message.MessageId));
+
+                    if (MessageReceived == null)
+                    {
+                        //  The parent program using this SocketClient is ignoring MessageReceived events so incoming messages are not being processed.
+                        SendFastMessage(new MessageResponseV1(message.MessageId, MessageEngineDeliveryResult.NoMessageReceivedEventListener));
+                    }
+                    else if (StopClientPermanently)
+                    {
+                        //  This SocketClient is shuting down. A shutdown message should have already been sent
+                        //  but we'll also send a quick response to the sender for this particular message.
+                        SendFastMessage(new MessageResponseV1(message.MessageId, MessageEngineDeliveryResult.Stopping));
+                    }
+                    else
+                    {
+                        //  Deserialize the message and raise a MessageReceived event for the parent program to process.
+                        MessageReceivedEventArgs args = new MessageReceivedEventArgs(message.Parameters);
+                        MessageReceived(this, args);
+
+                        //  There could be significant delay waiting for the calling program to process the MessageReceived event.
+                        //  ChatGPT, the message count timeout long before the calling program finishes, but there is no logic in this class to be able to kill this process, which could be dangerous if the calling program is doing something critical, except, perhaps during the Stop() method is called (Which also happens during Dispose()). 
+                        //  Respond to the sender, including optional response data (args.Response) the calling program provided.
+                        MessageResponseV1 response = new MessageResponseV1(message.MessageId, args.Response);
+                        SendResponse(response, message);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    NotifyExceptionRaised(ex);
+                    SendFastMessage(new MessageResponseV1(message.MessageId, ex));
+                }
+
+            }))
+            { IsBackground = true }.Start();
+        }
+#endif
+
 
 
         private bool CanSendReceive()
@@ -1242,12 +1350,3 @@ namespace SocketMeister
 
 }
 
-#pragma warning restore CA1805 // Do not initialize unnecessarily
-#pragma warning restore CA1031 // Do not catch general exception types
-#pragma warning restore CA1303 // Do not pass literals as localized parameters
-#pragma warning restore IDE0028 // Simplify collection initialization
-#pragma warning restore IDE0052 // Remove unread private members
-#pragma warning restore IDE0063 // Use simple 'using' statement
-#pragma warning restore IDE0017 // Simplify object initialization
-#pragma warning restore IDE0090 // Use 'new(...)'
-#pragma warning restore IDE0079 // Remove unnecessary suppression

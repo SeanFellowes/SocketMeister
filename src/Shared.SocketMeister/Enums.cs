@@ -47,6 +47,11 @@ namespace SocketMeister
         InProgress = 1,
 
         /// <summary>
+        /// Message has been aborted (E.g. Socket closed)
+        /// </summary>
+        Aborted = 100,
+
+        /// <summary>
         /// Send operation finished (Could be unsuccessful or successful)
         /// </summary>
         ResponseReceived = short.MaxValue
@@ -77,6 +82,11 @@ namespace SocketMeister
         /// Response to a message
         /// </summary>
         MessageResponseV1 = 30,
+
+        /// <summary>
+        /// Delivery Receipt Acknowledgement
+        /// </summary>
+        MessageDeliveredAckV1 = 31,
 
         /// <summary>
         /// Server is shutting down

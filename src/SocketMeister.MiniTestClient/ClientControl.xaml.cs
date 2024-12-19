@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -221,6 +222,7 @@ namespace SocketMeister.MiniTestClient
 
         private void Client_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
         {
+            Thread.Sleep(20000);
             Dispatcher.Invoke(() =>
             {
                 _messagesReceived++;

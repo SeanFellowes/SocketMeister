@@ -93,11 +93,17 @@ namespace SocketMeister.MiniTestClient
             ClientControl ct = (ClientControl)sender;
 
             byte[] receivedBytes = (byte[])e.Parameters[0];
-            string msgRec = Encoding.UTF8.GetString(receivedBytes, 0, receivedBytes.Length);
-
-            Log(LogItem.SeverityType.Information, "Client " + ct.ClientId, "MessageReceived: " + msgRec);
+            string msgRec;
+            if (receivedBytes.Length > 30)
+            {
+                msgRec = Encoding.UTF8.GetString(receivedBytes, 0, 30) + "...";
+            }
+            else
+            {
+                msgRec = Encoding.UTF8.GetString(receivedBytes, 0, receivedBytes.Length);
+            }
+            Log(LogItem.SeverityType.Information, "Client " + ct.ClientId, "MessageReceived (" + receivedBytes.Length + " bytes): " + msgRec);
         }
-
 
 
         private void Client_ServerStopping(object sender, EventArgs e)
@@ -126,57 +132,64 @@ namespace SocketMeister.MiniTestClient
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (_windowClosingProcessed == false)
+            try
             {
-                _windowClosingProcessed = true;
-                _dispatcherTimer.Stop();
-                foreach (ClientControl c in _clients)
+                if (_windowClosingProcessed == false)
                 {
-                    Thread bgClose = new Thread(
+                    _windowClosingProcessed = true;
+                    _dispatcherTimer.Stop();
+                    foreach (ClientControl c in _clients)
+                    {
+                        Thread bgClose = new Thread(
+                        new ThreadStart(delegate
+                        {
+                            c.Stop();
+                        }))
+                        {
+                            IsBackground = true
+                        };
+                        bgClose.Start();
+                    }
+
+                    Thread bgWaitForClose = new Thread(
                     new ThreadStart(delegate
                     {
-                        c.Stop();
+                        DateTime maxWait = DateTime.Now.AddSeconds(15);
+                        while (DateTime.Now < maxWait && true)
+                        {
+                            bool allClosed = true;
+
+                            foreach (ClientControl c in _clients)
+                            {
+                                if (c.Status != SocketClient.ConnectionStatuses.Disconnected)
+                                {
+                                    allClosed = false;
+                                    break;
+                                }
+                            }
+
+                            if (allClosed == true) break;
+
+                            Thread.Sleep(250);
+                        }
+
+                        Dispatcher.Invoke(() =>
+                        {
+                            App.Current.Shutdown();
+                        });
                     }))
                     {
                         IsBackground = true
                     };
-                    bgClose.Start();
+                    bgWaitForClose.Start();
+
+
+                    e.Cancel = true;
                 }
-
-                Thread bgWaitForClose = new Thread(
-                new ThreadStart(delegate
-                {
-                    DateTime maxWait = DateTime.Now.AddSeconds(15);
-                    while (DateTime.Now < maxWait && true)
-                    {
-                        bool allClosed = true;
-
-                        foreach (ClientControl c in _clients)
-                        {
-                            if (c.Status != SocketClient.ConnectionStatuses.Disconnected)
-                            {
-                                allClosed = false;
-                                break;
-                            }
-                        }
-
-                        if (allClosed == true) break;
-
-                        Thread.Sleep(250);
-                    }
-
-                    Dispatcher.Invoke(() =>
-                    {
-                        App.Current.Shutdown();
-                    });
-                }))
-                {
-                    IsBackground = true
-                };
-                bgWaitForClose.Start();
-
-
-                e.Cancel = true;
+            }
+            catch
+            {
+                throw;
             }
         }
 

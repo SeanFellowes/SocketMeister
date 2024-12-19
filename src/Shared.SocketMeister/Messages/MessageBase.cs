@@ -60,7 +60,14 @@ namespace SocketMeister.Messages
         public bool IsAborted
         {
             get { lock (_lock) { return _isAborted; } }
-            set { lock (_lock) { _isAborted = value; } }
+        }
+
+        /// <summary>
+        /// Abort the message (For example socket closed or SocketServer/SocketClient is stopping or disposing)
+        /// </summary>
+        public void Abort()
+        {
+
         }
 
 
