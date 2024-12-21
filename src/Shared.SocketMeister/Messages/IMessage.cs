@@ -22,12 +22,22 @@ namespace SocketMeister.Messages
         /// <summary>
         /// Status of the message. 
         /// </summary>
-        MessageStatus Status { get; set; }
+        MessageStatus Status { get; }
 
+        ///// <summary>
+        ///// Timestamp in UTC when the message will timeout
+        ///// </summary>
+        //DateTime TimeoutDateTime { get; }
+
+        /// <summary>
+        /// Number of milliseconds after the message was created before the message should timeout
+        /// </summary>
+        int TimeoutMilliseconds { get; set; }
+        
         /// <summary>
         /// After sending this message, the sender class will wait for a response.
         /// </summary>
-        bool WaitForResponse { get; }
+        bool ContinueWaitingtForResponse { get; }
 
         /// <summary>
         /// Mandatory method to append binary data to the IMessage object,
@@ -38,12 +48,23 @@ namespace SocketMeister.Messages
         /// <summary>
         /// Response message, where applicable, so null by default
         /// </summary>
-        IMessage Response { get; set; }
+        MessageResponseV1 Response { get; }
+
+        /// <summary>
+        /// Message displosal
+        /// </summary>
+        void Dispose();
+
+        void SetCompleted(MessageResponseV1 responseMessage);
+        void SetInProgress();
+        void TryRetrySend();
 
 
 #if !NET35
         //  This is only used by some message types as a wait lock for a response to be received. Null by default
         ManualResetEventSlim ResponseReceivedEvent { get; set; }
+
+        bool WaitForResponse(ManualResetEventSlim messageWaitHandle);
 #endif
 
 

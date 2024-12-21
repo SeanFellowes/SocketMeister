@@ -19,7 +19,7 @@ namespace SocketMeister.Messages
                 this.MessageLengthUncompressed = MessageLengthUncompressed;
                 this.MessageNumber = MessageNumber;
                 this.MessageType = MessageType;
-                ReceivedDateTime = DateTime.Now;
+                ReceivedDateTime = DateTime.UtcNow;
             }
 
             public long MessageNumber { get; set; }

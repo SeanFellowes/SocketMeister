@@ -20,7 +20,7 @@ namespace SocketMeister.MiniTestClient
         {
             public enum SeverityType { Information = 0, Warning = 1, Error = 2 }
 
-            private readonly DateTime timeStamp = DateTime.Now;
+            private readonly DateTime timeStamp = DateTime.UtcNow;
 
             public SeverityType Severity { get; set; }
             public string Source { get; set; }
@@ -154,8 +154,8 @@ namespace SocketMeister.MiniTestClient
                     Thread bgWaitForClose = new Thread(
                     new ThreadStart(delegate
                     {
-                        DateTime maxWait = DateTime.Now.AddSeconds(15);
-                        while (DateTime.Now < maxWait && true)
+                        DateTime maxWait = DateTime.UtcNow.AddSeconds(15);
+                        while (DateTime.UtcNow < maxWait && true)
                         {
                             bool allClosed = true;
 

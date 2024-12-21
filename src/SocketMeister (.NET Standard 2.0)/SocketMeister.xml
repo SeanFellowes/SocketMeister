@@ -44,79 +44,104 @@
             An exception occured while processing the message
             </summary>
         </member>
-        <member name="T:SocketMeister.MessageEngineDeliveryStatus">
+        <member name="T:SocketMeister.MessageStatus">
             <summary>
-            The progress of a message from creation to receiving a response.
+            The status of the message.
             </summary>
         </member>
-        <member name="F:SocketMeister.MessageEngineDeliveryStatus.Unsent">
+        <member name="F:SocketMeister.MessageStatus.Unsent">
             <summary>
             Message has not been sent or is flagged to resent (because socket connection failed)
             </summary>
         </member>
-        <member name="F:SocketMeister.MessageEngineDeliveryStatus.InProgress">
+        <member name="F:SocketMeister.MessageStatus.InProgress">
             <summary>
             Message is in progress
             </summary>
         </member>
-        <member name="F:SocketMeister.MessageEngineDeliveryStatus.ResponseReceived">
+        <member name="F:SocketMeister.MessageStatus.Aborted">
+            <summary>
+            Message has been aborted (E.g. Socket closed)
+            </summary>
+        </member>
+        <member name="F:SocketMeister.MessageStatus.Timeout">
+            <summary>
+            Message has times out
+            </summary>
+        </member>
+        <member name="F:SocketMeister.MessageStatus.Completed">
             <summary>
             Send operation finished (Could be unsuccessful or successful)
             </summary>
         </member>
-        <member name="T:SocketMeister.MessageEngineMessageType">
+        <member name="T:SocketMeister.MessageType">
             <summary>
             Internal message types
             </summary>
         </member>
-        <member name="F:SocketMeister.MessageEngineMessageType.Unknown">
+        <member name="F:SocketMeister.MessageType.Unknown">
             <summary>
             Unknown message type, usually associated with an error
             </summary>
         </member>
-        <member name="F:SocketMeister.MessageEngineMessageType.BroadcastV1">
+        <member name="F:SocketMeister.MessageType.BroadcastV1">
             <summary>
             Server sends a broadcast
             </summary>
         </member>
-        <member name="F:SocketMeister.MessageEngineMessageType.MessageV1">
+        <member name="F:SocketMeister.MessageType.MessageV1">
             <summary>
             Message (expecting a response, even a null response is valid). 
             </summary>
         </member>
-        <member name="F:SocketMeister.MessageEngineMessageType.MessageResponseV1">
+        <member name="F:SocketMeister.MessageType.MessageResponseV1">
             <summary>
             Response to a message
             </summary>
         </member>
-        <member name="F:SocketMeister.MessageEngineMessageType.ServerStoppingNotificationV1">
+        <member name="F:SocketMeister.MessageType.MessageDeliveredAckV1">
+            <summary>
+            Delivery Receipt Acknowledgement
+            </summary>
+        </member>
+        <member name="F:SocketMeister.MessageType.ServerStoppingNotificationV1">
             <summary>
             Server is shutting down
             </summary>
         </member>
-        <member name="F:SocketMeister.MessageEngineMessageType.ClientDisconnectingNotificationV1">
+        <member name="F:SocketMeister.MessageType.ClientDisconnectingNotificationV1">
             <summary>
             Client is disconnecting
             </summary>
         </member>
-        <member name="F:SocketMeister.MessageEngineMessageType.SubscriptionChangesNotificationV1">
+        <member name="F:SocketMeister.MessageType.SubscriptionChangesNotificationV1">
             <summary>
             Clients send subscription information to the server. The server updates it's local client details
             </summary>
         </member>
-        <member name="F:SocketMeister.MessageEngineMessageType.SubscriptionChangesResponseV1">
+        <member name="F:SocketMeister.MessageType.SubscriptionChangesResponseV1">
             <summary>
             Server sends a subscription response when a subscription notification is received from a client
             </summary>
         </member>
-        <member name="F:SocketMeister.MessageEngineMessageType.PollingRequestV1">
+        <member name="F:SocketMeister.MessageType.PollingRequestV1">
             <summary>
             Clients sent poll requests to determine if a connection is alive
             </summary>
         </member>
-        <member name="F:SocketMeister.MessageEngineMessageType.PollingResponseV1">
+        <member name="F:SocketMeister.MessageType.PollingResponseV1">
             <summary>
             Server sends a poll response when a poll request is received from a client
+            </summary>
+        </member>
+        <member name="F:SocketMeister.MessageType.ClientInfoV1">
+            <summary>
+            Client sends client information to the server after connecting
+            </summary>
+        </member>
+        <member name="F:SocketMeister.MessageType.ClientInfoV1Ack">
+            <summary>
+            Server sends acknowledgement to client after it sends client information after connecting to the server
             </summary>
         </member>
         <member name="T:SocketMeister.SeverityType">
@@ -328,6 +353,37 @@
             Optional Name/Tag/Identifier given to the broadcast
             </summary>
         </member>
+        <member name="T:SocketMeister.Messages.ClientInfoV1Ack">
+            <summary>
+            Internal Message: Socket server acknowledgement that client info was received from a newly connected client.
+            </summary>
+        </member>
+        <member name="T:SocketMeister.Messages.ClientInfoV1">
+            <summary>
+            Internal Message: Socket client sends client info to the server after connection.
+            </summary>
+        </member>
+        <member name="T:SocketMeister.Messages.MessageDeliveredAckV1">
+            <summary>
+            Light message sent by the message receiver to acknowledge receipt. Some system messages do not send an ack.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.MessageDeliveredAckV1.RemoteClient">
+            <summary>
+            The remote client which sent this Message (value null on SocketClient)
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageDeliveredAckV1.#ctor(System.IO.BinaryReader)">
+            <summary>
+            Fastest was to build this is to create it directly from the SocketEnvelope buffer.
+            </summary>
+            <param name="Reader">Binary Reader</param>
+        </member>
+        <member name="P:SocketMeister.Messages.MessageDeliveredAckV1.MessageId">
+            <summary>
+            The message that this response refers to
+            </summary>
+        </member>
         <member name="T:SocketMeister.Messages.TokenChangesRequestV1">
             <summary>
             Internal Message: Response when tokens are changed. Contains ChangeIds of token changes.
@@ -495,6 +551,11 @@
             Interface for internal messages, sent between socket clients and the socket server. Internal messages are not visible outside the socket library.
             </summary>
         </member>
+        <member name="P:SocketMeister.Messages.IMessage.CreatedDateTime">
+            <summary>
+            UTC datetime the message was created.
+            </summary>
+        </member>
         <member name="P:SocketMeister.Messages.IMessage.MessageType">
             <summary>
             Type of message
@@ -505,11 +566,31 @@
             Status of the message. 
             </summary>
         </member>
+        <member name="P:SocketMeister.Messages.IMessage.TimeoutMilliseconds">
+            <summary>
+            Number of milliseconds after the message was created before the message should timeout
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.IMessage.ContinueWaitingtForResponse">
+            <summary>
+            After sending this message, the sender class will wait for a response.
+            </summary>
+        </member>
         <member name="M:SocketMeister.Messages.IMessage.AppendBytes(System.IO.BinaryWriter)">
             <summary>
             Mandatory method to append binary data to the IMessage object,
             </summary>
             <param name="Writer"></param>
+        </member>
+        <member name="P:SocketMeister.Messages.IMessage.Response">
+            <summary>
+            Response message, where applicable, so null by default
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Messages.IMessage.Dispose">
+            <summary>
+            Message displosal
+            </summary>
         </member>
         <member name="M:SocketMeister.Messages.MessageBase.Dispose">
             <summary>
@@ -521,6 +602,46 @@
             Dispose of the class
             </summary>
             <param name="disposing"></param>
+        </member>
+        <member name="P:SocketMeister.Messages.MessageBase.CreatedDateTime">
+            <summary>
+            Timestamp, in UTC, when the message was created (Set during message instantiation)
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.MessageBase.TimeoutMilliseconds">
+            <summary>
+            Number of milliseconds until the message will timeout. Also sets TimeoutDateTime
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.MessageBase.IsAborted">
+            <summary>
+            Message is aborted, usually due to a SocketServer or SocketClient shutdown or disposal().
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.MessageBase.IsTimeout">
+            <summary>
+            Whether the Message has timed out
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.MessageBase.MessageType">
+            <summary>
+            Type of message
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.MessageBase.Response">
+            <summary>
+            Response message, where a response is required (waitForResponse = true)
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.MessageBase.Status">
+            <summary>
+            Calculated status of the message.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.MessageBase.ContinueWaitingtForResponse">
+            <summary>
+            Whether a SendReceive process should continue waiting for a response
+            </summary>
         </member>
         <member name="T:SocketMeister.Messages.PollingRequestV1">
             <summary>
@@ -560,29 +681,14 @@
             True is this message is long polling on the server side. Long polling messages will be closed immediately in the event of a close from either the client or server side.
             </summary>
         </member>
-        <member name="P:SocketMeister.Messages.MessageV1.IsTimeout">
-            <summary>
-            Whether the Message has timed out
-            </summary>
-        </member>
         <member name="P:SocketMeister.Messages.MessageV1.MessageId">
             <summary>
             Identifier assigned to this message when it was created
             </summary>
         </member>
-        <member name="P:SocketMeister.Messages.MessageV1.TimeoutMilliseconds">
-            <summary>
-            Number of milliseconds to wait before a timeout will occur.
-            </summary>
-        </member>
         <member name="P:SocketMeister.Messages.MessageV1.TrySendReceive">
             <summary>
             Whether the method SendReceive(Message Message) should continute trying
-            </summary>
-        </member>
-        <member name="P:SocketMeister.Messages.MessageV1.WaitForResponse">
-            <summary>
-            Whether a SendReceive process should continue waiting for a response
             </summary>
         </member>
         <member name="P:SocketMeister.Messages.MessageResponseV1.RemoteClient">
@@ -612,7 +718,7 @@
             The maximum number of milliseconds the client should wait for unresponded messages to be completed. The server will not send back responses for unresponded messages after this time.
             </summary>
         </member>
-        <member name="M:SocketMeister.UnrespondedMessageCollection.TryGetMessage(System.Int64,SocketMeister.Messages.MessageV1@)">
+        <member name="M:SocketMeister.UnrespondedMessageCollection.TryGetMessage(System.Int64,SocketMeister.Messages.IMessage@)">
             <summary>
             Safely retrieves a message if it exists.
             </summary>
@@ -962,6 +1068,12 @@
             <summary>
             Stops the client permenently. There is no option from here to restart without creating a new instance of SocketClient.
             </summary>
+        </member>
+        <member name="M:SocketMeister.SocketClient.SendFastMessage(SocketMeister.Messages.IMessage)">
+            <summary>
+            Used for system messages where the normal checks and balances do not apply.
+            </summary>
+            <param name="Message">Message to be sent</param>
         </member>
         <member name="M:SocketMeister.SocketClient.SendMessage(System.Object[],System.Int32,System.Boolean)">
             <summary>

@@ -63,7 +63,7 @@ namespace SocketMeister
         private readonly List<SocketEndPoint> _endPoints = null;
         private bool _isBackgroundWorkerRunning;
         private DateTime? _lastMessageFromServer;
-        private DateTime _lastPollResponse = DateTime.Now;
+        private DateTime _lastPollResponse = DateTime.UtcNow;
         private readonly object _lock = new object();
         private readonly byte[] _pollingBuffer = new byte[Constants.SEND_RECEIVE_BUFFER_SIZE];
         private readonly Random _randomizer = new Random();
@@ -135,7 +135,7 @@ namespace SocketMeister
             {
                 _currentEndPoint = _endPoints[GetThreadSafeRandomNumber(0, _endPoints.Count)];   // Safe to use direct access in class constructor
             }
-            _currentEndPoint.DontReconnectUntil = DateTime.Now.AddYears(-1);   // Safe to use direct access in class constructor
+            _currentEndPoint.DontReconnectUntil = DateTime.UtcNow.AddYears(-1);   // Safe to use direct access in class constructor
 
             //  Setup a pool of SocketAsyncEventArgs for sending messages
             _sendEventArgsPool = new SocketAsyncEventArgsPool();
@@ -481,8 +481,8 @@ namespace SocketMeister
                 if (StopClientPermanently == true)
                 {
                     //  WAIT UP TO 15 SECONDS FOR BACKGROUND THREADS TO STOP
-                    DateTime maxWait = DateTime.Now.AddSeconds(15);
-                    while ((IsBackgroundWorkerRunning == true) && DateTime.Now < maxWait) { Thread.Sleep(100); }
+                    DateTime maxWait = DateTime.UtcNow.AddSeconds(15);
+                    while ((IsBackgroundWorkerRunning == true) && DateTime.UtcNow < maxWait) { Thread.Sleep(100); }
                 }
 
                 if (!SocketHasErrored && CurrentEndPoint.Socket.Connected)
@@ -534,7 +534,7 @@ namespace SocketMeister
                     IsBackgroundWorkerRunning = true;
                     Stopwatch pollingTimer = Stopwatch.StartNew();
                     Stopwatch sendSubscriptionsTimer = Stopwatch.StartNew();
-                    LastPollResponse = DateTime.Now;
+                    LastPollResponse = DateTime.UtcNow;
 
                     //  FLAG ALL SUBSCRIPTIONS (Tokens) FOR SENDING TO THE SERVER
                     _subscriptions.FlagAllAfterSocketConnect();
@@ -573,10 +573,10 @@ namespace SocketMeister
             try
             {
                 //  This provides visual asthetics that connect operations are in progress
-                if (DateTime.Now < CurrentEndPoint.DontReconnectUntil.AddMilliseconds(-1500)) ConnectionStatus = ConnectionStatuses.Connecting;
+                if (DateTime.UtcNow < CurrentEndPoint.DontReconnectUntil.AddMilliseconds(-1500)) ConnectionStatus = ConnectionStatuses.Connecting;
 
                 //  Exit is it's not time to actually attempt to reconnect
-                if (DateTime.Now < CurrentEndPoint.DontReconnectUntil) return;
+                if (DateTime.UtcNow < CurrentEndPoint.DontReconnectUntil) return;
 
                 //  CHOOSE THE NEXT ENDPOINT TO TRY
                 if (_endPoints.Count > 1)
@@ -598,7 +598,7 @@ namespace SocketMeister
                 if (ConnectionStatus != ConnectionStatuses.Connected)
                 {
                     //  IMPORTANT!!! DON'T TRY THIS CONNECTION FOR AT LEAST 3 SECONDS
-                    CurrentEndPoint.DontReconnectUntil = DateTime.Now.AddMilliseconds(3000);
+                    CurrentEndPoint.DontReconnectUntil = DateTime.UtcNow.AddMilliseconds(3000);
                 }
                 else
                 {
@@ -614,7 +614,7 @@ namespace SocketMeister
             {
                 if (PollingTimer.Elapsed.TotalSeconds < POLLING_FREQUENCY) return;
 
-                if (LastPollResponse < (DateTime.Now.AddSeconds(-DISCONNECT_AFTER_NO_POLL_RESPONSE_SECONDS)))
+                if (LastPollResponse < (DateTime.UtcNow.AddSeconds(-DISCONNECT_AFTER_NO_POLL_RESPONSE_SECONDS)))
                 {
                     NotifyExceptionRaised(new Exception("Disconnecting: Server failed to reply to polling after " + DISCONNECT_AFTER_NO_POLL_RESPONSE_SECONDS + " seconds."));
                     DisconnectGracefully(SocketHasErrored: true);
@@ -722,7 +722,7 @@ namespace SocketMeister
             //  RESET
             try
             {
-                CurrentEndPoint.DontReconnectUntil = DateTime.Now.AddMilliseconds(pauseReconnect + GetThreadSafeRandomNumber(1, 4000));
+                CurrentEndPoint.DontReconnectUntil = DateTime.UtcNow.AddMilliseconds(pauseReconnect + GetThreadSafeRandomNumber(1, 4000));
             }
             catch (Exception ex)
             {
@@ -786,7 +786,7 @@ namespace SocketMeister
                     sendEventArgs = _sendEventArgsPool.Pop();
                     if (sendEventArgs != null)
                     {
-                        messageResponse.Status = MessageStatus.InProgress;
+                        messageResponse.SetInProgress();
                         sendEventArgs.UserToken = messageResponse;
                         sendEventArgs.SetBuffer(sendBytes, 0, sendBytes.Length);
                         sendEventArgs.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
@@ -822,7 +822,7 @@ namespace SocketMeister
 
             sendEventArgs.UserToken = Message;
             sendEventArgs.SetBuffer(sendBytes, 0, sendBytes.Length);
-            Message.Status = MessageStatus.InProgress;
+            Message.SetInProgress();
             sendEventArgs.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
             try
             {
@@ -849,16 +849,16 @@ namespace SocketMeister
             if (StopClientPermanently) throw new Exception("Message cannot be sent. The socket client is stopped or stopping");
             if (Parameters == null) throw new ArgumentException("Message parameters cannot be null.", nameof(Parameters));
             if (Parameters.Length == 0) throw new ArgumentException("At least 1 parameter is required because the message makes no sense.", nameof(Parameters));
-            DateTime startTime = DateTime.Now;
+            DateTime startTime = DateTime.UtcNow;
             DateTime maxWait = startTime.AddMilliseconds(TimeoutMilliseconds);
             while (ConnectionStatus != ConnectionStatuses.Connected && StopClientPermanently == false)
             {
                 Thread.Sleep(200);
                 if (StopClientPermanently) throw new Exception("Message cannot be sent. The socket client is stopped or stopping");
-                if (DateTime.Now > maxWait) throw new TimeoutException();
+                if (DateTime.UtcNow > maxWait) throw new TimeoutException();
             }
             //DelaySending();
-            int remainingMilliseconds = TimeoutMilliseconds - Convert.ToInt32((DateTime.Now - startTime).TotalMilliseconds);
+            int remainingMilliseconds = TimeoutMilliseconds - Convert.ToInt32((DateTime.UtcNow - startTime).TotalMilliseconds);
             return SendReceive(new MessageV1(Parameters, remainingMilliseconds, IsLongPolling));
         }
 
@@ -867,7 +867,7 @@ namespace SocketMeister
         {
             if (StopClientPermanently) return null;
 
-            DateTime startTime = DateTime.Now;
+            DateTime startTime = DateTime.UtcNow;
             _unrespondedMessages.Add(message);
 
             // Generate the sendBytes once outside the loop
@@ -884,7 +884,7 @@ namespace SocketMeister
                         var sendEventArgs = _sendEventArgsPool.Pop();
                         if (sendEventArgs != null)
                         {
-                            message.Status = MessageStatus.InProgress;
+                            message.SetInProgress();
                             sendEventArgs.UserToken = message;
                             sendEventArgs.SetBuffer(sendBytes, 0, sendBytes.Length);
                             sendEventArgs.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
@@ -892,9 +892,8 @@ namespace SocketMeister
                             if (!CurrentEndPoint.Socket.SendAsync(sendEventArgs))
                                 ProcessSend(null, sendEventArgs);
 
-                            // Wait for response or timeout
-                            int remainingMilliseconds = message.TimeoutMilliseconds - (int)(DateTime.Now - startTime).TotalMilliseconds;
-                            if (remainingMilliseconds <= 0) break;
+                            // Exit ix the message has timed out
+                            if (message.Status == MessageStatus.Timeout) break;
                         }
                     }
                 }
@@ -920,7 +919,7 @@ namespace SocketMeister
                             var sendEventArgs = _sendEventArgsPool.Pop();
                             if (sendEventArgs != null)
                             {
-                                message.Status = MessageStatus.InProgress;
+                                message.SetInProgress();
                                 sendEventArgs.UserToken = message;
                                 sendEventArgs.SetBuffer(sendBytes, 0, sendBytes.Length);
                                 sendEventArgs.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
@@ -928,9 +927,8 @@ namespace SocketMeister
                                 if (!CurrentEndPoint.Socket.SendAsync(sendEventArgs))
                                     ProcessSend(null, sendEventArgs);
 
-                                // Wait for response or timeout
-                                int remainingMilliseconds = message.TimeoutMilliseconds - (int)(DateTime.Now - startTime).TotalMilliseconds;
-                                if (!messageWaitHandle.Wait(remainingMilliseconds)) break; // Timeout
+                                // Exit if the message has timed before reveiving a response using a ManualResetEventSlim (Set if a response is received)
+                                if (message.WaitForResponse(messageWaitHandle) == false) break;
                             }
                         }
                     }
@@ -972,20 +970,20 @@ namespace SocketMeister
             {
                 if (result == SocketError.ConnectionReset)
                 {
-                    message.Status = MessageStatus.Unsent;
+                    message.TryRetrySend();
                     NotifyExceptionRaised(new Exception("Disconnecting: Connection was reset."));
                     DisconnectGracefully(SocketHasErrored: true);
                 }
                 else if (result != SocketError.Success)
                 {
-                    message.Status = MessageStatus.Unsent;
+                    message.TryRetrySend();
                     NotifyExceptionRaised(new Exception("Disconnecting: Send did not generate a success. Socket operation returned error code " + (int)e.SocketError));
                     DisconnectGracefully(SocketHasErrored: true);
                 }
             }
             catch (Exception ex)
             {
-                message.Status = MessageStatus.Unsent;
+                message.TryRetrySend();
                 NotifyExceptionRaised(ex);
             }
         }
@@ -1037,7 +1035,7 @@ namespace SocketMeister
                     bool haveEntireMessage = _receiveEngine.AddBytesFromSocketReceiveBuffer(e.BytesTransferred, e.Buffer, ref socketReceiveBufferPtr);
                     if (haveEntireMessage == true)
                     {
-                        LastMessageFromServer = DateTime.Now;
+                        LastMessageFromServer = DateTime.UtcNow;
 
                         if (_receiveEngine.MessageType == MessageType.MessageResponseV1)
                         {
@@ -1051,12 +1049,11 @@ namespace SocketMeister
                                 if (response.ProcessingResult == MessageEngineDeliveryResult.Stopping)
                                 {
                                     //  SOCKET SERVER IS SHUTTING DOWN. WE WILL RETRY
-                                    foundUnrespondedMessage.Status = MessageStatus.Unsent;
+                                    foundUnrespondedMessage.TryRetrySend();
                                 }
                                 else
                                 {
-                                    foundUnrespondedMessage.Response = response;
-                                    foundUnrespondedMessage.Status = MessageStatus.Completed;
+                                    foundUnrespondedMessage.SetCompleted(response);
                                 }
                             }
                         }
@@ -1072,11 +1069,11 @@ namespace SocketMeister
                             //  DON'T RECONNECT TO THIS SERVER FOR SOME NUMBER OF SECONDS
                             if (_endPoints.Count > 1)
                             {
-                                CurrentEndPoint.DontReconnectUntil = DateTime.Now;
+                                CurrentEndPoint.DontReconnectUntil = DateTime.UtcNow;
                             }
                             else
                             {
-                                CurrentEndPoint.DontReconnectUntil = DateTime.Now.AddSeconds(RECONNECT_DELAY_AFTER_SERVER_SHUTDOWN_AND_ONE_ENDPOINT);
+                                CurrentEndPoint.DontReconnectUntil = DateTime.UtcNow.AddSeconds(RECONNECT_DELAY_AFTER_SERVER_SHUTDOWN_AND_ONE_ENDPOINT);
                             }
 
                             NotifyServerStopping();
@@ -1084,7 +1081,7 @@ namespace SocketMeister
                         }
                         else if (_receiveEngine.MessageType == MessageType.PollingResponseV1)
                         {
-                            LastPollResponse = DateTime.Now;
+                            LastPollResponse = DateTime.UtcNow;
                         }
 
                         else if (_receiveEngine.MessageType == MessageType.SubscriptionChangesResponseV1)

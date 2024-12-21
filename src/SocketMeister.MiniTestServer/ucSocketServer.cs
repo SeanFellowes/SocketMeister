@@ -11,7 +11,7 @@ namespace SocketMeister
     {
         private readonly Random _rng = new Random();
         private const string _chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        private DateTime _nextAutomatedSend = DateTime.Now;
+        private DateTime _nextAutomatedSend = DateTime.UtcNow;
         private string _messageText;
         private int _serverId;
         private int _port;

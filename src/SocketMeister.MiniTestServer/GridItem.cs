@@ -12,7 +12,7 @@
 
 //        public SeverityType Severity { get; }
 
-//        readonly DateTime _timeStamp = DateTime.Now;
+//        readonly DateTime _timeStamp = DateTime.UtcNow;
 
 //        public string TimeStamp { get { return _timeStamp.ToString("HH:mm:ss fff"); } }
 //        public string Source { get; }

@@ -108,17 +108,17 @@ namespace SocketMeister
 
                 foreach (UcSocketServer uc in _servers)
                 {
-                    if (uc.NextAutomatedSend > DateTime.Now) continue;
+                    if (uc.NextAutomatedSend > DateTime.UtcNow) continue;
                     try
                     {
-                        uc.NextAutomatedSend = DateTime.Now.AddMinutes(10);
-                        if (uc.SendAutomatedMessage() > 0) uc.NextAutomatedSend = DateTime.Now.AddMilliseconds(500);
-                        else uc.NextAutomatedSend = DateTime.Now.AddMilliseconds(1000);
+                        uc.NextAutomatedSend = DateTime.UtcNow.AddMinutes(10);
+                        if (uc.SendAutomatedMessage() > 0) uc.NextAutomatedSend = DateTime.UtcNow.AddMilliseconds(500);
+                        else uc.NextAutomatedSend = DateTime.UtcNow.AddMilliseconds(1000);
                     }
                     catch (Exception ex)
                     {
                         InsertListboxItem(new LogEventArgs(ex, "Server #" + uc.ServerId.ToString(), "Server #" + uc.ServerId.ToString()));
-                        uc.NextAutomatedSend = DateTime.Now.AddMilliseconds(10000);
+                        uc.NextAutomatedSend = DateTime.UtcNow.AddMilliseconds(10000);
                     }
                 }
 

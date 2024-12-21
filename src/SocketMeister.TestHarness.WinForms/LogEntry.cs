@@ -23,7 +23,7 @@ namespace SocketMeister.Test
 
         public LogEntry(string source, string message, SeverityType severity, int eventId, string stacktrace = null)
         {
-            timeStamp = DateTime.Now;
+            timeStamp = DateTime.UtcNow;
             this.source = source;
             this.message = message;
             stackTrace = stacktrace;

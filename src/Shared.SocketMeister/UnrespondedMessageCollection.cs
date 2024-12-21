@@ -160,8 +160,8 @@ namespace SocketMeister
             // Process outside the lock
             foreach (var message in messagesCopy)
             {
-                if (message.WaitForResponse)
-                    message.Status = MessageStatus.Unsent;
+                if (message.ContinueWaitingtForResponse)
+                    message.TryRetrySend();
             }
         }
 
@@ -177,7 +177,7 @@ namespace SocketMeister
                 return false;
 
             // Update response outside the lock
-            message.Response = ResponseMessage;
+            message.SetCompleted(ResponseMessage);
 #if !NET35
             message.ResponseReceivedEvent?.Set();
 #endif

@@ -1,9 +1,4 @@
-﻿#pragma warning disable IDE0079 // Remove unnecessary suppression
-#pragma warning disable IDE0090 // Use 'new(...)'
-#pragma warning disable IDE0063 // Use simple 'using' statement
-#pragma warning disable CA1805 // Do not initialize unnecessarily
-
-using System;
+﻿using System;
 using System.IO;
 
 namespace SocketMeister.Messages
@@ -35,12 +30,9 @@ namespace SocketMeister.Messages
 
         //  MESSAGE VARIABLES
         private readonly bool _isLongPolling = false;
-        private bool _isResponseReceived = false;
         private readonly byte[] _parameterBytes = null;
         private readonly object[] _parameters = null;
         private readonly long _messageId;
-        private readonly DateTime _timeout;
-        private readonly int _timeoutMilliseconds;
 
         /// <summary>
         /// Message constructor
@@ -50,9 +42,8 @@ namespace SocketMeister.Messages
         /// <param name="IsLongPolling">The maximum number of milliseconds to wait for a response before timing out.</param>
         public MessageV1(object[] Parameters, int TimeoutMilliseconds, bool IsLongPolling = false) : base(MessageType.MessageV1, waitForResponse: true)
         {
+            base.TimeoutMilliseconds = TimeoutMilliseconds;
             _parameters = Parameters;
-            _timeoutMilliseconds = TimeoutMilliseconds;
-            _timeout = DateTime.Now.AddMilliseconds(TimeoutMilliseconds);
             _isLongPolling = IsLongPolling;
 
             //  CREATE A MESSAGE ID
@@ -67,7 +58,7 @@ namespace SocketMeister.Messages
             using (BinaryWriter writer = new BinaryWriter(new MemoryStream()))
             {
                 writer.Write(_messageId);
-                writer.Write(_timeoutMilliseconds);
+                writer.Write(base.TimeoutMilliseconds);
                 writer.Write(_isLongPolling);
                 Serializer.SerializeParameters(writer, _parameters);
                 using (BinaryReader reader = new BinaryReader(writer.BaseStream))
@@ -82,12 +73,9 @@ namespace SocketMeister.Messages
         internal MessageV1(BinaryReader bR) : base(MessageType.MessageV1, waitForResponse: true)
         {
             _messageId = bR.ReadInt64();
-            _timeoutMilliseconds = bR.ReadInt32();
+            base.TimeoutMilliseconds = bR.ReadInt32();
             _isLongPolling = bR.ReadBoolean();
             _parameters = Serializer.DeserializeParameters(bR);
-
-            //  SETUP TIMEOUT
-            _timeout = DateTime.Now.AddMilliseconds(_timeoutMilliseconds);
         }
 
 
@@ -101,53 +89,11 @@ namespace SocketMeister.Messages
         /// </summary>
         public bool IsLongPolling => _isLongPolling;
 
-        public bool IsResponseReceived
-        {
-            get { lock (Lock) { return _isResponseReceived; } }
-            set 
-            { 
-                lock (Lock) 
-                { 
-                    _isResponseReceived = value;
-                }
-            }
-        }
-
-
-        /// <summary>
-        /// Whether the Message has timed out
-        /// </summary>
-        public bool IsTimeout
-        {
-            get
-            {
-                if (DateTime.Now > _timeout) return true;
-                else return false;
-            }
-        }
-
-
         /// <summary>
         /// Identifier assigned to this message when it was created
         /// </summary>
         public long MessageId => _messageId;
 
-
-        public new MessageResponseV1 Response
-        {
-            get 
-            { 
-                if (base.Response == null) return null;
-                return (MessageResponseV1)base.Response; 
-            }
-            set { base.Response = value; }
-        }
-
-
-        /// <summary>
-        /// Number of milliseconds to wait before a timeout will occur.
-        /// </summary>
-        public int TimeoutMilliseconds => _timeoutMilliseconds;
 
         /// <summary>
         /// Whether the method SendReceive(Message Message) should continute trying
@@ -157,25 +103,9 @@ namespace SocketMeister.Messages
             get
             {
                 if (Status == MessageStatus.Unsent) return true;
-                else return WaitForResponse;
+                else return ContinueWaitingtForResponse;
             }
         }
-
-        /// <summary>
-        /// Whether a SendReceive process should continue waiting for a response
-        /// </summary>
-        public bool WaitForResponse
-        {
-            get
-            {
-                if (IsAborted) return false;
-                if (IsTimeout) return false;
-                else if (Response != null) return false;
-                else if (Status == MessageStatus.InProgress) return true;
-                else return false;
-            }
-        }
-
 
         public void AppendBytes(BinaryWriter Writer)
         {
@@ -185,9 +115,3 @@ namespace SocketMeister.Messages
 
     }
 }
-
-
-#pragma warning restore CA1805 // Do not initialize unnecessarily
-#pragma warning restore IDE0063 // Use simple 'using' statement
-#pragma warning restore IDE0090 // Use 'new(...)'
-#pragma warning restore IDE0079 // Remove unnecessary suppression

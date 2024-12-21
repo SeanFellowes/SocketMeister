@@ -9,7 +9,7 @@ namespace SocketMeister
         private readonly string _server;
         private readonly string _source;
         private readonly string _text;
-        private readonly DateTime _timeStamp = DateTime.Now;
+        private readonly DateTime _timeStamp = DateTime.UtcNow;
 
 
         public LogEventArgs(SeverityType Severity, string Server, string Source, string Text)

@@ -21,7 +21,7 @@ namespace SocketMeister
             private readonly Guid _clientId = Guid.NewGuid();
             private readonly Socket _clientSocket;
             private readonly bool _compressSentData;
-            private readonly DateTime _connectTimestamp = DateTime.Now;
+            private readonly DateTime _connectTimestamp = DateTime.UtcNow;
             private bool _disposed;
             private readonly UnrespondedMessageCollection _unrespondedMessages = new UnrespondedMessageCollection();
             private readonly MessageEngine _receivedEnvelope;
@@ -226,7 +226,7 @@ namespace SocketMeister
                         return null;
 
                     SendIMessage(message, true); // Attempt to send the message
-                    message.Status = MessageStatus.InProgress;
+                    message.SetInProgress();
 
                     // Wait for response or timeout
                     int remainingTimeout = TimeoutMilliseconds - (int)(DateTime.UtcNow - startTime).TotalMilliseconds;

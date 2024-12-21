@@ -66,10 +66,10 @@ namespace SocketMeister.Testing
 
             //new Thread(delegate ()
             //{
-            //    DateTime maxWait = DateTime.Now.AddSeconds(30);
+            //    DateTime maxWait = DateTime.UtcNow.AddSeconds(30);
             //    while (_disposeCalled == false)
             //    {
-            //        if (DateTime.Now > maxWait)
+            //        if (DateTime.UtcNow > maxWait)
             //            throw new TimeoutException("Visual Studio debug mode timed out waiting for the fixed client to connect. Make sure both the harness and client applications are set as Startup Projects.");
             //        else if (_fixedClient1.ListenerClient != null)
             //            break;

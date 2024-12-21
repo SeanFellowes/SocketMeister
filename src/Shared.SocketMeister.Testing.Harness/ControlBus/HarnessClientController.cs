@@ -117,8 +117,8 @@ namespace SocketMeister.Testing.ControlBus
             process.StartInfo.CreateNoWindow = false;
             process.StartInfo.UseShellExecute = true;
             process.Start();
-            DateTime maxWait = DateTime.Now.AddMilliseconds(MaxWaitMilliseconds);
-            while (DateTime.Now < maxWait)
+            DateTime maxWait = DateTime.UtcNow.AddMilliseconds(MaxWaitMilliseconds);
+            while (DateTime.UtcNow < maxWait)
             {
                 if (process.HasExited == true)
                 {

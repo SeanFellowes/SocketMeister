@@ -87,7 +87,7 @@ namespace SocketMeister.Testing.ControlBus
             ControlBusSocketClient.MessageReceived += ControlBusSocketClient_MessageReceived;
 
             //  WAIT UP TO 5 SECONDS FOR THE HarnessControlBusSocketClient TO CONNECT TO THE HarnessController
-            DateTime maxWait = DateTime.Now.AddMilliseconds(5000);
+            DateTime maxWait = DateTime.UtcNow.AddMilliseconds(5000);
 
             while (true)
             {
@@ -95,7 +95,7 @@ namespace SocketMeister.Testing.ControlBus
                 {
                     break;
                 }
-                else if (DateTime.Now > maxWait)
+                else if (DateTime.UtcNow > maxWait)
                 {
                     ControlBusSocketClient?.Stop();
                     ConnectionFailed?.Invoke(this, new EventArgs());

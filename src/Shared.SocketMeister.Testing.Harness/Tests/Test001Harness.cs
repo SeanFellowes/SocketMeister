@@ -59,8 +59,8 @@ namespace SocketMeister.Testing.Tests
                 //  TEST THROW EXCEPTION (SHOULD APPEAR ON SCREEN)
                 //throw new FieldAccessException("Bad things hewflkm welfkm ewlkfm welfkmlm Error regfergergregreg erg reg reg re greg re greg re gtsrh yrthjtyfj tyj jy tyfju ytfj ytj ytj tydj tydj dtyjdcfth dfyjcgjy cfyj cgjy ycjvgukgyukyfutkjg fyuk ftyj fyuk ftyjt dyh t");
 
-                DateTime end = DateTime.Now.AddSeconds(5);
-                while (DateTime.Now < end)
+                DateTime end = DateTime.UtcNow.AddSeconds(5);
+                while (DateTime.UtcNow < end)
                 {
                     //    //  IS THIS TO BE STOPPED?
                     if (Status == TestStatus.Stopping)

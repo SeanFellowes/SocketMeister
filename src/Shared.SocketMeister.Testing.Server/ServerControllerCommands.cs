@@ -13,7 +13,7 @@ namespace SocketMeister.Testing
         internal static byte[] ClientToServerSendRequestEcho01(ServerController Controller, int MessageId, int MessageLength, int TimeoutMilliseconds = 60000)
         {
             OpenTransaction oMsg = Controller.OpenMessages.Add(MessageId);
-            DateTime maxWait = DateTime.Now.AddMilliseconds(TimeoutMilliseconds);
+            DateTime maxWait = DateTime.UtcNow.AddMilliseconds(TimeoutMilliseconds);
             while (true)
             {
                 if (oMsg.IsTransacted == true)
@@ -23,7 +23,7 @@ namespace SocketMeister.Testing
                     if (sentMsg.Length != MessageLength) throw new ApplicationException("Expected message length " + MessageLength);
                     else return sentMsg;
                 }
-                else if (DateTime.Now > maxWait) throw new TimeoutException();
+                else if (DateTime.UtcNow > maxWait) throw new TimeoutException();
                 else Thread.Sleep(25);
             }
         }
@@ -84,7 +84,7 @@ namespace SocketMeister.Testing
         public OpenTransaction(int TransactionId)
         {
             this.TransactionId = TransactionId;
-            TimeStamp = DateTime.Now;
+            TimeStamp = DateTime.UtcNow;
         }
 
 
