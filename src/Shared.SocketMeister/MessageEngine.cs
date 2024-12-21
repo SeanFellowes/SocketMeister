@@ -206,68 +206,6 @@ namespace SocketMeister.Messages
             }
         }
 
-        //public static byte[] GenerateSendBytes(IMessage SendObject, bool Compress)
-        //{
-        //    using (BinaryWriter writer = new BinaryWriter(new MemoryStream()))
-        //    {
-        //        // Initial Header (placeholder values)
-        //        writer.Write(Convert.ToInt16(SendObject.MessageType, CultureInfo.InvariantCulture));
-        //        writer.Write(false);  // Compression flag
-        //        writer.Write(0);      // Placeholder for compressed length
-        //        writer.Write(0);      // Placeholder for uncompressed length
-
-        //        // Write user bytes
-        //        int messageBodyStartPosition = Convert.ToInt32(writer.BaseStream.Position);
-        //        SendObject.AppendBytes(writer);
-        //        int messageBodyLength = Convert.ToInt32(writer.BaseStream.Position - messageBodyStartPosition);
-
-        //        // Decide whether to compress
-        //        if (Compress && messageBodyLength > 1024)
-        //        {
-        //            byte[] uncompressedBytes = new byte[messageBodyLength];
-        //            writer.BaseStream.Position = messageBodyStartPosition;
-        //            writer.BaseStream.Read(uncompressedBytes, 0, messageBodyLength);
-
-        //            byte[] compressedBytes = CLZF2.Compress(uncompressedBytes);
-
-        //            // The messageBodyLength is now the compressed message length
-        //            messageBodyLength = compressedBytes.Length;
-
-        //            // Write compressed data over uncompressed data
-        //            writer.BaseStream.Position = messageBodyStartPosition;
-        //            writer.Write(compressedBytes);
-
-        //            // Update Header
-        //            writer.BaseStream.Position = 2; // 2 bytes for MessageType
-        //            writer.Write(true);  // Compression flag
-        //            writer.Write(compressedBytes.Length);
-        //            writer.Write(messageBodyLength);
-        //        }
-        //        else
-        //        {
-        //            // Update Header for uncompressed data
-        //            writer.BaseStream.Position = 3;         // 2 bytes for MessageType + 1 byte for compressed flag
-        //            writer.Write(messageBodyLength);        // Compressed length (0 for uncompressed)
-        //            writer.Write(messageBodyLength);
-        //        }
-
-        //        // Return byte array
-        //        using (BinaryReader reader = new BinaryReader(writer.BaseStream))
-        //        {
-        //            reader.BaseStream.Position = 0;
-
-        //            int totalLength = messageBodyStartPosition + messageBodyLength;
-        //            return reader.ReadBytes(totalLength);
-        //        }
-        //    }
-        //}
-
-
-
-
-
-
-
         /// <summary>
         /// The type of message. 
         /// </summary>

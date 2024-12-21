@@ -48,8 +48,6 @@ namespace SocketMeister
         private readonly ConcurrentDictionary<Task, bool> _backgroundTasks = new ConcurrentDictionary<Task, bool>();
 #endif
 
-
-
         private SocketAsyncEventArgs _asyncEventArgsConnect;
         private SocketAsyncEventArgs _asyncEventArgsPolling;
         private SocketAsyncEventArgs _asyncEventArgsReceive;
@@ -474,7 +472,7 @@ namespace SocketMeister
                 }
                 else
                 {
-                    _unrespondedMessages.ResetToUnsent();
+                    _unrespondedMessages.ResetAfterDisconnect();
                 }
 
 
@@ -781,12 +779,12 @@ namespace SocketMeister
                     return;
                 }
 
-                if (messageResponse.Status == SendReceiveStatus.Unsent && CanSendReceive() == true)
+                if (messageResponse.SendReceiveStatus == SendReceiveStatus.Unsent && CanSendReceive() == true)
                 {
                     sendEventArgs = _sendEventArgsPool.Pop();
                     if (sendEventArgs != null)
                     {
-                        messageResponse.SetInProgress();
+                        messageResponse.SetToInProgress();
                         sendEventArgs.UserToken = messageResponse;
                         sendEventArgs.SetBuffer(sendBytes, 0, sendBytes.Length);
                         sendEventArgs.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
@@ -822,7 +820,7 @@ namespace SocketMeister
 
             sendEventArgs.UserToken = Message;
             sendEventArgs.SetBuffer(sendBytes, 0, sendBytes.Length);
-            Message.SetInProgress();
+            Message.SetToInProgress();
             sendEventArgs.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
             try
             {
@@ -879,12 +877,12 @@ namespace SocketMeister
             {
                 try
                 {
-                    if (message.Status == SendReceiveStatus.Unsent && CanSendReceive())
+                    if (message.SendReceiveStatus == SendReceiveStatus.Unsent && CanSendReceive())
                     {
                         var sendEventArgs = _sendEventArgsPool.Pop();
                         if (sendEventArgs != null)
                         {
-                            message.SetInProgress();
+                            message.SetToInProgress();
                             sendEventArgs.UserToken = message;
                             sendEventArgs.SetBuffer(sendBytes, 0, sendBytes.Length);
                             sendEventArgs.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
@@ -893,7 +891,7 @@ namespace SocketMeister
                                 ProcessSend(null, sendEventArgs);
 
                             // Exit if the message has timed out
-                            if (message.Status == SendReceiveStatus.Timeout) break;
+                            if (message.SendReceiveStatus == SendReceiveStatus.Timeout) break;
                         }
                     }
                 }
@@ -910,12 +908,12 @@ namespace SocketMeister
             {
                 try
                 {
-                    if (message.Status == SendReceiveStatus.Unsent && CanSendReceive())
+                    if (message.SendReceiveStatus == SendReceiveStatus.Unsent && CanSendReceive())
                     {
                         var sendEventArgs = _sendEventArgsPool.Pop();
                         if (sendEventArgs != null)
                         {
-                            message.SetInProgress();
+                            message.SetToInProgress();
                             sendEventArgs.UserToken = message;
                             sendEventArgs.SetBuffer(sendBytes, 0, sendBytes.Length);
                             sendEventArgs.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
@@ -934,7 +932,6 @@ namespace SocketMeister
                 }
             }
 #endif
-
             _unrespondedMessages.Remove(message);
 
             if (message.Response?.Error != null) throw new Exception(message.Response.Error);
@@ -964,20 +961,20 @@ namespace SocketMeister
             {
                 if (result == SocketError.ConnectionReset)
                 {
-                    message.TryRetrySend();
+                    message.SetToUnsent();
                     NotifyExceptionRaised(new Exception("Disconnecting: Connection was reset."));
                     DisconnectGracefully(SocketHasErrored: true);
                 }
                 else if (result != SocketError.Success)
                 {
-                    message.TryRetrySend();
+                    message.SetToUnsent();
                     NotifyExceptionRaised(new Exception("Disconnecting: Send did not generate a success. Socket operation returned error code " + (int)e.SocketError));
                     DisconnectGracefully(SocketHasErrored: true);
                 }
             }
             catch (Exception ex)
             {
-                message.TryRetrySend();
+                message.SetToUnsent();
                 NotifyExceptionRaised(ex);
             }
         }
@@ -1037,25 +1034,15 @@ namespace SocketMeister
                             MessageResponseV1 response = _receiveEngine.GetMessageResponseV1();
 
                             //  CHECK TO SEE IS THE MESSAGE IS IN THE LIST OF OPEN SendReceive ITEMS.
-                            _unrespondedMessages.TryGetMessage(response.MessageId, out IMessage foundUnrespondedMessage);
-                            if (foundUnrespondedMessage != null)
-                            {
-                                if (response.ProcessingResult == MessageEngineDeliveryResult.Stopping)
-                                {
-                                    //  SOCKET SERVER IS SHUTTING DOWN. WE WILL RETRY
-                                    foundUnrespondedMessage.TryRetrySend();
-                                }
-                                else
-                                {
-                                    foundUnrespondedMessage.SetCompleted(response);
-                                }
-                            }
-                        }
+                            _unrespondedMessages.FindMessageAndSetResponse(response); ;
+                       }
 
                         else if (_receiveEngine.MessageType == MessageType.MessageV1)
                         {
-                            MessageV1 message = _receiveEngine.GetMessageV1();
-                            BgProcessMessageV1(message);
+                            MessageV1 messageV1 = _receiveEngine.GetMessageV1();
+
+
+                            BgProcessMessageV1(messageV1);
                         }
 
                         else if (_receiveEngine.MessageType == MessageType.ServerStoppingNotificationV1)

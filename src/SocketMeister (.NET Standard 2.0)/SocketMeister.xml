@@ -556,7 +556,7 @@
             Type of message
             </summary>
         </member>
-        <member name="P:SocketMeister.Messages.IMessage.Status">
+        <member name="P:SocketMeister.Messages.IMessage.SendReceiveStatus">
             <summary>
             Status of the message. 
             </summary>
@@ -580,6 +580,11 @@
         <member name="M:SocketMeister.Messages.IMessage.Dispose">
             <summary>
             Message displosal
+            </summary>
+        </member>
+        <member name="E:SocketMeister.Messages.MessageBase.SendReceiveStatusChanged">
+            <summary>
+            Event raised when the current EndPoint channges
             </summary>
         </member>
         <member name="M:SocketMeister.Messages.MessageBase.Dispose">
@@ -623,9 +628,9 @@
             Response message, where a response is required (waitForResponse = true)
             </summary>
         </member>
-        <member name="P:SocketMeister.Messages.MessageBase.Status">
+        <member name="P:SocketMeister.Messages.MessageBase.SendReceiveStatus">
             <summary>
-            Calculated status of the message.
+            Calculated SendReceive status of the message (Will consider timeout accurately)
             </summary>
         </member>
         <member name="P:SocketMeister.Messages.MessageBase.TrySendReceive">
@@ -709,9 +714,9 @@
             The maximum number of milliseconds the client should wait for unresponded messages to be completed. The server will not send back responses for unresponded messages after this time.
             </summary>
         </member>
-        <member name="M:SocketMeister.UnrespondedMessageCollection.TryGetMessage(System.Int64,SocketMeister.Messages.IMessage@)">
+        <member name="T:SocketMeister.UnrespondedMessageCollection">
             <summary>
-            Safely retrieves a message if it exists.
+            Messages waiting for a response
             </summary>
         </member>
         <member name="M:SocketMeister.UnrespondedMessageCollection.Clear">
@@ -729,22 +734,17 @@
             Removes a message from the collection.
             </summary>
         </member>
-        <member name="P:SocketMeister.UnrespondedMessageCollection.Count">
+        <member name="M:SocketMeister.UnrespondedMessageCollection.ResetAfterDisconnect">
             <summary>
-            Gets the total count of messages.
-            </summary>
-        </member>
-        <member name="M:SocketMeister.UnrespondedMessageCollection.ResetToUnsent">
-            <summary>
-            Resets messages to 'Unsent' status.
+            After a disconnect, reset applicable messages to Unsent, so the messages can be resent if the client reconnects to the server
             </summary>
         </member>
         <member name="M:SocketMeister.UnrespondedMessageCollection.FindMessageAndSetResponse(SocketMeister.Messages.MessageResponseV1)">
             <summary>
-            Finds a original message from the MessageId included in a response and sets the ResponseMessage to the original message to the ResponseMessage 
+            Safely finds the original message in this class using the MessageId included in a response. If found it sets the ResponseMessage on the original message
             </summary>
             <param name="ResponseMessage"></param>
-            <returns></returns>
+            <returns>true is successful</returns>
         </member>
         <member name="T:SocketMeister.Serializer">
             <summary>

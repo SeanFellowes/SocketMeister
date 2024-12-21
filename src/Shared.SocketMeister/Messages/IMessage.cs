@@ -22,7 +22,7 @@ namespace SocketMeister.Messages
         /// <summary>
         /// Status of the message. 
         /// </summary>
-        SendReceiveStatus Status { get; }
+        SendReceiveStatus SendReceiveStatus { get; }
 
         /// <summary>
         /// Number of milliseconds after the message was created before the message should timeout
@@ -45,9 +45,9 @@ namespace SocketMeister.Messages
         /// </summary>
         void Dispose();
 
-        void SetCompleted(MessageResponseV1 responseMessage);
-        void SetInProgress();
-        void TryRetrySend();
+        void SetToCompleted(MessageResponseV1 responseMessage);
+        void SetToInProgress();
+        void SetToUnsent();
 
 
 #if !NET35

@@ -15,7 +15,7 @@ namespace SocketMeister.Messages
         private bool _isAborted;
         private readonly object _lock = new object();
         private readonly MessageType _messageType;
-        private SendReceiveStatus _messageStatus = SendReceiveStatus.Unsent;
+        private SendReceiveStatus _sendReceiveStatus = SendReceiveStatus.Unsent;
         private MessageResponseV1 _response;
         private int _timeoutMilliseconds = 60000;
         private DateTime _timeoutDateTime;
@@ -23,6 +23,11 @@ namespace SocketMeister.Messages
 #if !NET35
         private ManualResetEventSlim _responseReceivedEvent;
 #endif
+
+        /// <summary>
+        /// Event raised when the current EndPoint channges
+        /// </summary>
+        public event EventHandler<EventArgs> SendReceiveStatusChanged;
 
 
         internal MessageBase(MessageType MessageType, bool waitForResponse)
@@ -121,65 +126,64 @@ namespace SocketMeister.Messages
             get { lock (_lock) { return _response; } }
         }
 
-        public void SetCompleted(MessageResponseV1 responseMessage)
+        public void SetToCompleted(MessageResponseV1 responseMessage)
         {
+            SetSendReceiveStatus(SendReceiveStatus.Completed, responseMessage);
+        }
+
+        public void SetToInProgress()
+        {
+            SetSendReceiveStatus(SendReceiveStatus.InProgress);
+        }
+
+        public void SetToUnsent()
+        {
+            if (SendReceiveStatus != SendReceiveStatus.InProgress) return;
+            SetSendReceiveStatus(SendReceiveStatus.Unsent);
+        }
+
+        private void SetSendReceiveStatus(SendReceiveStatus value, MessageResponseV1 responseMessage = null)
+        {
+            bool changed = false;
             lock (_lock)
-            {
-                _response = responseMessage;
-                _messageStatus = SendReceiveStatus.Completed;
+            {   
+                if (responseMessage != null)
+                {
+                    if (value != SendReceiveStatus.Completed) throw new ArgumentException("SendReceiveStatus must be " + nameof(SendReceiveStatus.Completed) + " when providing a response message", "value");
+                    _response = responseMessage;
 #if !NET35
-                _responseReceivedEvent?.Set();
-                _responseReceivedEvent?.Dispose();
+                    _responseReceivedEvent?.Set();
+                    _responseReceivedEvent?.Dispose();
 #endif
+                }
+
+                if (value != _sendReceiveStatus)
+                {
+                    changed = true;
+                    _sendReceiveStatus = value;
+                }
+
             }
+            if (changed) SendReceiveStatusChanged?.Invoke(this, new EventArgs());
         }
-
-        public void SetInProgress()
-        {
-            lock (_lock)
-            {
-                _messageStatus = SendReceiveStatus.InProgress;
-            }
-        }
-
-
-        public void TryRetrySend()
-        {
-            if (Status != SendReceiveStatus.InProgress) return;
-            _messageStatus = SendReceiveStatus.Unsent;
-        }
-
-
 
 
         /// <summary>
-        /// Calculated status of the message.
+        /// Calculated SendReceive status of the message (Will consider timeout accurately)
         /// </summary>
-        public SendReceiveStatus Status
+        public SendReceiveStatus SendReceiveStatus
         {
             get
             {
                 SendReceiveStatus calculatedStatus;
-                bool statusChanged = false;
 
                 lock (_lock)
                 {
-                    if (_messageStatus == SendReceiveStatus.Completed) calculatedStatus = SendReceiveStatus.Completed;
+                    if (_sendReceiveStatus == SendReceiveStatus.Completed) calculatedStatus = SendReceiveStatus.Completed;
                     else if (DateTime.UtcNow > _timeoutDateTime) calculatedStatus = SendReceiveStatus.Timeout;
-                    else calculatedStatus = _messageStatus;
-
-                    if (calculatedStatus != _messageStatus)
-                    {
-                        statusChanged = true;
-                        _messageStatus = calculatedStatus;
-                    }
+                    else calculatedStatus = _sendReceiveStatus;
                 }
-
-                if (statusChanged)
-                {
-                    //  RAISE STATUS CHANGED EVENT
-                }
-
+                SetSendReceiveStatus(calculatedStatus);
                 return calculatedStatus;
             }
         }
@@ -192,7 +196,7 @@ namespace SocketMeister.Messages
         {
             get
             {
-                SendReceiveStatus currentStatus = Status;
+                SendReceiveStatus currentStatus = SendReceiveStatus;
                 if (currentStatus == SendReceiveStatus.Completed || currentStatus == SendReceiveStatus.Timeout) return false;
                 return true;
             }

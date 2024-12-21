@@ -111,4 +111,32 @@ namespace SocketMeister
         public string StackTrace => _stackTrace;
     }
 
+
+
+    ///// <summary>
+    ///// Events and Exceptions raised for analysis and logging purposes
+    ///// </summary>
+    //internal class SendReceiveStatusEventArgs : EventArgs
+    //{
+    //    private readonly SendReceiveStatus _sendReceiveStatus;
+
+    //    /// <summary>
+    //    /// Constructor
+    //    /// </summary>
+    //    /// <param name="sendReceiveStatus">New SendReceiveStatus for the message</param>
+    //    public SendReceiveStatusEventArgs(SendReceiveStatus sendReceiveStatus)
+    //    {
+    //        _sendReceiveStatus = sendReceiveStatus;
+    //    }
+
+    //    /// <summary>
+    //    /// The new SendReceiveStatus for the message.
+    //    /// </summary>
+    //    public SendReceiveStatus SendReceiveStatus => _sendReceiveStatus;
+    //}
+
+
+
+
+
 }

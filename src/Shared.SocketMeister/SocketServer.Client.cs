@@ -225,7 +225,7 @@ namespace SocketMeister
                         return null;
 
                     SendIMessage(message, true); // Attempt to send the message
-                    message.SetInProgress();
+                    message.SetToInProgress();
 
                     // Wait for a response. 
                     if (message.WaitForResponse() == false)
