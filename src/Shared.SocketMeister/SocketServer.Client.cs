@@ -212,7 +212,6 @@ namespace SocketMeister
 
                 // Create and initialize the message
                 var message = new MessageV1(Parameters, TimeoutMilliseconds, IsLongPolling);
-                message.ResponseReceivedEvent = new ManualResetEventSlim(false);
 
                 try
                 {
@@ -228,12 +227,11 @@ namespace SocketMeister
                     SendIMessage(message, true); // Attempt to send the message
                     message.SetInProgress();
 
-                    // Wait for response or timeout
-                    int remainingTimeout = TimeoutMilliseconds - (int)(DateTime.UtcNow - startTime).TotalMilliseconds;
-                    if (remainingTimeout <= 0 || !message.ResponseReceivedEvent.Wait(remainingTimeout))
+                    // Wait for a response. 
+                    if (message.WaitForResponse() == false)
                     {
                         // Timeout occurred
-                        throw new TimeoutException($"SendMessage() timed out after {TimeoutMilliseconds} milliseconds.");
+                        throw new TimeoutException($"SendMessage() received no response out after {TimeoutMilliseconds} milliseconds.");
                     }
 
                     // Handle the response
@@ -251,7 +249,6 @@ namespace SocketMeister
                 {
                     // Clean up message and associated resources
                     _unrespondedMessages.Remove(message);   //  Locking performed inside the class so not required here
-                    message.ResponseReceivedEvent?.Dispose();
                 }
             }
         }

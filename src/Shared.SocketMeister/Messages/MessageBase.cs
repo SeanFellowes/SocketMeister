@@ -15,16 +15,13 @@ namespace SocketMeister.Messages
         private bool _isAborted;
         private readonly object _lock = new object();
         private readonly MessageType _messageType;
-        private MessageStatus _messageStatus = MessageStatus.Unsent;
+        private SendReceiveStatus _messageStatus = SendReceiveStatus.Unsent;
         private MessageResponseV1 _response;
         private int _timeoutMilliseconds = 60000;
         private DateTime _timeoutDateTime;
-        private readonly bool _waitForResponse;
-
-
+        //private readonly bool _waitForResponse;
 #if !NET35
-        //  This is only used by some message types, so is null by default
-        public ManualResetEventSlim ResponseReceivedEvent { get; set; }
+        private ManualResetEventSlim _responseReceivedEvent;
 #endif
 
 
@@ -32,7 +29,7 @@ namespace SocketMeister.Messages
         {
             _messageType = MessageType;
             CreatedDateTime = DateTime.UtcNow;
-            _waitForResponse = waitForResponse;
+            //_waitForResponse = waitForResponse;
             _timeoutDateTime = DateTime.UtcNow.AddMilliseconds(_timeoutMilliseconds);
         }
 
@@ -55,7 +52,7 @@ namespace SocketMeister.Messages
             if (disposing)
             {
 #if !NET35
-                ResponseReceivedEvent?.Dispose();
+                _responseReceivedEvent?.Dispose();
 #endif
                 _response?.Dispose();
             }
@@ -66,14 +63,6 @@ namespace SocketMeister.Messages
         /// </summary>
         public DateTime CreatedDateTime { get; }
 
-        ///// <summary>
-        ///// Timestamp, in UTC, when the message will timeout.
-        ///// </summary>
-        //public DateTime TimeoutDateTime 
-        //{ 
-        //    get { lock(_lock) { return _timeoutDateTime; } }
-        //}
-
         /// <summary>
         /// Number of milliseconds until the message will timeout. Also sets TimeoutDateTime
         /// </summary>
@@ -81,10 +70,7 @@ namespace SocketMeister.Messages
         {
             get
             {
-                lock (_lock)
-                {
-                    return _timeoutMilliseconds;
-                }
+                lock (_lock) { return _timeoutMilliseconds; }
             }
             set
             {
@@ -140,11 +126,11 @@ namespace SocketMeister.Messages
             lock (_lock)
             {
                 _response = responseMessage;
-                _messageStatus = MessageStatus.Completed;
+                _messageStatus = SendReceiveStatus.Completed;
 #if !NET35
-                ResponseReceivedEvent?.Set();
+                _responseReceivedEvent?.Set();
+                _responseReceivedEvent?.Dispose();
 #endif
-
             }
         }
 
@@ -152,43 +138,34 @@ namespace SocketMeister.Messages
         {
             lock (_lock)
             {
-                _messageStatus = MessageStatus.InProgress;
+                _messageStatus = SendReceiveStatus.InProgress;
             }
         }
 
 
         public void TryRetrySend()
         {
-            lock (_lock)
-            {
-                _messageStatus = MessageStatus.Unsent;
-            }
+            if (Status != SendReceiveStatus.InProgress) return;
+            _messageStatus = SendReceiveStatus.Unsent;
         }
 
-
-        ////  Make sure this is called within a lock
-        //private bool RetryPossible()
-        //{
-        //    if (_messageStatus == MessageStatus.Completed || _messageStatus == MessageStatus.
-        //}
 
 
 
         /// <summary>
         /// Calculated status of the message.
         /// </summary>
-        public MessageStatus Status
+        public SendReceiveStatus Status
         {
             get
             {
-                MessageStatus calculatedStatus;
+                SendReceiveStatus calculatedStatus;
                 bool statusChanged = false;
 
                 lock (_lock)
                 {
-                    if (_messageStatus == MessageStatus.Completed) calculatedStatus = MessageStatus.Completed;
-                    else if (_messageStatus == MessageStatus.Aborted) calculatedStatus = MessageStatus.Aborted;
-                    else if (DateTime.UtcNow > _timeoutDateTime) calculatedStatus = MessageStatus.Timeout;
+                    if (_messageStatus == SendReceiveStatus.Completed) calculatedStatus = SendReceiveStatus.Completed;
+                    else if (DateTime.UtcNow > _timeoutDateTime) calculatedStatus = SendReceiveStatus.Timeout;
                     else calculatedStatus = _messageStatus;
 
                     if (calculatedStatus != _messageStatus)
@@ -209,36 +186,35 @@ namespace SocketMeister.Messages
 
 
         /// <summary>
-        /// Whether a SendReceive process should continue waiting for a response
+        /// Whether the method SendReceive(Message Message) should continute trying
         /// </summary>
-        public bool ContinueWaitingtForResponse
+        public bool TrySendReceive
         {
             get
             {
-                lock (_lock)
-                {
-                    if (!_waitForResponse) return false;
-                    if (_isAborted) return false;
-                    if (DateTime.UtcNow > _timeoutDateTime) return false;
-                    if (_response != null) return false;
-                    if (Status == MessageStatus.InProgress) return true;
-                    return false;
-                }
+                SendReceiveStatus currentStatus = Status;
+                if (currentStatus == SendReceiveStatus.Completed || currentStatus == SendReceiveStatus.Timeout) return false;
+                return true;
             }
         }
 
+
 #if !NET35
-        public bool WaitForResponse(ManualResetEventSlim messageWaitHandle)
+        /// <summary>
+        ///     Waits for SetCompleted() has been called or the message times out.
+        /// </summary>
+        /// <returns></returns>
+        public bool WaitForResponse()
         {
             int remainingMilliseconds;
             lock (_lock) 
-            { 
-                ResponseReceivedEvent = messageWaitHandle; 
+            {
+                _responseReceivedEvent = new ManualResetEventSlim(false); 
                 remainingMilliseconds = _timeoutMilliseconds - (int)(DateTime.UtcNow - CreatedDateTime).TotalMilliseconds;
             }
             if (remainingMilliseconds > 0)
             {
-                return ResponseReceivedEvent.Wait(remainingMilliseconds);
+                return _responseReceivedEvent.Wait(remainingMilliseconds);
             }
             return false;
         }

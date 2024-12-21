@@ -44,32 +44,27 @@
             An exception occured while processing the message
             </summary>
         </member>
-        <member name="T:SocketMeister.MessageStatus">
+        <member name="T:SocketMeister.SendReceiveStatus">
             <summary>
-            The status of the message.
+            The SendReceive status of the message.
             </summary>
         </member>
-        <member name="F:SocketMeister.MessageStatus.Unsent">
+        <member name="F:SocketMeister.SendReceiveStatus.Unsent">
             <summary>
             Message has not been sent or is flagged to resent (because socket connection failed)
             </summary>
         </member>
-        <member name="F:SocketMeister.MessageStatus.InProgress">
+        <member name="F:SocketMeister.SendReceiveStatus.InProgress">
             <summary>
             Message is in progress
             </summary>
         </member>
-        <member name="F:SocketMeister.MessageStatus.Aborted">
+        <member name="F:SocketMeister.SendReceiveStatus.Timeout">
             <summary>
-            Message has been aborted (E.g. Socket closed)
+            Message has timed out
             </summary>
         </member>
-        <member name="F:SocketMeister.MessageStatus.Timeout">
-            <summary>
-            Message has times out
-            </summary>
-        </member>
-        <member name="F:SocketMeister.MessageStatus.Completed">
+        <member name="F:SocketMeister.SendReceiveStatus.Completed">
             <summary>
             Send operation finished (Could be unsuccessful or successful)
             </summary>
@@ -571,11 +566,6 @@
             Number of milliseconds after the message was created before the message should timeout
             </summary>
         </member>
-        <member name="P:SocketMeister.Messages.IMessage.ContinueWaitingtForResponse">
-            <summary>
-            After sending this message, the sender class will wait for a response.
-            </summary>
-        </member>
         <member name="M:SocketMeister.Messages.IMessage.AppendBytes(System.IO.BinaryWriter)">
             <summary>
             Mandatory method to append binary data to the IMessage object,
@@ -638,10 +628,16 @@
             Calculated status of the message.
             </summary>
         </member>
-        <member name="P:SocketMeister.Messages.MessageBase.ContinueWaitingtForResponse">
+        <member name="P:SocketMeister.Messages.MessageBase.TrySendReceive">
             <summary>
-            Whether a SendReceive process should continue waiting for a response
+            Whether the method SendReceive(Message Message) should continute trying
             </summary>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageBase.WaitForResponse">
+            <summary>
+                Waits for SetCompleted() has been called or the message times out.
+            </summary>
+            <returns></returns>
         </member>
         <member name="T:SocketMeister.Messages.PollingRequestV1">
             <summary>
@@ -684,11 +680,6 @@
         <member name="P:SocketMeister.Messages.MessageV1.MessageId">
             <summary>
             Identifier assigned to this message when it was created
-            </summary>
-        </member>
-        <member name="P:SocketMeister.Messages.MessageV1.TrySendReceive">
-            <summary>
-            Whether the method SendReceive(Message Message) should continute trying
             </summary>
         </member>
         <member name="P:SocketMeister.Messages.MessageResponseV1.RemoteClient">

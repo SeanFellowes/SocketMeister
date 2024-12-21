@@ -95,18 +95,6 @@ namespace SocketMeister.Messages
         public long MessageId => _messageId;
 
 
-        /// <summary>
-        /// Whether the method SendReceive(Message Message) should continute trying
-        /// </summary>
-        public bool TrySendReceive
-        {
-            get
-            {
-                if (Status == MessageStatus.Unsent) return true;
-                else return ContinueWaitingtForResponse;
-            }
-        }
-
         public void AppendBytes(BinaryWriter Writer)
         {
             Writer.Write(_parameterBytes);

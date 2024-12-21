@@ -781,7 +781,7 @@ namespace SocketMeister
                     return;
                 }
 
-                if (messageResponse.Status == MessageStatus.Unsent && CanSendReceive() == true)
+                if (messageResponse.Status == SendReceiveStatus.Unsent && CanSendReceive() == true)
                 {
                     sendEventArgs = _sendEventArgsPool.Pop();
                     if (sendEventArgs != null)
@@ -879,7 +879,7 @@ namespace SocketMeister
             {
                 try
                 {
-                    if (message.Status == MessageStatus.Unsent && CanSendReceive())
+                    if (message.Status == SendReceiveStatus.Unsent && CanSendReceive())
                     {
                         var sendEventArgs = _sendEventArgsPool.Pop();
                         if (sendEventArgs != null)
@@ -892,8 +892,8 @@ namespace SocketMeister
                             if (!CurrentEndPoint.Socket.SendAsync(sendEventArgs))
                                 ProcessSend(null, sendEventArgs);
 
-                            // Exit ix the message has timed out
-                            if (message.Status == MessageStatus.Timeout) break;
+                            // Exit if the message has timed out
+                            if (message.Status == SendReceiveStatus.Timeout) break;
                         }
                     }
                 }
@@ -906,38 +906,32 @@ namespace SocketMeister
             }
 #else
             // Improved implementation for .NET 4.0+
-            using (var messageWaitHandle = new ManualResetEventSlim(false))
+            while (message.TrySendReceive && !StopClientPermanently)
             {
-                message.ResponseReceivedEvent = messageWaitHandle;
-
-                while (message.TrySendReceive && !StopClientPermanently)
+                try
                 {
-                    try
+                    if (message.Status == SendReceiveStatus.Unsent && CanSendReceive())
                     {
-                        if (message.Status == MessageStatus.Unsent && CanSendReceive())
+                        var sendEventArgs = _sendEventArgsPool.Pop();
+                        if (sendEventArgs != null)
                         {
-                            var sendEventArgs = _sendEventArgsPool.Pop();
-                            if (sendEventArgs != null)
-                            {
-                                message.SetInProgress();
-                                sendEventArgs.UserToken = message;
-                                sendEventArgs.SetBuffer(sendBytes, 0, sendBytes.Length);
-                                sendEventArgs.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
+                            message.SetInProgress();
+                            sendEventArgs.UserToken = message;
+                            sendEventArgs.SetBuffer(sendBytes, 0, sendBytes.Length);
+                            sendEventArgs.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
 
-                                if (!CurrentEndPoint.Socket.SendAsync(sendEventArgs))
-                                    ProcessSend(null, sendEventArgs);
+                            if (!CurrentEndPoint.Socket.SendAsync(sendEventArgs))
+                                ProcessSend(null, sendEventArgs);
 
-                                // Exit if the message has timed before reveiving a response using a ManualResetEventSlim (Set if a response is received)
-                                if (message.WaitForResponse(messageWaitHandle) == false) break;
-                            }
+                            // Wait for a response.
+                            if (message.WaitForResponse() == false) break;
                         }
                     }
-                    catch (Exception ex)
-                    {
-                        NotifyExceptionRaised(ex);
-                    }
                 }
-                message.ResponseReceivedEvent?.Dispose();
+                catch (Exception ex)
+                {
+                    NotifyExceptionRaised(ex);
+                }
             }
 #endif
 
