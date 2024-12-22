@@ -36,6 +36,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Code", "Code", "{F79E4971-5
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SocketMeister (.NET 8)", "SocketMeister (.NET 8)\SocketMeister (.NET 8).csproj", "{B1BBB636-3EB5-4EAC-A96D-6CA353B491C7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocketMeister.MiniTestClient (.NET 3.5)", "SocketMeister.MiniTestClient (.NET 3.5)\SocketMeister.MiniTestClient (.NET 3.5).csproj", "{7C2EBE82-C775-4584-94F5-10001FFC62EF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -230,6 +232,26 @@ Global
 		{B1BBB636-3EB5-4EAC-A96D-6CA353B491C7}.Release|x64.Build.0 = Release|Any CPU
 		{B1BBB636-3EB5-4EAC-A96D-6CA353B491C7}.Release|x86.ActiveCfg = Release|Any CPU
 		{B1BBB636-3EB5-4EAC-A96D-6CA353B491C7}.Release|x86.Build.0 = Release|Any CPU
+		{7C2EBE82-C775-4584-94F5-10001FFC62EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C2EBE82-C775-4584-94F5-10001FFC62EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C2EBE82-C775-4584-94F5-10001FFC62EF}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{7C2EBE82-C775-4584-94F5-10001FFC62EF}.Debug|ARM.Build.0 = Debug|Any CPU
+		{7C2EBE82-C775-4584-94F5-10001FFC62EF}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{7C2EBE82-C775-4584-94F5-10001FFC62EF}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{7C2EBE82-C775-4584-94F5-10001FFC62EF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{7C2EBE82-C775-4584-94F5-10001FFC62EF}.Debug|x64.Build.0 = Debug|Any CPU
+		{7C2EBE82-C775-4584-94F5-10001FFC62EF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7C2EBE82-C775-4584-94F5-10001FFC62EF}.Debug|x86.Build.0 = Debug|Any CPU
+		{7C2EBE82-C775-4584-94F5-10001FFC62EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C2EBE82-C775-4584-94F5-10001FFC62EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C2EBE82-C775-4584-94F5-10001FFC62EF}.Release|ARM.ActiveCfg = Release|Any CPU
+		{7C2EBE82-C775-4584-94F5-10001FFC62EF}.Release|ARM.Build.0 = Release|Any CPU
+		{7C2EBE82-C775-4584-94F5-10001FFC62EF}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{7C2EBE82-C775-4584-94F5-10001FFC62EF}.Release|ARM64.Build.0 = Release|Any CPU
+		{7C2EBE82-C775-4584-94F5-10001FFC62EF}.Release|x64.ActiveCfg = Release|Any CPU
+		{7C2EBE82-C775-4584-94F5-10001FFC62EF}.Release|x64.Build.0 = Release|Any CPU
+		{7C2EBE82-C775-4584-94F5-10001FFC62EF}.Release|x86.ActiveCfg = Release|Any CPU
+		{7C2EBE82-C775-4584-94F5-10001FFC62EF}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
