@@ -1,7 +1,4 @@
-﻿#pragma warning disable IDE0079 // Remove unnecessary suppression
-#pragma warning disable IDE0090 // Use 'new(...)'
-
-using System;
+﻿using System;
 
 namespace SocketMeister.Messages
 {
@@ -52,7 +49,7 @@ namespace SocketMeister.Messages
         /// <summary>
         /// Improved C# LZF Compressor, a very small data compression library. The compression algorithm is extremely fast.
         /// </summary>
-        internal class CLZF2
+        internal static class CLZF2
         {
             #region Tunable Constants
 
@@ -432,7 +429,4 @@ namespace SocketMeister.Messages
         }
     }
 }
-
-#pragma warning restore IDE0090 // Use 'new(...)'
-#pragma warning restore IDE0079 // Remove unnecessary suppression
 

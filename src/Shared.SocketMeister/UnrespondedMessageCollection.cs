@@ -81,7 +81,7 @@ namespace SocketMeister
             // Process outside the lock
             foreach (var message in messagesCopy)
             {
-                message.SetToUnsent();
+                message.SetStatusUnsent();
             }
         }
 
@@ -107,7 +107,7 @@ namespace SocketMeister
             // Update response outside the lock
             if (message != null)
             {
-                message.SetToCompleted(ResponseMessage);
+                message.SetStatusCompleted(ResponseMessage);
                 return true;
             }
             else

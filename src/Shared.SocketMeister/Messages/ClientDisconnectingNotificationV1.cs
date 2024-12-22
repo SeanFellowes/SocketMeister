@@ -7,7 +7,7 @@ namespace SocketMeister.Messages
     /// </summary>
     internal class ClientDisconnectingNotificationV1 : MessageBase, IMessage
     {
-        public ClientDisconnectingNotificationV1() : base(MessageType.ClientDisconnectingNotificationV1, waitForResponse: false)
+        public ClientDisconnectingNotificationV1() : base(MessageType.ClientDisconnectingNotificationV1)
         {
         }
 

@@ -7,7 +7,7 @@ namespace SocketMeister.Messages
     /// </summary>
     internal class ClientInfoV1 : MessageBase, IMessage
     {
-        public ClientInfoV1() : base(MessageType.ClientInfoV1, waitForResponse: false) { }
+        public ClientInfoV1() : base(MessageType.ClientInfoV1) { }
 
         ///// <summary>
         ///// Fastest was to build this is to create it directly from the SocketEnvelope buffer.

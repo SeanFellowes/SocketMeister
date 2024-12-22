@@ -29,7 +29,7 @@ namespace SocketMeister.Messages
         //  RESPONSE VARIABLES
         private readonly long _messageId;
 
-        public MessageDeliveredAckV1(long MessageId) : base(MessageType.MessageDeliveredAckV1, waitForResponse: false)
+        public MessageDeliveredAckV1(long MessageId) : base(MessageType.MessageDeliveredAckV1)
         {
             _messageId = MessageId;
         }
@@ -38,7 +38,7 @@ namespace SocketMeister.Messages
         /// Fastest was to build this is to create it directly from the SocketEnvelope buffer.
         /// </summary>
         /// <param name="Reader">Binary Reader</param>
-        public MessageDeliveredAckV1(BinaryReader Reader) : base(MessageType.MessageDeliveredAckV1, waitForResponse: false)
+        public MessageDeliveredAckV1(BinaryReader Reader) : base(MessageType.MessageDeliveredAckV1)
         {
             _messageId = Reader.ReadInt64();
         }

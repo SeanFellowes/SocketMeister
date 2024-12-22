@@ -22,7 +22,7 @@ namespace SocketMeister.Messages
         /// <summary>
         /// Status of the message. 
         /// </summary>
-        SendReceiveStatus SendReceiveStatus { get; }
+        MessageStatus SendReceiveStatus { get; }
 
         /// <summary>
         /// Number of milliseconds after the message was created before the message should timeout
@@ -45,16 +45,16 @@ namespace SocketMeister.Messages
         /// </summary>
         void Dispose();
 
-        void SetToCompleted(MessageResponseV1 responseMessage);
-        void SetToInProgress();
-        void SetToUnsent();
+        void SetStatusCompleted(MessageResponseV1 responseMessage);
+        void SetStatusInProgress();
+        void SetStatusUnsent();
 
 
 #if !NET35
         //  This is only used by some message types as a wait lock for a response to be received. Null by default
         //ManualResetEventSlim ResponseReceivedEvent { get; set; }
 
-        bool WaitForResponse();
+        bool WaitForCompleted();
 #endif
 
 

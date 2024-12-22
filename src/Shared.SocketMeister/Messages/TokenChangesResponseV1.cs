@@ -5,7 +5,7 @@ using System.IO;
 namespace SocketMeister.Messages
 {
     /// <summary>
-    /// Internal Message: COntains information related to changed tokens.
+    /// Internal Message: Contains information related to changed tokens.
     /// </summary>
     internal class TokenChangesResponseV1 : MessageBase, IMessage
     {
@@ -23,7 +23,7 @@ namespace SocketMeister.Messages
 
         private readonly List<ChangeIdentifier> _changes = new List<ChangeIdentifier>();
 
-        public TokenChangesResponseV1(List<TokenChange> Changes) : base(MessageType.SubscriptionChangesResponseV1, waitForResponse: false)
+        public TokenChangesResponseV1(List<TokenChange> Changes) : base(MessageType.SubscriptionChangesResponseV1)
         {
             _changes = new List<ChangeIdentifier>(Changes.Count);
 
@@ -39,7 +39,7 @@ namespace SocketMeister.Messages
         /// Fastest was to build this is to create it directly from the SocketEnvelope buffer.
         /// </summary>
         /// <param name="Reader">Binary Reader</param>
-        public TokenChangesResponseV1(BinaryReader Reader) : base(MessageType.SubscriptionChangesResponseV1, waitForResponse: false)
+        public TokenChangesResponseV1(BinaryReader Reader) : base(MessageType.SubscriptionChangesResponseV1)
         {
             int changeCount = Reader.ReadInt32();
             _changes = new List<ChangeIdentifier>(changeCount);

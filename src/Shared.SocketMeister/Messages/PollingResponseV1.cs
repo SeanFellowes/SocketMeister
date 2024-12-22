@@ -7,7 +7,7 @@ namespace SocketMeister.Messages
     /// </summary>
     internal class PollingResponseV1 : MessageBase, IMessage
     {
-        public PollingResponseV1() : base(MessageType.PollingResponseV1, waitForResponse: false) { }
+        public PollingResponseV1() : base(MessageType.PollingResponseV1) { }
 
         public void AppendBytes(BinaryWriter Writer) { }
     }

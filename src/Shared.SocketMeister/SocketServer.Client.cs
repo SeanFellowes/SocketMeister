@@ -225,10 +225,10 @@ namespace SocketMeister
                         return null;
 
                     SendIMessage(message, true); // Attempt to send the message
-                    message.SetToInProgress();
+                    message.SetStatusInProgress();
 
                     // Wait for a response. 
-                    if (message.WaitForResponse() == false)
+                    if (message.WaitForCompleted() == false)
                     {
                         // Timeout occurred
                         throw new TimeoutException($"SendMessage() received no response out after {TimeoutMilliseconds} milliseconds.");
@@ -238,7 +238,7 @@ namespace SocketMeister
                     if (message.Response != null)
                     {
                         if (message.Response.Error != null)
-                            throw new Exception(message.Response.Error);
+                            throw message.Response.Error;
 
                         return message.Response.ResponseData;
                     }

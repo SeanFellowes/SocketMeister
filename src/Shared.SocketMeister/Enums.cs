@@ -32,9 +32,9 @@ namespace SocketMeister
 
 
     /// <summary>
-    /// The SendReceive status of the message.
+    /// Status of the message.
     /// </summary>
-    internal enum SendReceiveStatus
+    internal enum MessageStatus
     {
         /// <summary>
         /// Message has not been sent or is flagged to resent (because socket connection failed)
@@ -45,11 +45,6 @@ namespace SocketMeister
         /// Message is in progress
         /// </summary>
         InProgress = 1,
-
-        /// <summary>
-        /// Message has timed out
-        /// </summary>
-        Timeout = 101,
 
         /// <summary>
         /// Send operation finished (Could be unsuccessful or successful)

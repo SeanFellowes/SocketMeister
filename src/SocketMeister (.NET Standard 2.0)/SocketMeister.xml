@@ -44,27 +44,22 @@
             An exception occured while processing the message
             </summary>
         </member>
-        <member name="T:SocketMeister.SendReceiveStatus">
+        <member name="T:SocketMeister.MessageStatus">
             <summary>
-            The SendReceive status of the message.
+            Status of the message.
             </summary>
         </member>
-        <member name="F:SocketMeister.SendReceiveStatus.Unsent">
+        <member name="F:SocketMeister.MessageStatus.Unsent">
             <summary>
             Message has not been sent or is flagged to resent (because socket connection failed)
             </summary>
         </member>
-        <member name="F:SocketMeister.SendReceiveStatus.InProgress">
+        <member name="F:SocketMeister.MessageStatus.InProgress">
             <summary>
             Message is in progress
             </summary>
         </member>
-        <member name="F:SocketMeister.SendReceiveStatus.Timeout">
-            <summary>
-            Message has timed out
-            </summary>
-        </member>
-        <member name="F:SocketMeister.SendReceiveStatus.Completed">
+        <member name="F:SocketMeister.MessageStatus.Completed">
             <summary>
             Send operation finished (Could be unsuccessful or successful)
             </summary>
@@ -392,7 +387,7 @@
         </member>
         <member name="T:SocketMeister.Messages.TokenChangesResponseV1">
             <summary>
-            Internal Message: COntains information related to changed tokens.
+            Internal Message: Contains information related to changed tokens.
             </summary>
         </member>
         <member name="M:SocketMeister.Messages.TokenChangesResponseV1.#ctor(System.IO.BinaryReader)">
@@ -603,6 +598,11 @@
             Timestamp, in UTC, when the message was created (Set during message instantiation)
             </summary>
         </member>
+        <member name="P:SocketMeister.Messages.MessageBase.Error">
+            <summary>
+            Error which occured when the message failed
+            </summary>
+        </member>
         <member name="P:SocketMeister.Messages.MessageBase.TimeoutMilliseconds">
             <summary>
             Number of milliseconds until the message will timeout. Also sets TimeoutDateTime
@@ -638,7 +638,7 @@
             Whether the method SendReceive(Message Message) should continute trying
             </summary>
         </member>
-        <member name="M:SocketMeister.Messages.MessageBase.WaitForResponse">
+        <member name="M:SocketMeister.Messages.MessageBase.WaitForCompleted">
             <summary>
                 Waits for SetCompleted() has been called or the message times out.
             </summary>
@@ -1047,6 +1047,12 @@
             Get a list of subscription names
             </summary>
             <returns>List of subscription names</returns>
+        </member>
+        <member name="M:SocketMeister.SocketClient.RestartStopwatch(System.Diagnostics.Stopwatch)">
+            <summary>
+            Provides a Stopwatch restart mechanism for .NET 3.5 and everything else through compiler directives.
+            </summary>
+            <param name="stopwatch"></param>
         </member>
         <member name="M:SocketMeister.SocketClient.ProcessConnect(System.Object,System.Net.Sockets.SocketAsyncEventArgs)">
             <summary>
