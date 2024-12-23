@@ -746,11 +746,6 @@ namespace SocketMeister
                     if (!CurrentEndPoint.Socket.ReceiveAsync(_asyncEventArgsReceive)) ProcessReceive(null, _asyncEventArgsReceive);
                     //  CONNECTED
                     ConnectionStatus = ConnectionStatuses.Connected;
-#if !NET35
-                    //  SEND CLIENT INFO AND WAIT FOR A RESPONSE
-                    ClientInfoV1 clientInfo = new ClientInfoV1();
-                    SendFastMessage(clientInfo);
-#endif
 
                     //  IF SUBSCRIPTIONS EXIST, SEND THEM
                     if (SubscriptionCount > 0) TriggerSendSubscriptions = true;

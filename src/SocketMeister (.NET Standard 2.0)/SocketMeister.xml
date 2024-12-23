@@ -150,11 +150,6 @@
             Response to a message
             </summary>
         </member>
-        <member name="F:SocketMeister.MessageType.MessageDeliveredAckV1">
-            <summary>
-            Delivery Receipt Acknowledgement
-            </summary>
-        </member>
         <member name="F:SocketMeister.MessageType.ServerStoppingNotificationV1">
             <summary>
             Server is shutting down
@@ -183,16 +178,6 @@
         <member name="F:SocketMeister.MessageType.PollingResponseV1">
             <summary>
             Server sends a poll response when a poll request is received from a client
-            </summary>
-        </member>
-        <member name="F:SocketMeister.MessageType.ClientInfoV1">
-            <summary>
-            Client sends client information to the server after connecting
-            </summary>
-        </member>
-        <member name="F:SocketMeister.MessageType.ClientInfoV1Ack">
-            <summary>
-            Server sends acknowledgement to client after it sends client information after connecting to the server
             </summary>
         </member>
         <member name="T:SocketMeister.SeverityType">
@@ -402,16 +387,6 @@
         <member name="P:SocketMeister.Messages.BroadcastV1.Name">
             <summary>
             Optional Name/Tag/Identifier given to the broadcast
-            </summary>
-        </member>
-        <member name="T:SocketMeister.Messages.ClientInfoV1Ack">
-            <summary>
-            Internal Message: Socket server acknowledgement that client info was received from a newly connected client.
-            </summary>
-        </member>
-        <member name="T:SocketMeister.Messages.ClientInfoV1">
-            <summary>
-            Internal Message: Socket client sends client info to the server after connection.
             </summary>
         </member>
         <member name="T:SocketMeister.Messages.TokenChangesRequestV1">

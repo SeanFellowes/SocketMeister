@@ -79,11 +79,6 @@ namespace SocketMeister
         MessageResponseV1 = 30,
 
         /// <summary>
-        /// Delivery Receipt Acknowledgement
-        /// </summary>
-        MessageDeliveredAckV1 = 31,
-
-        /// <summary>
         /// Server is shutting down
         /// </summary>
         ServerStoppingNotificationV1 = 100,
@@ -112,16 +107,6 @@ namespace SocketMeister
         /// Server sends a poll response when a poll request is received from a client
         /// </summary>
         PollingResponseV1 = 310,
-
-        /// <summary>
-        /// Client sends client information to the server after connecting
-        /// </summary>
-        ClientInfoV1 = 400,
-
-        /// <summary>
-        /// Server sends acknowledgement to client after it sends client information after connecting to the server
-        /// </summary>
-        ClientInfoV1Ack = 410
     }
 
 
