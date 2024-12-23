@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace SocketMeister
@@ -231,17 +232,20 @@ namespace SocketMeister
 
         }
 
-        public int SendAutomatedMessage()
+        public async void SendAutomatedMessage(UcSocketServer UcServer)
         {
             //  SEND A RANDOM MESSAGE OF A RANDOM SIZE (UP TO 1 MB)
-            if (Server == null || Server.Status != SocketServerStatus.Started) return 0;
+            if (Server == null || Server.Status != SocketServerStatus.Started) return;
 
             if (rbAutoBCLarge.Checked == true)
             {
                 string toSendStr = GenerateRandomString(_rng.Next(6048576) + 1000000);
                 byte[] toSend = new byte[toSendStr.Length];
                 Buffer.BlockCopy(Encoding.UTF8.GetBytes(toSendStr), 0, toSend, 0, toSend.Length);
-                return SendMessageToClients(toSend);
+                int itemsProcessed = await SendMessageToClientsAsync(toSend);
+                if (itemsProcessed > 0) UcServer.NextAutomatedSend = DateTime.UtcNow.AddMilliseconds(500);
+                else UcServer.NextAutomatedSend = DateTime.UtcNow.AddMilliseconds(1000);
+
             }
             else if (rbAutoBCFast.Checked == true)
             {
@@ -251,12 +255,11 @@ namespace SocketMeister
                 Buffer.BlockCopy(Encoding.UTF8.GetBytes(toSendStr), 0, toSend, 0, toSend.Length);
                 for (int i = 0; i < 10; i++)
                 {
-                    totalSent += SendMessageToClients(toSend);
+                    totalSent += await SendMessageToClientsAsync(toSend);
                     Thread.Sleep(50);
                 }
-                return totalSent;
             }
-            else return 0;
+            else return;
 
         }
 
@@ -272,29 +275,67 @@ namespace SocketMeister
             return new string(buffer);
         }
 
-
-
-        private int SendMessageToClients(byte[] Bytes)
+        private async Task<int> SendMessageToClientsAsync(byte[] bytes)
         {
             List<SocketServer.Client> items = Server.GetClients();
             if (items.Count == 0) return 0;
-            foreach (SocketServer.Client i in items)
+
+            // Create a list to hold the tasks for parallel execution
+            var tasks = new List<Task>();
+
+            foreach (SocketServer.Client client in items)
             {
-                object[] parms = new object[1];
-                parms[0] = Bytes;
-                try
+                object[] parms = { bytes };
+                tasks.Add(Task.Run(() =>
                 {
-                    i.SendMessage(parms);
-                }
-                catch (Exception e)
-                {
-                    LogEventRaised?.Invoke(this, new LogEventArgs(SeverityType.Warning, "Server #" + ServerId.ToString(), "Client", "Error: " + e.ToString()));
-                }
+                    try
+                    {
+                        client.SendMessage(parms);
+                    }
+                    catch (Exception e)
+                    {
+                        LogEventRaised?.Invoke(this, new LogEventArgs(
+                            SeverityType.Warning,
+                            $"Server #{ServerId}",
+                            "Client",
+                            $"Error: {e}"
+                        ));
+                    }
+                }));
             }
+
+            // Wait for all the SendMessage tasks to complete
+            await Task.WhenAll(tasks);
+
+            // Update UI elements after all messages have been sent
             SetLabelText(lblTotalMessagesSent, Server.TotalMessagesSent.ToString("N0"));
             SetLabelText(lblBytesSent, Server.TotalBytesSent.ToString("N0"));
+
             return items.Count;
         }
+
+
+        //private int SendMessageToClients(byte[] Bytes)
+        //{
+        //    List<SocketServer.Client> items = Server.GetClients();
+        //    if (items.Count == 0) return 0;
+        //    foreach (SocketServer.Client i in items)
+        //    {
+        //        object[] parms = new object[1];
+        //        parms[0] = Bytes;
+        //        try
+        //        {
+        //            i.SendMessage(parms);
+        //        }
+        //        catch (Exception e)
+        //        {
+        //            LogEventRaised?.Invoke(this, new LogEventArgs(SeverityType.Warning, "Server #" + ServerId.ToString(), "Client", "Error: " + e.ToString()));
+        //        }
+        //    }
+        //    SetLabelText(lblTotalMessagesSent, Server.TotalMessagesSent.ToString("N0"));
+        //    SetLabelText(lblBytesSent, Server.TotalBytesSent.ToString("N0"));
+        //    return items.Count;
+        //}
 
         private void BtnBroadcastToSubscribers_Click(object sender, EventArgs e)
         {
@@ -311,13 +352,24 @@ namespace SocketMeister
             SetLabelText(lblBytesSent, Server.TotalBytesSent.ToString("N0"));
         }
 
-        private void BtnSendMessage_Click(object sender, EventArgs e)
+        private async void BtnSendMessage_Click(object sender, EventArgs e)
         {
-            if (MessageText.Length == 0) { MessageBox.Show("Message Text must not be empty"); return; }
+            if (MessageText.Length == 0)
+            {
+                MessageBox.Show("Message Text must not be empty");
+                return;
+            }
 
-            byte[] toSend = new byte[MessageText.Length];
-            Buffer.BlockCopy(Encoding.UTF8.GetBytes(MessageText), 0, toSend, 0, toSend.Length);
-            SendMessageToClients(toSend);
+            byte[] toSend = Encoding.UTF8.GetBytes(MessageText);
+
+            try
+            {
+                int result = await SendMessageToClientsAsync(toSend);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred while sending messages: {ex.Message}");
+            }
         }
 
         private void BtnStart_Click(object sender, EventArgs e)

@@ -1,6 +1,4 @@
-﻿#pragma warning disable IDE0090 // Use 'new(...)'
-
-using SocketMeister.MiniTestClient;
+﻿using SocketMeister.MiniTestClient;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -183,70 +181,6 @@ namespace SocketMeister.MiniTestClient
         }
 
 
-
-        //private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        //{
-        //    try
-        //    {
-        //        if (_windowClosingProcessed == false)
-        //        {
-        //            _windowClosingProcessed = true;
-        //            _dispatcherTimer.Stop();
-        //            foreach (ClientControl c in _clients)
-        //            {
-        //                Thread bgClose = new Thread(
-        //                new ThreadStart(delegate
-        //                {
-        //                    c.Stop();
-        //                }))
-        //                {
-        //                    IsBackground = true
-        //                };
-        //                bgClose.Start();
-        //            }
-
-        //            Thread bgWaitForClose = new Thread(
-        //            new ThreadStart(delegate
-        //            {
-        //                DateTime maxWait = DateTime.UtcNow.AddSeconds(15);
-        //                while (DateTime.UtcNow < maxWait && true)
-        //                {
-        //                    bool allClosed = true;
-
-        //                    foreach (ClientControl c in _clients)
-        //                    {
-        //                        if (c.Status != SocketClient.ConnectionStatuses.Disconnected)
-        //                        {
-        //                            allClosed = false;
-        //                            break;
-        //                        }
-        //                    }
-
-        //                    if (allClosed == true) break;
-
-        //                    Thread.Sleep(250);
-        //                }
-
-        //                Dispatcher.BeginInvoke((Action)(() =>
-        //                {
-        //                    App.Current.Shutdown();
-        //                }));
-
-        //            }))
-        //            {
-        //                IsBackground = true
-        //            };
-        //            bgWaitForClose.Start();
-
-        //            e.Cancel = true;
-        //        }
-        //    }
-        //    catch
-        //    {
-        //        throw;
-        //    }
-        //}
-
         private void Log(LogItem.SeverityType Severity, string Source, string Text)
         {
             Dispatcher.BeginInvoke((Action)(() =>
@@ -352,6 +286,4 @@ namespace SocketMeister.MiniTestClient
         }
     }
 }
-
-#pragma warning restore IDE0090 // Use 'new(...)'
 

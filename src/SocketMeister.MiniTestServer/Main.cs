@@ -111,9 +111,7 @@ namespace SocketMeister
                     if (uc.NextAutomatedSend > DateTime.UtcNow) continue;
                     try
                     {
-                        uc.NextAutomatedSend = DateTime.UtcNow.AddMinutes(10);
-                        if (uc.SendAutomatedMessage() > 0) uc.NextAutomatedSend = DateTime.UtcNow.AddMilliseconds(500);
-                        else uc.NextAutomatedSend = DateTime.UtcNow.AddMilliseconds(1000);
+                        uc.SendAutomatedMessage(uc);
                     }
                     catch (Exception ex)
                     {
