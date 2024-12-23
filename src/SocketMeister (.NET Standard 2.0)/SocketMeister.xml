@@ -9,7 +9,7 @@
             Base class for SocketClient and SocketServer.Client
             </summary>
         </member>
-        <member name="M:SocketMeister.ClientBase.#ctor">
+        <member name="M:SocketMeister.ClientBase.#ctor(System.Boolean)">
             <summary>
             Constructor
             </summary>
@@ -37,7 +37,7 @@
         </member>
         <member name="P:SocketMeister.ClientBase.FriendlyName">
             <summary>
-            A friendly name for the client.
+            A friendly name for the client. If available, the SocketServer will use this in logging and error handling
             </summary>
         </member>
         <member name="P:SocketMeister.ClientBase.ClientId">
@@ -45,9 +45,14 @@
             The unique identifier for the client.
             </summary>
         </member>
-        <member name="P:SocketMeister.ClientBase.SocketMeisterVersion">
+        <member name="P:SocketMeister.ClientBase.ClientSocketMeisterVersion">
             <summary>
             The version of SocketMeister used by the client.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.ClientBase.ServerSocketMeisterVersion">
+            <summary>
+            The version of SocketMeister used by the server.
             </summary>
         </member>
         <member name="M:SocketMeister.ClientBase.Serialize">
@@ -407,27 +412,6 @@
         <member name="T:SocketMeister.Messages.ClientInfoV1">
             <summary>
             Internal Message: Socket client sends client info to the server after connection.
-            </summary>
-        </member>
-        <member name="T:SocketMeister.Messages.MessageDeliveredAckV1">
-            <summary>
-            Light message sent by the message receiver to acknowledge receipt. Some system messages do not send an ack.
-            </summary>
-        </member>
-        <member name="P:SocketMeister.Messages.MessageDeliveredAckV1.RemoteClient">
-            <summary>
-            The remote client which sent this Message (value null on SocketClient)
-            </summary>
-        </member>
-        <member name="M:SocketMeister.Messages.MessageDeliveredAckV1.#ctor(System.IO.BinaryReader)">
-            <summary>
-            Fastest was to build this is to create it directly from the SocketEnvelope buffer.
-            </summary>
-            <param name="Reader">Binary Reader</param>
-        </member>
-        <member name="P:SocketMeister.Messages.MessageDeliveredAckV1.MessageId">
-            <summary>
-            The message that this response refers to
             </summary>
         </member>
         <member name="T:SocketMeister.Messages.TokenChangesRequestV1">
@@ -1017,12 +1001,29 @@
             Event raised whenever a broadcast is received from the server.
             </summary>
         </member>
+        <member name="M:SocketMeister.SocketClient.#ctor(System.Collections.Generic.List{SocketMeister.SocketEndPoint},System.Boolean,System.String)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="EndPoints">Collection of endpoints that are available to connect to</param>
+            <param name="EnableCompression">Whether compression will be applied to data.</param>
+            <param name="FriendlyName">Friendly name is sent to the SocketServer to be displayed in errors and logging.</param>
+        </member>
         <member name="M:SocketMeister.SocketClient.#ctor(System.Collections.Generic.List{SocketMeister.SocketEndPoint},System.Boolean)">
             <summary>
             Constructor
             </summary>
             <param name="EndPoints">Collection of endpoints that are available to connect to</param>
             <param name="EnableCompression">Whether compression will be applied to data.</param>
+        </member>
+        <member name="M:SocketMeister.SocketClient.#ctor(System.String,System.Int32,System.Boolean,System.String)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="IPAddress1">IP Address to of the SocketMeister server to connect to</param>
+            <param name="Port1">TCP port the server is listening on</param>
+            <param name="EnableCompression">Whether compression will be applied to data.</param>
+            <param name="FriendlyName">Friendly name is sent to the SocketServer to be displayed in errors and logging.</param>
         </member>
         <member name="M:SocketMeister.SocketClient.#ctor(System.String,System.Int32,System.Boolean)">
             <summary>
@@ -1031,6 +1032,17 @@
             <param name="IPAddress1">IP Address to of the SocketMeister server to connect to</param>
             <param name="Port1">TCP port the server is listening on</param>
             <param name="EnableCompression">Whether compression will be applied to data.</param>
+        </member>
+        <member name="M:SocketMeister.SocketClient.#ctor(System.String,System.Int32,System.String,System.Int32,System.Boolean,System.String)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="IPAddress1">IP Address to of the first SocketMeister server to connect to</param>
+            <param name="Port1">TCP port the first server is listening on</param>
+            <param name="IPAddress2">IP Address to of the second SocketMeister server to connect to</param>
+            <param name="Port2">TCP port the second server is listening on</param>
+            <param name="EnableCompression">Whether compression will be applied to data.</param>
+            <param name="FriendlyName">Friendly name is sent to the SocketServer to be displayed in errors and logging.</param>
         </member>
         <member name="M:SocketMeister.SocketClient.#ctor(System.String,System.Int32,System.String,System.Int32,System.Boolean)">
             <summary>

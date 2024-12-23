@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
+using System.Net;
 
 namespace SocketMeister
 {
@@ -108,11 +109,14 @@ namespace SocketMeister
         /// </summary>
         /// <param name="EndPoints">Collection of endpoints that are available to connect to</param>
         /// <param name="EnableCompression">Whether compression will be applied to data.</param>
-        public SocketClient(List<SocketEndPoint> EndPoints, bool EnableCompression)
+        /// <param name="FriendlyName">Friendly name is sent to the SocketServer to be displayed in errors and logging.</param>
+        public SocketClient(List<SocketEndPoint> EndPoints, bool EnableCompression, string FriendlyName) : base(isServerImplimentation: false)
         {
             if (EndPoints == null) throw new ArgumentNullException(nameof(EndPoints));
             else if (EndPoints.Count == 0) throw new ArgumentException("EndPoints must contain at least 1 value", nameof(EndPoints));
             _endPoints = EndPoints;
+
+            base.FriendlyName = FriendlyName;
 
             _enableCompression = EnableCompression;
             _receiveEngine = new MessageEngine(EnableCompression);
@@ -156,11 +160,51 @@ namespace SocketMeister
         /// <summary>
         /// Constructor
         /// </summary>
+        /// <param name="EndPoints">Collection of endpoints that are available to connect to</param>
+        /// <param name="EnableCompression">Whether compression will be applied to data.</param>
+        public SocketClient(List<SocketEndPoint> EndPoints, bool EnableCompression)
+            : this(EndPoints, EnableCompression, null) { }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="IPAddress1">IP Address to of the SocketMeister server to connect to</param>
+        /// <param name="Port1">TCP port the server is listening on</param>
+        /// <param name="EnableCompression">Whether compression will be applied to data.</param>
+        /// <param name="FriendlyName">Friendly name is sent to the SocketServer to be displayed in errors and logging.</param>
+        public SocketClient(string IPAddress1, int Port1, bool EnableCompression, string FriendlyName)
+            : this(new List<SocketEndPoint> { new SocketEndPoint(IPAddress1, Port1) }, EnableCompression, FriendlyName) { }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
         /// <param name="IPAddress1">IP Address to of the SocketMeister server to connect to</param>
         /// <param name="Port1">TCP port the server is listening on</param>
         /// <param name="EnableCompression">Whether compression will be applied to data.</param>
         public SocketClient(string IPAddress1, int Port1, bool EnableCompression)
-            : this(new List<SocketEndPoint> { new SocketEndPoint(IPAddress1, Port1) }, EnableCompression) { }
+            : this(new List<SocketEndPoint> { new SocketEndPoint(IPAddress1, Port1) }, EnableCompression, null) { }
+
+
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="IPAddress1">IP Address to of the first SocketMeister server to connect to</param>
+        /// <param name="Port1">TCP port the first server is listening on</param>
+        /// <param name="IPAddress2">IP Address to of the second SocketMeister server to connect to</param>
+        /// <param name="Port2">TCP port the second server is listening on</param>
+        /// <param name="EnableCompression">Whether compression will be applied to data.</param>
+        /// <param name="FriendlyName">Friendly name is sent to the SocketServer to be displayed in errors and logging.</param>
+        public SocketClient(string IPAddress1, int Port1, string IPAddress2, int Port2, bool EnableCompression, string FriendlyName)
+            : this(
+                new List<SocketEndPoint>
+                {
+                    new SocketEndPoint(IPAddress1, Port1),
+                    new SocketEndPoint(IPAddress2, Port2)
+                },
+                EnableCompression, FriendlyName)
+        {
+        }
 
 
         /// <summary>
@@ -178,9 +222,10 @@ namespace SocketMeister
                     new SocketEndPoint(IPAddress1, Port1),
                     new SocketEndPoint(IPAddress2, Port2)
                 },
-                EnableCompression)
+                EnableCompression, null)
         {
         }
+
 
         /// <summary>
         /// Dispose of the class
@@ -1123,9 +1168,6 @@ namespace SocketMeister
         {
             try
             {
-                //  Sent a receipt acknowlegement to the sender
-                SendFastMessage(new MessageDeliveredAckV1(message.MessageId));
-
                 if (MessageReceived == null)
                 {
                     //  The parent program using this SocketClient is ignoring MessageReceived events so incoming messages are not being processed.

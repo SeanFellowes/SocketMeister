@@ -11,9 +11,9 @@ namespace SocketMeister
     /// Base class for SocketClient and SocketServer.Client
     /// </summary>
 #if SMISPUBLIC
-    public abstract class ClientBase
+    public abstract class ClientBase : IDisposable
 #else
-    internal abstract class ClientBase
+    internal abstract class ClientBase : IDisposable
 #endif
     {
         private bool _disposed = false;
@@ -21,47 +21,54 @@ namespace SocketMeister
         private string _ipAddress;
         private string _friendlyName;
         private Guid _clientId;
-        private string _socketMeisterVersion;
+        private string _clientSocketMeisterVersion;
+        private string _serverSocketMeisterVersion;
         private readonly UnrespondedMessageCollection _unrespondedMessages = new UnrespondedMessageCollection();
 
-#if SMNOSERVER
         /// <summary>
         /// Constructor
         /// </summary>
-        public ClientBase()
+        public ClientBase(bool isServerImplimentation)
         {
-            // Constructor for SMNOSERVER
-            _clientId = Guid.NewGuid();
-        }
-#else
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        public ClientBase()
-        {
-            // Populate IPAddress with the local machine's IP address
-            try
+            if (isServerImplimentation)
             {
-                _ipAddress = Dns.GetHostAddresses(Dns.GetHostName())
-                               .FirstOrDefault(ip => ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)?.ToString();
-            }
-            catch
-            {
-                _ipAddress = "Unknown";
-            }
+                _clientId = Guid.NewGuid();
 
-            // Populate SocketMeisterVersion with the version of the current assembly
-            try
-            {
-                _socketMeisterVersion = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "Unknown";
+                // Populate SocketMeisterVersion with the version of the current assembly
+                try
+                {
+                    _serverSocketMeisterVersion = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "Unknown";
+                }
+                catch
+                {
+                    _serverSocketMeisterVersion = "Unknown";
+                }
+
             }
-            catch
+            else
             {
-                _socketMeisterVersion = "Unknown";
+                // Populate IPAddress with the local machine's IP address
+                try
+                {
+                    _ipAddress = Dns.GetHostAddresses(Dns.GetHostName())
+                                   .FirstOrDefault(ip => ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)?.ToString();
+                }
+                catch
+                {
+                    _ipAddress = "Unknown";
+                }
+
+                // Populate SocketMeisterVersion with the version of the current assembly
+                try
+                {
+                    _clientSocketMeisterVersion = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "Unknown";
+                }
+                catch
+                {
+                    _clientSocketMeisterVersion = "Unknown";
+                }
             }
         }
-#endif
-
 
         /// <summary>
         /// Disposes of the resources used by the class.
@@ -110,7 +117,7 @@ namespace SocketMeister
         }
 
         /// <summary>
-        /// A friendly name for the client.
+        /// A friendly name for the client. If available, the SocketServer will use this in logging and error handling
         /// </summary>
         public string FriendlyName
         {
@@ -138,17 +145,26 @@ namespace SocketMeister
         /// <summary>
         /// The version of SocketMeister used by the client.
         /// </summary>
-        public string SocketMeisterVersion
+        public string ClientSocketMeisterVersion
         {
-            get { lock (_lock) { return _socketMeisterVersion; } }
-            set { lock (_lock) { _socketMeisterVersion = value; } }
+            get { lock (_lock) { return _clientSocketMeisterVersion; } }
+            set { lock (_lock) { _clientSocketMeisterVersion = value; } }
         }
+
+        /// <summary>
+        /// The version of SocketMeister used by the server.
+        /// </summary>
+        public string ServerSocketMeisterVersion
+        {
+            get { lock (_lock) { return _serverSocketMeisterVersion; } }
+            set { lock (_lock) { _serverSocketMeisterVersion = value; } }
+        }
+
 
         internal UnrespondedMessageCollection UnrespondedMessages
         {
             get { return _unrespondedMessages; }
         }
-
 
 
         /// <summary>
@@ -173,9 +189,9 @@ namespace SocketMeister
                     if (_clientId != Guid.Empty)
                         writer.Write(_clientId.ToString("D"));
 
-                    writer.Write(!string.IsNullOrEmpty(_socketMeisterVersion));
-                    if (!string.IsNullOrEmpty(_socketMeisterVersion))
-                        writer.Write(_socketMeisterVersion);
+                    writer.Write(!string.IsNullOrEmpty(_clientSocketMeisterVersion));
+                    if (!string.IsNullOrEmpty(_clientSocketMeisterVersion))
+                        writer.Write(_clientSocketMeisterVersion);
 
                     return memoryStream.ToArray();
                 }
@@ -214,9 +230,9 @@ namespace SocketMeister
                         _clientId = Guid.Empty;
 
                     if (reader.ReadBoolean())
-                        _socketMeisterVersion = reader.ReadString();
+                        _clientSocketMeisterVersion = reader.ReadString();
                     else
-                        _socketMeisterVersion = null;
+                        _clientSocketMeisterVersion = null;
                 }
             }
         }

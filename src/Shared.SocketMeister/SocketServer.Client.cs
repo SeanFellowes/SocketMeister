@@ -27,7 +27,7 @@ namespace SocketMeister
             private readonly SocketServer _socketServer;
             private readonly TokenCollectionReadOnly _subscriptions = new TokenCollectionReadOnly();
 
-            internal Client(SocketServer Server, Socket ClientSocket, bool CompressSentData)
+            internal Client(SocketServer Server, Socket ClientSocket, bool CompressSentData) : base(isServerImplimentation: true)
             {
                 _socketServer = Server;
                 _clientSocket = ClientSocket;
