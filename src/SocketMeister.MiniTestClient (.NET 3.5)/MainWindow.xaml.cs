@@ -4,6 +4,7 @@ using SocketMeister.MiniTestClient;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows;
@@ -130,69 +131,121 @@ namespace SocketMeister.MiniTestClient
         }
 
 
-
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             try
             {
-                if (_windowClosingProcessed == false)
+                if (_windowClosingProcessed)
+                    return;
+
+                _windowClosingProcessed = true;
+                _dispatcherTimer.Stop();
+
+                // Track the number of completed client stops
+                int remainingClients = _clients.Count;
+
+                foreach (var client in _clients)
                 {
-                    _windowClosingProcessed = true;
-                    _dispatcherTimer.Stop();
-                    foreach (ClientControl c in _clients)
+                    ThreadPool.QueueUserWorkItem(state =>
                     {
-                        Thread bgClose = new Thread(
-                        new ThreadStart(delegate
+                        try
                         {
-                            c.Stop();
-                        }))
-                        {
-                            IsBackground = true
-                        };
-                        bgClose.Start();
-                    }
-
-                    Thread bgWaitForClose = new Thread(
-                    new ThreadStart(delegate
-                    {
-                        DateTime maxWait = DateTime.UtcNow.AddSeconds(15);
-                        while (DateTime.UtcNow < maxWait && true)
-                        {
-                            bool allClosed = true;
-
-                            foreach (ClientControl c in _clients)
-                            {
-                                if (c.Status != SocketClient.ConnectionStatuses.Disconnected)
-                                {
-                                    allClosed = false;
-                                    break;
-                                }
-                            }
-
-                            if (allClosed == true) break;
-
-                            Thread.Sleep(250);
+                            client.Stop();
                         }
-
-                        Dispatcher.BeginInvoke((Action)(() =>
+                        catch (Exception ex)
                         {
-                            App.Current.Shutdown();
-                        }));
-
-                    }))
-                    {
-                        IsBackground = true
-                    };
-                    bgWaitForClose.Start();
-
-                    e.Cancel = true;
+                            // Log the exception if necessary
+                            Console.WriteLine($"Error stopping client: {ex}");
+                        }
+                        finally
+                        {
+                            // Decrement remainingClients in a thread-safe way
+                            if (Interlocked.Decrement(ref remainingClients) == 0)
+                            {
+                                // All clients have stopped; shut down the application
+                                Dispatcher.Invoke(new Action(() =>
+                                {
+                                    Application.Current.Shutdown();
+                                }));
+                            }
+                        }
+                    });
                 }
+
+                e.Cancel = true; // Prevent immediate window close until all clients stop
             }
-            catch
+            catch (Exception ex)
             {
+                // Log the exception if necessary
+                Console.WriteLine(ex);
                 throw;
             }
         }
+
+
+
+        //private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        //{
+        //    try
+        //    {
+        //        if (_windowClosingProcessed == false)
+        //        {
+        //            _windowClosingProcessed = true;
+        //            _dispatcherTimer.Stop();
+        //            foreach (ClientControl c in _clients)
+        //            {
+        //                Thread bgClose = new Thread(
+        //                new ThreadStart(delegate
+        //                {
+        //                    c.Stop();
+        //                }))
+        //                {
+        //                    IsBackground = true
+        //                };
+        //                bgClose.Start();
+        //            }
+
+        //            Thread bgWaitForClose = new Thread(
+        //            new ThreadStart(delegate
+        //            {
+        //                DateTime maxWait = DateTime.UtcNow.AddSeconds(15);
+        //                while (DateTime.UtcNow < maxWait && true)
+        //                {
+        //                    bool allClosed = true;
+
+        //                    foreach (ClientControl c in _clients)
+        //                    {
+        //                        if (c.Status != SocketClient.ConnectionStatuses.Disconnected)
+        //                        {
+        //                            allClosed = false;
+        //                            break;
+        //                        }
+        //                    }
+
+        //                    if (allClosed == true) break;
+
+        //                    Thread.Sleep(250);
+        //                }
+
+        //                Dispatcher.BeginInvoke((Action)(() =>
+        //                {
+        //                    App.Current.Shutdown();
+        //                }));
+
+        //            }))
+        //            {
+        //                IsBackground = true
+        //            };
+        //            bgWaitForClose.Start();
+
+        //            e.Cancel = true;
+        //        }
+        //    }
+        //    catch
+        //    {
+        //        throw;
+        //    }
+        //}
 
         private void Log(LogItem.SeverityType Severity, string Source, string Text)
         {

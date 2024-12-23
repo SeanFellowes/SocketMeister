@@ -220,7 +220,6 @@ namespace SocketMeister.MiniTestClient
 
         private void Client_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
         {
-            //Thread.Sleep(20000);
             Dispatcher.Invoke(() =>
             {
                 _messagesReceived++;

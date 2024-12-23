@@ -3,8 +3,10 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
@@ -128,70 +130,32 @@ namespace SocketMeister.MiniTestClient
             Log(LogItem.SeverityType.Information, "Client " + ct.ClientId, "BroadcastReceived: " + e.Name + ", " + msgRec);
         }
 
-
-
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private async void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             try
             {
-                if (_windowClosingProcessed == false)
-                {
-                    _windowClosingProcessed = true;
-                    _dispatcherTimer.Stop();
-                    foreach (ClientControl c in _clients)
-                    {
-                        Thread bgClose = new Thread(
-                        new ThreadStart(delegate
-                        {
-                            c.Stop();
-                        }))
-                        {
-                            IsBackground = true
-                        };
-                        bgClose.Start();
-                    }
+                if (_windowClosingProcessed)
+                    return;
 
-                    Thread bgWaitForClose = new Thread(
-                    new ThreadStart(delegate
-                    {
-                        DateTime maxWait = DateTime.UtcNow.AddSeconds(15);
-                        while (DateTime.UtcNow < maxWait && true)
-                        {
-                            bool allClosed = true;
+                _windowClosingProcessed = true;
+                _dispatcherTimer.Stop();
 
-                            foreach (ClientControl c in _clients)
-                            {
-                                if (c.Status != SocketClient.ConnectionStatuses.Disconnected)
-                                {
-                                    allClosed = false;
-                                    break;
-                                }
-                            }
+                // Stop all clients asynchronously
+                var stopTasks = _clients.Select(client => Task.Run(() => client.Stop())).ToList();
 
-                            if (allClosed == true) break;
+                // Wait for all clients to stop
+                await Task.WhenAll(stopTasks);
 
-                            Thread.Sleep(250);
-                        }
-
-                        Dispatcher.Invoke(() =>
-                        {
-                            App.Current.Shutdown();
-                        });
-                    }))
-                    {
-                        IsBackground = true
-                    };
-                    bgWaitForClose.Start();
-
-
-                    e.Cancel = true;
-                }
+                Application.Current.Shutdown();
             }
-            catch
+            catch (Exception ex)
             {
+                // Log the exception if necessary
+                Console.WriteLine(ex);
                 throw;
             }
         }
+
 
         private void Log(LogItem.SeverityType Severity, string Source, string Text)
         {

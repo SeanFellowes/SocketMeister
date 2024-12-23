@@ -793,12 +793,6 @@ namespace SocketMeister
             if (StopClientPermanently == true) return;  //  Don't allow this to run more than once
             StopClientPermanently = true;
 
-            //  NOTE. This is taken care of in DisconnectGracefully()
-//#if !NET35
-//            // Signal cancellation
-//            _cancellationTokenSource.Cancel();
-//#endif
-
             _subscriptions.TokenAdded -= Subscriptions_AddChangedDeleted;
             _subscriptions.TokenChanged -= Subscriptions_AddChangedDeleted;
             _subscriptions.TokenDeleted -= Subscriptions_AddChangedDeleted;
