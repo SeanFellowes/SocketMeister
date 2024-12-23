@@ -17,7 +17,7 @@ namespace SocketMeister
 #endif
     {
         private readonly TokenChangeCollection _changes;
-        private readonly Dictionary<string, Token> _dict = new Dictionary<string, Token>();
+        private readonly Dictionary<string, Token> _tokenDictionary = new Dictionary<string, Token>(StringComparer.OrdinalIgnoreCase);
         private readonly object _lock = new object();
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace SocketMeister
                 lock (_lock)
                 {
                     Token fnd;
-                    _dict.TryGetValue(Name.ToUpper(CultureInfo.InvariantCulture), out fnd);
+                    _tokenDictionary.TryGetValue(Name.ToUpper(CultureInfo.InvariantCulture), out fnd);
                     return fnd;
                 }
             }
@@ -67,7 +67,7 @@ namespace SocketMeister
         /// <summary>
         /// Number of tokens in the token collection
         /// </summary>
-        public int Count { get { lock (_lock) { return _dict.Count; } } }
+        public int Count { get { lock (_lock) { return _tokenDictionary.Count; } } }
 
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace SocketMeister
 
             lock (_lock)
             {
-                _dict.Add(Token.Name.ToUpper(CultureInfo.InvariantCulture), Token);
+                _tokenDictionary.Add(Token.Name.ToUpper(CultureInfo.InvariantCulture), Token);
                 Token.Changed += Token_Changed;
             }
             TokenAdded?.Invoke(Token, new EventArgs());
@@ -89,26 +89,26 @@ namespace SocketMeister
 
         internal void Clear()
         {
-            List<Token> deletedTokens = null;
+            List<Token> deleteTokens = null;
             lock (_lock)
             {
                 if (TokenDeleted != null)
                 {
-                    deletedTokens = new List<Token>(_dict.Values);
+                    deleteTokens = new List<Token>(_tokenDictionary.Values);
                 }
 
-                foreach (var token in _dict.Values)
+                foreach (var token in _tokenDictionary.Values)
                 {
                     token.Changed -= Token_Changed;
                 }
 
-                _dict.Clear();
+                _tokenDictionary.Clear();
             }
 
             //  if there is an event listener attached, send TokenDeleted events.
-            if (deletedTokens != null)
+            if (deleteTokens != null)
             {
-                foreach (Token t in deletedTokens)
+                foreach (Token t in deleteTokens)
                 {
                     TokenDeleted?.Invoke(t, new EventArgs());
                 }
@@ -147,7 +147,7 @@ namespace SocketMeister
             Token fnd = null;
             lock (_lock)
             {
-                _dict.TryGetValue(Name.ToUpper(CultureInfo.InvariantCulture), out fnd);
+                _tokenDictionary.TryGetValue(Name.ToUpper(CultureInfo.InvariantCulture), out fnd);
             }
 
             if (fnd != null)
@@ -156,7 +156,7 @@ namespace SocketMeister
 
                 lock (_lock)
                 {
-                    _dict.Remove(Name.ToUpper(CultureInfo.InvariantCulture));
+                    _tokenDictionary.Remove(Name.ToUpper(CultureInfo.InvariantCulture));
                 }
                 TokenDeleted?.Invoke(fnd, new EventArgs());
             }
@@ -171,7 +171,7 @@ namespace SocketMeister
         {
             lock (_lock)
             {
-                return _dict.Values.ToList();
+                return _tokenDictionary.Values.ToList();
             }
         }
 
@@ -183,7 +183,7 @@ namespace SocketMeister
         {
             lock (_lock)
             {
-                return _dict.Values.Select(t => t.Name).ToList();
+                return _tokenDictionary.Values.Select(t => t.Name).ToList();
             }
         }
 

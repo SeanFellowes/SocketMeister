@@ -16,15 +16,13 @@ namespace SocketMeister
         /// <summary>
         /// Remote client which has connected to the socket server
         /// </summary>
-        public class Client : IDisposable
+        public class Client : ClientBase, IDisposable
         {
-            private readonly Guid _clientId = Guid.NewGuid();
             private readonly Socket _clientSocket;
             private readonly bool _compressSentData;
             private readonly DateTime _connectTimestamp = DateTime.UtcNow;
             private bool _disposed;
-            private readonly UnrespondedMessageCollection _unrespondedMessages = new UnrespondedMessageCollection();
-            private readonly MessageEngine _receivedEnvelope;
+            private readonly MessageEngine _receiveEngine;
             private readonly AsyncCallback _sendCallback;
             private readonly SocketServer _socketServer;
             private readonly TokenCollectionReadOnly _subscriptions = new TokenCollectionReadOnly();
@@ -34,20 +32,20 @@ namespace SocketMeister
                 _socketServer = Server;
                 _clientSocket = ClientSocket;
                 _compressSentData = CompressSentData;
-                _receivedEnvelope = new MessageEngine(CompressSentData);
+                _receiveEngine = new MessageEngine(CompressSentData);
                 _sendCallback = SendCallback; // Cache the delegate
             }
 
             /// <summary>
             /// Dispose of the class
             /// </summary>
-            public void Dispose()
+            public new void Dispose()
             {
                 Dispose(true);
                 GC.SuppressFinalize(this);
             }
 
-            private void Dispose(bool disposing)
+            private new void Dispose(bool disposing)
             {
                 if (_disposed) return;
 
@@ -56,10 +54,10 @@ namespace SocketMeister
                     // Dispose managed resources
                     _clientSocket.Dispose();
                     _subscriptions.Dispose();
-                    _unrespondedMessages.Clear(); // Explicitly clear any remaining references
                 }
 
                 // Unmanaged resources would be cleaned here (none in this case)
+                base.Dispose(disposing);
                 _disposed = true;
             }
 
@@ -70,11 +68,6 @@ namespace SocketMeister
             {
                 Dispose(false);
             }
-
-            /// <summary>
-            /// Unique GUID assigned to each client
-            /// </summary>
-            public Guid ClientId => _clientId;
 
             /// <summary>
             /// Socket which the client is transmitting data on.
@@ -94,7 +87,7 @@ namespace SocketMeister
             /// <summary>
             /// Class which processes raw data directly from the socket and converts into usable messages.
             /// </summary>
-            internal MessageEngine ReceiveEnvelope => _receivedEnvelope;
+            internal MessageEngine ReceiveEngine => _receiveEngine;
 
             /// <summary>
             /// The number of subscriptions for this client
@@ -126,7 +119,7 @@ namespace SocketMeister
             /// <param name="ResponseMessage"></param>
             internal void SetMessageResponseInUnrespondedMessages(MessageResponseV1 ResponseMessage)
             {
-                _unrespondedMessages.FindMessageAndSetResponse(ResponseMessage); //  Locking performed inside the class so not required here
+                UnrespondedMessages.FindMessageAndSetResponse(ResponseMessage); //  Locking performed inside the class so not required here
             }
 
             internal TokenChangesResponseV1 ImportSubscriptionChanges(TokenChangesRequestV1 request)
@@ -215,7 +208,7 @@ namespace SocketMeister
 
                 try
                 {
-                    _unrespondedMessages.Add(message);   //  Locking performed inside the class so not required here
+                    UnrespondedMessages.Add(message);   //  Locking performed inside the class so not required here
 
                     // Generate bytes and prepare to send
                     byte[] sendBytes = MessageEngine.GenerateSendBytes(message, false);
@@ -248,7 +241,7 @@ namespace SocketMeister
                 finally
                 {
                     // Clean up message and associated resources
-                    _unrespondedMessages.Remove(message);   //  Locking performed inside the class so not required here
+                    UnrespondedMessages.Remove(message);   //  Locking performed inside the class so not required here
                 }
             }
         }

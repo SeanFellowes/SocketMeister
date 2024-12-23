@@ -5,7 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Windows;
 
-namespace SocketMeister.MiniTestClient__.NET_3._5_
+namespace SocketMeister.MiniTestClient
 {
     /// <summary>
     /// Interaction logic for App.xaml

@@ -4,6 +4,62 @@
         <name>SocketMeister</name>
     </assembly>
     <members>
+        <member name="T:SocketMeister.ClientBase">
+            <summary>
+            Base class for SocketClient and SocketServer.Client
+            </summary>
+        </member>
+        <member name="M:SocketMeister.ClientBase.#ctor">
+            <summary>
+            Constructor
+            </summary>
+        </member>
+        <member name="M:SocketMeister.ClientBase.Dispose">
+            <summary>
+            Disposes of the resources used by the class.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.ClientBase.Dispose(System.Boolean)">
+            <summary>
+            Releases resources.
+            </summary>
+            <param name="disposing">True if managed resources should be released.</param>
+        </member>
+        <member name="M:SocketMeister.ClientBase.Finalize">
+            <summary>
+            Disposes of the resources used by the class.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.ClientBase.IPAddress">
+            <summary>
+            The IP address of the client.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.ClientBase.FriendlyName">
+            <summary>
+            A friendly name for the client.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.ClientBase.ClientId">
+            <summary>
+            The unique identifier for the client.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.ClientBase.SocketMeisterVersion">
+            <summary>
+            The version of SocketMeister used by the client.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.ClientBase.Serialize">
+            <summary>
+            Serializes the object to a byte array.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.ClientBase.Deserialize(System.Byte[])">
+            <summary>
+            Deserializes the object from a byte array.
+            </summary>
+        </member>
         <member name="F:SocketMeister.Constants.SEND_RECEIVE_BUFFER_SIZE">
             <summary>
             The buffer size to use for sending and receiving data. Note: This value is also used by the 'SocketServer' class.
@@ -997,6 +1053,11 @@
             </summary>
             <param name="disposing"></param>
         </member>
+        <member name="M:SocketMeister.SocketClient.Finalize">
+            <summary>
+            Disposes of the resources used by the class.
+            </summary>
+        </member>
         <member name="M:SocketMeister.SocketClient.AddSubscription(System.String)">
             <summary>
             Adds a subscription name to the list of subscriptions. Throws an error if the name (case insensitive) exists.
@@ -1183,11 +1244,6 @@
             Finalizer
             </summary>
         </member>
-        <member name="P:SocketMeister.SocketServer.Client.ClientId">
-            <summary>
-            Unique GUID assigned to each client
-            </summary>
-        </member>
         <member name="P:SocketMeister.SocketServer.Client.ClientSocket">
             <summary>
             Socket which the client is transmitting data on.
@@ -1203,7 +1259,7 @@
             Byte array to directly receive data from the socket. 
             </summary>
         </member>
-        <member name="P:SocketMeister.SocketServer.Client.ReceiveEnvelope">
+        <member name="P:SocketMeister.SocketServer.Client.ReceiveEngine">
             <summary>
             Class which processes raw data directly from the socket and converts into usable messages.
             </summary>

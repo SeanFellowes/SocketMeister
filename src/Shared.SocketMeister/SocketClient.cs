@@ -16,9 +16,9 @@ namespace SocketMeister
     /// Asynchronous, persistent TCP/IP socket client supporting multiple destinations
     /// </summary>
 #if SMISPUBLIC
-    public partial class SocketClient : IDisposable
+    public partial class SocketClient : ClientBase, IDisposable
 #else
-    internal partial class SocketClient : IDisposable
+    internal partial class SocketClient : ClientBase, IDisposable
 #endif
     {
         /// <summary>
@@ -57,6 +57,7 @@ namespace SocketMeister
         private readonly ReaderWriterLockSlim _connectionStatusLock = new ReaderWriterLockSlim();
         private SocketEndPoint _currentEndPoint = null;
         private readonly ReaderWriterLockSlim _currentEndPointLock = new ReaderWriterLockSlim();
+        private bool _disposed = false;
         private readonly bool _enableCompression;
         private readonly List<SocketEndPoint> _endPoints = null;
         private bool _isBackgroundWorkerRunning;
@@ -70,7 +71,6 @@ namespace SocketMeister
         private bool _stopClientPermanently;
         private readonly object _stopClientPermanentlyLock = new object();
         private bool _triggerSendSubscriptions;
-        private readonly UnrespondedMessageCollection _unrespondedMessages = new UnrespondedMessageCollection();
 
         /// <summary>
         /// Event raised when the status of a socket connection changes
@@ -185,7 +185,7 @@ namespace SocketMeister
         /// <summary>
         /// Dispose of the class
         /// </summary>
-        public void Dispose()
+        public new void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
@@ -195,40 +195,52 @@ namespace SocketMeister
         /// Dispose of the class
         /// </summary>
         /// <param name="disposing"></param>
-        protected virtual void Dispose(bool disposing)
+        protected new virtual void Dispose(bool disposing)
         {
-            if (disposing)
+            if (!_disposed)
             {
-                Stop();
-
-                _connectionStatusLock.Dispose();
-                _currentEndPointLock.Dispose();
-
-                _asyncEventArgsConnect?.Dispose();
-                _asyncEventArgsConnect = null;
-
-                _asyncEventArgsPolling?.Dispose();
-                _asyncEventArgsPolling = null;
-
-                _asyncEventArgsReceive?.Dispose();
-                _asyncEventArgsReceive = null;
-
-                _sendEventArgsPool?.Dispose();
-
-                _asyncEventArgsSendSubscriptionChanges?.Dispose();
-                _asyncEventArgsSendSubscriptionChanges = null;
-
-                _unrespondedMessages.Clear();
-
-                foreach (SocketEndPoint ep in _endPoints)
+                if (disposing)
                 {
-                    ep.Dispose();
+                    Stop();
+
+                    _connectionStatusLock.Dispose();
+                    _currentEndPointLock.Dispose();
+
+                    _asyncEventArgsConnect?.Dispose();
+                    _asyncEventArgsConnect = null;
+
+                    _asyncEventArgsPolling?.Dispose();
+                    _asyncEventArgsPolling = null;
+
+                    _asyncEventArgsReceive?.Dispose();
+                    _asyncEventArgsReceive = null;
+
+                    _sendEventArgsPool?.Dispose();
+
+                    _asyncEventArgsSendSubscriptionChanges?.Dispose();
+                    _asyncEventArgsSendSubscriptionChanges = null;
+
+
+                    foreach (SocketEndPoint ep in _endPoints)
+                    {
+                        ep.Dispose();
+                    }
+
+                    _endPoints.Clear();
                 }
-
-                _endPoints.Clear();
+                base.Dispose(disposing);
+                _disposed = true;
             }
-
         }
+
+        /// <summary>
+        /// Disposes of the resources used by the class.
+        /// </summary>
+        ~SocketClient()
+        {
+            Dispose(false);
+        }
+
 
 
         private void Subscriptions_AddChangedDeleted(object sender, EventArgs e)
@@ -466,11 +478,11 @@ namespace SocketMeister
                 //  Deal with unresponded messages
                 if (StopClientPermanently == true)
                 {
-                    _unrespondedMessages.Clear();
+                    UnrespondedMessages.Clear();
                 }
                 else
                 {
-                    _unrespondedMessages.ResetAfterDisconnect();
+                    UnrespondedMessages.ResetAfterDisconnect();
                 }
 
 
@@ -867,7 +879,7 @@ namespace SocketMeister
             if (StopClientPermanently) return null;
 
             DateTime startTime = DateTime.UtcNow;
-            _unrespondedMessages.Add(message);
+            UnrespondedMessages.Add(message);
 
             // Generate the sendBytes once outside the loop
             byte[] sendBytes = MessageEngine.GenerateSendBytes(message, false);
@@ -909,7 +921,7 @@ namespace SocketMeister
                 Thread.Sleep(10); // Poll for response
 #endif
             }
-            _unrespondedMessages.Remove(message);
+            UnrespondedMessages.Remove(message);
 
             if (message.Response?.Error != null) throw message.Response.Error;
             return message.Response?.ResponseData ?? throw new TimeoutException($"SendReceive() timed out after {message.TimeoutMilliseconds} ms");
@@ -1007,7 +1019,7 @@ namespace SocketMeister
                         if (_receiveEngine.MessageType == MessageType.MessageResponseV1)
                         {
                             //  Attempt to find the message this response belongs to and attach the response to the message.
-                            _unrespondedMessages.FindMessageAndSetResponse(_receiveEngine.GetMessageResponseV1()); ;
+                            UnrespondedMessages.FindMessageAndSetResponse(_receiveEngine.GetMessageResponseV1()); ;
                         }
 
                         else if (_receiveEngine.MessageType == MessageType.MessageV1)

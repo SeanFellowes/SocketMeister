@@ -414,7 +414,7 @@ namespace SocketMeister
                 // Retrieve the state object and the handler socket  
                 // from the asynchronous state object.  
                 remoteClient = (Client)ar.AsyncState;
-                MessageEngine receiveEnvelope = remoteClient.ReceiveEnvelope;
+                MessageEngine receiveEnvelope = remoteClient.ReceiveEngine;
 
                 // Read data from the client socket.  
                 if (remoteClient.ClientSocket.Connected == false) return;

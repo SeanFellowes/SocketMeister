@@ -1,6 +1,6 @@
 ﻿#pragma warning disable IDE0090 // Use 'new(...)'
 
-using SocketMeister.MiniTestClient__.NET_3._5_;
+using SocketMeister.MiniTestClient;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -184,7 +184,6 @@ namespace SocketMeister.MiniTestClient
                         IsBackground = true
                     };
                     bgWaitForClose.Start();
-
 
                     e.Cancel = true;
                 }
