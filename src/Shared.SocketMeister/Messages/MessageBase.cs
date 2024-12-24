@@ -12,9 +12,14 @@ namespace SocketMeister.Messages
     internal partial class MessageBase
 #endif
     {
+        //  MESSAGE ID
+        private static long _maxMessageId = 0;
+        private static readonly object _lockMaxMessageId = new object();
+
         private Exception _error;
         private bool _isAborted;
         private readonly object _lock = new object();
+        private readonly long _messageId;
         private readonly MessageType _messageType;
         private MessageStatus _status = MessageStatus.Unsent;
         private MessageResponseV1 _response;
@@ -30,13 +35,22 @@ namespace SocketMeister.Messages
         public event EventHandler<EventArgs> SendReceiveStatusChanged;
 
 
-        internal MessageBase(MessageType MessageType)
+        internal MessageBase(MessageType MessageType, long messageId)
         {
             _messageType = MessageType;
             CreatedDateTime = DateTime.UtcNow;
             _timeoutDateTime = DateTime.UtcNow.AddMilliseconds(_timeoutMilliseconds);
+            if (messageId == 0)
+            {
+                //  Create a MessageId
+                lock (_lockMaxMessageId)
+                {
+                    if (_maxMessageId + 1 > long.MaxValue) _maxMessageId = 1;
+                    else _maxMessageId += 1;
+                    _messageId = _maxMessageId;
+                }
+            }
         }
-
 
         /// <summary>
         /// Dispose of the class
@@ -73,6 +87,11 @@ namespace SocketMeister.Messages
         public Exception Error
         {
             get { lock (_lock) { return _error; } }
+        }
+
+        public long MessageId
+        {
+            get { return _messageId; }
         }
 
         /// <summary>

@@ -561,6 +561,11 @@
             UTC datetime the message was created.
             </summary>
         </member>
+        <member name="P:SocketMeister.Messages.IMessage.MessageId">
+            <summary>
+            Unique identifier for the message
+            </summary>
+        </member>
         <member name="P:SocketMeister.Messages.IMessage.MessageType">
             <summary>
             Type of message
@@ -697,11 +702,6 @@
             True is this message is long polling on the server side. Long polling messages will be closed immediately in the event of a close from either the client or server side.
             </summary>
         </member>
-        <member name="P:SocketMeister.Messages.MessageV1.MessageId">
-            <summary>
-            Identifier assigned to this message when it was created
-            </summary>
-        </member>
         <member name="P:SocketMeister.Messages.MessageResponseV1.RemoteClient">
             <summary>
             The remote client which sent this Message (value null on SocketClient)
@@ -712,11 +712,6 @@
             Fastest was to build this is to create it directly from the SocketEnvelope buffer.
             </summary>
             <param name="Reader">Binary Reader</param>
-        </member>
-        <member name="P:SocketMeister.Messages.MessageResponseV1.MessageId">
-            <summary>
-            The message that this response refers to
-            </summary>
         </member>
         <member name="M:SocketMeister.Messages.ServerStoppingNotificationV1.#ctor(System.IO.BinaryReader)">
             <summary>

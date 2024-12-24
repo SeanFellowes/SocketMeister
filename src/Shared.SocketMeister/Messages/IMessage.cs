@@ -15,6 +15,11 @@ namespace SocketMeister.Messages
         DateTime CreatedDateTime { get; }
 
         /// <summary>
+        /// Unique identifier for the message
+        /// </summary>
+        long MessageId { get; }
+
+        /// <summary>
         /// Type of message
         /// </summary>
         MessageType MessageType { get; }

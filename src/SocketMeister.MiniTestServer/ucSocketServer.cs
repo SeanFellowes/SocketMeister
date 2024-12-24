@@ -14,6 +14,8 @@ namespace SocketMeister
         private const string _chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         private DateTime _nextAutomatedSend = DateTime.UtcNow;
         private string _messageText;
+        private int _msProcessing = 5000;
+        private int _msSendTimeout = 5000;
         private int _serverId;
         private int _port;
         private readonly object _lock = new object();
@@ -185,7 +187,7 @@ namespace SocketMeister
             SetLabelText(lblTotalRequestsReceived, Server.TotalMessagesReceived.ToString("N0"));
             SetLabelText(lblBytesReceived, Server.TotalBytesReceived.ToString("N0"));
 
-            //MESSAGE RECEIVED. SEND IT BACK IF LOGGING IS ON
+            //  MESSAGE RECEIVED. SEND IT BACK
             int clientId = (int)e.Parameters[0];
             byte[] receivedBytes = (byte[])e.Parameters[1];
             string msgRec = Encoding.UTF8.GetString(receivedBytes, 0, receivedBytes.Length);
@@ -194,7 +196,16 @@ namespace SocketMeister
             else
                 LogEventRaised?.Invoke(this, new LogEventArgs(SeverityType.Information, "Server #" + ServerId.ToString(), "Client " + clientId, "MessageReceived: " + msgRec));
 
+            //  Simulate Processing Time
+            int msProcessing;
+            lock (_lock) { msProcessing = _msProcessing; }            
+            DateTime timeout = DateTime.Now.AddMilliseconds(msProcessing);
+            while (DateTime.Now < timeout)
+            {
+                Thread.Sleep(1000);
+            }
 
+            //  Return message
             byte[] toSend = new byte[msgRec.Length];
             Buffer.BlockCopy(Encoding.UTF8.GetBytes(msgRec), 0, toSend, 0, toSend.Length);
             e.Response = receivedBytes;
@@ -277,6 +288,9 @@ namespace SocketMeister
 
         private async Task<int> SendMessageToClientsAsync(byte[] bytes)
         {
+            int msSendTimeout;
+            lock (_lock) { msSendTimeout = _msSendTimeout; }
+
             List<SocketServer.Client> items = Server.GetClients();
             if (items.Count == 0) return 0;
 
@@ -290,7 +304,7 @@ namespace SocketMeister
                 {
                     try
                     {
-                        client.SendMessage(parms);
+                        client.SendMessage(parms, msSendTimeout);
                     }
                     catch (Exception e)
                     {
@@ -393,5 +407,14 @@ namespace SocketMeister
             MessageBox.Show(e, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
+        private void nmSndTimeout_ValueChanged(object sender, EventArgs e)
+        {
+            lock (_lock) { _msSendTimeout = (int)nmSndTimeout.Value; }
+        }
+
+        private void nmReceiveProcessing_ValueChanged(object sender, EventArgs e)
+        {
+            lock (_lock) {  _msProcessing = (int)nmReceiveProcessing.Value;}
+        }
     }
 }
