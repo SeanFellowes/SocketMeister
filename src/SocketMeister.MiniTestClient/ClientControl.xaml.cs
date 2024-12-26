@@ -16,9 +16,12 @@ namespace SocketMeister.MiniTestClient
         private int _clientId = 1;
         private int _messagesReceived = 0;
         private int _messagesSent = 0;
+        private int _processingSimulationDelayMs = 1000;
+        private int _sendMessageTimeout = 10000;
         private readonly Random _rnd = new();
         private int _broadcastsReceived = 0;
         private SocketClient _client;
+        private object _lock = new object();
 
         /// <summary>
         /// Event raised when an exception occurs
@@ -64,8 +67,9 @@ namespace SocketMeister.MiniTestClient
                 _clientId = value;
                 tbClientId.Text = value.ToString();
             }
-
         }
+
+        public int ProcessingSimululationDelayMs {  get {  lock(_lock) {  return _processingSimulationDelayMs; } } } 
 
         public bool TestSubscriptions
         {
@@ -226,6 +230,15 @@ namespace SocketMeister.MiniTestClient
                 tbRequestsReceived.Text = _messagesReceived.ToString();
             });
             MessageReceived?.Invoke(this, e);
+
+            //  Simulate Processing Time
+            int msProcessing;
+            lock (_lock) { msProcessing = _processingSimulationDelayMs; }
+            DateTime timeout = DateTime.Now.AddMilliseconds(msProcessing);
+            while (DateTime.Now < timeout)
+            {
+                Thread.Sleep(1000);
+            }
         }
 
         private void Client_ServerStopping(object sender, EventArgs e)
@@ -236,6 +249,16 @@ namespace SocketMeister.MiniTestClient
         private void BtnSendMessage_Click(object sender, RoutedEventArgs e)
         {
             SendMessageButtonPressed?.Invoke(this, new EventArgs());
+        }
+
+        private void udTimeOutMs_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            lock (_lock) { _sendMessageTimeout = (int)udTimeOutMs.Value; }
+        }
+
+        private void udProcessingMs_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            lock (_lock) { _processingSimulationDelayMs = (int)udProcessingSimulationDelayMs.Value; }
         }
     }
 

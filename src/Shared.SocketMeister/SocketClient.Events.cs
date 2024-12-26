@@ -18,7 +18,6 @@ namespace SocketMeister
     internal partial class SocketClient : IDisposable
 #endif
     {
-
         /// <summary>
         /// Values provided when a message is received from a server. 
         /// </summary>
@@ -42,7 +41,6 @@ namespace SocketMeister
             /// </summary>
             public byte[] Response { get; set; } = null;
         }
-
 
 
         /// <summary>

@@ -50,6 +50,8 @@ namespace SocketMeister.Messages
                     _messageId = _maxMessageId;
                 }
             }
+            else
+                { _messageId = messageId; }    
         }
 
         /// <summary>

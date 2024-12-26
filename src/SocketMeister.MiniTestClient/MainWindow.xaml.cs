@@ -61,7 +61,7 @@ namespace SocketMeister.MiniTestClient
 
                 Top = 0;
                 Left = 850;
-                Height = 900;
+                Height = 1000;
                 Visibility = Visibility.Visible;
                 IPAddress.Text = "127.0.0.1";
 
@@ -104,6 +104,7 @@ namespace SocketMeister.MiniTestClient
             {
                 msgRec = Encoding.UTF8.GetString(receivedBytes, 0, receivedBytes.Length);
             }
+
             Log(LogItem.SeverityType.Information, "Client " + ct.ClientId, "MessageReceived (" + receivedBytes.Length + " bytes): " + msgRec);
         }
 

@@ -105,6 +105,8 @@
                         <ColumnDefinition Width="60"/>
                         <ColumnDefinition Width="100"/>
                         <ColumnDefinition Width="90"/>
+                        <ColumnDefinition Width="65"/>
+                        <ColumnDefinition Width="65"/>
                     </Grid.ColumnDefinitions>
                     <Border Grid.Column="0" Grid.ColumnSpan="12" Background="#FF274F5F" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Border>
                     <TextBlock Grid.Column="0" Foreground="White" Text="Client #" TextAlignment="Center" VerticalAlignment="Center"/>
@@ -114,6 +116,8 @@
                     <TextBlock Grid.Column="4" Foreground="White" Text="Requests Sent" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center"/>
                     <TextBlock Grid.Column="5" Foreground="White" Text="Send a Message" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center"/>
                     <TextBlock Grid.Column="6" Foreground="White" Text="Subscriptions" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Grid.Column="7" Foreground="White" Text="Timeout ms (Snd)" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Grid.Column="8" Foreground="White" Text="Processing ms (Rcv)" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center"/>
                 </Grid>
 
                 <!-- CLIENT STATS - CLIENT ROWS -->
