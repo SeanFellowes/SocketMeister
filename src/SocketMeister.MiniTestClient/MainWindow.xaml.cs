@@ -20,8 +20,6 @@ namespace SocketMeister.MiniTestClient
     {
         internal class LogItem
         {
-            public enum SeverityType { Information = 0, Warning = 1, Error = 2 }
-
             private readonly DateTime timeStamp = DateTime.UtcNow;
 
             public SeverityType Severity { get; set; }
@@ -87,7 +85,7 @@ namespace SocketMeister.MiniTestClient
         private void Client_ExceptionRaised(object sender, ExceptionEventArgs e)
         {
             ClientControl ct = (ClientControl)sender;
-            Log(LogItem.SeverityType.Error, "Client " + ct.ClientId, e.Exception.Message);
+            Log(SeverityType.Error, "Client " + ct.ClientId, e.Exception.Message);
         }
 
         private void Client_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
@@ -105,14 +103,14 @@ namespace SocketMeister.MiniTestClient
                 msgRec = Encoding.UTF8.GetString(receivedBytes, 0, receivedBytes.Length);
             }
 
-            Log(LogItem.SeverityType.Information, "Client " + ct.ClientId, "MessageReceived (" + receivedBytes.Length + " bytes): " + msgRec);
+            Log(SeverityType.Information, "Client " + ct.ClientId, "MessageReceived (" + receivedBytes.Length + " bytes): " + msgRec);
         }
 
 
         private void Client_ServerStopping(object sender, EventArgs e)
         {
             ClientControl ct = (ClientControl)sender;
-            Log(LogItem.SeverityType.Warning, "Client " + ct.ClientId, "Server is stopping");
+            Log(SeverityType.Warning, "Client " + ct.ClientId, "Server is stopping");
         }
 
         private void Client_SendRequestButtonPressed(object sender, EventArgs e)
@@ -128,8 +126,15 @@ namespace SocketMeister.MiniTestClient
             byte[] receivedBytes = (byte[])e.Parameters[0];
             string msgRec = Encoding.UTF8.GetString(receivedBytes, 0, receivedBytes.Length);
 
-            Log(LogItem.SeverityType.Information, "Client " + ct.ClientId, "BroadcastReceived: " + e.Name + ", " + msgRec);
+            Log(SeverityType.Information, "Client " + ct.ClientId, "BroadcastReceived: " + e.Name + ", " + msgRec);
         }
+
+        private void Client_ResponseReceived(object sender, ResponseReceived e)
+        {
+            ClientControl ct = (ClientControl)sender;
+            Log(e.Severity, "Client " + ct.ClientId, e.DisplayText);
+        }
+
 
         private async void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
@@ -158,7 +163,7 @@ namespace SocketMeister.MiniTestClient
         }
 
 
-        private void Log(LogItem.SeverityType Severity, string Source, string Text)
+        private void Log(SeverityType Severity, string Source, string Text)
         {
             Dispatcher.Invoke(() =>
             {
@@ -203,6 +208,7 @@ namespace SocketMeister.MiniTestClient
                     Client.SendMessageButtonPressed += Client_SendRequestButtonPressed;
                     Client.ServerStopping += Client_ServerStopping;
                     Client.BroadcastReceived += Client_BroadcastReceived;
+                    Client.ResponseReceived += Client_ResponseReceived;
 
                     if (EndpointRB2.IsChecked == false)
                     {

@@ -8,6 +8,25 @@ using System.Windows.Media;
 
 namespace SocketMeister.MiniTestClient
 {
+    internal class ResponseReceived : EventArgs
+    {
+        private readonly int _messageId;
+        private readonly string _displayText;
+        private readonly SeverityType severity;
+
+        public ResponseReceived(SeverityType severity, int MessageId, string displayText)
+        {
+            this.severity = severity;
+            _displayText = displayText;
+            _messageId = MessageId;
+        }
+
+        public int MessageId => _messageId;
+        public string DisplayText => _displayText;
+        public SeverityType Severity => severity;
+    }
+
+
     /// <summary>
     /// Interaction logic for ClientControl.xaml
     /// </summary>
@@ -27,6 +46,8 @@ namespace SocketMeister.MiniTestClient
         /// Event raised when an exception occurs
         /// </summary>
         public event EventHandler<ExceptionEventArgs> ExceptionRaised;
+
+        internal event EventHandler<ResponseReceived> ResponseReceived;
 
         public event EventHandler<EventArgs> SendMessageButtonPressed;
 
@@ -51,7 +72,6 @@ namespace SocketMeister.MiniTestClient
         public ClientControl()
         {
             InitializeComponent();
-
         }
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
@@ -122,6 +142,7 @@ namespace SocketMeister.MiniTestClient
 
         public void SendMessage(string Message)
         {
+            DateTime start = DateTime.Now;
             try
             {
 #pragma warning disable CA2208 // Instantiate argument exceptions correctly
@@ -135,6 +156,9 @@ namespace SocketMeister.MiniTestClient
                 p[0] = _clientId;
                 p[1] = toSend;
                 byte[] result = _client.SendMessage(p);
+
+                string msg = "Response Received (" + (int)(DateTime.Now - start).TotalMilliseconds + " ms))"; 
+                ResponseReceived?.Invoke(this, new ResponseReceived(SeverityType.Information, 0, msg));
 
                 Dispatcher.Invoke(() =>
                 {
