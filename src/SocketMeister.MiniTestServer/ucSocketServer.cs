@@ -253,7 +253,7 @@ namespace SocketMeister
                 string toSendStr = GenerateRandomString(_rng.Next(6048576) + 1000000);
                 byte[] toSend = new byte[toSendStr.Length];
                 Buffer.BlockCopy(Encoding.UTF8.GetBytes(toSendStr), 0, toSend, 0, toSend.Length);
-                int itemsProcessed = await SendMessageToClientsAsync(toSend);
+                int itemsProcessed = await SendMessageToClientsAsync(toSend, false);
                 if (itemsProcessed > 0) UcServer.NextAutomatedSend = DateTime.UtcNow.AddMilliseconds(500);
                 else UcServer.NextAutomatedSend = DateTime.UtcNow.AddMilliseconds(1000);
 
@@ -266,7 +266,7 @@ namespace SocketMeister
                 Buffer.BlockCopy(Encoding.UTF8.GetBytes(toSendStr), 0, toSend, 0, toSend.Length);
                 for (int i = 0; i < 10; i++)
                 {
-                    totalSent += await SendMessageToClientsAsync(toSend);
+                    totalSent += await SendMessageToClientsAsync(toSend, false);
                     Thread.Sleep(50);
                 }
             }
@@ -286,7 +286,7 @@ namespace SocketMeister
             return new string(buffer);
         }
 
-        private async Task<int> SendMessageToClientsAsync(byte[] bytes)
+        private async Task<int> SendMessageToClientsAsync(byte[] bytes, bool raiseLogOnResponse)
         {
             int msSendTimeout;
             lock (_lock) { msSendTimeout = _msSendTimeout; }
@@ -325,31 +325,18 @@ namespace SocketMeister
             SetLabelText(lblTotalMessagesSent, Server.TotalMessagesSent.ToString("N0"));
             SetLabelText(lblBytesSent, Server.TotalBytesSent.ToString("N0"));
 
+            if (raiseLogOnResponse)
+            {
+                LogEventRaised?.Invoke(this, new LogEventArgs(
+                    SeverityType.Information,
+                    $"Server #{ServerId}",
+                    $"Server #{ServerId}",
+                    $"Completed 'Send Message (Wait for Response)'"
+                ));
+            }
             return items.Count;
         }
 
-
-        //private int SendMessageToClients(byte[] Bytes)
-        //{
-        //    List<SocketServer.Client> items = Server.GetClients();
-        //    if (items.Count == 0) return 0;
-        //    foreach (SocketServer.Client i in items)
-        //    {
-        //        object[] parms = new object[1];
-        //        parms[0] = Bytes;
-        //        try
-        //        {
-        //            i.SendMessage(parms);
-        //        }
-        //        catch (Exception e)
-        //        {
-        //            LogEventRaised?.Invoke(this, new LogEventArgs(SeverityType.Warning, "Server #" + ServerId.ToString(), "Client", "Error: " + e.ToString()));
-        //        }
-        //    }
-        //    SetLabelText(lblTotalMessagesSent, Server.TotalMessagesSent.ToString("N0"));
-        //    SetLabelText(lblBytesSent, Server.TotalBytesSent.ToString("N0"));
-        //    return items.Count;
-        //}
 
         private void BtnBroadcastToSubscribers_Click(object sender, EventArgs e)
         {
@@ -378,7 +365,7 @@ namespace SocketMeister
 
             try
             {
-                int result = await SendMessageToClientsAsync(toSend);
+                int result = await SendMessageToClientsAsync(toSend, true);
             }
             catch (Exception ex)
             {
