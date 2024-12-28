@@ -20,7 +20,7 @@
     <DocumentationFile></DocumentationFile>
     <PackageIcon>icon_128.png</PackageIcon>
     <SelfContained>true</SelfContained>
-    <Version>4.1.0</Version>
+    <Version>4.1.1</Version>
     <AssemblyVersion>4.0.6.0</AssemblyVersion>
     <FileVersion>4.0.6.0</FileVersion>
     <PackageReadmeFile>NuGetDocumentation.md</PackageReadmeFile>
