@@ -253,19 +253,21 @@ namespace SocketMeister.Messages
         ///     Waits for SetCompleted() has been called or the message times out.
         /// </summary>
         /// <returns></returns>
-        public bool WaitForCompleted()
+        public void WaitForResponseOrTimeout()
         {
             int remainingMilliseconds;
+            int timeoutMilliseconds;
             lock (_lock) 
             {
                 _responseReceivedEvent = new ManualResetEventSlim(false); 
-                remainingMilliseconds = _timeoutMilliseconds - (int)(DateTime.UtcNow - CreatedDateTime).TotalMilliseconds;
+                timeoutMilliseconds = _timeoutMilliseconds;
+                remainingMilliseconds = timeoutMilliseconds - (int)(DateTime.UtcNow - CreatedDateTime).TotalMilliseconds;
             }
-            if (remainingMilliseconds > 0)
-            {
-                return _responseReceivedEvent.Wait(remainingMilliseconds);
-            }
-            return false;
+            if (remainingMilliseconds <= 0)
+                throw new TimeoutException($"SendMessage() received no response out after {timeoutMilliseconds} milliseconds.");
+
+            if (_responseReceivedEvent.Wait(remainingMilliseconds) == false)
+                throw new TimeoutException($"SendMessage() received no response out after {timeoutMilliseconds} milliseconds.");
         }
 #endif
 }

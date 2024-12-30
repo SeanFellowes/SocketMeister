@@ -59,7 +59,7 @@ namespace SocketMeister.Messages
         //  This is only used by some message types as a wait lock for a response to be received. Null by default
         //ManualResetEventSlim ResponseReceivedEvent { get; set; }
 
-        bool WaitForCompleted();
+        void WaitForResponseOrTimeout();
 #endif
 
 

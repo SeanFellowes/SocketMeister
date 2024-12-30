@@ -221,13 +221,8 @@ namespace SocketMeister
                     message.SetStatusInProgress();
 
                     // Wait for a response. 
-                    if (message.WaitForCompleted() == false)
-                    {
-                        // Timeout occurred
-                        throw new TimeoutException($"SendMessage() received no response out after {TimeoutMilliseconds} milliseconds.");
-                    }
+                    message.WaitForResponseOrTimeout();
 
-                    // Handle the response
                     if (message.Response != null)
                     {
                         if (message.Response.Error != null)
@@ -236,7 +231,10 @@ namespace SocketMeister
                         return message.Response.ResponseData;
                     }
 
-                    throw new TimeoutException($"SendMessage() timed out after {TimeoutMilliseconds} milliseconds.");
+                    if (message.Error != null)
+                        throw message.Error;
+
+                    throw new Exception("There was no message response");
                 }
                 finally
                 {

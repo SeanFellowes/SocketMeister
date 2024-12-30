@@ -919,46 +919,72 @@ namespace SocketMeister
             byte[] sendBytes = MessageEngine.GenerateSendBytes(message, false);
 
             // Improved implementation for .NET 4.0+
-            while (message.TrySendReceive && !StopClientPermanently)
+            try
             {
-                try
+                while (message.TrySendReceive && !StopClientPermanently)
                 {
-                    if (message.SendReceiveStatus == MessageStatus.Unsent && CanSendReceive())
+                    try
                     {
-                        var sendEventArgs = _sendEventArgsPool.Pop();
-                        if (sendEventArgs != null)
+                        if (message.SendReceiveStatus == MessageStatus.Unsent && CanSendReceive())
                         {
-                            message.SetStatusInProgress();
-                            sendEventArgs.UserToken = message;
-                            sendEventArgs.SetBuffer(sendBytes, 0, sendBytes.Length);
-                            sendEventArgs.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
+                            var sendEventArgs = _sendEventArgsPool.Pop();
+                            if (sendEventArgs != null)
+                            {
+                                message.SetStatusInProgress();
+                                sendEventArgs.UserToken = message;
+                                sendEventArgs.SetBuffer(sendBytes, 0, sendBytes.Length);
+                                sendEventArgs.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
 
-                            if (!CurrentEndPoint.Socket.SendAsync(sendEventArgs))
-                                ProcessSend(null, sendEventArgs);
+                                if (!CurrentEndPoint.Socket.SendAsync(sendEventArgs))
+                                    ProcessSend(null, sendEventArgs);
 
 #if NET35
                             // Exit if the message has timed out
                             if (message.SendReceiveStatus == MessageStatus.Completed) break;
 #else
-                            // Wait for a response.
-                            if (message.WaitForCompleted() == false) break;
+                                // Wait for a response.
+                                message.WaitForResponseOrTimeout();
+                                break;
 #endif
+                            }
                         }
                     }
-                }
-                catch (Exception ex)
-                {
-                    NotifyExceptionRaised(ex);
-                }
+                    catch (TimeoutException)
+                    {
+                        throw;
+                    }
+                    catch (Exception ex)
+                    {
+                        NotifyExceptionRaised(ex);
+                    }
 
 #if NET35
                 Thread.Sleep(10); // Poll for response
 #endif
+                }
             }
-            UnrespondedMessages.Remove(message);
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+                // Clean up message and associated resources
+                UnrespondedMessages.Remove(message);
+            }
 
-            if (message.Response?.Error != null) throw message.Response.Error;
-            return message.Response?.ResponseData ?? throw new TimeoutException($"SendReceive() timed out after {message.TimeoutMilliseconds} ms");
+            if (message.Response != null)
+            {
+                if (message.Response.Error != null)
+                    throw message.Response.Error;
+
+                return message.Response.ResponseData;
+            }
+
+            if (message.Error != null)
+                throw message.Error;
+
+            throw new Exception("There was no message response");
         }
 
 

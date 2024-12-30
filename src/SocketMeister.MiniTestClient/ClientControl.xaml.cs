@@ -155,7 +155,7 @@ namespace SocketMeister.MiniTestClient
                 object[] p = new object[2];
                 p[0] = _clientId;
                 p[1] = toSend;
-                byte[] result = _client.SendMessage(p);
+                byte[] result = _client.SendMessage(p, (int)udTimeOutMs.Value);
 
                 string msg = "Response Received (" + (int)(DateTime.Now - start).TotalMilliseconds + " ms))"; 
                 ResponseReceived?.Invoke(this, new ResponseReceived(SeverityType.Information, 0, msg));
