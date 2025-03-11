@@ -49,17 +49,17 @@ namespace SocketMeister
             this.rbAutoBCLarge = new System.Windows.Forms.RadioButton();
             this.rbAutoBCOff = new System.Windows.Forms.RadioButton();
             this.pnlMain = new System.Windows.Forms.GroupBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.nmReceiveProcessing = new System.Windows.Forms.NumericUpDown();
+            this.label1 = new System.Windows.Forms.Label();
+            this.nmSndTimeout = new System.Windows.Forms.NumericUpDown();
             this.btnBroadcastToSubscribers = new System.Windows.Forms.Button();
             this.lbPort = new System.Windows.Forms.Label();
             this.btnSendMessage = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
-            this.nmSndTimeout = new System.Windows.Forms.NumericUpDown();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.nmReceiveProcessing = new System.Windows.Forms.NumericUpDown();
             this.pnlMain.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nmSndTimeout)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nmReceiveProcessing)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nmSndTimeout)).BeginInit();
             this.SuspendLayout();
             // 
             // label15
@@ -297,6 +297,78 @@ namespace SocketMeister
             this.pnlMain.TabStop = false;
             this.pnlMain.Text = "Socket Server 1";
             // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(168, 37);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(130, 13);
+            this.label6.TabIndex = 92;
+            this.label6.Text = "Processing ms (Rcv Msg):";
+            this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // nmReceiveProcessing
+            // 
+            this.nmReceiveProcessing.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(128)))));
+            this.nmReceiveProcessing.Increment = new decimal(new int[] {
+            5000,
+            0,
+            0,
+            0});
+            this.nmReceiveProcessing.Location = new System.Drawing.Point(306, 35);
+            this.nmReceiveProcessing.Maximum = new decimal(new int[] {
+            120000,
+            0,
+            0,
+            0});
+            this.nmReceiveProcessing.Name = "nmReceiveProcessing";
+            this.nmReceiveProcessing.Size = new System.Drawing.Size(61, 20);
+            this.nmReceiveProcessing.TabIndex = 91;
+            this.nmReceiveProcessing.Value = new decimal(new int[] {
+            2000,
+            0,
+            0,
+            0});
+            this.nmReceiveProcessing.ValueChanged += new System.EventHandler(this.nmReceiveProcessing_ValueChanged);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(167, 17);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(121, 13);
+            this.label1.TabIndex = 90;
+            this.label1.Text = "Timeout ms (Send Msg):";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // nmSndTimeout
+            // 
+            this.nmSndTimeout.Increment = new decimal(new int[] {
+            5000,
+            0,
+            0,
+            0});
+            this.nmSndTimeout.Location = new System.Drawing.Point(306, 15);
+            this.nmSndTimeout.Maximum = new decimal(new int[] {
+            120000,
+            0,
+            0,
+            0});
+            this.nmSndTimeout.Minimum = new decimal(new int[] {
+            5000,
+            0,
+            0,
+            0});
+            this.nmSndTimeout.Name = "nmSndTimeout";
+            this.nmSndTimeout.Size = new System.Drawing.Size(61, 20);
+            this.nmSndTimeout.TabIndex = 89;
+            this.nmSndTimeout.Value = new decimal(new int[] {
+            5000,
+            0,
+            0,
+            0});
+            this.nmSndTimeout.ValueChanged += new System.EventHandler(this.nmSndTimeout_ValueChanged);
+            // 
             // btnBroadcastToSubscribers
             // 
             this.btnBroadcastToSubscribers.Enabled = false;
@@ -340,77 +412,6 @@ namespace SocketMeister
             this.label5.Text = "Automatic Message Generator:";
             this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // nmSndTimeout
-            // 
-            this.nmSndTimeout.Increment = new decimal(new int[] {
-            5000,
-            0,
-            0,
-            0});
-            this.nmSndTimeout.Location = new System.Drawing.Point(306, 15);
-            this.nmSndTimeout.Maximum = new decimal(new int[] {
-            120000,
-            0,
-            0,
-            0});
-            this.nmSndTimeout.Minimum = new decimal(new int[] {
-            5000,
-            0,
-            0,
-            0});
-            this.nmSndTimeout.Name = "nmSndTimeout";
-            this.nmSndTimeout.Size = new System.Drawing.Size(61, 20);
-            this.nmSndTimeout.TabIndex = 89;
-            this.nmSndTimeout.Value = new decimal(new int[] {
-            5000,
-            0,
-            0,
-            0});
-            this.nmSndTimeout.ValueChanged += new System.EventHandler(this.nmSndTimeout_ValueChanged);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(167, 17);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(121, 13);
-            this.label1.TabIndex = 90;
-            this.label1.Text = "Timeout ms (Send Msg):";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(168, 37);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(130, 13);
-            this.label6.TabIndex = 92;
-            this.label6.Text = "Processing ms (Rcv Msg):";
-            this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // nmReceiveProcessing
-            // 
-            this.nmReceiveProcessing.Increment = new decimal(new int[] {
-            5000,
-            0,
-            0,
-            0});
-            this.nmReceiveProcessing.Location = new System.Drawing.Point(306, 35);
-            this.nmReceiveProcessing.Maximum = new decimal(new int[] {
-            120000,
-            0,
-            0,
-            0});
-            this.nmReceiveProcessing.Name = "nmReceiveProcessing";
-            this.nmReceiveProcessing.Size = new System.Drawing.Size(61, 20);
-            this.nmReceiveProcessing.TabIndex = 91;
-            this.nmReceiveProcessing.Value = new decimal(new int[] {
-            5000,
-            0,
-            0,
-            0});
-            this.nmReceiveProcessing.ValueChanged += new System.EventHandler(this.nmReceiveProcessing_ValueChanged);
-            // 
             // UcSocketServer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -420,8 +421,8 @@ namespace SocketMeister
             this.Size = new System.Drawing.Size(384, 198);
             this.pnlMain.ResumeLayout(false);
             this.pnlMain.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nmSndTimeout)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nmReceiveProcessing)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nmSndTimeout)).EndInit();
             this.ResumeLayout(false);
 
         }

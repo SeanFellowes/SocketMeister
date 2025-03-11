@@ -14,7 +14,7 @@ namespace SocketMeister
         private const string _chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         private DateTime _nextAutomatedSend = DateTime.UtcNow;
         private string _messageText;
-        private int _msProcessing = 5000;
+        private int _msProcessing = 2000;
         private int _msSendTimeout = 5000;
         private int _serverId;
         private int _port;

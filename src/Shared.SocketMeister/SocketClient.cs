@@ -66,6 +66,7 @@ namespace SocketMeister
         private DateTime _lastPollResponse = DateTime.UtcNow;
         private readonly object _lock = new object();
         private readonly byte[] _pollingBuffer = new byte[Constants.SEND_RECEIVE_BUFFER_SIZE];
+        private bool _pollingReceivedAfterConnect = false;
         private readonly Random _randomizer = new Random();
         private readonly MessageEngine _receiveEngine;
         private readonly SocketAsyncEventArgsPool _sendEventArgsPool;
@@ -333,6 +334,24 @@ namespace SocketMeister
         {
             get
             {
+                //  If the socket is connected but we haven't completed polling, then we are still connecting.
+                ConnectionStatuses conStatus = InternalConnectionStatus;
+                if (conStatus == ConnectionStatuses.Connected && PollingReceivedAfterConnect == false)
+                {
+                    return ConnectionStatuses.Connecting;
+                }
+                return conStatus;
+            }
+        }
+
+
+        /// <summary>
+        /// Used internally. Returns the real connection status.
+        /// </summary>
+        private ConnectionStatuses InternalConnectionStatus
+        {
+            get
+            {
                 if (_connectionStatusLock == null)
                     return ConnectionStatuses.Disconnected;
 
@@ -355,12 +374,13 @@ namespace SocketMeister
                     }
                 }
             }
-            private set
+            set
             {
                 bool lockAcquired = false;
                 try
                 {
-                    if (ConnectionStatus == value) return;
+                    //  IF THE VALUE IS THE SAME, DON'T RAISE THE EVENT
+                    if (InternalConnectionStatus == value) return;
                     _connectionStatusLock.EnterWriteLock();
                     lockAcquired = true;
                     _connectionStatus = value;
@@ -372,17 +392,10 @@ namespace SocketMeister
                         _connectionStatusLock.ExitWriteLock();
                     }
                 }
-
-                try
-                {
-                    ConnectionStatusChanged?.Invoke(this, EventArgs.Empty);
-                }
-                catch 
-                {
-                    Debug.Write("Calling program error processing ConnectionStatusChanged event");
-                }
+                RaiseConnectionStatusChanged();
             }
         }
+
 
 
         /// <summary>
@@ -431,6 +444,8 @@ namespace SocketMeister
         /// </summary>
         private DateTime LastPollResponse { get { lock (_lock) { return _lastPollResponse; } } set { lock (_lock) { _lastPollResponse = value; } } }
 
+        private bool PollingReceivedAfterConnect { get { lock (_lock) { return _pollingReceivedAfterConnect; } } set { lock (_lock) { _pollingReceivedAfterConnect = value; } } }
+
         private bool TriggerSendSubscriptions { get { lock (_lock) { return _triggerSendSubscriptions; } } set { lock (_lock) { _triggerSendSubscriptions = value; } } }
 
         private bool StopClientPermanently { get { lock (_stopClientPermanentlyLock) { return _stopClientPermanently; } } set { lock (_stopClientPermanentlyLock) { _stopClientPermanently = value; } } }
@@ -466,8 +481,8 @@ namespace SocketMeister
             Stopwatch timer = Stopwatch.StartNew();
             try
             {
-                if (ConnectionStatus == ConnectionStatuses.Disconnecting || ConnectionStatus == ConnectionStatuses.Disconnected) return;
-
+                if (InternalConnectionStatus == ConnectionStatuses.Disconnecting || InternalConnectionStatus == ConnectionStatuses.Disconnected) return;
+                PollingReceivedAfterConnect = false;
                 if (SocketHasErrored == false)
                 {
                     //  Attempt to send a disconnecting message  to the server
@@ -484,7 +499,7 @@ namespace SocketMeister
                 }
 
                 //  Initiate Shutdown
-                ConnectionStatus = ConnectionStatuses.Disconnecting;
+                InternalConnectionStatus = ConnectionStatuses.Disconnecting;
 
                 //  Stop raising events when messages are received
                 try
@@ -554,7 +569,7 @@ namespace SocketMeister
                 }
                 catch { }
 
-                ConnectionStatus = ConnectionStatuses.Disconnected;
+                InternalConnectionStatus = ConnectionStatuses.Disconnected;
 
                 //  Prepare new socket and start reconnect process
                 if (StopClientPermanently == false)
@@ -594,13 +609,14 @@ namespace SocketMeister
 
                     while (!StopClientPermanently)
                     {
-                        switch (ConnectionStatus)
+                        switch (InternalConnectionStatus)
                         {
                             case ConnectionStatuses.Disconnected:
                             case ConnectionStatuses.Connecting:
                                 BgPerformAttemptConnect();
                                 break;
                             case ConnectionStatuses.Connected:
+                                if (PollingReceivedAfterConnect == false) break;
                                 BgPerformPolling(pollingTimer);
                                 BgPerformSubscriptionSends(sendSubscriptionsTimer);
                                 break;
@@ -626,7 +642,7 @@ namespace SocketMeister
             try
             {
                 //  This provides visual asthetics that connect operations are in progress
-                if (DateTime.UtcNow < CurrentEndPoint.DontReconnectUntil.AddMilliseconds(-1500)) ConnectionStatus = ConnectionStatuses.Connecting;
+                if (DateTime.UtcNow < CurrentEndPoint.DontReconnectUntil.AddMilliseconds(-1500)) InternalConnectionStatus = ConnectionStatuses.Connecting;
 
                 //  Exit is it's not time to actually attempt to reconnect
                 if (DateTime.UtcNow < CurrentEndPoint.DontReconnectUntil) return;
@@ -648,7 +664,7 @@ namespace SocketMeister
                 if (!CurrentEndPoint.Socket.ConnectAsync(_asyncEventArgsConnect)) ProcessConnect(null, _asyncEventArgsConnect);
                 if (StopClientPermanently == true) return;
 
-                if (ConnectionStatus != ConnectionStatuses.Connected)
+                if (InternalConnectionStatus != ConnectionStatuses.Connected)
                 {
                     //  IMPORTANT!!! DON'T TRY THIS CONNECTION FOR AT LEAST 3 SECONDS
                     CurrentEndPoint.DontReconnectUntil = DateTime.UtcNow.AddMilliseconds(3000);
@@ -710,6 +726,19 @@ namespace SocketMeister
             }
         }
 
+
+        private void RaiseConnectionStatusChanged()
+        {
+            try
+            {
+                ConnectionStatusChanged?.Invoke(this, EventArgs.Empty);
+            }
+            catch
+            {
+                Debug.Write("Calling program error processing ConnectionStatusChanged event");
+            }
+        }
+
         /// <summary>
         /// Provides a Stopwatch restart mechanism for .NET 3.5 and everything else through compiler directives.
         /// </summary>
@@ -737,15 +766,25 @@ namespace SocketMeister
             double pauseReconnect = 2000;
             if (e.SocketError == SocketError.Success)
             {
+                PollingReceivedAfterConnect = false;
                 //  ATTEMPT TO START RECEIVING
                 try
                 {
                     _asyncEventArgsReceive = new SocketAsyncEventArgs();
                     _asyncEventArgsReceive.SetBuffer(new byte[Constants.SEND_RECEIVE_BUFFER_SIZE], 0, Constants.SEND_RECEIVE_BUFFER_SIZE);
                     _asyncEventArgsReceive.Completed += new EventHandler<SocketAsyncEventArgs>(ProcessReceive);
-                    if (!CurrentEndPoint.Socket.ReceiveAsync(_asyncEventArgsReceive)) ProcessReceive(null, _asyncEventArgsReceive);
-                    //  CONNECTED
-                    ConnectionStatus = ConnectionStatuses.Connected;
+                    if (!CurrentEndPoint.Socket.ReceiveAsync(_asyncEventArgsReceive))
+                    {
+                        ProcessReceive(null, _asyncEventArgsReceive);
+                    }
+
+                    // Start a new thread to confirm connection via polling
+                    Thread pollingThread = new Thread(new ThreadStart(ConfirmConnectionViaPolling));
+                    pollingThread.IsBackground = true;
+                    pollingThread.Start();
+
+                    //  Internally, we are connected, but user property 
+                    InternalConnectionStatus = ConnectionStatuses.Connected;
 
                     //  IF SUBSCRIPTIONS EXIST, SEND THEM
                     if (SubscriptionCount > 0) TriggerSendSubscriptions = true;
@@ -783,6 +822,57 @@ namespace SocketMeister
                 }
             }
         }
+
+        /// <summary>
+        /// Confirm connection via polling. Although the socket has connected, there are times the receive buffers on either the server
+        /// of the client are not ready to receive data. This method will poll the server until a response is received. Once we have a
+        /// polling response, the external calling program will see the status as connected.
+        /// </summary>
+        private void ConfirmConnectionViaPolling()
+        {
+            int maxAttempts = 6; // 6 attempts at 5-second intervals (30 seconds total)
+
+            for (int i = 0; i < maxAttempts && !PollingReceivedAfterConnect && !StopClientPermanently; i++)
+            {
+                Debug.WriteLine("Polling attempt " + (i + 1) + " to confirm connection...");
+
+                try
+                {
+                    _asyncEventArgsPolling.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
+                    _asyncEventArgsPolling.SetBuffer(_pollingBuffer, 0, _pollingBuffer.Length);
+                    if (!CurrentEndPoint.Socket.SendAsync(_asyncEventArgsPolling)) ProcessSendPollRequest(null, _asyncEventArgsPolling);
+                }
+                catch (Exception ex)
+                {
+                    NotifyExceptionRaised(ex);
+                }
+
+                DateTime maxWaitThisTry = DateTime.UtcNow.AddSeconds(5);
+                while (true)
+                {
+                    if (PollingReceivedAfterConnect)
+                    {
+                        //  No need to change InternalConnectionStatus = Connected but me MUST raise an event so the calling
+                        //  software knows the connection is fully established.
+                        RaiseConnectionStatusChanged();
+                        Debug.WriteLine("Polling confirmed. Connection is fully established.");
+                        return;
+                    }
+                    if (DateTime.UtcNow > maxWaitThisTry)
+                    {
+                        Debug.WriteLine("No polling response received.");
+                        break;
+                    }
+                    if (StopClientPermanently || InternalConnectionStatus != ConnectionStatuses.Connected) return;
+                    Thread.Sleep(100); // Pause a little
+                }
+            }
+
+            // If we reach this point, polling never succeeded
+            NotifyExceptionRaised(new Exception("Connection failure: No response to initial polling so disconnected."));
+            DisconnectGracefully(SocketHasErrored: true);
+        }
+
 
 
         /// <summary>
@@ -860,7 +950,7 @@ namespace SocketMeister
         {
             byte[] sendBytes = MessageEngine.GenerateSendBytes(Message, false);
 
-            if (ConnectionStatus != ConnectionStatuses.Connected || !CurrentEndPoint.Socket.Connected) return;
+            if (InternalConnectionStatus != ConnectionStatuses.Connected || !CurrentEndPoint.Socket.Connected) return;
 
             SocketAsyncEventArgs sendEventArgs = _sendEventArgsPool.Pop();
             if (sendEventArgs == null) return;
@@ -902,7 +992,6 @@ namespace SocketMeister
                 if (StopClientPermanently) throw new Exception("Message cannot be sent. The socket client is stopped or stopping");
                 if (DateTime.UtcNow > maxWait) throw new TimeoutException();
             }
-            //DelaySending();
             int remainingMilliseconds = TimeoutMilliseconds - Convert.ToInt32((DateTime.UtcNow - startTime).TotalMilliseconds);
             return SendReceive(new MessageV1(Parameters, remainingMilliseconds, IsLongPolling));
         }
@@ -939,8 +1028,8 @@ namespace SocketMeister
                                     ProcessSend(null, sendEventArgs);
 
 #if NET35
-                            // Exit if the message has timed out
-                            if (message.SendReceiveStatus == MessageStatus.Completed) break;
+                                // Exit if the message has timed out
+                                if (message.SendReceiveStatus == MessageStatus.Completed) break;
 #else
                                 // Wait for a response.
                                 message.WaitForResponseOrTimeout();
@@ -1045,7 +1134,7 @@ namespace SocketMeister
         /// <param name="e">Socket Arguments</param>
         private void ProcessReceive(object sender, SocketAsyncEventArgs e)
         {
-            if (ConnectionStatus == ConnectionStatuses.Disconnected) return;
+            if (InternalConnectionStatus == ConnectionStatuses.Disconnected) return;
 
             if (e.BytesTransferred == 0)
             {
@@ -1102,6 +1191,7 @@ namespace SocketMeister
                         else if (_receiveEngine.MessageType == MessageType.PollingResponseV1)
                         {
                             LastPollResponse = DateTime.UtcNow;
+                            PollingReceivedAfterConnect = true;
                         }
 
                         else if (_receiveEngine.MessageType == MessageType.SubscriptionChangesResponseV1)
@@ -1125,8 +1215,8 @@ namespace SocketMeister
                 }
 
                 //  KEEP RECEIVING
-                if (ConnectionStatus == ConnectionStatuses.Disconnecting && !CurrentEndPoint.Socket.ReceiveAsync(e)) ProcessReceive(null, e);
-                else if (StopClientPermanently == false && ConnectionStatus == ConnectionStatuses.Connected && !CurrentEndPoint.Socket.ReceiveAsync(e)) ProcessReceive(null, e);
+                if (InternalConnectionStatus == ConnectionStatuses.Disconnecting && !CurrentEndPoint.Socket.ReceiveAsync(e)) ProcessReceive(null, e);
+                else if (StopClientPermanently == false && InternalConnectionStatus == ConnectionStatuses.Connected && !CurrentEndPoint.Socket.ReceiveAsync(e)) ProcessReceive(null, e);
             }
             catch (ObjectDisposedException ee)
             {
@@ -1217,7 +1307,7 @@ namespace SocketMeister
 
         private bool CanSendReceive()
         {
-            return !StopClientPermanently && ConnectionStatus == ConnectionStatuses.Connected && CurrentEndPoint.Socket.Connected;
+            return !StopClientPermanently && InternalConnectionStatus == ConnectionStatuses.Connected && CurrentEndPoint.Socket.Connected;
         }
 
 
@@ -1318,22 +1408,29 @@ namespace SocketMeister
 #endif
         }
 
+#if NET35
         private static Random ThreadSafeRandom
         {
             get
             {
-#if NET35
                 // Initialize Random for the current thread if not already initialized
                 if (_threadStaticRandom == null)
                 {
                     _threadStaticRandom = new Random(Guid.NewGuid().GetHashCode());
                 }
                 return _threadStaticRandom;
-#else
-            return _threadLocalRandom.Value;
-#endif
             }
         }
+#else
+        private static Random ThreadSafeRandom
+        {
+            get
+            {
+                return _threadLocalRandom.Value;
+            }
+        }
+#endif
+
 
         private static int GetThreadSafeRandomNumber(int min, int max)
         {
