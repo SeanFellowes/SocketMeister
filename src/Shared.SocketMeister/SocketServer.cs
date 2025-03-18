@@ -626,6 +626,7 @@ namespace SocketMeister
             {
                 remoteClient.ClientSocketMeisterVersion = message.ClientSocketMeisterVersion;
                 remoteClient.FriendlyName = message.FriendlyName;
+                remoteClient.ImportSubscriptions(message.ChangeBytes);
                 remoteClient.SendIMessage(new Handshake2Ack(), false);
             }
             catch (Exception ex)

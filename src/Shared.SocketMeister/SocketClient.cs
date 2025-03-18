@@ -58,7 +58,6 @@ namespace SocketMeister
         private SocketAsyncEventArgs _asyncEventArgsPolling;
         private SocketAsyncEventArgs _asyncEventArgsReceive;
         private SocketAsyncEventArgs _asyncEventArgsSendSubscriptionChanges;
-        private readonly TokenCollection _subscriptions = new TokenCollection();
         private string _clientId = "";
         private ConnectionStatuses _connectionStatus = ConnectionStatuses.Disconnected;
         private readonly ReaderWriterLockSlim _connectionStatusLock = new ReaderWriterLockSlim();
@@ -86,7 +85,8 @@ namespace SocketMeister
         private int _serverSocketMeisterVersion;
         private bool _stopClientPermanently;
         private readonly object _stopClientPermanentlyLock = new object();
-        private bool _triggerSendSubscriptions;
+        private readonly TokenCollection _subscriptions = new TokenCollection();
+        private bool _subscriptionsSendTrigger;
         private readonly UnrespondedMessageCollection _unrespondedMessages = new UnrespondedMessageCollection();
 
         /// <summary>
@@ -305,7 +305,7 @@ namespace SocketMeister
 
         private void Subscriptions_AddChangedDeleted(object sender, EventArgs e)
         {
-            TriggerSendSubscriptions = true;
+            SubscriptionsSendTrigger = true;
         }
 
 
@@ -513,7 +513,6 @@ namespace SocketMeister
         private int  ServerSocketMeisterVersion { get { lock (_handshakeLock) { return _serverSocketMeisterVersion; } } set { lock (_handshakeLock) { _serverSocketMeisterVersion = value; } } }
 
 
-        private bool TriggerSendSubscriptions { get { lock (_lock) { return _triggerSendSubscriptions; } } set { lock (_lock) { _triggerSendSubscriptions = value; } } }
 
         private bool StopClientPermanently { get { lock (_stopClientPermanentlyLock) { return _stopClientPermanently; } } set { lock (_stopClientPermanentlyLock) { _stopClientPermanently = value; } } }
 
@@ -522,6 +521,7 @@ namespace SocketMeister
         /// </summary>
         public int SubscriptionCount => _subscriptions.Count;
 
+        private bool SubscriptionsSendTrigger { get { lock (_lock) { return _subscriptionsSendTrigger; } } set { lock (_lock) { _subscriptionsSendTrigger = value; } } }
 
         /// <summary>
         /// Messages sent to the server in which there has been no response
@@ -788,10 +788,10 @@ namespace SocketMeister
             try
             {
                 //  SEND SUBSCRIPTION CHANGES
-                if (TriggerSendSubscriptions == true)
+                if (SubscriptionsSendTrigger == true)
                 {
                     RestartStopwatch(sendSubscriptionsTimer);
-                    TriggerSendSubscriptions = false;
+                    SubscriptionsSendTrigger = false;
                     byte[] changesBytes = _subscriptions.GetChangeBytes();
                     if (changesBytes != null)
                     {
@@ -874,7 +874,7 @@ namespace SocketMeister
                     InternalConnectionStatus = ConnectionStatuses.Connected;
 
                     //  IF SUBSCRIPTIONS EXIST, SEND THEM
-                    if (SubscriptionCount > 0) TriggerSendSubscriptions = true;
+                    if (SubscriptionCount > 0) SubscriptionsSendTrigger = true;
                 }
                 catch (Exception ex)
                 {
@@ -934,8 +934,9 @@ namespace SocketMeister
                 DisconnectGracefully(SocketHasErrored: true);
                 return;
             }
+
             //  SEND THE SERVER Handshake2 MESSAGE
-            SendFastMessage(new Handshake2(CLIENT_SOCKET_MEISTER_VERSION));
+            SendFastMessage(new Handshake2(CLIENT_SOCKET_MEISTER_VERSION, FriendlyName, _subscriptions.GetBytes()));
 
             //  WAIT TO RECEIVE A Handshake2Ack MESSAGE FROM THE SERVER
             while (DateTime.UtcNow < timeout && !Handshake2AckReceived && !StopClientPermanently && InternalConnectionStatus == ConnectionStatuses.Connected)
@@ -1303,7 +1304,7 @@ namespace SocketMeister
                         else if (_receiveEngine.MessageType == MessageType.SubscriptionChangesResponseV1)
                         {
                             _subscriptions.ImportTokenChangesResponseV1(_receiveEngine.GetSubscriptionChangesResponseV1());
-                            TriggerSendSubscriptions = true;
+                            SubscriptionsSendTrigger = true;
                         }
 
                         else if (_receiveEngine.MessageType == MessageType.BroadcastV1)

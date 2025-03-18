@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 
 
@@ -123,6 +124,36 @@ namespace SocketMeister
             _changes.FlagAllAfterSocketConnect();
         }
 
+        /// <summary>
+        /// Returns the byte array of all tokens
+        /// </summary>
+        /// <returns>byte array or null if no subscriptions exist</returns>
+        internal byte[] GetBytes()
+        {
+            List<Token> alltokens = ToList();
+            if (alltokens.Count == 0) return null;
+
+            using (BinaryWriter writer = new BinaryWriter(new MemoryStream()))
+            {
+                writer.Write(alltokens.Count);
+
+                foreach (Token t in alltokens)
+                {
+                    t.Serialize(writer);  //  TOKEN
+                }
+
+                using (BinaryReader reader = new BinaryReader(writer.BaseStream))
+                {
+                    reader.BaseStream.Position = 0;
+                    return reader.ReadBytes(Convert.ToInt32(reader.BaseStream.Length));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Returns the byte array of all token changes
+        /// </summary>
+        /// <returns></returns>
         internal byte[] GetChangeBytes()
         {
             return _changes.Serialize();

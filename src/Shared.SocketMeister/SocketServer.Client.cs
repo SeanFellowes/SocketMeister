@@ -163,8 +163,18 @@ namespace SocketMeister
 
             internal TokenChangesResponseV1 ImportSubscriptionChanges(TokenChangesRequestV1 request)
             {
-                return _subscriptions.ImportTokenChangesV1(request.ChangeBytes);
+                return new TokenChangesResponseV1(_subscriptions.ImportTokenChangesV1(request.ChangeBytes));
             }
+
+            /// <summary>
+            /// During handshake the server sends the client its subscriptions. This method imports the subscriptions into the client
+            /// </summary>
+            /// <param name="subscriptionBytes">byte array containing the token information</param>
+            internal void ImportSubscriptions(byte[] subscriptionBytes)
+            {
+                if (subscriptionBytes != null) _subscriptions.ImportTokens(subscriptionBytes);
+            }
+
 
             internal void SendIMessage(IMessage Message, bool Async = true)
             {

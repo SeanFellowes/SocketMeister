@@ -40,7 +40,7 @@ namespace SocketMeister
         /// </summary>
         public int Count => _tokenDictionary.Count;
 
-        internal TokenChangesResponseV1 ImportTokenChangesV1(byte[] changeBytes)
+        internal List<TokenChange> ImportTokenChangesV1(byte[] changeBytes)
         {
             if (changeBytes == null) throw new ArgumentNullException(nameof(changeBytes));
 
@@ -83,7 +83,25 @@ namespace SocketMeister
                 }
             }
 
-            return new TokenChangesResponseV1(tokenChanges);
+            return tokenChanges;
+        }
+
+
+        internal void ImportTokens(byte[] tokenBytes)
+        {
+            if (tokenBytes == null) throw new ArgumentNullException(nameof(tokenBytes));
+
+            using (var stream = new MemoryStream(tokenBytes))
+            using (var reader = new BinaryReader(stream))
+            {
+                int itemCount = reader.ReadInt32();
+
+                while (reader.BaseStream.Position < reader.BaseStream.Length)
+                {
+                    var newToken = new Token(reader);
+                    _tokenDictionary.TryAdd(newToken.Name, newToken);
+                }
+            }
         }
 
 

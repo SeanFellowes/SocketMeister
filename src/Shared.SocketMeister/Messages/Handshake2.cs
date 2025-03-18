@@ -5,18 +5,23 @@ using System.IO;
 namespace SocketMeister.Messages
 {
     /// <summary>
-    /// Internal Message: SocketClient sends the server the version number of the SocketClient.
-    /// This is sent when the client receives the version number of the SocketServer (Handshake1).
-    /// Introduced in version 4 of SocketMeister for robust handshaking.
+    /// Internal Message: SocketClient sends client related information the server as part of
+    /// the handshake process.
+    /// This Handshake2 message is sent when the client receives Handshake1 from the server.
+    /// Introduced in version 5 of SocketMeister for robust handshaking.
     /// </summary>
     internal class Handshake2 : MessageBase, IMessage
     {
         private readonly int _clientSocketMeisterVersion;
         private readonly string _friendlyName;
+        private readonly byte[] _subscriptionBytes;
 
-        public Handshake2(int clientSocketMeisterVersion) : base(MessageType.Handshake2, messageId: 0)
+
+        public Handshake2(int clientSocketMeisterVersion, string friendlyName, byte[] subscriptionBytes) : base(MessageType.Handshake2, messageId: 0)
         {
             _clientSocketMeisterVersion = clientSocketMeisterVersion;
+            _friendlyName = friendlyName;
+            _subscriptionBytes = subscriptionBytes;
         }
 
         /// <summary>
@@ -30,7 +35,13 @@ namespace SocketMeister.Messages
             {
                 _friendlyName = Reader.ReadString();
             }
+            if (Reader.ReadBoolean())
+            {
+                _subscriptionBytes = Reader.ReadBytes(Reader.ReadInt32());
+            }
         }
+
+        public byte[] ChangeBytes => _subscriptionBytes;
 
         public int ClientSocketMeisterVersion => _clientSocketMeisterVersion;
 
@@ -44,6 +55,16 @@ namespace SocketMeister.Messages
             {
                 Writer.Write(true);
                 Writer.Write(_friendlyName);
+            }
+            else
+            {
+                Writer.Write(false);
+            }
+            if (_subscriptionBytes != null)
+            {
+                Writer.Write(true);
+                Writer.Write(_subscriptionBytes.Length);
+                Writer.Write(_subscriptionBytes);
             }
             else
             {
