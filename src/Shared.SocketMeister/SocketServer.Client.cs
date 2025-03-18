@@ -16,7 +16,7 @@ namespace SocketMeister
         /// <summary>
         /// Remote client which has connected to the socket server
         /// </summary>
-        public class Client : ClientBase, IDisposable
+        public class Client : IDisposable
         {
             private readonly Socket _clientSocket;
             private readonly string _clientId;
@@ -24,12 +24,15 @@ namespace SocketMeister
             private readonly bool _compressSentData;
             private readonly DateTime _connectTimestamp = DateTime.UtcNow;
             private bool _disposed;
+            private string _friendlyName = string.Empty;
+            private readonly object _friendlyNameLock = new object();
             private readonly MessageEngine _receiveEngine;
             private readonly AsyncCallback _sendCallback;
             private readonly SocketServer _socketServer;
             private readonly TokenCollectionReadOnly _subscriptions = new TokenCollectionReadOnly();
+            private readonly UnrespondedMessageCollection _unrespondedMessages = new UnrespondedMessageCollection();
 
-            internal Client(SocketServer Server, Socket ClientSocket, bool CompressSentData) : base(isServerImplimentation: true)
+            internal Client(SocketServer Server, Socket ClientSocket, bool CompressSentData)
             {
                 _socketServer = Server;
                 _clientId = Guid.NewGuid().ToString();
@@ -42,25 +45,24 @@ namespace SocketMeister
             /// <summary>
             /// Dispose of the class
             /// </summary>
-            public new void Dispose()
+            public void Dispose()
             {
                 Dispose(true);
                 GC.SuppressFinalize(this);
             }
 
-            private new void Dispose(bool disposing)
+            private void Dispose(bool disposing)
             {
                 if (_disposed) return;
 
                 if (disposing)
                 {
                     // Dispose managed resources
+                    _unrespondedMessages.Clear(); // Explicitly clear any remaining references
                     _clientSocket.Dispose();
                     _subscriptions.Dispose();
                 }
 
-                // Unmanaged resources would be cleaned here (none in this case)
-                base.Dispose(disposing);
                 _disposed = true;
             }
 
@@ -72,7 +74,10 @@ namespace SocketMeister
                 Dispose(false);
             }
 
-            internal string ClientId => _clientId;
+            /// <summary>
+            /// GUID assigned to the client by the server, when it connects.
+            /// </summary>
+            public string ClientId => _clientId;
 
 
             /// <summary>
@@ -95,6 +100,16 @@ namespace SocketMeister
             public DateTime ConnectTimestamp => _connectTimestamp;
 
             /// <summary>
+            /// A friendly name for the client. You application can set this to help identify the client in logs and error handling.
+            /// </summary>
+            public string FriendlyName
+            {
+                get { lock (_friendlyNameLock) { return _friendlyName; } }
+                set { lock (_friendlyNameLock) { _friendlyName = value; } }
+            }
+
+
+            /// <summary>
             /// Byte array to directly receive data from the socket. 
             /// </summary>
             internal byte[] ReceiveBuffer = new byte[Constants.SEND_RECEIVE_BUFFER_SIZE];
@@ -108,6 +123,15 @@ namespace SocketMeister
             /// The number of subscriptions for this client
             /// </summary>
             public int SubscriptionCount => _subscriptions.Count;
+
+            /// <summary>
+            /// Messages sent to the client in which there has been no response
+            /// </summary>
+            internal UnrespondedMessageCollection UnrespondedMessages
+            {
+                get { return _unrespondedMessages; }
+            }
+
 
             /// <summary>
             /// Whether a subscription exists. 

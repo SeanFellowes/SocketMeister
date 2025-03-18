@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 #endif
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
-using System.Net;
 
 namespace SocketMeister
 {
@@ -17,9 +15,9 @@ namespace SocketMeister
     /// Asynchronous, persistent TCP/IP socket client supporting multiple destinations
     /// </summary>
 #if SMISPUBLIC
-    public partial class SocketClient : ClientBase, IDisposable
+    public partial class SocketClient : IDisposable
 #else
-    internal partial class SocketClient : ClientBase, IDisposable
+    internal partial class SocketClient : IDisposable
 #endif
     {
         /// <summary>
@@ -69,6 +67,7 @@ namespace SocketMeister
         private bool _disposed = false;
         private readonly bool _enableCompression;
         private readonly List<SocketEndPoint> _endPoints = null;
+        private readonly string _friendlyName = string.Empty;
 
         private bool _handshakeCompleted = false;
         private readonly object _handshakeLock = new object();
@@ -84,10 +83,11 @@ namespace SocketMeister
         private readonly Random _randomizer = new Random();
         private readonly MessageEngine _receiveEngine;
         private readonly SocketAsyncEventArgsPool _sendEventArgsPool;
-        private int _socketServerVersion;
+        private int _serverSocketMeisterVersion;
         private bool _stopClientPermanently;
         private readonly object _stopClientPermanentlyLock = new object();
         private bool _triggerSendSubscriptions;
+        private readonly UnrespondedMessageCollection _unrespondedMessages = new UnrespondedMessageCollection();
 
         /// <summary>
         /// Event raised when the status of a socket connection changes
@@ -125,16 +125,15 @@ namespace SocketMeister
         /// </summary>
         /// <param name="EndPoints">Collection of endpoints that are available to connect to</param>
         /// <param name="EnableCompression">Whether compression will be applied to data.</param>
-        /// <param name="FriendlyName">Friendly name is sent to the SocketServer to be displayed in errors and logging.</param>
-        public SocketClient(List<SocketEndPoint> EndPoints, bool EnableCompression, string FriendlyName) : base(isServerImplimentation: false)
+        /// <param name="friendlyName">Friendly name is sent to the SocketServer to be displayed in errors and logging.</param>
+        public SocketClient(List<SocketEndPoint> EndPoints, bool EnableCompression, string friendlyName)
         {
             if (EndPoints == null) throw new ArgumentNullException(nameof(EndPoints));
             else if (EndPoints.Count == 0) throw new ArgumentException("EndPoints must contain at least 1 value", nameof(EndPoints));
             _endPoints = EndPoints;
 
-            base.FriendlyName = FriendlyName;
-
             _enableCompression = EnableCompression;
+            if (!string.IsNullOrEmpty(friendlyName)) _friendlyName = friendlyName;
             _receiveEngine = new MessageEngine(EnableCompression);
 
             _subscriptions.TokenAdded += Subscriptions_AddChangedDeleted;
@@ -246,7 +245,7 @@ namespace SocketMeister
         /// <summary>
         /// Dispose of the class
         /// </summary>
-        public new void Dispose()
+        public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
@@ -256,7 +255,7 @@ namespace SocketMeister
         /// Dispose of the class
         /// </summary>
         /// <param name="disposing"></param>
-        protected new virtual void Dispose(bool disposing)
+        protected virtual void Dispose(bool disposing)
         {
             if (!_disposed)
             {
@@ -281,6 +280,7 @@ namespace SocketMeister
                     _asyncEventArgsSendSubscriptionChanges?.Dispose();
                     _asyncEventArgsSendSubscriptionChanges = null;
 
+                    _unrespondedMessages.Clear(); // Explicitly clear any remaining references
 
                     foreach (SocketEndPoint ep in _endPoints)
                     {
@@ -289,7 +289,6 @@ namespace SocketMeister
 
                     _endPoints.Clear();
                 }
-                base.Dispose(disposing);
                 _disposed = true;
             }
         }
@@ -397,6 +396,16 @@ namespace SocketMeister
 
 
         /// <summary>
+        /// A friendly name for the client which can be. If available, the SocketServer will use this in logging and error handling
+        /// </summary>
+        public string FriendlyName
+        {
+            get { return _friendlyName; }
+        }
+
+
+
+        /// <summary>
         /// Used internally. Returns the real connection status.
         /// </summary>
         private ConnectionStatuses InternalConnectionStatus
@@ -501,7 +510,7 @@ namespace SocketMeister
 
         private bool Handshake2AckReceived { get { lock (_handshakeLock) { return _handshake2AckReceived; } } set { lock (_handshakeLock) { _handshake2AckReceived = value; } } }
 
-        private int  SocketServerVersion { get { lock (_handshakeLock) { return _socketServerVersion; } } set { lock (_handshakeLock) { _socketServerVersion = value; } } }
+        private int  ServerSocketMeisterVersion { get { lock (_handshakeLock) { return _serverSocketMeisterVersion; } } set { lock (_handshakeLock) { _serverSocketMeisterVersion = value; } } }
 
 
         private bool TriggerSendSubscriptions { get { lock (_lock) { return _triggerSendSubscriptions; } } set { lock (_lock) { _triggerSendSubscriptions = value; } } }
@@ -512,6 +521,16 @@ namespace SocketMeister
         /// The number of subscriptions for this client
         /// </summary>
         public int SubscriptionCount => _subscriptions.Count;
+
+
+        /// <summary>
+        /// Messages sent to the server in which there has been no response
+        /// </summary>
+        internal UnrespondedMessageCollection UnrespondedMessages
+        {
+            get { return _unrespondedMessages; }
+        }
+
 
         /// <summary>
         /// Whether a subscription name exists in the list of subscriptions. 
@@ -948,59 +967,6 @@ namespace SocketMeister
         }
 
 
-
-        /// <summary>
-        /// Confirm connection via polling. Although the socket has connected, there are times the receive buffers on either the server
-        /// of the client are not ready to receive data. This method will poll the server until a response is received. Once we have a
-        /// polling response, the external calling program will see the status as connected.
-        /// </summary>
-        private void ConfirmConnectionViaPolling()
-        {
-            int maxAttempts = 6; // 6 attempts at 5-second intervals (30 seconds total)
-
-            for (int i = 0; i < maxAttempts && !HandshakeCompleted && !StopClientPermanently; i++)
-            {
-                Debug.WriteLine("Polling attempt " + (i + 1) + " to confirm connection...");
-
-                try
-                {
-                    _asyncEventArgsPolling.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
-                    _asyncEventArgsPolling.SetBuffer(_pollingBuffer, 0, _pollingBuffer.Length);
-                    if (!CurrentEndPoint.Socket.SendAsync(_asyncEventArgsPolling)) ProcessSendPollRequest(null, _asyncEventArgsPolling);
-                }
-                catch (Exception ex)
-                {
-                    NotifyExceptionRaised(ex);
-                }
-
-                DateTime maxWaitThisTry = DateTime.UtcNow.AddSeconds(5);
-                while (true)
-                {
-                    if (HandshakeCompleted)
-                    {
-                        //  No need to change InternalConnectionStatus = Connected but me MUST raise an event so the calling
-                        //  software knows the connection is fully established.
-                        RaiseConnectionStatusChanged();
-                        Debug.WriteLine("Polling confirmed. Connection is fully established.");
-                        return;
-                    }
-                    if (DateTime.UtcNow > maxWaitThisTry)
-                    {
-                        Debug.WriteLine("No polling response received.");
-                        break;
-                    }
-                    if (StopClientPermanently || InternalConnectionStatus != ConnectionStatuses.Connected) return;
-                    Thread.Sleep(100); // Pause a little
-                }
-            }
-
-            // If we reach this point, polling never succeeded
-            NotifyExceptionRaised(new Exception("Connection failure: No response to initial polling so disconnected."));
-            DisconnectGracefully(SocketHasErrored: true);
-        }
-
-
-
         /// <summary>
         /// Stops the client permenently. There is no option from here to restart without creating a new instance of SocketClient.
         /// </summary>
@@ -1324,7 +1290,7 @@ namespace SocketMeister
                         {
                             Handshake1Received = true;
                             Handshake1 hs1 = _receiveEngine.GetHandshake1();
-                            SocketServerVersion = hs1.SocketServerVersion;
+                            ServerSocketMeisterVersion = hs1.SocketServerVersion;
                             ClientId = hs1.ClientId;
                         }
 

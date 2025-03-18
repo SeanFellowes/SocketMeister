@@ -625,6 +625,7 @@ namespace SocketMeister
             try
             {
                 remoteClient.ClientSocketMeisterVersion = message.ClientSocketMeisterVersion;
+                remoteClient.FriendlyName = message.FriendlyName;
                 remoteClient.SendIMessage(new Handshake2Ack(), false);
             }
             catch (Exception ex)
@@ -716,11 +717,6 @@ namespace SocketMeister
                 }
             });
         }
-
-
-
-
-
 
 
         private void SendServerStoppingMessage(Client RemoteClient)

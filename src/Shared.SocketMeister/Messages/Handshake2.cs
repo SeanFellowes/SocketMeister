@@ -12,6 +12,7 @@ namespace SocketMeister.Messages
     internal class Handshake2 : MessageBase, IMessage
     {
         private readonly int _clientSocketMeisterVersion;
+        private readonly string _friendlyName;
 
         public Handshake2(int clientSocketMeisterVersion) : base(MessageType.Handshake2, messageId: 0)
         {
@@ -25,13 +26,29 @@ namespace SocketMeister.Messages
         public Handshake2(BinaryReader Reader) : base(MessageType.Handshake2, messageId: 0)
         {
             _clientSocketMeisterVersion = Reader.ReadInt32();
+            if (Reader.ReadBoolean())
+            {
+                _friendlyName = Reader.ReadString();
+            }
         }
 
         public int ClientSocketMeisterVersion => _clientSocketMeisterVersion;
 
+        public string FriendlyName => _friendlyName;
+
+
         public void AppendBytes(BinaryWriter Writer)
         {
             Writer.Write(_clientSocketMeisterVersion);
+            if (_friendlyName != null)
+            {
+                Writer.Write(true);
+                Writer.Write(_friendlyName);
+            }
+            else
+            {
+                Writer.Write(false);
+            }
         }
     }
 }
