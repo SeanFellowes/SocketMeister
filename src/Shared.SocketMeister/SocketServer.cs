@@ -400,6 +400,19 @@ namespace SocketMeister
                     Client remoteClient = new Client(this, handler, _compressSentData);
                     _connectedClients.Add(remoteClient);
                     handler.BeginReceive(remoteClient.ReceiveBuffer, 0, Constants.SEND_RECEIVE_BUFFER_SIZE, 0, new AsyncCallback(ReadCallback), remoteClient);
+
+                    //  Send SocketServerHandshake1 to the client which will indicate that the server is reasy to receive data.
+                    try
+                    {
+                        Thread.Sleep(1000);
+                        byte[] sendBytes = MessageEngine.GenerateSendBytes(new Handshake1(Constants.SOCKET_SERVER_VERSION, remoteClient.ClientId.ToString()), _compressSentData);
+                        remoteClient.ClientSocket.Send(sendBytes, sendBytes.Length, SocketFlags.None);
+                    }
+                    catch (Exception ex)
+                    {
+                        NotifyTraceEventRaised(ex, 5008);
+                    }
+
                 });
             }
         }
@@ -493,6 +506,16 @@ namespace SocketMeister
                                 Task.Run(() => BgProcessPollRequest(remoteClient));
                             }
                         }
+
+                        else if (receiveEnvelope.MessageType == MessageType.Handshake2)
+                        {
+                            Handshake2 msg = receiveEnvelope.GetHandshake2();
+                            if (Status == SocketServerStatus.Started)
+                            {
+                                Task.Run(() => BgProcessHandshake2(remoteClient, msg));
+                            }
+                        }
+
 
                         else if (receiveEnvelope.MessageType == MessageType.SubscriptionChangesNotificationV1)
                         {
@@ -595,6 +618,21 @@ namespace SocketMeister
                 NotifyTraceEventRaised(ex, 5008);
             }
         }
+
+
+        private void BgProcessHandshake2(Client remoteClient, Handshake2 message)
+        {
+            try
+            {
+                remoteClient.ClientSocketMeisterVersion = message.ClientSocketMeisterVersion;
+                remoteClient.SendIMessage(new Handshake2Ack(), false);
+            }
+            catch (Exception ex)
+            {
+                NotifyTraceEventRaised(ex, 5008);
+            }
+        }
+
 
         private void BgProcessSubscriptionChanges(Client remoteClient, TokenChangesRequestV1 request)
         {

@@ -16,7 +16,7 @@ namespace SocketMeister
     {
         internal class Clients
         {
-            private readonly ConcurrentDictionary<Guid, Client> _clientDictionary = new ConcurrentDictionary<Guid, Client>();
+            private readonly ConcurrentDictionary<string, Client> _clientDictionary = new ConcurrentDictionary<string, Client>();
             /// <summary>
             /// Event raised when a client connects to the socket server (Raised in a seperate thread)
             /// </summary>

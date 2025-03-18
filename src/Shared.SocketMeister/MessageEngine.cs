@@ -262,6 +262,25 @@ namespace SocketMeister.Messages
             }
         }
 
+        internal Handshake1 GetHandshake1()
+        {
+            using (var stream = new MemoryStream(GetBuffer()))
+            using (var reader = new BinaryReader(stream))
+            {
+                return new Handshake1(reader);
+            }
+        }
+
+        internal Handshake2 GetHandshake2()
+        {
+            using (var stream = new MemoryStream(GetBuffer()))
+            using (var reader = new BinaryReader(stream))
+            {
+                return new Handshake2(reader);
+            }
+        }
+
+
         internal TokenChangesRequestV1 GetSubscriptionChangesNotificationV1()
         {
             using (var stream = new MemoryStream(GetBuffer()))

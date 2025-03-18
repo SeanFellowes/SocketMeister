@@ -18,10 +18,10 @@ namespace SocketMeister
     {
         private bool _disposed = false;
         private readonly object _lock = new object();
-        private string _ipAddress;
+        private string _remoteIPAddress;
         private string _friendlyName;
-        private Guid _clientId;
-        private string _clientSocketMeisterVersion;
+        //private string _clientId;
+        private string _ipAddress;
         private string _serverSocketMeisterVersion;
         private readonly UnrespondedMessageCollection _unrespondedMessages = new UnrespondedMessageCollection();
 
@@ -32,7 +32,7 @@ namespace SocketMeister
         {
             if (isServerImplimentation)
             {
-                _clientId = Guid.NewGuid();
+                //_clientId = Guid.NewGuid().ToString();
 
                 // Populate SocketMeisterVersion with the version of the current assembly
                 try
@@ -50,22 +50,12 @@ namespace SocketMeister
                 // Populate IPAddress with the local machine's IP address
                 try
                 {
-                    _ipAddress = Dns.GetHostAddresses(Dns.GetHostName())
+                    _remoteIPAddress = Dns.GetHostAddresses(Dns.GetHostName())
                                    .FirstOrDefault(ip => ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)?.ToString();
                 }
                 catch
                 {
-                    _ipAddress = "Unknown";
-                }
-
-                // Populate SocketMeisterVersion with the version of the current assembly
-                try
-                {
-                    _clientSocketMeisterVersion = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "Unknown";
-                }
-                catch
-                {
-                    _clientSocketMeisterVersion = "Unknown";
+                    _remoteIPAddress = "Unknown";
                 }
             }
         }
@@ -112,8 +102,8 @@ namespace SocketMeister
         /// </summary>
         public string IPAddress
         {
-            get { lock (_lock) { return _ipAddress; } }
-            set { lock (_lock) { _ipAddress = value; } }
+            get { lock (_lock) { return _remoteIPAddress; } }
+            set { lock (_lock) { _remoteIPAddress = value; } }
         }
 
         /// <summary>
@@ -133,23 +123,15 @@ namespace SocketMeister
             }
         }
 
-        /// <summary>
-        /// The unique identifier for the client.
-        /// </summary>
-        public Guid ClientId
-        {
-            get { lock (_lock) { return _clientId; } }
-            set { lock (_lock) { _clientId = value; } }
-        }
+        ///// <summary>
+        ///// The unique identifier for the client.
+        ///// </summary>
+        //public string ClientId
+        //{
+        //    get { lock (_lock) { return _clientId; } }
+        //    set { lock (_lock) { _clientId = value; } }
+        //}
 
-        /// <summary>
-        /// The version of SocketMeister used by the client.
-        /// </summary>
-        public string ClientSocketMeisterVersion
-        {
-            get { lock (_lock) { return _clientSocketMeisterVersion; } }
-            set { lock (_lock) { _clientSocketMeisterVersion = value; } }
-        }
 
         /// <summary>
         /// The version of SocketMeister used by the server.
@@ -185,13 +167,9 @@ namespace SocketMeister
                     if (!string.IsNullOrEmpty(_friendlyName))
                         writer.Write(_friendlyName);
 
-                    writer.Write(_clientId != Guid.Empty);
-                    if (_clientId != Guid.Empty)
-                        writer.Write(_clientId.ToString("D"));
-
-                    writer.Write(!string.IsNullOrEmpty(_clientSocketMeisterVersion));
-                    if (!string.IsNullOrEmpty(_clientSocketMeisterVersion))
-                        writer.Write(_clientSocketMeisterVersion);
+                    //writer.Write(!string.IsNullOrEmpty(_clientId));
+                    //if (!string.IsNullOrEmpty(_clientId))
+                    //    writer.Write(_clientId);
 
                     return memoryStream.ToArray();
                 }
@@ -221,18 +199,10 @@ namespace SocketMeister
                     else
                         _friendlyName = null;
 
-                    if (reader.ReadBoolean())
-                    {
-                        string guidString = reader.ReadString();
-                        _clientId = new Guid(guidString);
-                    }
-                    else
-                        _clientId = Guid.Empty;
-
-                    if (reader.ReadBoolean())
-                        _clientSocketMeisterVersion = reader.ReadString();
-                    else
-                        _clientSocketMeisterVersion = null;
+                    //if (reader.ReadBoolean())
+                    //    _clientId = reader.ReadString();
+                    //else
+                    //    _clientId = null;
                 }
             }
         }

@@ -18,6 +18,11 @@
         /// </summary>
         public static int SocketAsyncEventArgsPoolSize = 20;
 
+        /// <summary>
+        /// This willl be sent to the client during the handshake process. This enables the client to perform
+        /// version specific operations.
+        /// </summary>
+        public static int SOCKET_SERVER_VERSION = 4;
 
     }
 }

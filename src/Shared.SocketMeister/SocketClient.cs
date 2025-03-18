@@ -23,6 +23,12 @@ namespace SocketMeister
 #endif
     {
         /// <summary>
+        /// This will be sent to the server during the handshake process. It enables the server to perform
+        /// version specific operations.
+        /// </summary>
+        private static int CLIENT_SOCKET_MEISTER_VERSION = 4;
+
+        /// <summary>
         /// If a poll response has not been received from the server after a number of seconds, the socket client will be disconnected.
         /// </summary>
         private const int DISCONNECT_AFTER_NO_POLL_RESPONSE_SECONDS = 300;
@@ -38,6 +44,7 @@ namespace SocketMeister
         /// </summary>
         private const int POLLING_FREQUENCY = 15;
 
+
 #if NET35
         // ThreadStatic for .NET 3.5 to give each thread its own Random instance
         [ThreadStatic]
@@ -45,15 +52,16 @@ namespace SocketMeister
 #else
         // ThreadLocal for .NET 4.0+
         private static ThreadLocal<Random> _threadLocalRandom = new ThreadLocal<Random>(() => new Random(Guid.NewGuid().GetHashCode()));
-        private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+        private object _cancellationTokenSourceLock = new object();
+        private CancellationTokenSource _cancellationTokenSource;
         private readonly ConcurrentDictionary<Task, bool> _backgroundTasks = new ConcurrentDictionary<Task, bool>();
 #endif
-
         private SocketAsyncEventArgs _asyncEventArgsConnect;
         private SocketAsyncEventArgs _asyncEventArgsPolling;
         private SocketAsyncEventArgs _asyncEventArgsReceive;
         private SocketAsyncEventArgs _asyncEventArgsSendSubscriptionChanges;
         private readonly TokenCollection _subscriptions = new TokenCollection();
+        private string _clientId = "";
         private ConnectionStatuses _connectionStatus = ConnectionStatuses.Disconnected;
         private readonly ReaderWriterLockSlim _connectionStatusLock = new ReaderWriterLockSlim();
         private SocketEndPoint _currentEndPoint = null;
@@ -61,15 +69,22 @@ namespace SocketMeister
         private bool _disposed = false;
         private readonly bool _enableCompression;
         private readonly List<SocketEndPoint> _endPoints = null;
+
+        private bool _handshakeCompleted = false;
+        private readonly object _handshakeLock = new object();
+        private bool _handshake1Received;
+        private bool _handshake2AckReceived;
+
         private bool _isBackgroundWorkerRunning;
         private DateTime? _lastMessageFromServer;
         private DateTime _lastPollResponse = DateTime.UtcNow;
         private readonly object _lock = new object();
+
         private readonly byte[] _pollingBuffer = new byte[Constants.SEND_RECEIVE_BUFFER_SIZE];
-        private bool _pollingReceivedAfterConnect = false;
         private readonly Random _randomizer = new Random();
         private readonly MessageEngine _receiveEngine;
         private readonly SocketAsyncEventArgsPool _sendEventArgsPool;
+        private int _socketServerVersion;
         private bool _stopClientPermanently;
         private readonly object _stopClientPermanentlyLock = new object();
         private bool _triggerSendSubscriptions;
@@ -328,6 +343,42 @@ namespace SocketMeister
 
 
         /// <summary>
+        /// GUID identifier for the client, set by the server and sent to the client during connection handshaking
+        /// </summary>
+        public string ClientId
+        {
+            get
+            {
+                return _clientId;
+            }
+            internal set
+            {
+                _clientId = value;
+            }
+        }
+
+
+#if !NET35
+        private CancellationTokenSource CancellationToken
+        {
+            get
+            {
+                lock (_cancellationTokenSourceLock)
+                {
+                    return _cancellationTokenSource;
+                }
+            }
+            set
+            {
+                lock (_cancellationTokenSourceLock)
+                {
+                    _cancellationTokenSource = value;
+                }
+            }
+        }
+#endif
+
+        /// <summary>
         /// The connection status of the socket client
         /// </summary>
         public ConnectionStatuses ConnectionStatus
@@ -336,7 +387,7 @@ namespace SocketMeister
             {
                 //  If the socket is connected but we haven't completed polling, then we are still connecting.
                 ConnectionStatuses conStatus = InternalConnectionStatus;
-                if (conStatus == ConnectionStatuses.Connected && PollingReceivedAfterConnect == false)
+                if (conStatus == ConnectionStatuses.Connected && HandshakeCompleted == false)
                 {
                     return ConnectionStatuses.Connecting;
                 }
@@ -444,7 +495,14 @@ namespace SocketMeister
         /// </summary>
         private DateTime LastPollResponse { get { lock (_lock) { return _lastPollResponse; } } set { lock (_lock) { _lastPollResponse = value; } } }
 
-        private bool PollingReceivedAfterConnect { get { lock (_lock) { return _pollingReceivedAfterConnect; } } set { lock (_lock) { _pollingReceivedAfterConnect = value; } } }
+        private bool HandshakeCompleted { get { lock (_handshakeLock) { return _handshakeCompleted; } } set { lock (_handshakeLock) { _handshakeCompleted = value; } } }
+
+        private bool Handshake1Received { get { lock (_handshakeLock) { return _handshake1Received; } } set { lock (_handshakeLock) { _handshake1Received = value; } } }
+
+        private bool Handshake2AckReceived { get { lock (_handshakeLock) { return _handshake2AckReceived; } } set { lock (_handshakeLock) { _handshake2AckReceived = value; } } }
+
+        private int  SocketServerVersion { get { lock (_handshakeLock) { return _socketServerVersion; } } set { lock (_handshakeLock) { _socketServerVersion = value; } } }
+
 
         private bool TriggerSendSubscriptions { get { lock (_lock) { return _triggerSendSubscriptions; } } set { lock (_lock) { _triggerSendSubscriptions = value; } } }
 
@@ -482,7 +540,12 @@ namespace SocketMeister
             try
             {
                 if (InternalConnectionStatus == ConnectionStatuses.Disconnecting || InternalConnectionStatus == ConnectionStatuses.Disconnected) return;
-                PollingReceivedAfterConnect = false;
+                lock (_handshakeLock)
+                {
+                    _handshakeCompleted = false;
+                    _handshake1Received = false;
+                    _handshake2AckReceived = false;
+                }
                 if (SocketHasErrored == false)
                 {
                     //  Attempt to send a disconnecting message  to the server
@@ -506,7 +569,7 @@ namespace SocketMeister
                 {
                     if (_asyncEventArgsReceive != null)
                     {
-                        _asyncEventArgsReceive.Completed -= new EventHandler<SocketAsyncEventArgs>(ProcessSend);
+                        _asyncEventArgsReceive.Completed -= new EventHandler<SocketAsyncEventArgs>(ProcessReceive);
                         _asyncEventArgsReceive.Dispose();
                         _asyncEventArgsReceive = null;
                     }
@@ -516,7 +579,7 @@ namespace SocketMeister
 
 #if !NET35
                 // Wait for calling program to progress inbound messages, with a timeout
-                _cancellationTokenSource.Cancel();  // Signal cancellation
+                CancellationToken.Cancel();  // Signal cancellation
                 try
                 {
                     Task allTasks = Task.WhenAll(_backgroundTasks.Keys);
@@ -616,7 +679,7 @@ namespace SocketMeister
                                 BgPerformAttemptConnect();
                                 break;
                             case ConnectionStatuses.Connected:
-                                if (PollingReceivedAfterConnect == false) break;
+                                if (HandshakeCompleted == false) break;
                                 BgPerformPolling(pollingTimer);
                                 BgPerformSubscriptionSends(sendSubscriptionsTimer);
                                 break;
@@ -766,10 +829,14 @@ namespace SocketMeister
             double pauseReconnect = 2000;
             if (e.SocketError == SocketError.Success)
             {
-                PollingReceivedAfterConnect = false;
                 //  ATTEMPT TO START RECEIVING
                 try
                 {
+#if !NET35
+                    // Instantiate a new CancellationTokenSource
+                    CancellationToken = new CancellationTokenSource();
+#endif
+
                     _asyncEventArgsReceive = new SocketAsyncEventArgs();
                     _asyncEventArgsReceive.SetBuffer(new byte[Constants.SEND_RECEIVE_BUFFER_SIZE], 0, Constants.SEND_RECEIVE_BUFFER_SIZE);
                     _asyncEventArgsReceive.Completed += new EventHandler<SocketAsyncEventArgs>(ProcessReceive);
@@ -778,12 +845,13 @@ namespace SocketMeister
                         ProcessReceive(null, _asyncEventArgsReceive);
                     }
 
-                    // Start a new thread to confirm connection via polling
-                    Thread pollingThread = new Thread(new ThreadStart(ConfirmConnectionViaPolling));
+                    // Start a new thread to complete the handshake.
+                    // Note: Server will send Handshake1 message.
+                    Thread pollingThread = new Thread(new ThreadStart(BgCompleteHandshake));
                     pollingThread.IsBackground = true;
                     pollingThread.Start();
 
-                    //  Internally, we are connected, but user property 
+                    //  Internally, we are connected, but ConnectionStatus property must continue to show Connecting until handshake is completed.
                     InternalConnectionStatus = ConnectionStatuses.Connected;
 
                     //  IF SUBSCRIPTIONS EXIST, SEND THEM
@@ -804,6 +872,11 @@ namespace SocketMeister
             {
                 Debug.WriteLine("Socket Already in use");
             }
+            else if (e.SocketError == SocketError.ConnectionRefused)
+            {
+                Debug.WriteLine("Connection refused");
+            }
+
             else
             {
                 Debug.WriteLine("Undefined Socket Error: " + e.SocketError.ToString());
@@ -824,6 +897,59 @@ namespace SocketMeister
         }
 
         /// <summary>
+        /// Once a connection has been established, wait for the socket server to send a SocketServerHandshake1 message, then
+        /// complete handshake activities.
+        /// </summary>
+        private void BgCompleteHandshake()
+        {
+            Debug.WriteLine("Connected. Completing handshake...");
+            int timeoutSeconds = 30;
+            DateTime timeout = DateTime.UtcNow.AddSeconds(timeoutSeconds);
+            while (DateTime.UtcNow < timeout && !Handshake1Received)
+            {
+                Thread.Sleep(100);
+            }
+            if (!Handshake1Received)
+            {
+                NotifyExceptionRaised(new Exception("Handshake failed. No response from server."));
+                DisconnectGracefully(SocketHasErrored: true);
+                return;
+            }
+            //  SEND THE SERVER Handshake2 MESSAGE
+            SendFastMessage(new Handshake2(CLIENT_SOCKET_MEISTER_VERSION));
+
+            //  WAIT TO RECEIVE A Handshake2Ack MESSAGE FROM THE SERVER
+            while (DateTime.UtcNow < timeout && !Handshake2AckReceived && !StopClientPermanently && InternalConnectionStatus == ConnectionStatuses.Connected)
+            {
+                Thread.Sleep(100);
+            }
+
+            string status;
+            if (StopClientPermanently || InternalConnectionStatus != ConnectionStatuses.Connected)
+            {
+                status = "Connection reset before handshake completed.";
+                Debug.WriteLine(status);
+                NotifyExceptionRaised(new Exception(status));
+            }
+            else if (HandshakeCompleted)
+            {
+                //  No need to change InternalConnectionStatus = Connected but me MUST raise an event so the calling
+                //  software knows the connection is fully established.
+                RaiseConnectionStatusChanged();
+                Debug.WriteLine("Handshake completed. Connection is fully established.");
+            }
+            else
+            {
+                status = "Handshake could not be completed within " + timeoutSeconds + " seconds";
+                Debug.WriteLine(status);
+                NotifyExceptionRaised(new Exception(status));
+                DisconnectGracefully(SocketHasErrored: true);
+            }
+        }
+
+
+
+        /// <summary>
         /// Confirm connection via polling. Although the socket has connected, there are times the receive buffers on either the server
         /// of the client are not ready to receive data. This method will poll the server until a response is received. Once we have a
         /// polling response, the external calling program will see the status as connected.
@@ -832,7 +958,7 @@ namespace SocketMeister
         {
             int maxAttempts = 6; // 6 attempts at 5-second intervals (30 seconds total)
 
-            for (int i = 0; i < maxAttempts && !PollingReceivedAfterConnect && !StopClientPermanently; i++)
+            for (int i = 0; i < maxAttempts && !HandshakeCompleted && !StopClientPermanently; i++)
             {
                 Debug.WriteLine("Polling attempt " + (i + 1) + " to confirm connection...");
 
@@ -850,7 +976,7 @@ namespace SocketMeister
                 DateTime maxWaitThisTry = DateTime.UtcNow.AddSeconds(5);
                 while (true)
                 {
-                    if (PollingReceivedAfterConnect)
+                    if (HandshakeCompleted)
                     {
                         //  No need to change InternalConnectionStatus = Connected but me MUST raise an event so the calling
                         //  software knows the connection is fully established.
@@ -890,7 +1016,7 @@ namespace SocketMeister
             DisconnectGracefully(SocketHasErrored: false);
 
 #if !NET35
-            _cancellationTokenSource.Dispose();
+            CancellationToken.Dispose();
 #endif
 
         }
@@ -1191,7 +1317,21 @@ namespace SocketMeister
                         else if (_receiveEngine.MessageType == MessageType.PollingResponseV1)
                         {
                             LastPollResponse = DateTime.UtcNow;
-                            PollingReceivedAfterConnect = true;
+                            HandshakeCompleted = true;
+                        }
+
+                        else if (_receiveEngine.MessageType == MessageType.Handshake1)
+                        {
+                            Handshake1Received = true;
+                            Handshake1 hs1 = _receiveEngine.GetHandshake1();
+                            SocketServerVersion = hs1.SocketServerVersion;
+                            ClientId = hs1.ClientId;
+                        }
+
+                        else if (_receiveEngine.MessageType == MessageType.Handshake2Ack)
+                        {
+                            HandshakeCompleted = true;
+                            Handshake2AckReceived = true;
                         }
 
                         else if (_receiveEngine.MessageType == MessageType.SubscriptionChangesResponseV1)
@@ -1237,7 +1377,7 @@ namespace SocketMeister
         private async void ProcessMessageV1BackgroundLauncher(object state)
         {
             var message = (MessageV1)state;
-            var cancellationToken = _cancellationTokenSource.Token;
+            var cancellationToken = CancellationToken.Token;
             var task = Task.Run(async () =>
             {
                 // Check for cancellation
@@ -1250,6 +1390,12 @@ namespace SocketMeister
             try
             {
                 await task.ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception and continue
+                Debug.WriteLine($"Error processing message: {ex}");
+                NotifyExceptionRaised(ex);
             }
             finally
             {

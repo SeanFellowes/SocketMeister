@@ -19,6 +19,8 @@ namespace SocketMeister
         public class Client : ClientBase, IDisposable
         {
             private readonly Socket _clientSocket;
+            private readonly string _clientId;
+            private int _clientSocketMeisterVersion;
             private readonly bool _compressSentData;
             private readonly DateTime _connectTimestamp = DateTime.UtcNow;
             private bool _disposed;
@@ -30,6 +32,7 @@ namespace SocketMeister
             internal Client(SocketServer Server, Socket ClientSocket, bool CompressSentData) : base(isServerImplimentation: true)
             {
                 _socketServer = Server;
+                _clientId = Guid.NewGuid().ToString();
                 _clientSocket = ClientSocket;
                 _compressSentData = CompressSentData;
                 _receiveEngine = new MessageEngine(CompressSentData);
@@ -69,10 +72,22 @@ namespace SocketMeister
                 Dispose(false);
             }
 
+            internal string ClientId => _clientId;
+
+
             /// <summary>
             /// Socket which the client is transmitting data on.
             /// </summary>
             internal Socket ClientSocket => _clientSocket;
+
+            /// <summary>
+            /// The version of SocketMeister used by the client.
+            /// </summary>
+            public int ClientSocketMeisterVersion
+            {
+                get { return _clientSocketMeisterVersion; }
+                set { _clientSocketMeisterVersion = value; }
+            }
 
             /// <summary>
             /// Date and time which the client connected.

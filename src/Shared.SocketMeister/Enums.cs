@@ -107,6 +107,22 @@ namespace SocketMeister
         /// Server sends a poll response when a poll request is received from a client
         /// </summary>
         PollingResponseV1 = 310,
+
+        /// <summary>
+        /// Server sends server version number to the client
+        /// </summary>
+        Handshake1 = 400,
+
+        /// <summary>
+        /// Client sends client version number to the server after receiving Handshake1
+        /// </summary>
+        Handshake2 = 410,
+
+        /// <summary>
+        /// Server sends a Handshake2Ack to the client after receiving Handshake2
+        /// </summary>
+        Handshake2Ack = 411
+
     }
 
 
