@@ -2,7 +2,6 @@
 using SocketMeister.Messages;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Globalization;
 using System.Net;
 using System.Net.Sockets;
@@ -405,7 +404,7 @@ namespace SocketMeister
                     try
                     {
                         Thread.Sleep(1000);
-                        byte[] sendBytes = MessageEngine.GenerateSendBytes(new Handshake1(Constants.SOCKET_SERVER_VERSION, remoteClient.ClientId.ToString()), _compressSentData);
+                        byte[] sendBytes = MessageEngine.GenerateSendBytes(new Handshake1(Constants.SocketMeisterVersion, remoteClient.ClientId.ToString()), _compressSentData);
                         remoteClient.ClientSocket.Send(sendBytes, sendBytes.Length, SocketFlags.None);
                     }
                     catch (Exception ex)
@@ -563,17 +562,6 @@ namespace SocketMeister
                 NotifyTraceEventRaised(ex, 5008);
             }
         }
-
-        private async Task ProcessMessageAsync(Client remoteClient, MessageEngine receiveEnvelope)
-        {
-            if (receiveEnvelope.MessageType == MessageType.MessageV1)
-            {
-                var message = receiveEnvelope.GetMessageV1();
-                await Task.Run(() => BgProcessMessage(message));
-            }
-            // Add similar async handling for other message types
-        }
-
 
         private void BgListen()
         {

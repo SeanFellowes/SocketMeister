@@ -21,12 +21,6 @@ namespace SocketMeister
 #endif
     {
         /// <summary>
-        /// This will be sent to the server during the handshake process. It enables the server to perform
-        /// version specific operations.
-        /// </summary>
-        private static int CLIENT_SOCKET_MEISTER_VERSION = 4;
-
-        /// <summary>
         /// If a poll response has not been received from the server after a number of seconds, the socket client will be disconnected.
         /// </summary>
         private const int DISCONNECT_AFTER_NO_POLL_RESPONSE_SECONDS = 300;
@@ -936,7 +930,7 @@ namespace SocketMeister
             }
 
             //  SEND THE SERVER Handshake2 MESSAGE
-            SendFastMessage(new Handshake2(CLIENT_SOCKET_MEISTER_VERSION, FriendlyName, _subscriptions.GetBytes()));
+            SendFastMessage(new Handshake2(Constants.SocketMeisterVersion, FriendlyName, _subscriptions.GetBytes()));
 
             //  WAIT TO RECEIVE A Handshake2Ack MESSAGE FROM THE SERVER
             while (DateTime.UtcNow < timeout && !Handshake2AckReceived && !StopClientPermanently && InternalConnectionStatus == ConnectionStatuses.Connected)

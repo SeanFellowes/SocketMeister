@@ -2,6 +2,11 @@
 {
     internal static class Constants
     {
+        /// <summary>
+        /// Server and Client exchange this value to determine if they are compatible with each other. 
+        /// This value is used to determine version specific operations.
+        /// </summary>
+        public static int SocketMeisterVersion = 4;
 
         /// <summary>
         /// The buffer size to use for sending and receiving data. Note: This value is also used by the 'SocketServer' class.
@@ -18,11 +23,6 @@
         /// </summary>
         public static int SocketAsyncEventArgsPoolSize = 20;
 
-        /// <summary>
-        /// This willl be sent to the client during the handshake process. This enables the client to perform
-        /// version specific operations.
-        /// </summary>
-        public static int SOCKET_SERVER_VERSION = 4;
 
     }
 }

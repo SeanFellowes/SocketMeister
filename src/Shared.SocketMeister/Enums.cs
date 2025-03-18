@@ -1,8 +1,4 @@
-﻿#pragma warning disable IDE0079 // Remove unnecessary suppression
-#pragma warning disable CA1062 // Validate arguments of public methods
-
-
-namespace SocketMeister
+﻿namespace SocketMeister
 {
     /// <summary>
     /// Result of an attempt to process a message. This is included in the MessageResponse.
@@ -259,9 +255,4 @@ namespace SocketMeister
 
 
 }
-
-
-
-#pragma warning restore CA1062 // Validate arguments of public methods
-#pragma warning restore IDE0079 // Remove unnecessary suppression
 

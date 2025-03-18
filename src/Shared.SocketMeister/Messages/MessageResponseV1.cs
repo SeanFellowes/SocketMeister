@@ -1,7 +1,4 @@
-﻿#pragma warning disable IDE0079 // Remove unnecessary suppression
-#pragma warning disable CA1805 // Do not initialize unnecessarily
-
-using System;
+﻿using System;
 using System.Globalization;
 using System.IO;
 
@@ -84,6 +81,3 @@ namespace SocketMeister.Messages
         }
     }
 }
-
-#pragma warning restore CA1805 // Do not initialize unnecessarily
-#pragma warning restore IDE0079 // Remove unnecessary suppression

@@ -1,7 +1,4 @@
-﻿#pragma warning disable IDE0079 // Remove unnecessary suppression
-#pragma warning disable CA1717 // Only FlagsAttribute enums should have plural names
-
-using System;
+﻿using System;
 
 namespace SocketMeister
 {
@@ -39,6 +36,3 @@ namespace SocketMeister
 
     }
 }
-
-#pragma warning restore CA1717 // Only FlagsAttribute enums should have plural names
-#pragma warning restore IDE0079 // Remove unnecessary suppression

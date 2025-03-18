@@ -1,7 +1,4 @@
-﻿#pragma warning disable IDE0079 // Remove unnecessary suppression
-#pragma warning disable IDE0090 // Use 'new(...)'
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -195,6 +192,3 @@ namespace SocketMeister
 
     }
 }
-
-#pragma warning restore IDE0090 // Use 'new(...)'
-#pragma warning restore IDE0079 // Remove unnecessary suppression

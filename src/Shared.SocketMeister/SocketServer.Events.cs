@@ -1,9 +1,4 @@
-﻿#pragma warning disable IDE0079 // Remove unnecessary suppression
-#pragma warning disable CA1805 // Do not initialize unnecessarily
-#pragma warning disable CA1819 // Properties should not return arrays
-#pragma warning disable CA1001 // Types that own disposable fields should be disposable
-
-#if !SMNOSERVER && !NET35
+﻿#if !SMNOSERVER && !NET35
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -66,8 +61,3 @@ namespace SocketMeister
 }
 
 #endif
-
-#pragma warning restore CA1001 // Types that own disposable fields should be disposable
-#pragma warning restore CA1819 // Properties should not return arrays
-#pragma warning restore CA1805 // Do not initialize unnecessarily
-#pragma warning restore IDE0079 // Remove unnecessary suppression
