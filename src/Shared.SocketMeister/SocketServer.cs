@@ -403,7 +403,12 @@ namespace SocketMeister
                     //  Send SocketServerHandshake1 to the client which will indicate that the server is reasy to receive data.
                     try
                     {
-                        Thread.Sleep(1000);
+                        //  Pause so the client can establish it's receive buffer.
+                        //  and this server can also complete setting up buffer
+                        //  *** Look for a better solution. i.e retry on Handshake1 (Will require a Handshake1Ack) ***
+                        Thread.Sleep(1000); 
+
+                        //  Send Handshake 1
                         byte[] sendBytes = MessageEngine.GenerateSendBytes(new Handshake1(Constants.SocketMeisterVersion, remoteClient.ClientId.ToString()), _compressSentData);
                         remoteClient.ClientSocket.Send(sendBytes, sendBytes.Length, SocketFlags.None);
                     }
