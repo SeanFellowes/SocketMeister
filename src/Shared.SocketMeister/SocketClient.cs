@@ -544,7 +544,7 @@ namespace SocketMeister
         /// <returns>List of subscription names</returns>
         public List<string> GetSubscriptions()
         {
-            return _subscriptions.ToListOfStrings();
+            return _subscriptions.GetNames();
         }
 
         private void DisconnectGracefully(bool SocketHasErrored)
@@ -930,7 +930,7 @@ namespace SocketMeister
             }
 
             //  SEND THE SERVER Handshake2 MESSAGE
-            SendFastMessage(new Handshake2(Constants.SocketMeisterVersion, FriendlyName, _subscriptions.GetBytes()));
+            SendFastMessage(new Handshake2(Constants.SocketMeisterVersion, FriendlyName, _subscriptions.Serialize()));
 
             //  WAIT TO RECEIVE A Handshake2Ack MESSAGE FROM THE SERVER
             while (DateTime.UtcNow < timeout && !Handshake2AckReceived && !StopClientPermanently && InternalConnectionStatus == ConnectionStatuses.Connected)

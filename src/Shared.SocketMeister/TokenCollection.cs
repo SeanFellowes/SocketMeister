@@ -87,34 +87,6 @@ namespace SocketMeister
         }
 
 
-        internal void Clear()
-        {
-            List<Token> deleteTokens = null;
-            lock (_lock)
-            {
-                if (TokenDeleted != null)
-                {
-                    deleteTokens = new List<Token>(_tokenDictionary.Values);
-                }
-
-                foreach (var token in _tokenDictionary.Values)
-                {
-                    token.Changed -= Token_Changed;
-                }
-
-                _tokenDictionary.Clear();
-            }
-
-            //  if there is an event listener attached, send TokenDeleted events.
-            if (deleteTokens != null)
-            {
-                foreach (Token t in deleteTokens)
-                {
-                    TokenDeleted?.Invoke(t, new EventArgs());
-                }
-            }
-        }
-
         /// <summary>
         /// After a socket connects, all tokens are sent to the other side.
         /// </summary>
@@ -126,11 +98,10 @@ namespace SocketMeister
         /// <summary>
         /// Returns the byte array of all tokens
         /// </summary>
-        /// <returns>byte array or null if no subscriptions exist</returns>
-        internal byte[] GetBytes()
+        /// <returns>byte array of the tokens in the collection</returns>
+        internal byte[] Serialize()
         {
             List<Token> alltokens = ToList();
-            if (alltokens.Count == 0) return null;
 
             using (BinaryWriter writer = new BinaryWriter(new MemoryStream()))
             {
@@ -172,7 +143,7 @@ namespace SocketMeister
         /// <returns>The token which was removed (Null if nothing removed)</returns>
         public Token Remove(string Name)
         {
-            if (string.IsNullOrEmpty(Name)) throw new ArgumentException("Name cannot be null or empty", nameof(Name));
+            if (string.IsNullOrEmpty(Name)) throw new ArgumentException("Token name cannot be null or empty", nameof(Name));
 
             Token fnd = null;
             lock (_lock)
@@ -209,7 +180,7 @@ namespace SocketMeister
         /// Returns a list of token names
         /// </summary>
         /// <returns>List of strings containing the token names.</returns>
-        public List<string> ToListOfStrings()
+        public List<string> GetNames()
         {
             lock (_lock)
             {

@@ -162,7 +162,7 @@ namespace SocketMeister
 
             internal TokenChangesResponseV1 ImportSubscriptionChanges(TokenChangesRequestV1 request)
             {
-                return new TokenChangesResponseV1(_subscriptions.ImportTokenChangesV1(request.ChangeBytes));
+                return new TokenChangesResponseV1(_subscriptions.ImportTokenChanges(request.ChangeBytes));
             }
 
             /// <summary>

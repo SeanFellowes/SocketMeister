@@ -70,7 +70,7 @@ namespace SocketMeister
                 {
                     TokenChange fnd;
                     _dictName.TryGetValue(i.TokenNameUppercase, out fnd);
-                    if (fnd != null && fnd.ChangeId == i.ChangeId) _dictName.Remove(i.TokenNameUppercase);
+                    if (fnd != null && fnd.ChangeId == i.ChangeId)  _dictName.Remove(i.TokenNameUppercase);
                 }
             }
         }

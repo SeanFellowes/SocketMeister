@@ -520,7 +520,6 @@ namespace SocketMeister
                             }
                         }
 
-
                         else if (receiveEnvelope.MessageType == MessageType.SubscriptionChangesNotificationV1)
                         {
                             if (Status == SocketServerStatus.Started)

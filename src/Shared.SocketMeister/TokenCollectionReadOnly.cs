@@ -38,9 +38,12 @@ namespace SocketMeister
         /// </summary>
         public int Count => _tokenDictionary.Count;
 
-        internal List<TokenChange> ImportTokenChangesV1(byte[] changeBytes)
+        internal List<TokenChange> ImportTokenChanges(byte[] changeBytes)
         {
-            if (changeBytes == null) throw new ArgumentNullException(nameof(changeBytes));
+            if (changeBytes == null)
+            {
+                throw new ArgumentNullException(nameof(changeBytes));
+            }
 
             var tokenChanges = new List<TokenChange>();
 
@@ -85,6 +88,11 @@ namespace SocketMeister
         }
 
 
+        /// <summary>
+        /// Imports tokens from a byte array created using the Serialize method.
+        /// </summary>
+        /// <param name="tokenBytes">byte array</param>
+        /// <exception cref="ArgumentNullException"></exception>
         internal void ImportTokens(byte[] tokenBytes)
         {
             if (tokenBytes == null) throw new ArgumentNullException(nameof(tokenBytes));
