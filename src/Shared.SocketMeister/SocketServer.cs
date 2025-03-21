@@ -689,7 +689,7 @@ namespace SocketMeister
         }
 
 
-        internal void NotifyTraceEventRaised(Exception ex, int ErrorNumber)
+        private void NotifyTraceEventRaised(Exception ex, int ErrorNumber)
         {
             NotifyTraceEventRaised(new TraceEventArgs(ex, ErrorNumber));
         }
@@ -702,7 +702,7 @@ namespace SocketMeister
             {
                 try
                 {
-                    TraceEventRaised?.Invoke(this, args);
+                     TraceEventRaised?.Invoke(this, args);
                 }
                 catch 
                 {

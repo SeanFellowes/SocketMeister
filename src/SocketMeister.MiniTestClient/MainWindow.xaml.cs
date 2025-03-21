@@ -85,8 +85,16 @@ namespace SocketMeister.MiniTestClient
         private void Client_ExceptionRaised(object sender, ExceptionEventArgs e)
         {
             ClientControl ct = (ClientControl)sender;
+            if (ct.TraceEvents == true) return; // Ignore exceptions if trace events are enabled as they will be logged
             Log(SeverityType.Error, "Client " + ct.ClientId, e.Exception.Message);
         }
+
+        private void Client_TraceEventReceived(object sender, TraceEventArgs e)
+        {
+            ClientControl ct = (ClientControl)sender;
+            Log(e.Severity, e.Source, e.Message);
+        }
+
 
         private void Client_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
         {
@@ -110,6 +118,7 @@ namespace SocketMeister.MiniTestClient
         private void Client_ServerStopping(object sender, EventArgs e)
         {
             ClientControl ct = (ClientControl)sender;
+            if (ct.TraceEvents == true) return; // Ignore exceptions if trace events are enabled as they will be logged
             Log(SeverityType.Warning, "Client " + ct.ClientId, "Server is stopping");
         }
 
@@ -209,6 +218,7 @@ namespace SocketMeister.MiniTestClient
                     Client.ServerStopping += Client_ServerStopping;
                     Client.BroadcastReceived += Client_BroadcastReceived;
                     Client.ResponseReceived += Client_ResponseReceived;
+                    Client.TraceEventReceived += Client_TraceEventReceived;
 
                     if (EndpointRB2.IsChecked == false)
                     {

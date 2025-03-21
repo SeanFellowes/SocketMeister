@@ -22,6 +22,7 @@
             <ColumnDefinition Width="60"/>
             <ColumnDefinition Width="100"/>
             <ColumnDefinition Width="90"/>
+            <ColumnDefinition Width="30"/>
         </Grid.ColumnDefinitions>
 
         <Border Grid.Row="0" Grid.ColumnSpan="10" Background="DarkGray" Height="1" HorizontalAlignment="Stretch"></Border>
@@ -49,6 +50,8 @@
             <CheckBox x:Name="cbSubscriptions" Grid.Column="0" Content="Test? :"/>
             <TextBlock x:Name="tbSubscriptions" Grid.Column="1" Margin="6,0" HorizontalAlignment="Right" TextAlignment="Right">0</TextBlock>
         </Grid>
+
+        <CheckBox x:Name="cbTrace" Grid.Row="2" Grid.Column="7" VerticalAlignment="Center" HorizontalAlignment="Center"/>
 
         <Border Visibility="Collapsed" Grid.Row="4" Grid.ColumnSpan="10" x:Name="bdBottom" Background="DarkGray" Height="1" HorizontalAlignment="Stretch"></Border>
     </Grid>

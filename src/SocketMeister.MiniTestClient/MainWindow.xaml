@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SocketMeister.MiniTestClient"
         mc:Ignorable="d"
-        Title="SocketMeister Mini Client Tester (.NET 8)" Height="900" Width="800" Icon="/icon_128.png" Closing="Window_Closing">
+        Title="SocketMeister Mini Client Tester (.NET 8)" Height="1000" Width="800" Icon="/icon_128.png" Closing="Window_Closing">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="154*"/>
@@ -107,6 +107,7 @@
                         <ColumnDefinition Width="90"/>
                         <ColumnDefinition Width="65"/>
                         <ColumnDefinition Width="65"/>
+                        <ColumnDefinition Width="30"/>
                     </Grid.ColumnDefinitions>
                     <Border Grid.Column="0" Grid.ColumnSpan="12" Background="#FF274F5F" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Border>
                     <TextBlock Grid.Column="0" Foreground="White" Text="Client #" TextAlignment="Center" VerticalAlignment="Center"/>
@@ -118,10 +119,11 @@
                     <TextBlock Grid.Column="6" Foreground="White" Text="Subscriptions" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center"/>
                     <TextBlock Grid.Column="7" Foreground="White" Text="Timeout ms (Snd)" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center"/>
                     <TextBlock Grid.Column="8" Foreground="White" Text="Processing ms (Rcv)" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Grid.Column="9" Foreground="White" Text="Trace" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center"/>
                 </Grid>
 
                 <!-- CLIENT STATS - CLIENT ROWS -->
-                <local:ClientControl Grid.Row="1" x:Name="Client1" ClientId="1" TestSubscriptions="True" />
+                <local:ClientControl Grid.Row="1" x:Name="Client1" ClientId="1" TestSubscriptions="True" TraceEvents="True"  />
                 <local:ClientControl Grid.Row="2" x:Name="Client2" ClientId="2" TestSubscriptions="True" />
                 <local:ClientControl Grid.Row="3" x:Name="Client3" ClientId="3" TestSubscriptions="True" />
                 <local:ClientControl Grid.Row="4" x:Name="Client4" ClientId="4" TestSubscriptions="True" />

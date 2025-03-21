@@ -25,6 +25,7 @@
             <ColumnDefinition Width="90"/>
             <ColumnDefinition Width="65"/>
             <ColumnDefinition Width="65"/>
+            <ColumnDefinition Width="30"/>
         </Grid.ColumnDefinitions>
 
         <Border Grid.Row="0" Grid.ColumnSpan="10" Background="DarkGray" Height="1" HorizontalAlignment="Stretch"></Border>
@@ -61,6 +62,7 @@
 
         </wpfTool:IntegerUpDown>
 
+        <CheckBox x:Name="cbTrace" Grid.Row="2" Grid.Column="9" VerticalAlignment="Center" HorizontalAlignment="Center"/>
 
 
         <Border Visibility="Collapsed" Grid.Row="4" Grid.ColumnSpan="10" x:Name="bdBottom" Background="DarkGray" Height="1" HorizontalAlignment="Stretch"></Border>

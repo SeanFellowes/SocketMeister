@@ -171,7 +171,7 @@ namespace SocketMeister
             /// <param name="subscriptionBytes">byte array containing the token information</param>
             internal void ImportSubscriptions(byte[] subscriptionBytes)
             {
-                if (subscriptionBytes != null) _subscriptions.ImportTokens(subscriptionBytes);
+                if (subscriptionBytes != null) _subscriptions.Initialize(subscriptionBytes);
             }
 
 

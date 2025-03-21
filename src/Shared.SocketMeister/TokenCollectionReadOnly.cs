@@ -93,7 +93,7 @@ namespace SocketMeister
         /// </summary>
         /// <param name="tokenBytes">byte array</param>
         /// <exception cref="ArgumentNullException"></exception>
-        internal void ImportTokens(byte[] tokenBytes)
+        internal void Initialize(byte[] tokenBytes)
         {
             if (tokenBytes == null) throw new ArgumentNullException(nameof(tokenBytes));
 

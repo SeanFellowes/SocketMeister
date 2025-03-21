@@ -68,6 +68,8 @@ namespace SocketMeister.MiniTestClient
         /// </summary>
         public event EventHandler<EventArgs> ServerStopping;
 
+        public event EventHandler<TraceEventArgs> TraceEventReceived;
+
 
         public ClientControl()
         {
@@ -95,6 +97,12 @@ namespace SocketMeister.MiniTestClient
         {
             get => cbSubscriptions.IsChecked.Value;
             set => cbSubscriptions.IsChecked = value;
+        }
+
+        public bool TraceEvents
+        {
+            get => cbTrace.IsChecked.Value;
+            set => cbTrace.IsChecked = value;
         }
 
         public SocketClient.ConnectionStatuses Status
@@ -176,13 +184,14 @@ namespace SocketMeister.MiniTestClient
 
         public void Start(string IPAddress, int Port)
         {
-            _client = new SocketClient(IPAddress, Port, true);
+            _client = new SocketClient(IPAddress, Port, true, "Client " + ClientId);
             _client.ConnectionStatusChanged += Client_ConnectionStatusChanged;
             _client.CurrentEndPointChanged += Client_CurrentEndPointChanged;
             _client.ExceptionRaised += Client_ExceptionRaised;
             _client.MessageReceived += Client_MessageReceived;
             _client.ServerStopping += Client_ServerStopping;
             _client.BroadcastReceived += Client_BroadcastReceived;
+            _client.TraceEventRaised += Client_TraceEventRaised;
 
             tbPort.Text = _client.CurrentEndPoint.Port.ToString();
         }
@@ -190,13 +199,14 @@ namespace SocketMeister.MiniTestClient
 
         public void Start(List<SocketEndPoint> eps)
         {
-            _client = new SocketClient(eps, true);
+            _client = new SocketClient(eps, true, "Client " + ClientId);
             _client.ConnectionStatusChanged += Client_ConnectionStatusChanged;
             _client.CurrentEndPointChanged += Client_CurrentEndPointChanged;
             _client.ExceptionRaised += Client_ExceptionRaised;
             _client.MessageReceived += Client_MessageReceived;
             _client.ServerStopping += Client_ServerStopping;
             _client.BroadcastReceived += Client_BroadcastReceived;
+            _client.TraceEventRaised += Client_TraceEventRaised;
 
             tbPort.Text = _client.CurrentEndPoint.Port.ToString();
         }
@@ -232,7 +242,10 @@ namespace SocketMeister.MiniTestClient
 
         private void Client_ExceptionRaised(object sender, ExceptionEventArgs e)
         {
-            ExceptionRaised?.Invoke(this, e);
+            Dispatcher.BeginInvoke((Action)(() =>
+            {
+                ExceptionRaised?.Invoke(this, e);
+            }));
         }
 
         private void Client_BroadcastReceived(object sender, SocketClient.BroadcastReceivedEventArgs e)
@@ -269,6 +282,15 @@ namespace SocketMeister.MiniTestClient
         {
             ServerStopping?.Invoke(this, e);
         }
+
+        private void Client_TraceEventRaised(object sender, TraceEventArgs e)
+        {
+            Dispatcher.BeginInvoke((Action)(() =>
+            {
+                if (cbTrace.IsChecked == true) TraceEventReceived?.Invoke(this, e);
+            }));
+        }
+
 
         private void BtnSendMessage_Click(object sender, RoutedEventArgs e)
         {

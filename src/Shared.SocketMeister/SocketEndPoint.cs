@@ -37,7 +37,7 @@ namespace SocketMeister
             _port = Convert.ToUInt16(Port);
 
             //  TRY TO CREATE IpAddress
-            System.Net.IPAddress IPAddr;
+            IPAddress IPAddr;
             if (System.Net.IPAddress.TryParse(_iPAddress, out IPAddr))
             {
                 switch (IPAddr.AddressFamily)
@@ -53,7 +53,11 @@ namespace SocketMeister
             else throw new ArgumentException("IP Address '" + IPAddress + "' is invalid", nameof(IPAddress));
 
             _ipEndPoint = new IPEndPoint(IPAddr, _port);
+        }
 
+        public string Description
+        {
+            get { return _iPAddress + ":" + _port; }
         }
 
         /// <summary>

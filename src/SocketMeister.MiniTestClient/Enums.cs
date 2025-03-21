@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SocketMeister.MiniTestClient
 {
-    public enum SeverityType { Information = 0, Warning = 1, Error = 2 }
+    //public enum SeverityType { Information = 0, Warning = 1, Error = 2 }
 
 
 }

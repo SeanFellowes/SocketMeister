@@ -113,6 +113,12 @@ namespace SocketMeister
         /// </summary>
         public event EventHandler<BroadcastReceivedEventArgs> BroadcastReceived;
 
+        /// <summary>
+        /// Raised when an trace log event has been raised.
+        /// </summary>
+        public event EventHandler<TraceEventArgs> TraceEventRaised;
+
+
 
         /// <summary>
         /// Constructor
@@ -570,7 +576,7 @@ namespace SocketMeister
                     }
                     catch (Exception ex)
                     {
-                        Debug.WriteLine("Error sending disconnect message to server: " + ex.ToString());
+                        NotifyTraceEventRaised(ex);
                     }
                 }
 
@@ -598,7 +604,7 @@ namespace SocketMeister
                     Task allTasks = Task.WhenAll(_backgroundTasks.Keys);
                     if (!allTasks.Wait(TimeSpan.FromSeconds(20)))
                     {
-                        Debug.WriteLine("Timeout occurred while waiting for background tasks to complete.");
+                        NotifyTraceEventRaised("Timeout occurred while waiting for background tasks to complete.", SeverityType.Error);
                     }
                 }
                 catch (AggregateException ex)
@@ -606,7 +612,7 @@ namespace SocketMeister
                     // Handle any task exceptions here
                     foreach (var innerException in ex.InnerExceptions)
                     {
-                        NotifyExceptionRaised(innerException);
+                        NotifyTraceEventRaised(innerException);
                     }
                 }
 #endif
@@ -659,12 +665,12 @@ namespace SocketMeister
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
+                NotifyTraceEventRaised(ex);
             }
             finally
             {
                 timer.Stop();
-                Debug.WriteLine("PerformDisconnect() took " + timer.ElapsedMilliseconds + " milliseconds to execute.");
+                NotifyTraceEventRaised("PerformDisconnect() took " + timer.ElapsedMilliseconds + " milliseconds to execute.", SeverityType.Information);
             }
         }
 
@@ -689,6 +695,7 @@ namespace SocketMeister
                         {
                             case ConnectionStatuses.Disconnected:
                             case ConnectionStatuses.Connecting:
+                                RestartStopwatch(pollingTimer);
                                 BgPerformAttemptConnect();
                                 break;
                             case ConnectionStatuses.Connected:
@@ -700,11 +707,11 @@ namespace SocketMeister
                         Thread.Sleep(200);
                     }
                 }
-                catch (Exception e) { Debug.WriteLine(e); }
+                catch (Exception e) { NotifyTraceEventRaised(e); }
                 finally
                 {
                     IsBackgroundWorkerRunning = false;
-                    Debug.WriteLine("SocketClient Background Worker Exited");
+                    NotifyTraceEventRaised("SocketClient Background Worker Exited", SeverityType.Information);
                 }
             }));
             bgWorker.IsBackground = true;
@@ -761,7 +768,8 @@ namespace SocketMeister
 
                 if (LastPollResponse < (DateTime.UtcNow.AddSeconds(-DISCONNECT_AFTER_NO_POLL_RESPONSE_SECONDS)))
                 {
-                    NotifyExceptionRaised(new Exception("Disconnecting: Server failed to reply to polling after " + DISCONNECT_AFTER_NO_POLL_RESPONSE_SECONDS + " seconds."));
+                    RestartStopwatch(PollingTimer);
+                    NotifyTraceEventRaised(new Exception("Disconnecting: Server failed to reply to polling after " + DISCONNECT_AFTER_NO_POLL_RESPONSE_SECONDS + " seconds."));
                     DisconnectGracefully(SocketHasErrored: true);
                     return;
                 }
@@ -772,7 +780,7 @@ namespace SocketMeister
             }
             catch (Exception ex)
             {
-                NotifyExceptionRaised(ex);
+                NotifyTraceEventRaised(ex);
             }
         }
 
@@ -798,7 +806,7 @@ namespace SocketMeister
             }
             catch (Exception ex)
             {
-                NotifyExceptionRaised(ex);
+                NotifyTraceEventRaised(ex);
             }
         }
 
@@ -811,7 +819,7 @@ namespace SocketMeister
             }
             catch
             {
-                Debug.Write("Calling program error processing ConnectionStatusChanged event");
+                NotifyTraceEventRaised("Calling program error processing ConnectionStatusChanged event", SeverityType.Error);
             }
         }
 
@@ -872,27 +880,27 @@ namespace SocketMeister
                 }
                 catch (Exception ex)
                 {
-                    NotifyExceptionRaised(ex);
+                    NotifyTraceEventRaised(ex);
                 }
             }
             else if (e.SocketError == SocketError.TimedOut)
             {
                 //  NOTE: WHEN FAILING OVER UNDER HIGH LOAD, SocketError.TimedOut OCCURS FOR UP TO 120 SECONDS (WORSE CASE)
                 //  BEFORE CONNECTION SUCCESSFULLY COMPLETES. IT'S A BIT ANNOYING BUT I HAVE FOUND NO WORK AROUND.
-                Debug.WriteLine("Socket Timeout");
+                NotifyTraceEventRaised(new Exception("Socket Timeout"));
             }
             else if (e.SocketError == SocketError.AddressAlreadyInUse)
             {
-                Debug.WriteLine("Socket Already in use");
+                NotifyTraceEventRaised(new Exception("Socket Already in use"));
             }
             else if (e.SocketError == SocketError.ConnectionRefused)
             {
-                Debug.WriteLine("Connection refused");
+                NotifyTraceEventRaised(new Exception($"Connection refused by server {CurrentEndPoint.Description}"));
             }
 
             else
             {
-                Debug.WriteLine("Undefined Socket Error: " + e.SocketError.ToString());
+                NotifyTraceEventRaised(new Exception("Undefined Socket Error: " + e.SocketError.ToString()));
             }
 
             //  RESET
@@ -904,7 +912,7 @@ namespace SocketMeister
             {
                 if (!StopClientPermanently)
                 {
-                    NotifyExceptionRaised(ex);
+                    NotifyTraceEventRaised(ex);
                 }
             }
         }
@@ -915,7 +923,7 @@ namespace SocketMeister
         /// </summary>
         private void BgCompleteHandshake()
         {
-            Debug.WriteLine("Connected. Completing handshake...");
+            NotifyTraceEventRaised($"Connected to {CurrentEndPoint.Description}. Initiating handshake...", SeverityType.Information);
             int timeoutSeconds = 30;
             DateTime timeout = DateTime.UtcNow.AddSeconds(timeoutSeconds);
             while (DateTime.UtcNow < timeout && !Handshake1Received)
@@ -924,7 +932,7 @@ namespace SocketMeister
             }
             if (!Handshake1Received)
             {
-                NotifyExceptionRaised(new Exception("Handshake failed. No response from server."));
+                NotifyTraceEventRaised(new Exception("Handshake failed. No response from server."));
                 DisconnectGracefully(SocketHasErrored: true);
                 return;
             }
@@ -942,21 +950,19 @@ namespace SocketMeister
             if (StopClientPermanently || InternalConnectionStatus != ConnectionStatuses.Connected)
             {
                 status = "Connection reset before handshake completed.";
-                Debug.WriteLine(status);
-                NotifyExceptionRaised(new Exception(status));
+                NotifyTraceEventRaised(new Exception(status));
             }
             else if (HandshakeCompleted)
             {
                 //  No need to change InternalConnectionStatus = Connected but me MUST raise an event so the calling
                 //  software knows the connection is fully established.
                 RaiseConnectionStatusChanged();
-                Debug.WriteLine("Handshake completed. Connection is fully established.");
+                NotifyTraceEventRaised("Handshake completed. Connection is fully established.", SeverityType.Information);
             }
             else
             {
                 status = "Handshake could not be completed within " + timeoutSeconds + " seconds";
-                Debug.WriteLine(status);
-                NotifyExceptionRaised(new Exception(status));
+                NotifyTraceEventRaised(new Exception(status));
                 DisconnectGracefully(SocketHasErrored: true);
             }
         }
@@ -993,7 +999,7 @@ namespace SocketMeister
                 if (message.IsTimeout)
                 {
                     //  TIMEOUT: NO POINT SENDING THE RESPONSE BECAUSE IT WILL HAVE ALSO TIMED OUT AT THE OTHER END
-                    NotifyExceptionRaised(new TimeoutException("Message " + message.MessageId + ", timed out after " + message.TimeoutMilliseconds + " milliseconds."));
+                    NotifyTraceEventRaised(new TimeoutException("Message " + message.MessageId + ", timed out after " + message.TimeoutMilliseconds + " milliseconds."));
                     return;
                 }
                 else if (StopClientPermanently)
@@ -1019,7 +1025,7 @@ namespace SocketMeister
                         }
                         catch (Exception ex)
                         {
-                            NotifyExceptionRaised(ex);
+                            NotifyTraceEventRaised(ex);
                         }
                     }
                 }
@@ -1052,7 +1058,7 @@ namespace SocketMeister
             }
             catch (Exception ex)
             {
-                NotifyExceptionRaised(ex);
+                NotifyTraceEventRaised(ex);
             }
         }
 
@@ -1131,7 +1137,7 @@ namespace SocketMeister
                     }
                     catch (Exception ex)
                     {
-                        NotifyExceptionRaised(ex);
+                        NotifyTraceEventRaised(ex);
                     }
 
 #if NET35
@@ -1186,20 +1192,20 @@ namespace SocketMeister
                 if (result == SocketError.ConnectionReset)
                 {
                     message.SetStatusUnsent();
-                    NotifyExceptionRaised(new Exception("Disconnecting: Connection was reset."));
+                    NotifyTraceEventRaised(new Exception("Disconnecting: Connection was reset."));
                     DisconnectGracefully(SocketHasErrored: true);
                 }
                 else if (result != SocketError.Success)
                 {
                     message.SetStatusUnsent();
-                    NotifyExceptionRaised(new Exception("Disconnecting: Send did not generate a success. Socket operation returned error code " + (int)e.SocketError));
+                    NotifyTraceEventRaised(new Exception("Disconnecting: Send did not generate a success. Socket operation returned error code " + (int)e.SocketError));
                     DisconnectGracefully(SocketHasErrored: true);
                 }
             }
             catch (Exception ex)
             {
                 message.SetStatusUnsent();
-                NotifyExceptionRaised(ex);
+                NotifyTraceEventRaised(ex);
             }
         }
 
@@ -1237,7 +1243,7 @@ namespace SocketMeister
 
             if (e.SocketError != SocketError.Success)
             {
-                NotifyExceptionRaised(new Exception("Disconnecting: ProcessReceive received socket error code " + (int)e.SocketError));
+                NotifyTraceEventRaised(new Exception("Disconnecting: ProcessReceive received socket error code " + (int)e.SocketError));
                 DisconnectGracefully(SocketHasErrored: true);
                 return;
             }
@@ -1286,6 +1292,18 @@ namespace SocketMeister
                             Handshake1Received = true;
                             Handshake1 hs1 = _receiveEngine.GetHandshake1();
                             ServerSocketMeisterVersion = hs1.SocketServerVersion;
+                            string msg = $"Handshake1 received from server. Server version {hs1.SocketServerVersion}";
+                            if (hs1.SocketServerVersion < Constants.SocketMeisterVersion)
+                            {
+                                msg += $" is older than this client version ({Constants.SocketMeisterVersion}).";
+                            }
+                            else if(hs1.SocketServerVersion > Constants.SocketMeisterVersion)
+                                msg += $" is newer than this client version ({Constants.SocketMeisterVersion}).";
+                            else
+                            {
+                                msg += " matches the client version.";
+                            }
+                            NotifyTraceEventRaised(msg, SeverityType.Information);
                             ClientId = hs1.ClientId;
                         }
 
@@ -1310,7 +1328,7 @@ namespace SocketMeister
                         {
                             //  An unknown message was received. The server may be a more recent version of SocketMeister.
                             //  Raise an exception and ignore the message. The server will have to factor this into consideration.
-                            NotifyExceptionRaised(new Exception("Unknown message type received (" + _receiveEngine.MessageType.ToString() + "). The server may be running a newer version of SocketMeister"));
+                            NotifyTraceEventRaised(new Exception("Unknown message type received (" + _receiveEngine.MessageType.ToString() + "). The server may be running a newer version of SocketMeister"));
                         }
                     }
                 }
@@ -1323,12 +1341,12 @@ namespace SocketMeister
             {
                 //  IF A LARGE CHUNK OF DATA WAS BEING RECEIVED WHEN THE CONNECTION WAS LOST, THE Disconnect() ROUTINE
                 //  MAY ALREADY HAVE BEEN RUN (WHICH DISPOSES OBJECTS). IF THIS IS THE CASE, SIMPLY EXIT
-                NotifyExceptionRaised(new Exception("Disconnecting: ObjectDisposedException running ProcessReceive: " + ee.Message));
+                NotifyTraceEventRaised(new Exception("Disconnecting: ObjectDisposedException running ProcessReceive: " + ee.Message));
                 DisconnectGracefully(SocketHasErrored: true);
             }
             catch (Exception ex)
             {
-                NotifyExceptionRaised(new Exception("Disconnecting: Error running ProcessReceive: " + ex.Message));
+                NotifyTraceEventRaised(new Exception("Disconnecting: Error running ProcessReceive: " + ex.Message));
                 DisconnectGracefully(SocketHasErrored: true);
             }
         }
@@ -1354,9 +1372,7 @@ namespace SocketMeister
             }
             catch (Exception ex)
             {
-                // Log the exception and continue
-                Debug.WriteLine($"Error processing message: {ex}");
-                NotifyExceptionRaised(ex);
+                NotifyTraceEventRaised($"Error processing message: {ex}", SeverityType.Error);
             }
             finally
             {
@@ -1405,7 +1421,7 @@ namespace SocketMeister
             }
             catch (Exception ex)
             {
-                NotifyExceptionRaised(ex);
+                NotifyTraceEventRaised(ex);
                 SendFastMessage(new MessageResponseV1(message.MessageId, ex));
             }
         }
@@ -1418,37 +1434,6 @@ namespace SocketMeister
         }
 
 
-        private void NotifyExceptionRaised(Exception ex)
-        {
-            if (ExceptionRaised == null) return;
-
-#if NET35
-            new Thread(() =>
-            {
-                try
-                {
-                    ExceptionRaised?.Invoke(this, new ExceptionEventArgs(ex, 1234));
-                }
-                catch
-                {
-                    // Swallow exceptions to prevent cascading failures.
-                }
-            })
-            { IsBackground = true }.Start();
-#else
-            Task.Run(() =>
-            {
-                try
-                {
-                    ExceptionRaised?.Invoke(this, new ExceptionEventArgs(ex, 1234));
-                }
-                catch
-                {
-                    // Swallow exceptions to prevent cascading failures.
-                }
-            });
-#endif
-        }
 
 
         private void NotifyBroadcastReceived(Messages.BroadcastV1 Message)
@@ -1463,7 +1448,7 @@ namespace SocketMeister
                 }
                 catch (Exception ex)
                 {
-                    NotifyExceptionRaised(ex);
+                    NotifyTraceEventRaised(ex);
                 }
             }))
             { IsBackground = true }.Start();
@@ -1476,7 +1461,7 @@ namespace SocketMeister
                 }
                 catch (Exception ex)
                 {
-                    NotifyExceptionRaised(ex);
+                    NotifyTraceEventRaised(ex);
                 }
             });
 #endif
@@ -1486,6 +1471,7 @@ namespace SocketMeister
         private void NotifyServerStopping()
         {
             if (ServerStopping == null) return;
+            string warningMessage = "Server has notified that it is stopping.";
 
 #if NET35  // Compiler directive for code which will be compiled to .NET 3.5. This provides a less efficient but workable solution to the desired functional requirements.
             new Thread(new ThreadStart(delegate
@@ -1493,10 +1479,11 @@ namespace SocketMeister
                 try
                 {
                     ServerStopping(this, null);
+                    NotifyTraceEventRaised(new TraceEventArgs(warningMessage, SeverityType.Warning, 0));
                 }
                 catch (Exception ex)
                 {
-                    NotifyExceptionRaised(ex);
+                    NotifyTraceEventRaised(ex);
                 }
             }))
             { IsBackground = true }.Start();
@@ -1506,14 +1493,77 @@ namespace SocketMeister
                 try
                 {
                     ServerStopping(this, null);
+                    NotifyTraceEventRaised(new TraceEventArgs(warningMessage, SeverityType.Warning, 0));
                 }
                 catch (Exception ex)
                 {
-                    NotifyExceptionRaised(ex);
+                    NotifyTraceEventRaised(ex);
                 }
             });
 #endif
         }
+
+        private void NotifyTraceEventRaised(string message, SeverityType severity)
+        {
+            string source = FriendlyName;
+            if (string.IsNullOrEmpty(source)) source = ClientId;
+            NotifyTraceEventRaised(new TraceEventArgs(message, severity, 0, source));
+        }
+
+        private void NotifyTraceEventRaised(Exception ex, int ErrorNumber = 0)
+        {
+            string source = FriendlyName;
+            if (string.IsNullOrEmpty(source)) source = ClientId;
+            NotifyTraceEventRaised(new TraceEventArgs(ex, ErrorNumber, source));
+        }
+
+
+        private void NotifyTraceEventRaised(TraceEventArgs args, Exception ex = null)
+        {
+#if NET35  // Compiler directive for code which will be compiled to .NET 3.5. This provides a less efficient but workable solution to the desired functional requirements.
+            new Thread(new ThreadStart(delegate
+            {
+                try
+                {
+                    Debug.WriteLine(args.Message);
+                    if ((ex != null || args.Severity == SeverityType.Error) && ExceptionRaised != null)
+                    {
+                        if (ex != null)
+                            ExceptionRaised(this, new ExceptionEventArgs(ex, args.EventId));
+                        else
+                            ExceptionRaised(this, new ExceptionEventArgs(new Exception(args.Message), args.EventId));
+                    }
+                    TraceEventRaised?.Invoke(this, args);
+                }
+                catch (Exception ex1)
+                {
+                    Debug.WriteLine($"Error in {nameof(NotifyTraceEventRaised)}: {ex1}");
+                }
+            }))
+            { IsBackground = true }.Start();
+#else
+            Task.Run(() =>
+            {
+                try
+                {
+                    Debug.WriteLine(args.Message);
+                    if ((ex != null || args.Severity == SeverityType.Error) && ExceptionRaised != null)
+                    {
+                        if (ex != null) 
+                            ExceptionRaised(this, new ExceptionEventArgs(ex, args.EventId));
+                        else 
+                            ExceptionRaised(this, new ExceptionEventArgs(new Exception(args.Message), args.EventId));
+                    }
+                    TraceEventRaised?.Invoke(this, args);
+                }
+                catch (Exception ex1)
+                {
+                    Debug.WriteLine($"Error in {nameof(NotifyTraceEventRaised)}: {ex1}");
+                }
+            });
+#endif
+        }
+
 
 #if NET35
         private static Random ThreadSafeRandom
