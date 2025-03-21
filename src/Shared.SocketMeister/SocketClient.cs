@@ -553,7 +553,7 @@ namespace SocketMeister
             return _subscriptions.GetNames();
         }
 
-        private void DisconnectGracefully(bool SocketHasErrored)
+        private void Disconnect(bool SocketHasErrored)
         {
             Stopwatch timer = Stopwatch.StartNew();
             try
@@ -670,7 +670,7 @@ namespace SocketMeister
             finally
             {
                 timer.Stop();
-                NotifyTraceEventRaised("PerformDisconnect() took " + timer.ElapsedMilliseconds + " milliseconds to execute.", SeverityType.Information);
+                NotifyTraceEventRaised($"{nameof(Disconnect)}() took " + timer.ElapsedMilliseconds + " milliseconds to execute.", SeverityType.Information);
             }
         }
 
@@ -701,7 +701,7 @@ namespace SocketMeister
                             case ConnectionStatuses.Connected:
                                 if (HandshakeCompleted == false) break;
                                 BgPerformPolling(pollingTimer);
-                                BgPerformSubscriptionSends(sendSubscriptionsTimer);
+                                BgSendSubscriptionChanges(sendSubscriptionsTimer);
                                 break;
                         }
                         Thread.Sleep(200);
@@ -770,7 +770,7 @@ namespace SocketMeister
                 {
                     RestartStopwatch(PollingTimer);
                     NotifyTraceEventRaised(new Exception("Disconnecting: Server failed to reply to polling after " + DISCONNECT_AFTER_NO_POLL_RESPONSE_SECONDS + " seconds."));
-                    DisconnectGracefully(SocketHasErrored: true);
+                    Disconnect(SocketHasErrored: true);
                     return;
                 }
                 RestartStopwatch(PollingTimer);
@@ -785,7 +785,7 @@ namespace SocketMeister
         }
 
 
-        private void BgPerformSubscriptionSends(Stopwatch sendSubscriptionsTimer)
+        private void BgSendSubscriptionChanges(Stopwatch sendSubscriptionsTimer)
         {
             try
             {
@@ -817,9 +817,9 @@ namespace SocketMeister
             {
                 ConnectionStatusChanged?.Invoke(this, EventArgs.Empty);
             }
-            catch
+            catch (Exception ex)
             {
-                NotifyTraceEventRaised("Calling program error processing ConnectionStatusChanged event", SeverityType.Error);
+                NotifyTraceEventRaised($"Caller error processing {nameof(RaiseConnectionStatusChanged)} event: {ex}", SeverityType.Error);
             }
         }
 
@@ -891,7 +891,7 @@ namespace SocketMeister
             }
             else if (e.SocketError == SocketError.AddressAlreadyInUse)
             {
-                NotifyTraceEventRaised(new Exception("Socket Already in use"));
+                NotifyTraceEventRaised(new Exception("Socket address already in use"));
             }
             else if (e.SocketError == SocketError.ConnectionRefused)
             {
@@ -926,14 +926,19 @@ namespace SocketMeister
             NotifyTraceEventRaised($"Connected to {CurrentEndPoint.Description}. Initiating handshake...", SeverityType.Information);
             int timeoutSeconds = 30;
             DateTime timeout = DateTime.UtcNow.AddSeconds(timeoutSeconds);
-            while (DateTime.UtcNow < timeout && !Handshake1Received)
+            while (DateTime.UtcNow < timeout && !Handshake1Received && !StopClientPermanently && InternalConnectionStatus == ConnectionStatuses.Connected)
             {
                 Thread.Sleep(100);
             }
+            if (StopClientPermanently || InternalConnectionStatus != ConnectionStatuses.Connected)
+            {
+                NotifyTraceEventRaised(new Exception("Connection reset before handshake completed."));
+                return;
+            }
             if (!Handshake1Received)
             {
-                NotifyTraceEventRaised(new Exception("Handshake failed. No response from server."));
-                DisconnectGracefully(SocketHasErrored: true);
+                NotifyTraceEventRaised(new Exception($"Handshake1 could not be completed within {timeoutSeconds} seconds. Disconnecting."));
+                Disconnect(SocketHasErrored: true);
                 return;
             }
 
@@ -946,11 +951,10 @@ namespace SocketMeister
                 Thread.Sleep(100);
             }
 
-            string status;
             if (StopClientPermanently || InternalConnectionStatus != ConnectionStatuses.Connected)
             {
-                status = "Connection reset before handshake completed.";
-                NotifyTraceEventRaised(new Exception(status));
+                NotifyTraceEventRaised(new Exception("Connection reset before handshake completed."));
+                return;
             }
             else if (HandshakeCompleted)
             {
@@ -961,9 +965,8 @@ namespace SocketMeister
             }
             else
             {
-                status = "Handshake could not be completed within " + timeoutSeconds + " seconds";
-                NotifyTraceEventRaised(new Exception(status));
-                DisconnectGracefully(SocketHasErrored: true);
+                NotifyTraceEventRaised(new Exception($"Handshake2 could not be completed within {timeoutSeconds} seconds. Disconnecting."));
+                Disconnect(SocketHasErrored: true);
             }
         }
 
@@ -980,7 +983,7 @@ namespace SocketMeister
             _subscriptions.TokenChanged -= Subscriptions_AddChangedDeleted;
             _subscriptions.TokenDeleted -= Subscriptions_AddChangedDeleted;
 
-            DisconnectGracefully(SocketHasErrored: false);
+            Disconnect(SocketHasErrored: false);
 
 #if !NET35
             CancellationToken.Dispose();
@@ -1193,13 +1196,13 @@ namespace SocketMeister
                 {
                     message.SetStatusUnsent();
                     NotifyTraceEventRaised(new Exception("Disconnecting: Connection was reset."));
-                    DisconnectGracefully(SocketHasErrored: true);
+                    Disconnect(SocketHasErrored: true);
                 }
                 else if (result != SocketError.Success)
                 {
                     message.SetStatusUnsent();
                     NotifyTraceEventRaised(new Exception("Disconnecting: Send did not generate a success. Socket operation returned error code " + (int)e.SocketError));
-                    DisconnectGracefully(SocketHasErrored: true);
+                    Disconnect(SocketHasErrored: true);
                 }
             }
             catch (Exception ex)
@@ -1237,14 +1240,14 @@ namespace SocketMeister
                 //  3.   The server A) sends its last data B) calls Shutdown(SocketShutdown.Send)) C) calls Close on the socket, optionally with a timeout to allow the data to be read from the client
                 //  4. * The client A) reads the remaining data from the server and then receives 0 bytes(the server signals there is no more data from its side) B) calls Close on the socket
 
-                DisconnectGracefully(SocketHasErrored: true);
+                Disconnect(SocketHasErrored: true);
                 return;
             }
 
             if (e.SocketError != SocketError.Success)
             {
                 NotifyTraceEventRaised(new Exception("Disconnecting: ProcessReceive received socket error code " + (int)e.SocketError));
-                DisconnectGracefully(SocketHasErrored: true);
+                Disconnect(SocketHasErrored: true);
                 return;
             }
 
@@ -1279,7 +1282,7 @@ namespace SocketMeister
                                 CurrentEndPoint.DontReconnectUntil = DateTime.UtcNow.AddSeconds(RECONNECT_DELAY_AFTER_SERVER_SHUTDOWN_AND_ONE_ENDPOINT);
                             //  Clean up gracefully
                             NotifyServerStopping();
-                            DisconnectGracefully(SocketHasErrored: false);
+                            Disconnect(SocketHasErrored: false);
                         }
                         else if (_receiveEngine.MessageType == MessageType.PollingResponseV1)
                         {
@@ -1342,12 +1345,12 @@ namespace SocketMeister
                 //  IF A LARGE CHUNK OF DATA WAS BEING RECEIVED WHEN THE CONNECTION WAS LOST, THE Disconnect() ROUTINE
                 //  MAY ALREADY HAVE BEEN RUN (WHICH DISPOSES OBJECTS). IF THIS IS THE CASE, SIMPLY EXIT
                 NotifyTraceEventRaised(new Exception("Disconnecting: ObjectDisposedException running ProcessReceive: " + ee.Message));
-                DisconnectGracefully(SocketHasErrored: true);
+                Disconnect(SocketHasErrored: true);
             }
             catch (Exception ex)
             {
                 NotifyTraceEventRaised(new Exception("Disconnecting: Error running ProcessReceive: " + ex.Message));
-                DisconnectGracefully(SocketHasErrored: true);
+                Disconnect(SocketHasErrored: true);
             }
         }
 
@@ -1479,11 +1482,11 @@ namespace SocketMeister
                 try
                 {
                     ServerStopping(this, null);
-                    NotifyTraceEventRaised(new TraceEventArgs(warningMessage, SeverityType.Warning, 0));
+                    NotifyTraceEventRaised(warningMessage, SeverityType.Warning);
                 }
                 catch (Exception ex)
                 {
-                    NotifyTraceEventRaised(ex);
+                    Debug.WriteLine($"Error in {nameof(NotifyServerStopping)}: {ex}");
                 }
             }))
             { IsBackground = true }.Start();
@@ -1493,11 +1496,11 @@ namespace SocketMeister
                 try
                 {
                     ServerStopping(this, null);
-                    NotifyTraceEventRaised(new TraceEventArgs(warningMessage, SeverityType.Warning, 0));
+                    NotifyTraceEventRaised(warningMessage, SeverityType.Warning);
                 }
                 catch (Exception ex)
                 {
-                    NotifyTraceEventRaised(ex);
+                    Debug.WriteLine($"Error in {nameof(NotifyServerStopping)}: {ex}");
                 }
             });
 #endif

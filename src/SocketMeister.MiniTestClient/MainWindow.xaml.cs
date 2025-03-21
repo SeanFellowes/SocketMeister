@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace SocketMeister.MiniTestClient
 {
@@ -118,8 +119,8 @@ namespace SocketMeister.MiniTestClient
         private void Client_ServerStopping(object sender, EventArgs e)
         {
             ClientControl ct = (ClientControl)sender;
-            if (ct.TraceEvents == true) return; // Ignore exceptions if trace events are enabled as they will be logged
-            Log(SeverityType.Warning, "Client " + ct.ClientId, "Server is stopping");
+            if (ct.TraceEvents == true) return; // Ignore if trace events are enabled as they will be logged
+            Log(SeverityType.Warning, "Client " + ct.ClientId, "Server has notified that it is stopping.");
         }
 
         private void Client_SendRequestButtonPressed(object sender, EventArgs e)
@@ -134,7 +135,6 @@ namespace SocketMeister.MiniTestClient
 
             byte[] receivedBytes = (byte[])e.Parameters[0];
             string msgRec = Encoding.UTF8.GetString(receivedBytes, 0, receivedBytes.Length);
-
             Log(SeverityType.Information, "Client " + ct.ClientId, "BroadcastReceived: " + e.Name + ", " + msgRec);
         }
 
@@ -161,7 +161,7 @@ namespace SocketMeister.MiniTestClient
                 // Wait for all clients to stop
                 await Task.WhenAll(stopTasks);
 
-                Application.Current.Shutdown();
+                System.Windows.Application.Current.Shutdown();
             }
             catch (Exception ex)
             {
@@ -182,7 +182,6 @@ namespace SocketMeister.MiniTestClient
 
                 _log.Insert(0, i);
             });
-
         }
 
         private void StartBtn_Click(object sender, RoutedEventArgs e)
@@ -277,6 +276,47 @@ namespace SocketMeister.MiniTestClient
             if (ClientsSlider.Value > 5) Client6.IsEnabled = true;
             else Client6.IsEnabled = false;
 
+            if (ClientsSlider.Value > 6) Client7.IsEnabled = true;
+            else Client7.IsEnabled = false;
+
+            if (ClientsSlider.Value > 7) Client8.IsEnabled = true;
+            else Client8.IsEnabled = false;
+
+            if (ClientsSlider.Value > 8) Client9.IsEnabled = true;
+            else Client9.IsEnabled = false;
+
+            if (ClientsSlider.Value > 9) Client10.IsEnabled = true;
+            else Client10.IsEnabled = false;
+
+            if (ClientsSlider.Value > 10) Client11.IsEnabled = true;
+            else Client11.IsEnabled = false;
+
+            if (ClientsSlider.Value > 11) Client12.IsEnabled = true;
+            else Client12.IsEnabled = false;
+
+            if (ClientsSlider.Value > 12) Client13.IsEnabled = true;
+            else Client13.IsEnabled = false;
+
+            if (ClientsSlider.Value > 13) Client14.IsEnabled = true;
+            else Client14.IsEnabled = false;
+
+            if (ClientsSlider.Value > 14) Client15.IsEnabled = true;
+            else Client15.IsEnabled = false;
+
+            if (ClientsSlider.Value > 15) Client16.IsEnabled = true;
+            else Client16.IsEnabled = false;
+
+            if (ClientsSlider.Value > 16) Client17.IsEnabled = true;
+            else Client17.IsEnabled = false;
+
+            if (ClientsSlider.Value > 17) Client18.IsEnabled = true;
+            else Client18.IsEnabled = false;
+
+            if (ClientsSlider.Value > 18) Client19.IsEnabled = true;
+            else Client19.IsEnabled = false;
+
+            if (ClientsSlider.Value > 19) Client20.IsEnabled = true;
+            else Client20.IsEnabled = false;
         }
     }
 }

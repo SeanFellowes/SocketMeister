@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Interop;
 using System.Windows.Media;
 
 namespace SocketMeister.MiniTestClient
@@ -158,27 +160,43 @@ namespace SocketMeister.MiniTestClient
 #pragma warning restore CA2208 // Instantiate argument exceptions correctly
                 if (_client == null) throw new Exception("Client is null");
 
-                byte[] toSend = new byte[Message.Length];
-                Buffer.BlockCopy(Encoding.UTF8.GetBytes(Message), 0, toSend, 0, toSend.Length);
-                object[] p = new object[2];
-                p[0] = _clientId;
-                p[1] = toSend;
-                byte[] result = _client.SendMessage(p, (int)udTimeOutMs.Value);
-
-                string msg = "Response Received (" + (int)(DateTime.Now - start).TotalMilliseconds + " ms))"; 
-                ResponseReceived?.Invoke(this, new ResponseReceived(SeverityType.Information, 0, msg));
-
-                Dispatcher.Invoke(() =>
+                int timeout = (int)udTimeOutMs.Value;
+                new Thread(new ThreadStart(delegate
                 {
-                    _messagesSent++;
-                    tbRequestsSent.Text = _messagesSent.ToString();
+                    try
+                    {
+                        byte[] toSend = new byte[Message.Length];
+                        Buffer.BlockCopy(Encoding.UTF8.GetBytes(Message), 0, toSend, 0, toSend.Length);
+                        object[] p = new object[2];
+                        p[0] = _clientId;
+                        p[1] = toSend;
+                        byte[] result = _client.SendMessage(p, timeout);
 
-                });
+                        string msg = "Response Received (" + (int)(DateTime.Now - start).TotalMilliseconds + " ms))";
 
+                        Dispatcher.Invoke(() =>
+                        {
+                            ResponseReceived?.Invoke(this, new ResponseReceived(SeverityType.Information, 0, msg));
+                            _messagesSent++;
+                            tbRequestsSent.Text = _messagesSent.ToString();
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            ExceptionRaised?.Invoke(this, new ExceptionEventArgs(ex, 1200));
+                        });
+                    }
+                }))
+                { IsBackground = true }.Start();
             }
             catch (Exception ex)
             {
-                ExceptionRaised?.Invoke(this, new ExceptionEventArgs(ex, 1200));
+                Dispatcher.Invoke(() =>
+                {
+                    ExceptionRaised?.Invoke(this, new ExceptionEventArgs(ex, 1200));
+                });
             }
         }
 
@@ -226,8 +244,8 @@ namespace SocketMeister.MiniTestClient
                 if (_client.ConnectionStatus == SocketClient.ConnectionStatuses.Connected) bdStatus.Background = new SolidColorBrush(Colors.Green);
                 else if (_client.ConnectionStatus == SocketClient.ConnectionStatuses.Disconnected) bdStatus.Background = new SolidColorBrush(Colors.Red);
                 else bdStatus.Background = new SolidColorBrush(Colors.Orange);
+                StatusChanged?.Invoke(this, new EventArgs());
             });
-            StatusChanged?.Invoke(this, new EventArgs());
         }
 
         private void Client_CurrentEndPointChanged(object sender, EventArgs e)
@@ -254,8 +272,8 @@ namespace SocketMeister.MiniTestClient
             {
                 _broadcastsReceived++;
                 tbMessagesReceived.Text = _broadcastsReceived.ToString();
+                BroadcastReceived?.Invoke(this, e);
             });
-            BroadcastReceived?.Invoke(this, e);
         }
 
 
@@ -265,8 +283,8 @@ namespace SocketMeister.MiniTestClient
             {
                 _messagesReceived++;
                 tbRequestsReceived.Text = _messagesReceived.ToString();
+                MessageReceived?.Invoke(this, e);
             });
-            MessageReceived?.Invoke(this, e);
 
             //  Simulate Processing Time
             int msProcessing;
@@ -280,7 +298,10 @@ namespace SocketMeister.MiniTestClient
 
         private void Client_ServerStopping(object sender, EventArgs e)
         {
-            ServerStopping?.Invoke(this, e);
+            Dispatcher.Invoke(() =>
+            {
+                ServerStopping?.Invoke(this, e);
+            });
         }
 
         private void Client_TraceEventRaised(object sender, TraceEventArgs e)
@@ -299,12 +320,18 @@ namespace SocketMeister.MiniTestClient
 
         private void udTimeOutMs_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            lock (_lock) { _sendMessageTimeout = (int)udTimeOutMs.Value; }
+            Dispatcher.BeginInvoke((Action)(() =>
+            {
+                lock (_lock) { _sendMessageTimeout = (int)udTimeOutMs.Value; }
+            }));
         }
 
         private void udProcessingMs_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            lock (_lock) { _processingSimulationDelayMs = (int)udProcessingSimulationDelayMs.Value; }
+            Dispatcher.BeginInvoke((Action)(() =>
+            {
+                lock (_lock) { _processingSimulationDelayMs = (int)udProcessingSimulationDelayMs.Value; }
+            }));
         }
     }
 
