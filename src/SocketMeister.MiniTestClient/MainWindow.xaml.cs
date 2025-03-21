@@ -174,14 +174,11 @@ namespace SocketMeister.MiniTestClient
 
         private void Log(SeverityType Severity, string Source, string Text)
         {
-            Dispatcher.Invoke(() =>
-            {
-                if (Text.Length > 150) Text = Text.Substring(0, 147) + "...";
-                LogItem i = new LogItem() { Severity = Severity, Source = Source, Text = Text };
-                if (_log.Count > 99) _log.RemoveAt(_log.Count - 1);
+            if (Text.Length > 150) Text = Text.Substring(0, 147) + "...";
+            LogItem i = new LogItem() { Severity = Severity, Source = Source, Text = Text };
+            if (_log.Count > 99) _log.RemoveAt(_log.Count - 1);
 
-                _log.Insert(0, i);
-            });
+            _log.Insert(0, i);
         }
 
         private void StartBtn_Click(object sender, RoutedEventArgs e)
