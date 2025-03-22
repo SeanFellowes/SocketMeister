@@ -212,24 +212,10 @@ namespace SocketMeister.MiniTestClient
             }
         }
 
-        public void Start(string IPAddress, int Port)
-        {
-            IsRunning = true;
-            _client = new SocketClient(IPAddress, Port, true, "Client " + ClientId);
-            _client.ConnectionStatusChanged += Client_ConnectionStatusChanged;
-            _client.CurrentEndPointChanged += Client_CurrentEndPointChanged;
-            _client.ExceptionRaised += Client_ExceptionRaised;
-            _client.MessageReceived += Client_MessageReceived;
-            _client.ServerStopping += Client_ServerStopping;
-            _client.BroadcastReceived += Client_BroadcastReceived;
-            _client.TraceEventRaised += Client_TraceEventRaised;
-
-            tbPort.Text = _client.CurrentEndPoint.Port.ToString();
-        }
-
 
         public void Start(List<SocketEndPoint> eps)
         {
+            IsRunning = true;
             _client = new SocketClient(eps, true, "Client " + ClientId);
             _client.ConnectionStatusChanged += Client_ConnectionStatusChanged;
             _client.CurrentEndPointChanged += Client_CurrentEndPointChanged;
