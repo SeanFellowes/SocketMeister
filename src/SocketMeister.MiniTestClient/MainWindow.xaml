@@ -54,8 +54,8 @@
             <Border Grid.Row="0" Grid.Column="2" Margin="3" Background="Beige" BorderBrush="Black" BorderThickness="1" >
                 <StackPanel Name="ClientsStackPanal" Orientation="Horizontal" Margin="3" VerticalAlignment="Center">
                     <TextBlock VerticalAlignment="Center" TextAlignment="Left" HorizontalAlignment="Center"># of clients:</TextBlock>
-                    <Slider x:Name="ClientsSlider" Margin="6,0,6,0" Width="60" Minimum="1" Maximum="20" Value="20" SmallChange="1" LargeChange="2" ValueChanged="ClientsSlider_ValueChanged" Interval="1" TickPlacement="BottomRight" Delay="503" IsSnapToTickEnabled="True" />
-                    <TextBlock x:Name="ClientsText" VerticalAlignment="Center" TextAlignment="Left" HorizontalAlignment="Center">20</TextBlock>
+                    <Slider x:Name="ClientsSlider" Margin="6,0,6,0" Width="60" Minimum="1" Maximum="20" Value="1" SmallChange="1" LargeChange="2" ValueChanged="ClientsSlider_ValueChanged" Interval="1" TickPlacement="None" Delay="503" IsSnapToTickEnabled="True" />
+                    <TextBlock x:Name="ClientsText" VerticalAlignment="Center" TextAlignment="Left" HorizontalAlignment="Center">1</TextBlock>
                 </StackPanel>
             </Border>
 
@@ -146,8 +146,6 @@
                         <ColumnDefinition Width="60"/>
                         <ColumnDefinition Width="100"/>
                         <ColumnDefinition Width="90"/>
-                        <ColumnDefinition Width="65"/>
-                        <ColumnDefinition Width="65"/>
                         <ColumnDefinition Width="30"/>
                     </Grid.ColumnDefinitions>
                     <Border Grid.Column="0" Grid.ColumnSpan="12" Background="#FF274F5F" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Border>
@@ -158,32 +156,30 @@
                     <TextBlock Grid.Column="4" Foreground="White" Text="Requests Sent" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center"/>
                     <TextBlock Grid.Column="5" Foreground="White" Text="Send a Message" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center"/>
                     <TextBlock Grid.Column="6" Foreground="White" Text="Subscriptions" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center"/>
-                    <TextBlock Grid.Column="7" Foreground="White" Text="Timeout ms (Snd)" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center"/>
-                    <TextBlock Grid.Column="8" Foreground="White" Text="Processing ms (Rcv)" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center"/>
-                    <TextBlock Grid.Column="9" Foreground="White" Text="Trace" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Grid.Column="7" Foreground="White" Text="Trace" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center"/>
                 </Grid>
 
                 <!-- CLIENT STATS - CLIENT ROWS -->
                 <local:ClientControl Grid.Row="1" x:Name="Client1" ClientId="1" TestSubscriptions="True" TraceEvents="True"  />
-                <local:ClientControl Grid.Row="2" x:Name="Client2" ClientId="2" TestSubscriptions="True" />
-                <local:ClientControl Grid.Row="3" x:Name="Client3" ClientId="3" TestSubscriptions="True" />
-                <local:ClientControl Grid.Row="4" x:Name="Client4" ClientId="4" TestSubscriptions="True" />
-                <local:ClientControl Grid.Row="5" x:Name="Client5" ClientId="5" TestSubscriptions="True" />
-                <local:ClientControl Grid.Row="6" x:Name="Client6" ClientId="6" TestSubscriptions="True" />
-                <local:ClientControl Grid.Row="7" x:Name="Client7" ClientId="7" TestSubscriptions="True" />
-                <local:ClientControl Grid.Row="8" x:Name="Client8" ClientId="8" TestSubscriptions="True" />
-                <local:ClientControl Grid.Row="9" x:Name="Client9" ClientId="9" TestSubscriptions="True" />
-                <local:ClientControl Grid.Row="10" x:Name="Client10" ClientId="10" TestSubscriptions="True" />
-                <local:ClientControl Grid.Row="11" x:Name="Client11" ClientId="11" />
-                <local:ClientControl Grid.Row="12" x:Name="Client12" ClientId="12" />
-                <local:ClientControl Grid.Row="13" x:Name="Client13" ClientId="13" />
-                <local:ClientControl Grid.Row="14" x:Name="Client14" ClientId="14" />
-                <local:ClientControl Grid.Row="15" x:Name="Client15" ClientId="15" />
-                <local:ClientControl Grid.Row="16" x:Name="Client16" ClientId="16" />
-                <local:ClientControl Grid.Row="17" x:Name="Client17" ClientId="17" />
-                <local:ClientControl Grid.Row="18" x:Name="Client18" ClientId="18" />
-                <local:ClientControl Grid.Row="19" x:Name="Client19" ClientId="19" />
-                <local:ClientControl Grid.Row="20" x:Name="Client20" ClientId="20" />
+                <local:ClientControl Grid.Row="2" x:Name="Client2" ClientId="2" TestSubscriptions="True" IsEnabled="False" />
+                <local:ClientControl Grid.Row="3" x:Name="Client3" ClientId="3" TestSubscriptions="True" IsEnabled="False" />
+                <local:ClientControl Grid.Row="4" x:Name="Client4" ClientId="4" TestSubscriptions="True" IsEnabled="False" />
+                <local:ClientControl Grid.Row="5" x:Name="Client5" ClientId="5" TestSubscriptions="True" IsEnabled="False" />
+                <local:ClientControl Grid.Row="6" x:Name="Client6" ClientId="6" TestSubscriptions="True" IsEnabled="False" />
+                <local:ClientControl Grid.Row="7" x:Name="Client7" ClientId="7" TestSubscriptions="True" IsEnabled="False" />
+                <local:ClientControl Grid.Row="8" x:Name="Client8" ClientId="8" TestSubscriptions="True" IsEnabled="False" />
+                <local:ClientControl Grid.Row="9" x:Name="Client9" ClientId="9" TestSubscriptions="True" IsEnabled="False" />
+                <local:ClientControl Grid.Row="10" x:Name="Client10" ClientId="10" TestSubscriptions="True" IsEnabled="False" />
+                <local:ClientControl Grid.Row="11" x:Name="Client11" ClientId="11" IsEnabled="False" />
+                <local:ClientControl Grid.Row="12" x:Name="Client12" ClientId="12" IsEnabled="False" />
+                <local:ClientControl Grid.Row="13" x:Name="Client13" ClientId="13" IsEnabled="False" />
+                <local:ClientControl Grid.Row="14" x:Name="Client14" ClientId="14" IsEnabled="False" />
+                <local:ClientControl Grid.Row="15" x:Name="Client15" ClientId="15" IsEnabled="False" />
+                <local:ClientControl Grid.Row="16" x:Name="Client16" ClientId="16" IsEnabled="False" />
+                <local:ClientControl Grid.Row="17" x:Name="Client17" ClientId="17" IsEnabled="False" />
+                <local:ClientControl Grid.Row="18" x:Name="Client18" ClientId="18" IsEnabled="False" />
+                <local:ClientControl Grid.Row="19" x:Name="Client19" ClientId="19" IsEnabled="False" />
+                <local:ClientControl Grid.Row="20" x:Name="Client20" ClientId="20" IsEnabled="False" />
             </Grid>
 
             <!-- FUTURE USE -->

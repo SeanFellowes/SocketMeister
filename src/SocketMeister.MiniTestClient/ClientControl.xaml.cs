@@ -37,7 +37,6 @@ namespace SocketMeister.MiniTestClient
         private int _clientId = 1;
         private int _messagesReceived = 0;
         private int _messagesSent = 0;
-        private int _messageSendingTimeoutMs = 1000;
         private readonly Random _rnd = new Random();
         private int _broadcastsReceived = 0;
         private bool _isRunning;
@@ -101,13 +100,6 @@ namespace SocketMeister.MiniTestClient
         }
 
 
-        public int MessageSendingTimeoutMs
-        {
-            get { lock (_lock) { return _messageSendingTimeoutMs; } }
-            set { lock (_lock) { _messageSendingTimeoutMs = value; } }
-        }
-
-
         public bool TestSubscriptions
         {
             get => cbSubscriptions.IsChecked.Value;
@@ -163,7 +155,7 @@ namespace SocketMeister.MiniTestClient
             tbSubscriptions.Text = count.ToString();
         }
 
-        public void SendMessage(string Message)
+        public void SendMessage(string Message, int TimeoutMs)
         {
             DateTime start = DateTime.Now;
             try
@@ -182,7 +174,7 @@ namespace SocketMeister.MiniTestClient
                         object[] p = new object[2];
                         p[0] = _clientId;
                         p[1] = toSend;
-                        byte[] result = _client.SendMessage(p, MessageSendingTimeoutMs);
+                        byte[] result = _client.SendMessage(p, TimeoutMs);
 
                         string msg = "Response Received (" + (int)(DateTime.Now - start).TotalMilliseconds + " ms))";
 
@@ -223,7 +215,9 @@ namespace SocketMeister.MiniTestClient
             _client.MessageReceived += Client_MessageReceived;
             _client.ServerStopping += Client_ServerStopping;
             _client.BroadcastReceived += Client_BroadcastReceived;
+#if !VERSION4
             _client.TraceEventRaised += Client_TraceEventRaised;
+#endif
 
             tbPort.Text = _client.CurrentEndPoint.Port.ToString();
         }

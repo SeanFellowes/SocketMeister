@@ -53,6 +53,7 @@ namespace SocketMeister.MiniTestClient
         private readonly List<ClientControl> _clients = new List<ClientControl>();
         private object _lock = new object();
         private readonly ObservableCollection<LogItem> _log = new ObservableCollection<LogItem>();
+        private int _messageSendingTimeoutMs = 5000;
         private int _processingSimulationDelayMs = 1000;
         private bool _windowClosingProcessed = false;
 
@@ -67,6 +68,17 @@ namespace SocketMeister.MiniTestClient
                 Height = 1000;
                 Visibility = Visibility.Visible;
                 IPAddress.Text = "127.0.0.1";
+
+#if VERSION4
+                this.Title = "SocketMeister Mini Test Client (Legacy Version 4)";
+#elif NET35
+                this.Title = "SocketMeister Mini Test Client (.NET 3.5)";
+#else
+                this.Title = "SocketMeister Mini Test Client";
+#endif
+
+                sendTimeoutSlider.Value = _messageSendingTimeoutMs;
+                processingDelaySlider.Value = _processingSimulationDelayMs;
 
                 lvLog.ItemsSource = _log;
 
@@ -109,6 +121,13 @@ namespace SocketMeister.MiniTestClient
             }
         }
 
+        public int MessageSendingTimeoutMs
+        {
+            get { lock (_lock) { return _messageSendingTimeoutMs; } }
+            set { lock (_lock) { _messageSendingTimeoutMs = value; } }
+        }
+
+
         public int ProcessingSimulationDelayMs
         {
             get { lock (_lock) { return _processingSimulationDelayMs; } }
@@ -138,7 +157,11 @@ namespace SocketMeister.MiniTestClient
                 var receivedBytes = (byte[])e.Parameters[0];
 
                 string preview = Encoding.UTF8.GetString(receivedBytes, 0, Math.Min(receivedBytes.Length, 10));
+#if !VERSION4
                 string msgRec = $"Message {e.MessageId} received \"{preview}{(receivedBytes.Length > 10 ? "..." : "")}\" ({receivedBytes.Length} bytes)";
+#else
+                string msgRec = $"Message received \"{preview}{(receivedBytes.Length > 10 ? "..." : "")}\" ({receivedBytes.Length} bytes)";
+#endif
 
                 if (ProcessingSimulationDelayMs > 0)
                 {
@@ -169,7 +192,7 @@ namespace SocketMeister.MiniTestClient
         private void Client_SendRequestButtonPressed(object sender, EventArgs e)
         {
             ClientControl client = (ClientControl)sender;
-            client.SendMessage(tbTextToSend.Text);
+            client.SendMessage(tbTextToSend.Text, MessageSendingTimeoutMs);
         }
 
         private void Client_BroadcastReceived(object sender, SocketClient.BroadcastReceivedEventArgs e)
@@ -199,62 +222,60 @@ namespace SocketMeister.MiniTestClient
                 _windowClosingProcessed = true;
                 _dispatcherTimer.Stop();
 
+                // Cancel closing until tasks complete
+                e.Cancel = true;
+
                 // Stop all clients asynchronously
-                List<ClientControl> runningClients = new List<ClientControl>();
-                foreach (ClientControl ct in _clients)
-                {
-                    if (ct.IsRunning) runningClients.Add(ct);
-                }
+                List<ClientControl> runningClients = _clients.Where(ct => ct.IsRunning).ToList();
                 var stopTasks = runningClients.Select(client => Task.Run(() => client.Stop())).ToList();
 
-                // Wait for all clients to stop
-                await Task.WhenAll(stopTasks);
+                await Task.WhenAll(stopTasks); // Ensure all clients stop before proceeding
 
+                // Now allow window to close
                 System.Windows.Application.Current.Shutdown();
             }
             catch (Exception ex)
             {
-                // Log the exception if necessary
                 Console.WriteLine(ex);
                 throw;
             }
         }
 #else
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            try
-            {
-                if (_windowClosingProcessed)
-                    return;
-
-                _windowClosingProcessed = true;
-                _dispatcherTimer.Stop();
-
-                // Stop all clients synchronously
-                foreach (ClientControl ct in _clients)
+                private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
                 {
-                    if (ct.IsRunning)
+                    try
                     {
-                        try
+                        if (_windowClosingProcessed)
+                            return;
+
+                        _windowClosingProcessed = true;
+                        _dispatcherTimer.Stop();
+
+                        // Stop all clients synchronously
+                        foreach (ClientControl ct in _clients)
                         {
-                            ct.Stop(); // Assuming Stop() is synchronous in .NET 3.5
+                            if (ct.IsRunning)
+                            {
+                                try
+                                {
+                                    ct.Stop(); // Assuming Stop() is synchronous in .NET 3.5
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine("Error stopping client: " + ex);
+                                }
+                            }
                         }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine("Error stopping client: " + ex);
-                        }
+
+                        System.Windows.Application.Current.Shutdown();
+                    }
+                    catch (Exception ex)
+                    {
+                        // Log the exception if necessary
+                        Console.WriteLine(ex);
+                        throw;
                     }
                 }
-
-                System.Windows.Application.Current.Shutdown();
-            }
-            catch (Exception ex)
-            {
-                // Log the exception if necessary
-                Console.WriteLine(ex);
-                throw;
-            }
-        }
 #endif
 
 
@@ -347,11 +368,8 @@ namespace SocketMeister.MiniTestClient
         private void sendTimeoutSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             if (sendTimeoutText == null) return;    // Occurs during form initialization
+            MessageSendingTimeoutMs = (int)sendTimeoutSlider.Value;
             sendTimeoutText.Text = sendTimeoutSlider.Value.ToString() + " ms";
-            for (int x = 0; x < _clients.Count; x++)
-            {
-                _clients[x].MessageSendingTimeoutMs = (int)sendTimeoutSlider.Value;
-            }
         }
     }
 }
