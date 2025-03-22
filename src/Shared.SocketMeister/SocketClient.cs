@@ -1001,8 +1001,8 @@ namespace SocketMeister
             {
                 if (message.IsTimeout)
                 {
-                    //  TIMEOUT: NO POINT SENDING THE RESPONSE BECAUSE IT WILL HAVE ALSO TIMED OUT AT THE OTHER END
-                    NotifyTraceEventRaised(new TimeoutException("Message " + message.MessageId + ", timed out after " + message.TimeoutMilliseconds + " milliseconds."));
+                    //  TIMEOUT: NO POINT SENDING THE RESPONSE BECAUSE IT WILL HAVE ALSO TIMED OUT AT THESERVER
+                    NotifyTraceEventRaised(new TimeoutException("Message " + message.MessageId + ", timed out at the server after " + message.TimeoutMilliseconds + " milliseconds."));
                     return;
                 }
                 else if (StopClientPermanently)
@@ -1413,7 +1413,7 @@ namespace SocketMeister
                 else
                 {
                     //  Deserialize the message and raise a MessageReceived event for the parent program to process.
-                    MessageReceivedEventArgs args = new MessageReceivedEventArgs(message.Parameters);
+                    MessageReceivedEventArgs args = new MessageReceivedEventArgs(message.Parameters, message.MessageId, DateTime.UtcNow.AddMilliseconds(message.TimeoutMilliseconds));
                     MessageReceived(this, args);
 
                     //  There could be significant delay waiting for the calling program to process the MessageReceived event.

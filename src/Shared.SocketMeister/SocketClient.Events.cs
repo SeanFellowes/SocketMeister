@@ -18,22 +18,35 @@ namespace SocketMeister
         public class MessageReceivedEventArgs : EventArgs
         {
             private readonly object[] _parameters;
+            private readonly long _messageId;
+            private readonly DateTime _timeoutAtServerUTC;
 
-            internal MessageReceivedEventArgs(object[] Parameters)
+            internal MessageReceivedEventArgs(object[] Parameters, long messageId, DateTime timeoutAtServerUTC)
             {
                 _parameters = Parameters;
+                _messageId = messageId;
+                _timeoutAtServerUTC = timeoutAtServerUTC;
             }
+
+            /// <summary>
+            /// The message identifier. This is a unique identifier for the message.
+            /// </summary>
+            public long MessageId => _messageId;
 
             /// <summary>
             /// The parameters provided with the message.
             /// </summary>
             public object[] Parameters => _parameters;
 
-
             /// <summary>
             /// The byte array which can optionally be returned to the client. Null is returned if a 'Response' value is not provided.
             /// </summary>
             public byte[] Response { get; set; } = null;
+
+            /// <summary>
+            /// The UTC datetime when the message will timeout at the server.
+            /// </summary>
+            public DateTime TimeoutAtServerUTC => _timeoutAtServerUTC;
         }
 
 

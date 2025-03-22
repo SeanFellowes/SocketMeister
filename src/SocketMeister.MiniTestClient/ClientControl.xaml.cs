@@ -37,10 +37,10 @@ namespace SocketMeister.MiniTestClient
         private int _clientId = 1;
         private int _messagesReceived = 0;
         private int _messagesSent = 0;
-        private int _processingSimulationDelayMs = 1000;
-        private int _sendMessageTimeout = 10000;
-        private readonly Random _rnd = new();
+        private int _messageSendingTimeoutMs = 1000;
+        private readonly Random _rnd = new Random();
         private int _broadcastsReceived = 0;
+        private bool _isRunning;
         private SocketClient _client;
         private object _lock = new object();
 
@@ -93,7 +93,20 @@ namespace SocketMeister.MiniTestClient
             }
         }
 
-        public int ProcessingSimululationDelayMs {  get {  lock(_lock) {  return _processingSimulationDelayMs; } } } 
+
+        public bool IsRunning
+        {
+            get { lock (_lock) { return _isRunning; } }
+            set { lock (_lock) { _isRunning = value; } }
+        }
+
+
+        public int MessageSendingTimeoutMs
+        {
+            get { lock (_lock) { return _messageSendingTimeoutMs; } }
+            set { lock (_lock) { _messageSendingTimeoutMs = value; } }
+        }
+
 
         public bool TestSubscriptions
         {
@@ -160,7 +173,6 @@ namespace SocketMeister.MiniTestClient
 #pragma warning restore CA2208 // Instantiate argument exceptions correctly
                 if (_client == null) throw new Exception("Client is null");
 
-                int timeout = (int)udTimeOutMs.Value;
                 new Thread(new ThreadStart(delegate
                 {
                     try
@@ -170,38 +182,39 @@ namespace SocketMeister.MiniTestClient
                         object[] p = new object[2];
                         p[0] = _clientId;
                         p[1] = toSend;
-                        byte[] result = _client.SendMessage(p, timeout);
+                        byte[] result = _client.SendMessage(p, MessageSendingTimeoutMs);
 
                         string msg = "Response Received (" + (int)(DateTime.Now - start).TotalMilliseconds + " ms))";
 
-                        Dispatcher.Invoke(() =>
+                        Dispatcher.BeginInvoke((Action)(() =>
                         {
                             ResponseReceived?.Invoke(this, new ResponseReceived(SeverityType.Information, 0, msg));
                             _messagesSent++;
                             tbRequestsSent.Text = _messagesSent.ToString();
-                        });
+                        }));
                     }
                     catch (Exception ex)
                     {
-                        Dispatcher.Invoke(() =>
+                        Dispatcher.BeginInvoke((Action)(() =>
                         {
                             ExceptionRaised?.Invoke(this, new ExceptionEventArgs(ex, 1200));
-                        });
+                        }));
                     }
                 }))
                 { IsBackground = true }.Start();
             }
             catch (Exception ex)
             {
-                Dispatcher.Invoke(() =>
+                Dispatcher.BeginInvoke((Action)(() =>
                 {
                     ExceptionRaised?.Invoke(this, new ExceptionEventArgs(ex, 1200));
-                });
+                }));
             }
         }
 
         public void Start(string IPAddress, int Port)
         {
+            IsRunning = true;
             _client = new SocketClient(IPAddress, Port, true, "Client " + ClientId);
             _client.ConnectionStatusChanged += Client_ConnectionStatusChanged;
             _client.CurrentEndPointChanged += Client_CurrentEndPointChanged;
@@ -239,21 +252,21 @@ namespace SocketMeister.MiniTestClient
 
         private void Client_ConnectionStatusChanged(object sender, EventArgs e)
         {
-            Dispatcher.Invoke(() =>
+            Dispatcher.BeginInvoke((Action)(() =>
             {
                 if (_client.ConnectionStatus == SocketClient.ConnectionStatuses.Connected) bdStatus.Background = new SolidColorBrush(Colors.Green);
                 else if (_client.ConnectionStatus == SocketClient.ConnectionStatuses.Disconnected) bdStatus.Background = new SolidColorBrush(Colors.Red);
                 else bdStatus.Background = new SolidColorBrush(Colors.Orange);
                 StatusChanged?.Invoke(this, new EventArgs());
-            });
+            }));
         }
 
         private void Client_CurrentEndPointChanged(object sender, EventArgs e)
         {
-            Dispatcher.Invoke(() =>
+            Dispatcher.BeginInvoke((Action)(() =>
             {
                 tbPort.Text = _client.CurrentEndPoint.Port.ToString();
-            });
+            }));
         }
 
 
@@ -268,40 +281,31 @@ namespace SocketMeister.MiniTestClient
 
         private void Client_BroadcastReceived(object sender, SocketClient.BroadcastReceivedEventArgs e)
         {
-            Dispatcher.Invoke(() =>
+            Dispatcher.BeginInvoke((Action)(() =>
             {
                 _broadcastsReceived++;
                 tbMessagesReceived.Text = _broadcastsReceived.ToString();
                 BroadcastReceived?.Invoke(this, e);
-            });
+            }));
         }
 
 
         private void Client_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
         {
-            Dispatcher.Invoke(() =>
+            _messagesReceived++;
+            Dispatcher.BeginInvoke((Action)(() =>
             {
-                _messagesReceived++;
                 tbRequestsReceived.Text = _messagesReceived.ToString();
-                MessageReceived?.Invoke(this, e);
-            });
-
-            //  Simulate Processing Time
-            int msProcessing;
-            lock (_lock) { msProcessing = _processingSimulationDelayMs; }
-            DateTime timeout = DateTime.Now.AddMilliseconds(msProcessing);
-            while (DateTime.Now < timeout)
-            {
-                Thread.Sleep(1000);
-            }
+            }));
+            MessageReceived?.Invoke(this, e);
         }
 
         private void Client_ServerStopping(object sender, EventArgs e)
         {
-            Dispatcher.Invoke(() =>
+            Dispatcher.BeginInvoke((Action)(() =>
             {
                 ServerStopping?.Invoke(this, e);
-            });
+            }));
         }
 
         private void Client_TraceEventRaised(object sender, TraceEventArgs e)
@@ -318,21 +322,6 @@ namespace SocketMeister.MiniTestClient
             SendMessageButtonPressed?.Invoke(this, new EventArgs());
         }
 
-        private void udTimeOutMs_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
-            Dispatcher.BeginInvoke((Action)(() =>
-            {
-                lock (_lock) { _sendMessageTimeout = (int)udTimeOutMs.Value; }
-            }));
-        }
-
-        private void udProcessingMs_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
-            Dispatcher.BeginInvoke((Action)(() =>
-            {
-                lock (_lock) { _processingSimulationDelayMs = (int)udProcessingSimulationDelayMs.Value; }
-            }));
-        }
     }
 
 }

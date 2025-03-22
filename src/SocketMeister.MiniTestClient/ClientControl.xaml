@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:wpfTool="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
              xmlns:local="clr-namespace:SocketMeister.MiniTestClient"
              mc:Ignorable="d" 
              d:DesignHeight="35" d:DesignWidth="800" Loaded="UserControl_Loaded">
@@ -23,8 +22,6 @@
             <ColumnDefinition Width="60"/>
             <ColumnDefinition Width="100"/>
             <ColumnDefinition Width="90"/>
-            <ColumnDefinition Width="65"/>
-            <ColumnDefinition Width="65"/>
             <ColumnDefinition Width="30"/>
         </Grid.ColumnDefinitions>
 
@@ -54,15 +51,8 @@
             <TextBlock x:Name="tbSubscriptions" Grid.Column="1" Margin="6,0" HorizontalAlignment="Right" VerticalAlignment="Center" TextAlignment="Right">0</TextBlock>
         </Grid>
 
-        <wpfTool:IntegerUpDown x:Name="udTimeOutMs" Grid.Row="2" Grid.Column="7" VerticalAlignment="Center" Minimum="0" Maximum="120000" Value="5000" Increment="5000" ValueChanged="udTimeOutMs_ValueChanged">
 
-        </wpfTool:IntegerUpDown>
-
-        <wpfTool:IntegerUpDown x:Name="udProcessingSimulationDelayMs" Grid.Row="2" Grid.Column="8" VerticalAlignment="Center" Minimum="0" Maximum="120000" Value="1000" Increment="1000" ValueChanged="udProcessingMs_ValueChanged">
-
-        </wpfTool:IntegerUpDown>
-
-        <CheckBox x:Name="cbTrace" Grid.Row="2" Grid.Column="9" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        <CheckBox x:Name="cbTrace" Grid.Row="2" Grid.Column="7" VerticalAlignment="Center" HorizontalAlignment="Center"/>
 
 
         <Border Visibility="Collapsed" Grid.Row="4" Grid.ColumnSpan="10" x:Name="bdBottom" Background="DarkGray" Height="1" HorizontalAlignment="Stretch"></Border>

@@ -1,29 +1,77 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Interop;
 using System.Windows.Media;
 
 namespace SocketMeister.MiniTestClient
 {
+    internal class ResponseReceived : EventArgs
+    {
+        private readonly int _messageId;
+        private readonly string _displayText;
+        private readonly SeverityType severity;
+
+        public ResponseReceived(SeverityType severity, int MessageId, string displayText)
+        {
+            this.severity = severity;
+            _displayText = displayText;
+            _messageId = MessageId;
+        }
+
+        public int MessageId => _messageId;
+        public string DisplayText => _displayText;
+        public SeverityType Severity => severity;
+    }
+
+
+    /// <summary>
+    /// Interaction logic for ClientControl.xaml
+    /// </summary>
     public partial class ClientControl : UserControl
     {
         private int _clientId = 1;
         private int _messagesReceived = 0;
         private int _messagesSent = 0;
+        private int _messageSendingTimeoutMs = 1000;
         private readonly Random _rnd = new Random();
         private int _broadcastsReceived = 0;
+        private bool _isRunning;
         private SocketClient _client;
+        private object _lock = new object();
 
+        /// <summary>
+        /// Event raised when an exception occurs
+        /// </summary>
         public event EventHandler<ExceptionEventArgs> ExceptionRaised;
+
+        internal event EventHandler<ResponseReceived> ResponseReceived;
+
         public event EventHandler<EventArgs> SendMessageButtonPressed;
+
         public event EventHandler<EventArgs> StatusChanged;
+
+        /// <summary>
+        /// Event raised whenever a broadcast is received from the server.
+        /// </summary>
         public event EventHandler<SocketClient.BroadcastReceivedEventArgs> BroadcastReceived;
+
+        /// <summary>
+        /// Raised when a  message is received from the server. A response can be provided which will be returned to the server.
+        /// </summary>
         public event EventHandler<SocketClient.MessageReceivedEventArgs> MessageReceived;
+
+        /// <summary>
+        /// Raised when the server service is stopping in a cleanly (Not a crash).
+        /// </summary>
         public event EventHandler<EventArgs> ServerStopping;
+
         public event EventHandler<TraceEventArgs> TraceEventReceived;
+
 
         public ClientControl()
         {
@@ -45,6 +93,21 @@ namespace SocketMeister.MiniTestClient
             }
         }
 
+
+        public bool IsRunning
+        {
+            get { lock (_lock) { return _isRunning; } }
+            set { lock (_lock) { _isRunning = value; } }
+        }
+
+
+        public int MessageSendingTimeoutMs
+        {
+            get { lock (_lock) { return _messageSendingTimeoutMs; } }
+            set { lock (_lock) { _messageSendingTimeoutMs = value; } }
+        }
+
+
         public bool TestSubscriptions
         {
             get => cbSubscriptions.IsChecked.Value;
@@ -57,10 +120,13 @@ namespace SocketMeister.MiniTestClient
             set => cbTrace.IsChecked = value;
         }
 
-
         public SocketClient.ConnectionStatuses Status
         {
-            get => _client == null ? SocketClient.ConnectionStatuses.Disconnected : _client.ConnectionStatus;
+            get
+            {
+                if (_client == null) return SocketClient.ConnectionStatuses.Disconnected;
+                else return _client.ConnectionStatus;
+            }
         }
 
         public void ProcessSubscriptions()
@@ -69,6 +135,7 @@ namespace SocketMeister.MiniTestClient
 
             int cnt = _rnd.Next(1, 21);
             int direction = _rnd.Next(1, 3);
+
 
             if (direction == 1)
             {
@@ -96,32 +163,59 @@ namespace SocketMeister.MiniTestClient
             tbSubscriptions.Text = count.ToString();
         }
 
-        public void SendMessage(string message)
+        public void SendMessage(string Message)
         {
+            DateTime start = DateTime.Now;
             try
             {
-                if (string.IsNullOrEmpty(message)) throw new ArgumentNullException("Message cannot be null or empty");
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly
+                if (string.IsNullOrEmpty(Message)) throw new ArgumentNullException("Message cannot be null or empty");
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
                 if (_client == null) throw new Exception("Client is null");
 
-                byte[] toSend = Encoding.UTF8.GetBytes(message);
-                object[] p = { _clientId, toSend };
-                byte[] result = _client.SendMessage(p);
-
-                Dispatcher.BeginInvoke((Action)(() =>
+                new Thread(new ThreadStart(delegate
                 {
-                    _messagesSent++;
-                    tbRequestsSent.Text = _messagesSent.ToString();
-                }));
+                    try
+                    {
+                        byte[] toSend = new byte[Message.Length];
+                        Buffer.BlockCopy(Encoding.UTF8.GetBytes(Message), 0, toSend, 0, toSend.Length);
+                        object[] p = new object[2];
+                        p[0] = _clientId;
+                        p[1] = toSend;
+                        byte[] result = _client.SendMessage(p, MessageSendingTimeoutMs);
+
+                        string msg = "Response Received (" + (int)(DateTime.Now - start).TotalMilliseconds + " ms))";
+
+                        Dispatcher.BeginInvoke((Action)(() =>
+                        {
+                            ResponseReceived?.Invoke(this, new ResponseReceived(SeverityType.Information, 0, msg));
+                            _messagesSent++;
+                            tbRequestsSent.Text = _messagesSent.ToString();
+                        }));
+                    }
+                    catch (Exception ex)
+                    {
+                        Dispatcher.BeginInvoke((Action)(() =>
+                        {
+                            ExceptionRaised?.Invoke(this, new ExceptionEventArgs(ex, 1200));
+                        }));
+                    }
+                }))
+                { IsBackground = true }.Start();
             }
             catch (Exception ex)
             {
-                ExceptionRaised?.Invoke(this, new ExceptionEventArgs(ex, 1200));
+                Dispatcher.BeginInvoke((Action)(() =>
+                {
+                    ExceptionRaised?.Invoke(this, new ExceptionEventArgs(ex, 1200));
+                }));
             }
         }
 
-        public void Start(string ipAddress, int port)
+        public void Start(string IPAddress, int Port)
         {
-            _client = new SocketClient(ipAddress, port, true, "Client " + ClientId);
+            IsRunning = true;
+            _client = new SocketClient(IPAddress, Port, true, "Client " + ClientId);
             _client.ConnectionStatusChanged += Client_ConnectionStatusChanged;
             _client.CurrentEndPointChanged += Client_CurrentEndPointChanged;
             _client.ExceptionRaised += Client_ExceptionRaised;
@@ -132,6 +226,7 @@ namespace SocketMeister.MiniTestClient
 
             tbPort.Text = _client.CurrentEndPoint.Port.ToString();
         }
+
 
         public void Start(List<SocketEndPoint> eps)
         {
@@ -159,20 +254,11 @@ namespace SocketMeister.MiniTestClient
         {
             Dispatcher.BeginInvoke((Action)(() =>
             {
-                if (_client.ConnectionStatus == SocketClient.ConnectionStatuses.Connected)
-                {
-                    bdStatus.Background = new SolidColorBrush(Colors.Green);
-                }
-                else if (_client.ConnectionStatus == SocketClient.ConnectionStatuses.Disconnected)
-                {
-                    bdStatus.Background = new SolidColorBrush(Colors.Red);
-                }
-                else
-                {
-                    bdStatus.Background = new SolidColorBrush(Colors.Orange);
-                }
+                if (_client.ConnectionStatus == SocketClient.ConnectionStatuses.Connected) bdStatus.Background = new SolidColorBrush(Colors.Green);
+                else if (_client.ConnectionStatus == SocketClient.ConnectionStatuses.Disconnected) bdStatus.Background = new SolidColorBrush(Colors.Red);
+                else bdStatus.Background = new SolidColorBrush(Colors.Orange);
+                StatusChanged?.Invoke(this, new EventArgs());
             }));
-            StatusChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void Client_CurrentEndPointChanged(object sender, EventArgs e)
@@ -183,9 +269,43 @@ namespace SocketMeister.MiniTestClient
             }));
         }
 
+
+
         private void Client_ExceptionRaised(object sender, ExceptionEventArgs e)
         {
-            ExceptionRaised?.Invoke(this, e);
+            Dispatcher.BeginInvoke((Action)(() =>
+            {
+                ExceptionRaised?.Invoke(this, e);
+            }));
+        }
+
+        private void Client_BroadcastReceived(object sender, SocketClient.BroadcastReceivedEventArgs e)
+        {
+            Dispatcher.BeginInvoke((Action)(() =>
+            {
+                _broadcastsReceived++;
+                tbMessagesReceived.Text = _broadcastsReceived.ToString();
+                BroadcastReceived?.Invoke(this, e);
+            }));
+        }
+
+
+        private void Client_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
+        {
+            _messagesReceived++;
+            Dispatcher.BeginInvoke((Action)(() =>
+            {
+                tbRequestsReceived.Text = _messagesReceived.ToString();
+            }));
+            MessageReceived?.Invoke(this, e);
+        }
+
+        private void Client_ServerStopping(object sender, EventArgs e)
+        {
+            Dispatcher.BeginInvoke((Action)(() =>
+            {
+                ServerStopping?.Invoke(this, e);
+            }));
         }
 
         private void Client_TraceEventRaised(object sender, TraceEventArgs e)
@@ -197,34 +317,11 @@ namespace SocketMeister.MiniTestClient
         }
 
 
-        private void Client_BroadcastReceived(object sender, SocketClient.BroadcastReceivedEventArgs e)
-        {
-            Dispatcher.BeginInvoke((Action)(() =>
-            {
-                _broadcastsReceived++;
-                tbMessagesReceived.Text = _broadcastsReceived.ToString();
-            }));
-            BroadcastReceived?.Invoke(this, e);
-        }
-
-        private void Client_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
-        {
-            Dispatcher.BeginInvoke((Action)(() =>
-            {
-                _messagesReceived++;
-                tbRequestsReceived.Text = _messagesReceived.ToString();
-            }));
-            MessageReceived?.Invoke(this, e);
-        }
-
-        private void Client_ServerStopping(object sender, EventArgs e)
-        {
-            ServerStopping?.Invoke(this, e);
-        }
-
         private void BtnSendMessage_Click(object sender, RoutedEventArgs e)
         {
-            SendMessageButtonPressed?.Invoke(this, EventArgs.Empty);
+            SendMessageButtonPressed?.Invoke(this, new EventArgs());
         }
+
     }
+
 }
