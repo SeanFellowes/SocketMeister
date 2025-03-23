@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SocketMeister.MiniTestClient"
         mc:Ignorable="d"
-        Title="SocketMeister Mini Client Tester (.NET 8)" Height="1000" Width="800" Icon="/icon_128.png" Closing="Window_Closing">
+        Title="SocketMeister Mini Client Tester" Height="1000" Width="800" Icon="/icon_128.png" Closing="Window_Closing">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="154*"/>
