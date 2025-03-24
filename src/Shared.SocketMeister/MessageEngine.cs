@@ -262,6 +262,16 @@ namespace SocketMeister.Messages
             }
         }
 
+        internal ClientDisconnectingNotificationV1 GetClientDisconnectingNotificationV1()
+        {
+            using (var stream = new MemoryStream(GetBuffer()))
+            using (var reader = new BinaryReader(stream))
+            {
+                return new ClientDisconnectingNotificationV1(reader);
+            }
+        }
+
+
         internal Handshake1 GetHandshake1()
         {
             using (var stream = new MemoryStream(GetBuffer()))
@@ -279,6 +289,16 @@ namespace SocketMeister.Messages
                 return new Handshake2(reader);
             }
         }
+
+        internal Handshake2Ack GetHandshake2Ack()
+        {
+            using (var stream = new MemoryStream(GetBuffer()))
+            using (var reader = new BinaryReader(stream))
+            {
+                return new Handshake2Ack(reader);
+            }
+        }
+
 
 
         internal TokenChangesRequestV1 GetSubscriptionChangesNotificationV1()
@@ -324,9 +344,6 @@ namespace SocketMeister.Messages
             _messageIsCompressed = BitConverter.ToBoolean(_headerBuffer, 2);
             _messageLength = BitConverter.ToInt32(_headerBuffer, 3);
             _messageLengthUncompressed = BitConverter.ToInt32(_headerBuffer, 7);
-
-            if (!Enum.IsDefined(typeof(MessageType), _messageType))
-                throw new Exception("Invalid Message Type");
 
             if (_messageLength > _receiveBuffer.Length)
                 Array.Resize(ref _receiveBuffer, _messageLength);

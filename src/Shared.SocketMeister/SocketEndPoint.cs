@@ -17,6 +17,7 @@ namespace SocketMeister
         private readonly IPEndPoint _ipEndPoint = null;
         private readonly string _iPAddress = null;
         private bool _isDisposed = false;
+        private ClientDisconnectReason _lastClientDisconnectReason = ClientDisconnectReason.Unknown;
         private readonly object _lock = new object();
         private readonly object _lockSocket = new object();
         private readonly ushort _port = 0;
@@ -55,11 +56,6 @@ namespace SocketMeister
             _ipEndPoint = new IPEndPoint(IPAddr, _port);
         }
 
-        public string Description
-        {
-            get { return _iPAddress + ":" + _port; }
-        }
-
         /// <summary>
         /// Dispose of the class
         /// </summary>
@@ -90,6 +86,14 @@ namespace SocketMeister
             }
         }
 
+        /// <summary>
+        /// Description of the IP Address and Port. For example, 123.123.123.123:5000
+        /// </summary>
+        public string Description
+        {
+            get { return _iPAddress + ":" + _port; }
+        }
+
 
         /// <summary>
         /// Used to delay reconnecting to a server after a server has disconnected or a socket has failed to a server.
@@ -118,6 +122,16 @@ namespace SocketMeister
         }
 
         /// <summary>
+        /// The last reason the client disconnected. Used to calculate reconnect delay.
+        /// </summary>
+        internal ClientDisconnectReason LastClientDisconnectReason
+        {
+            get { lock (_lock) { return _lastClientDisconnectReason; } }
+            set { lock (_lock) { _lastClientDisconnectReason = value; } }
+        }
+
+
+        /// <summary>
         /// Port number of the socket listener to connect to
         /// </summary>
         public ushort Port => _port;
@@ -129,6 +143,44 @@ namespace SocketMeister
         {
             get { lock (_lockSocket) { return _socket; } }
         }
+
+        /// <summary>
+        /// Recalculated the 'DontReconnectUntil' value based on the last disconnect reason.
+        /// </summary>
+        internal void SetDontReconnectUntil()
+        {
+            lock (_lock)
+            {
+                switch (_lastClientDisconnectReason)
+                {
+                    case ClientDisconnectReason.HandshakeTimeout:
+                        _dontReconnectUntil = DateTime.UtcNow.AddSeconds(15);
+                        break;
+                    case ClientDisconnectReason.PollingTimeout:
+                        _dontReconnectUntil = DateTime.UtcNow.AddSeconds(15);
+                        break;
+                    case ClientDisconnectReason.ServerVersionNotSupportedOnClient:
+                        _dontReconnectUntil = DateTime.UtcNow.AddSeconds(30);
+                        break;
+                    case ClientDisconnectReason.AcknowledgeServerRejectsClientVersion:
+                        _dontReconnectUntil = DateTime.UtcNow.AddSeconds(30);
+                        break;
+                    case ClientDisconnectReason.SocketError:
+                        _dontReconnectUntil = DateTime.UtcNow.AddSeconds(5);
+                        break;
+                    case ClientDisconnectReason.ClientIsStopping:
+                        _dontReconnectUntil = DateTime.UtcNow.AddSeconds(600);
+                        break;
+                    case ClientDisconnectReason.ServerIsStopping:
+                        _dontReconnectUntil = DateTime.UtcNow.AddSeconds(15);
+                        break;
+                    default:
+                        _dontReconnectUntil = DateTime.UtcNow.AddSeconds(10);
+                        break;
+                }
+            }
+        }
+
 
         /// <summary>
         /// Creates a new socket.

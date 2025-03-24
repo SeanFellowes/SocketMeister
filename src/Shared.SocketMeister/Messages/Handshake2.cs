@@ -6,20 +6,22 @@ namespace SocketMeister.Messages
     /// Internal Message: SocketClient sends client related information the server as part of
     /// the handshake process.
     /// This Handshake2 message is sent when the client receives Handshake1 from the server.
-    /// Introduced in version 5 of SocketMeister for robust handshaking.
+    /// Introduced in version 10 of SocketMeister for robust handshaking.
     /// </summary>
     internal class Handshake2 : MessageBase, IMessage
     {
+        private readonly bool _clientSupportsServerVersion;
         private readonly int _clientSocketMeisterVersion;
         private readonly string _friendlyName;
         private readonly byte[] _subscriptionBytes;
 
 
-        public Handshake2(int clientSocketMeisterVersion, string friendlyName, byte[] subscriptionBytes) : base(MessageType.Handshake2, messageId: 0)
+        public Handshake2(int clientSocketMeisterVersion, string friendlyName, byte[] subscriptionBytes, bool clientSuportsServerVersion) : base(MessageType.Handshake2, messageId: 0)
         {
             _clientSocketMeisterVersion = clientSocketMeisterVersion;
             _friendlyName = friendlyName;
             _subscriptionBytes = subscriptionBytes;
+            _clientSupportsServerVersion = clientSuportsServerVersion;
         }
 
         /// <summary>
@@ -28,6 +30,7 @@ namespace SocketMeister.Messages
         /// <param name="Reader">Binary Reader</param>
         public Handshake2(BinaryReader Reader) : base(MessageType.Handshake2, messageId: 0)
         {
+            _clientSupportsServerVersion = Reader.ReadBoolean();
             _clientSocketMeisterVersion = Reader.ReadInt32();
             if (Reader.ReadBoolean())
             {
@@ -45,9 +48,11 @@ namespace SocketMeister.Messages
 
         public string FriendlyName => _friendlyName;
 
+        public bool ClientSupportsServerVersion => _clientSupportsServerVersion;
 
         public void AppendBytes(BinaryWriter Writer)
         {
+            Writer.Write(_clientSupportsServerVersion);
             Writer.Write(_clientSocketMeisterVersion);
             if (_friendlyName != null)
             {

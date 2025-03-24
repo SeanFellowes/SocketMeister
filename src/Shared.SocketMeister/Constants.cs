@@ -6,7 +6,17 @@
         /// Server and Client exchange this value to determine if they are compatible with each other. 
         /// This value is used to determine version specific operations.
         /// </summary>
-        public static int SocketMeisterVersion = 4;
+        public static int SocketMeisterVersion = 10;
+
+        /// <summary>
+        /// The minimum version of the SocketServer that the client can connect to.
+        /// </summary>
+        public static int MinimumServerVersionSupportedByClient = 11;
+
+        /// <summary>
+        /// The minimum version of the SocketClient that the server can connect to.
+        /// </summary>
+        public static int MinimumClientVersionSupportedByServer = 3;
 
         /// <summary>
         /// The buffer size to use for sending and receiving data. Note: This value is also used by the 'SocketServer' class.

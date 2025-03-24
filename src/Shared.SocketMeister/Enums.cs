@@ -1,5 +1,49 @@
 ﻿namespace SocketMeister
 {
+    internal enum ClientDisconnectReason
+    {
+        /// <summary>
+        /// Unknown reason for client disconnect
+        /// </summary>
+        Unknown = 0,
+
+        /// <summary>
+        /// Client disconnects because the handshake between client and server timed out
+        /// </summary>
+        HandshakeTimeout = 10,
+
+        /// <summary>
+        /// Client disconnects because the server did not respond to a poll request
+        /// </summary>
+        PollingTimeout = 15,
+
+        /// <summary>
+        /// Client disconnects because the server version is not supported
+        /// </summary>
+        ServerVersionNotSupportedOnClient = 20,
+
+        /// <summary>
+        /// Client disconnects because the server rejects the client version
+        /// </summary>
+        AcknowledgeServerRejectsClientVersion = 30,
+
+        /// <summary>
+        /// Client is disconnecting due to a socket error
+        /// </summary>
+        SocketError = 100,
+
+        /// <summary>
+        /// Client is disconnecting because the calling program requested it.
+        /// </summary>
+        ClientIsStopping = 10000,
+
+        /// <summary>
+        /// Client is disconnecting because it received a server stopping notification
+        /// </summary>
+        ServerIsStopping = 20000
+
+    }
+
     /// <summary>
     /// Result of an attempt to process a message. This is included in the MessageResponse.
     /// </summary>

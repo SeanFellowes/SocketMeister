@@ -5,12 +5,15 @@ namespace SocketMeister.Messages
     /// <summary>
     /// Internal Message: SocketServer sends SocketClient a Handshake2Ack after receiving a
     /// Handshake2 message from the client.
-    /// Introduced in version 5 of SocketMeister for robust handshaking.
+    /// Introduced in version 10 of SocketMeister for robust handshaking.
     /// </summary>
     internal class Handshake2Ack : MessageBase, IMessage
     {
-        public Handshake2Ack() : base(MessageType.Handshake2Ack, messageId: 0)
+        private readonly bool _serverSupportsClientVersion;
+
+        public Handshake2Ack(bool serverSupportsClientVersion) : base(MessageType.Handshake2Ack, messageId: 0)
         {
+            _serverSupportsClientVersion = serverSupportsClientVersion;
         }
 
         /// <summary>
@@ -19,10 +22,15 @@ namespace SocketMeister.Messages
         /// <param name="Reader">Binary Reader</param>
         public Handshake2Ack(BinaryReader Reader) : base(MessageType.Handshake2Ack, messageId: 0)
         {
+            _serverSupportsClientVersion = Reader.ReadBoolean();
         }
+
+        public bool ServerSupportsClientVersion => _serverSupportsClientVersion;
+
 
         public void AppendBytes(BinaryWriter Writer)
         {
+            Writer.Write(_serverSupportsClientVersion);
         }
     }
 }

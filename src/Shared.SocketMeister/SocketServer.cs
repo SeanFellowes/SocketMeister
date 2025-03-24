@@ -395,6 +395,7 @@ namespace SocketMeister
                     try { handler = listener.EndAccept(ar); }
                     catch { return; }
                     handler.SendTimeout = 30000;
+
                     // Create the state object.  
                     Client remoteClient = new Client(this, handler, _compressSentData);
                     _connectedClients.Add(remoteClient);
@@ -411,6 +412,11 @@ namespace SocketMeister
                         //  Send Handshake 1
                         byte[] sendBytes = MessageEngine.GenerateSendBytes(new Handshake1(Constants.SocketMeisterVersion, remoteClient.ClientId.ToString()), _compressSentData);
                         remoteClient.ClientSocket.Send(sendBytes, sendBytes.Length, SocketFlags.None);
+                    }
+                    catch (ObjectDisposedException)
+                    {
+                        _connectedClients.Disconnect(remoteClient);
+                        return;
                     }
                     catch (Exception ex)
                     {
@@ -502,6 +508,8 @@ namespace SocketMeister
                             {
                                 NotifyTraceEventRaised(ex, 5008);
                             }
+                            ClientDisconnectingNotificationV1 msg = receiveEnvelope.GetClientDisconnectingNotificationV1();
+                            NotifyTraceEventRaised(new TraceEventArgs(msg.ClientMessage, SeverityType.Information, 2345));
                         }
                         else if (receiveEnvelope.MessageType == MessageType.PollingRequestV1)
                         {
@@ -619,7 +627,10 @@ namespace SocketMeister
                 remoteClient.ClientSocketMeisterVersion = message.ClientSocketMeisterVersion;
                 remoteClient.FriendlyName = message.FriendlyName;
                 remoteClient.ImportSubscriptions(message.ChangeBytes);
-                remoteClient.SendIMessage(new Handshake2Ack(), false);
+
+                bool serverSupportsClientVersion = Constants.SocketMeisterVersion >= message.ClientSocketMeisterVersion;
+                //  SEND HANDSHAKE 2 ACK
+                remoteClient.SendIMessage(new Handshake2Ack(serverSupportsClientVersion), serverSupportsClientVersion);
             }
             catch (Exception ex)
             {

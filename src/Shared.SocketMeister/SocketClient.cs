@@ -77,6 +77,7 @@ namespace SocketMeister
         private readonly MessageEngine _receiveEngine;
         private readonly SocketAsyncEventArgsPool _sendEventArgsPool;
         private int _serverSocketMeisterVersion;
+        private bool _serverSupportsThisClientVersion = true;
         private bool _stopClientPermanently;
         private readonly object _stopClientPermanentlyLock = new object();
         private readonly TokenCollection _subscriptions = new TokenCollection();
@@ -152,7 +153,6 @@ namespace SocketMeister
             {
                 _currentEndPoint = _endPoints[GetThreadSafeRandomNumber(0, _endPoints.Count)];   // Safe to use direct access in class constructor
             }
-            _currentEndPoint.DontReconnectUntil = DateTime.UtcNow.AddYears(-1);   // Safe to use direct access in class constructor
 
             //  Setup a pool of SocketAsyncEventArgs for sending messages
             _sendEventArgsPool = new SocketAsyncEventArgsPool();
@@ -497,6 +497,26 @@ namespace SocketMeister
             }
         }
 
+        private bool HandshakeCompleted
+        {
+            get { lock (_handshakeLock) { return _handshakeCompleted; } }
+            set
+            {
+                lock (_handshakeLock)
+                {
+                    _handshakeCompleted = value;
+                    _handshake1Received = value;
+                    _handshake2AckReceived = value;
+                }
+            }
+        }
+
+        private bool Handshake1Received { get { lock (_handshakeLock) { return _handshake1Received; } } set { lock (_handshakeLock) { _handshake1Received = value; } } }
+
+        private bool Handshake2AckReceived { get { lock (_handshakeLock) { return _handshake2AckReceived; } } set { lock (_handshakeLock) { _handshake2AckReceived = value; } } }
+
+
+
         private bool IsBackgroundWorkerRunning { get { lock (_lock) { return _isBackgroundWorkerRunning; } } set { lock (_lock) { _isBackgroundWorkerRunning = value; } } }
 
         /// <summary>
@@ -504,14 +524,9 @@ namespace SocketMeister
         /// </summary>
         private DateTime LastPollResponse { get { lock (_lock) { return _lastPollResponse; } } set { lock (_lock) { _lastPollResponse = value; } } }
 
-        private bool HandshakeCompleted { get { lock (_handshakeLock) { return _handshakeCompleted; } } set { lock (_handshakeLock) { _handshakeCompleted = value; } } }
-
-        private bool Handshake1Received { get { lock (_handshakeLock) { return _handshake1Received; } } set { lock (_handshakeLock) { _handshake1Received = value; } } }
-
-        private bool Handshake2AckReceived { get { lock (_handshakeLock) { return _handshake2AckReceived; } } set { lock (_handshakeLock) { _handshake2AckReceived = value; } } }
-
         private int  ServerSocketMeisterVersion { get { lock (_handshakeLock) { return _serverSocketMeisterVersion; } } set { lock (_handshakeLock) { _serverSocketMeisterVersion = value; } } }
 
+        private bool ServerSupportsThisClientVersion { get { lock (_handshakeLock) { return _serverSupportsThisClientVersion; } } set { lock (_handshakeLock) { _serverSupportsThisClientVersion = value; } } }
 
 
         private bool StopClientPermanently { get { lock (_stopClientPermanentlyLock) { return _stopClientPermanently; } } set { lock (_stopClientPermanentlyLock) { _stopClientPermanently = value; } } }
@@ -529,7 +544,7 @@ namespace SocketMeister
         internal UnrespondedMessageCollection UnrespondedMessages
         {
             get { return _unrespondedMessages; }
-        }
+        }   
 
 
         /// <summary>
@@ -553,26 +568,23 @@ namespace SocketMeister
             return _subscriptions.GetNames();
         }
 
-        private void Disconnect(bool SocketHasErrored)
+        private void Disconnect(bool SocketHasErrored, ClientDisconnectReason Reason, string Message)
         {
             Stopwatch timer = Stopwatch.StartNew();
             try
             {
                 if (InternalConnectionStatus == ConnectionStatuses.Disconnecting || InternalConnectionStatus == ConnectionStatuses.Disconnected) return;
-                lock (_handshakeLock)
-                {
-                    _handshakeCompleted = false;
-                    _handshake1Received = false;
-                    _handshake2AckReceived = false;
-                }
+                CurrentEndPoint.LastClientDisconnectReason = Reason;
+                CurrentEndPoint.SetDontReconnectUntil();
+
+                HandshakeCompleted = false;  // Sets all handshake flags to false
+
                 if (SocketHasErrored == false)
                 {
-                    //  Attempt to send a disconnecting message  to the server
+                    //  Attempt to send a disconnecting message to the server
                     try
                     {
-                        byte[] sendBytes = MessageEngine.GenerateSendBytes(new ClientDisconnectingNotificationV1(), false);
-                        CurrentEndPoint.Socket.Send(sendBytes);
-                        SendFastMessage(new ClientDisconnectingNotificationV1());
+                        SendFastMessage(new ClientDisconnectingNotificationV1(Reason, Message));
                     }
                     catch (Exception ex)
                     {
@@ -670,7 +682,8 @@ namespace SocketMeister
             finally
             {
                 timer.Stop();
-                NotifyTraceEventRaised($"{nameof(Disconnect)}() took " + timer.ElapsedMilliseconds + " milliseconds to execute.", SeverityType.Information);
+                string dmsg = $"{nameof(Disconnect)}() took " + timer.ElapsedMilliseconds + " milliseconds.";
+                NotifyTraceEventRaised(dmsg, SeverityType.Information);
             }
         }
 
@@ -725,7 +738,7 @@ namespace SocketMeister
             try
             {
                 //  This provides visual asthetics that connect operations are in progress
-                if (DateTime.UtcNow < CurrentEndPoint.DontReconnectUntil.AddMilliseconds(-1500)) InternalConnectionStatus = ConnectionStatuses.Connecting;
+                if (DateTime.UtcNow < CurrentEndPoint.DontReconnectUntil.AddMilliseconds(-1000)) InternalConnectionStatus = ConnectionStatuses.Connecting;
 
                 //  Exit is it's not time to actually attempt to reconnect
                 if (DateTime.UtcNow < CurrentEndPoint.DontReconnectUntil) return;
@@ -739,6 +752,9 @@ namespace SocketMeister
                         if (_endPoints[i].DontReconnectUntil < bestEP.DontReconnectUntil) bestEP = _endPoints[i];
                     }
                     CurrentEndPoint = bestEP;
+                    //  Delay next connect attempt on this endpoint to ensure we don't keep trying the same endpoint
+                    CurrentEndPoint.DontReconnectUntil = DateTime.UtcNow.AddSeconds(60);
+                    //  Raise an event to notify the caller that the current endpoint has changed
                     CurrentEndPointChanged?.Invoke(this, new EventArgs());
                 }
 
@@ -747,16 +763,19 @@ namespace SocketMeister
                 if (!CurrentEndPoint.Socket.ConnectAsync(_asyncEventArgsConnect)) ProcessConnect(null, _asyncEventArgsConnect);
                 if (StopClientPermanently == true) return;
 
-                if (InternalConnectionStatus != ConnectionStatuses.Connected)
-                {
-                    //  IMPORTANT!!! DON'T TRY THIS CONNECTION FOR AT LEAST 3 SECONDS
-                    CurrentEndPoint.DontReconnectUntil = DateTime.UtcNow.AddMilliseconds(3000);
-                }
-                else
-                {
-                }
+                //if (InternalConnectionStatus != ConnectionStatuses.Connected)
+                //{
+                //    //  Determine the next time to attempt connection on the current endpoint.
+                //    CurrentEndPoint.SetDontReconnectUntil();
+                //}
+                //else
+                //{
+                //}
             }
-            catch { }
+            catch (Exception ex )
+            {
+                NotifyTraceEventRaised(ex);
+            }
         }
 
 
@@ -769,8 +788,9 @@ namespace SocketMeister
                 if (LastPollResponse < (DateTime.UtcNow.AddSeconds(-DISCONNECT_AFTER_NO_POLL_RESPONSE_SECONDS)))
                 {
                     RestartStopwatch(PollingTimer);
-                    NotifyTraceEventRaised(new Exception("Disconnecting: Server failed to reply to polling after " + DISCONNECT_AFTER_NO_POLL_RESPONSE_SECONDS + " seconds."));
-                    Disconnect(SocketHasErrored: true);
+                    string msg = "Disconnecting: Server failed to reply to polling after " + DISCONNECT_AFTER_NO_POLL_RESPONSE_SECONDS + " seconds.";
+                    NotifyTraceEventRaised(new Exception(msg));
+                    Disconnect(SocketHasErrored: false, ClientDisconnectReason.PollingTimeout, msg);
                     return;
                 }
                 RestartStopwatch(PollingTimer);
@@ -923,50 +943,91 @@ namespace SocketMeister
         /// </summary>
         private void BgCompleteHandshake()
         {
-            NotifyTraceEventRaised($"Connected to {CurrentEndPoint.Description}. Initiating handshake...", SeverityType.Information);
+            string traceMsg;
+
+            //  WAIT FOR HANDSHAKE1 MESSAGE
+            NotifyTraceEventRaised($"Connected to {CurrentEndPoint.Description}. Awaiting handshake...", SeverityType.Information);
             int timeoutSeconds = 30;
             DateTime timeout = DateTime.UtcNow.AddSeconds(timeoutSeconds);
             while (DateTime.UtcNow < timeout && !Handshake1Received && !StopClientPermanently && InternalConnectionStatus == ConnectionStatuses.Connected)
             {
-                Thread.Sleep(100);
+                Thread.Sleep(25);
             }
             if (StopClientPermanently || InternalConnectionStatus != ConnectionStatuses.Connected)
             {
-                NotifyTraceEventRaised(new Exception("Connection reset before handshake completed."));
+                NotifyTraceEventRaised(new Exception("Connection reset before Handshake1 received."));
                 return;
             }
             if (!Handshake1Received)
             {
-                NotifyTraceEventRaised(new Exception($"Handshake1 could not be completed within {timeoutSeconds} seconds. Disconnecting."));
-                Disconnect(SocketHasErrored: true);
+                traceMsg = $"Handshake1 was not received within {timeoutSeconds} seconds. Disconnecting.";
+                NotifyTraceEventRaised(new Exception(traceMsg));
+                Disconnect(SocketHasErrored: false, ClientDisconnectReason.HandshakeTimeout, traceMsg);
                 return;
             }
 
-            //  SEND THE SERVER Handshake2 MESSAGE
-            SendFastMessage(new Handshake2(Constants.SocketMeisterVersion, FriendlyName, _subscriptions.Serialize()));
+            //  Validate Handshake1 message 
+            traceMsg = $"Handshake1 received from server. Server version {ServerSocketMeisterVersion}";
+            if (ServerSocketMeisterVersion < Constants.SocketMeisterVersion)
+            {
+                traceMsg += $" is older than this client version ({Constants.SocketMeisterVersion}).";
+            }
+            else if (ServerSocketMeisterVersion > Constants.SocketMeisterVersion)
+                traceMsg += $" is newer than this client version ({Constants.SocketMeisterVersion}).";
+            else
+            {
+                traceMsg += " matches the client version.";
+            }
+            NotifyTraceEventRaised(traceMsg, SeverityType.Information);
+
+
+            //  Establish whether this client supports the server version
+            bool isServerVersionSupported = false;
+            if (ServerSocketMeisterVersion >= Constants.MinimumServerVersionSupportedByClient)
+            {
+                isServerVersionSupported = true;
+            }
+
+            //  SEND Handshake2 TO THE SERVER
+            SendFastMessage(new Handshake2(Constants.SocketMeisterVersion, FriendlyName, _subscriptions.Serialize(), isServerVersionSupported));
 
             //  WAIT TO RECEIVE A Handshake2Ack MESSAGE FROM THE SERVER
             while (DateTime.UtcNow < timeout && !Handshake2AckReceived && !StopClientPermanently && InternalConnectionStatus == ConnectionStatuses.Connected)
             {
-                Thread.Sleep(100);
+                Thread.Sleep(25);
             }
 
             if (StopClientPermanently || InternalConnectionStatus != ConnectionStatuses.Connected)
             {
-                NotifyTraceEventRaised(new Exception("Connection reset before handshake completed."));
+                NotifyTraceEventRaised(new Exception("Connection reset before Handshake2Ack received."));
                 return;
             }
-            else if (HandshakeCompleted)
+            else if (!HandshakeCompleted)
             {
-                //  No need to change InternalConnectionStatus = Connected but me MUST raise an event so the calling
-                //  software knows the connection is fully established.
-                RaiseConnectionStatusChanged();
-                NotifyTraceEventRaised("Handshake completed. Connection is fully established.", SeverityType.Information);
+                traceMsg = $"Handshake2 could not be completed within {timeoutSeconds} seconds. Disconnecting.";
+                NotifyTraceEventRaised(new Exception(traceMsg));
+                Disconnect(SocketHasErrored: false, ClientDisconnectReason.HandshakeTimeout, traceMsg);
+            }
+            else if (ServerSocketMeisterVersion < Constants.MinimumServerVersionSupportedByClient)
+            {
+                //  Abort if this client does not support the server version
+                traceMsg = $"Disconnecting: Server version {ServerSocketMeisterVersion} not supported by this client. Minimum version required is {Constants.MinimumServerVersionSupportedByClient}";
+                NotifyTraceEventRaised(new Exception(traceMsg));
+                Disconnect(SocketHasErrored: false, ClientDisconnectReason.ServerVersionNotSupportedOnClient, traceMsg);
+            }
+            else if (!ServerSupportsThisClientVersion)
+            {
+                traceMsg = "Disconnecting: Server does not support this client version.";
+                NotifyTraceEventRaised(new Exception(traceMsg));
+                Disconnect(SocketHasErrored: false, ClientDisconnectReason.AcknowledgeServerRejectsClientVersion, traceMsg);
             }
             else
             {
-                NotifyTraceEventRaised(new Exception($"Handshake2 could not be completed within {timeoutSeconds} seconds. Disconnecting."));
-                Disconnect(SocketHasErrored: true);
+                //  Success. Connection is fully established.
+                //  No need to change InternalConnectionStatus = Connected but me MUST raise an event so the calling
+                //  software knows the connection is fully established via the ConnectionStatus property.
+                RaiseConnectionStatusChanged();
+                NotifyTraceEventRaised("Handshake completed. Connection is fully established.", SeverityType.Information);
             }
         }
 
@@ -983,7 +1044,7 @@ namespace SocketMeister
             _subscriptions.TokenChanged -= Subscriptions_AddChangedDeleted;
             _subscriptions.TokenDeleted -= Subscriptions_AddChangedDeleted;
 
-            Disconnect(SocketHasErrored: false);
+            Disconnect(SocketHasErrored: false, ClientDisconnectReason.ClientIsStopping, "Client is stopping (Requested by calling program).");
 
 #if !NET35
             CancellationToken.Dispose();
@@ -1196,13 +1257,13 @@ namespace SocketMeister
                 {
                     message.SetStatusUnsent();
                     NotifyTraceEventRaised(new Exception("Disconnecting: Connection was reset."));
-                    Disconnect(SocketHasErrored: true);
+                    Disconnect(SocketHasErrored: true, ClientDisconnectReason.SocketError, "");
                 }
                 else if (result != SocketError.Success)
                 {
                     message.SetStatusUnsent();
                     NotifyTraceEventRaised(new Exception("Disconnecting: Send did not generate a success. Socket operation returned error code " + (int)e.SocketError));
-                    Disconnect(SocketHasErrored: true);
+                    Disconnect(SocketHasErrored: true, ClientDisconnectReason.SocketError, "");
                 }
             }
             catch (Exception ex)
@@ -1240,14 +1301,14 @@ namespace SocketMeister
                 //  3.   The server A) sends its last data B) calls Shutdown(SocketShutdown.Send)) C) calls Close on the socket, optionally with a timeout to allow the data to be read from the client
                 //  4. * The client A) reads the remaining data from the server and then receives 0 bytes(the server signals there is no more data from its side) B) calls Close on the socket
 
-                Disconnect(SocketHasErrored: true);
+                Disconnect(SocketHasErrored: true, ClientDisconnectReason.SocketError, "");
                 return;
             }
 
             if (e.SocketError != SocketError.Success)
             {
                 NotifyTraceEventRaised(new Exception("Disconnecting: ProcessReceive received socket error code " + (int)e.SocketError));
-                Disconnect(SocketHasErrored: true);
+                Disconnect(SocketHasErrored: true, ClientDisconnectReason.SocketError, "");
                 return;
             }
 
@@ -1274,46 +1335,35 @@ namespace SocketMeister
 
                         else if (_receiveEngine.MessageType == MessageType.ServerStoppingNotificationV1)
                         {
-                            //  Server has notified that it is stopping. 
-                            //  Determine the length of time to wait before attempting reconnection
-                            if (_endPoints.Count > 1)
-                                CurrentEndPoint.DontReconnectUntil = DateTime.UtcNow;
-                            else
-                                CurrentEndPoint.DontReconnectUntil = DateTime.UtcNow.AddSeconds(RECONNECT_DELAY_AFTER_SERVER_SHUTDOWN_AND_ONE_ENDPOINT);
-                            //  Clean up gracefully
+                            ////  Server has notified that it is stopping. 
+                            ////  Determine the length of time to wait before attempting reconnection
+                            //if (_endPoints.Count > 1)
+                            //    CurrentEndPoint.DontReconnectUntil = DateTime.UtcNow;
+                            //else
+                            //    CurrentEndPoint.DontReconnectUntil = DateTime.UtcNow.AddSeconds(RECONNECT_DELAY_AFTER_SERVER_SHUTDOWN_AND_ONE_ENDPOINT);
                             NotifyServerStopping();
-                            Disconnect(SocketHasErrored: false);
+                            Disconnect(SocketHasErrored: false, ClientDisconnectReason.ServerIsStopping, "Closing because server has notified it is stopping");
                         }
                         else if (_receiveEngine.MessageType == MessageType.PollingResponseV1)
                         {
                             LastPollResponse = DateTime.UtcNow;
-                            HandshakeCompleted = true;
                         }
 
                         else if (_receiveEngine.MessageType == MessageType.Handshake1)
                         {
                             Handshake1Received = true;
                             Handshake1 hs1 = _receiveEngine.GetHandshake1();
-                            ServerSocketMeisterVersion = hs1.SocketServerVersion;
-                            string msg = $"Handshake1 received from server. Server version {hs1.SocketServerVersion}";
-                            if (hs1.SocketServerVersion < Constants.SocketMeisterVersion)
-                            {
-                                msg += $" is older than this client version ({Constants.SocketMeisterVersion}).";
-                            }
-                            else if(hs1.SocketServerVersion > Constants.SocketMeisterVersion)
-                                msg += $" is newer than this client version ({Constants.SocketMeisterVersion}).";
-                            else
-                            {
-                                msg += " matches the client version.";
-                            }
-                            NotifyTraceEventRaised(msg, SeverityType.Information);
                             ClientId = hs1.ClientId;
+                            ServerSocketMeisterVersion = hs1.ServerSocketMeisterVersion;
+                            // Note: Validation is performed in BgCompleteHandshake()
                         }
 
                         else if (_receiveEngine.MessageType == MessageType.Handshake2Ack)
                         {
-                            HandshakeCompleted = true;
-                            Handshake2AckReceived = true;
+                            Handshake2Ack hs1 = _receiveEngine.GetHandshake2Ack();
+                            ServerSupportsThisClientVersion = hs1.ServerSupportsClientVersion;
+                            HandshakeCompleted = true;   // Sets all handshake flags to true
+                            // Note: Validation is performed in BgCompleteHandshake()
                         }
 
                         else if (_receiveEngine.MessageType == MessageType.SubscriptionChangesResponseV1)
@@ -1344,13 +1394,15 @@ namespace SocketMeister
             {
                 //  IF A LARGE CHUNK OF DATA WAS BEING RECEIVED WHEN THE CONNECTION WAS LOST, THE Disconnect() ROUTINE
                 //  MAY ALREADY HAVE BEEN RUN (WHICH DISPOSES OBJECTS). IF THIS IS THE CASE, SIMPLY EXIT
-                NotifyTraceEventRaised(new Exception("Disconnecting: ObjectDisposedException running ProcessReceive: " + ee.Message));
-                Disconnect(SocketHasErrored: true);
+                string em1 = "Disconnecting: ObjectDisposedException running ProcessReceive: " + ee.ToString();
+                NotifyTraceEventRaised(new Exception(em1));
+                Disconnect(SocketHasErrored: true, ClientDisconnectReason.SocketError, em1);
             }
             catch (Exception ex)
             {
-                NotifyTraceEventRaised(new Exception("Disconnecting: Error running ProcessReceive: " + ex.Message));
-                Disconnect(SocketHasErrored: true);
+                string em2 = "Disconnecting: Exception running ProcessReceive: " + ex.ToString();
+                NotifyTraceEventRaised(new Exception(em2));
+                Disconnect(SocketHasErrored: true, ClientDisconnectReason.SocketError, em2);
             }
         }
 
