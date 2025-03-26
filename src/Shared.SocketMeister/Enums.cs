@@ -18,19 +18,24 @@
         PollingTimeout = 15,
 
         /// <summary>
-        /// Client disconnects because the server version is not supported
+        /// Client disconnects because the server version is not supported by this client
         /// </summary>
-        ServerVersionNotSupportedOnClient = 20,
+        IncompatibleServerVersion = 20,
 
         /// <summary>
-        /// Client disconnects because the server rejects the client version
+        /// Client disconnects because the server does not support this client version
         /// </summary>
-        AcknowledgeServerRejectsClientVersion = 30,
+        IncompatibleClientVersion = 30,
 
         /// <summary>
         /// Client is disconnecting due to a socket error
         /// </summary>
         SocketError = 100,
+
+        /// <summary>
+        /// Socket server is not listening for connections.
+        /// </summary>
+        SocketConnectionRefused = 101,
 
         /// <summary>
         /// Client is disconnecting because the calling program requested it.
@@ -162,7 +167,6 @@
         /// Server sends a Handshake2Ack to the client after receiving Handshake2
         /// </summary>
         Handshake2Ack = 411
-
     }
 
 

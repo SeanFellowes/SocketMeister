@@ -20,11 +20,6 @@ namespace SocketMeister
     internal partial class SocketServer
 #endif
     {
-        /// <summary>
-        /// The maximum number of milliseconds to wait for clients to disconnect whien stopping the socket server
-        /// </summary>
-        private const int MAX_WAIT_FOR_CLIENT_DISCONNECT_WHEN_STOPPING = 30000;
-
         internal ManualResetEventSlim ServerStarted { get; set; } = new ManualResetEventSlim(false);
 
         internal ManualResetEventSlim _allDone { get; set; } = new ManualResetEventSlim(false);
@@ -340,7 +335,7 @@ namespace SocketMeister
             });
 
             // Wait for clients to disconnect with timeout
-            DateTime maxWait = DateTime.UtcNow.AddMilliseconds(MAX_WAIT_FOR_CLIENT_DISCONNECT_WHEN_STOPPING);
+            DateTime maxWait = DateTime.UtcNow.AddMilliseconds(Constants.MAX_WAIT_FOR_CLIENT_DISCONNECT_WHEN_STOPPING);
             while (_connectedClients.Count > 0 && DateTime.UtcNow < maxWait)
             {
                 Thread.Sleep(50); // Reduced sleep interval for responsiveness
@@ -410,7 +405,7 @@ namespace SocketMeister
                         Thread.Sleep(1000); 
 
                         //  Send Handshake 1
-                        byte[] sendBytes = MessageEngine.GenerateSendBytes(new Handshake1(Constants.SocketMeisterVersion, remoteClient.ClientId.ToString()), _compressSentData);
+                        byte[] sendBytes = MessageEngine.GenerateSendBytes(new Handshake1(Constants.SOCKET_MEISTER_VERSION, remoteClient.ClientId.ToString()), _compressSentData);
                         remoteClient.ClientSocket.Send(sendBytes, sendBytes.Length, SocketFlags.None);
                     }
                     catch (ObjectDisposedException)
@@ -628,7 +623,11 @@ namespace SocketMeister
                 remoteClient.FriendlyName = message.FriendlyName;
                 remoteClient.ImportSubscriptions(message.ChangeBytes);
 
-                bool serverSupportsClientVersion = Constants.SocketMeisterVersion >= message.ClientSocketMeisterVersion;
+                bool serverSupportsClientVersion = true;
+                if (message.ClientSocketMeisterVersion < Constants.MINIMUM_CLIENT_VERSION_SUPPORTED_BY_SERVER)
+                {
+                    serverSupportsClientVersion = false;
+                }
                 //  SEND HANDSHAKE 2 ACK
                 remoteClient.SendIMessage(new Handshake2Ack(serverSupportsClientVersion), serverSupportsClientVersion);
             }
@@ -728,7 +727,7 @@ namespace SocketMeister
             try
             {
                 if (RemoteClient.ClientSocket == null || RemoteClient.ClientSocket.Connected == false) return;
-                byte[] sendBytes = MessageEngine.GenerateSendBytes(new ServerStoppingNotificationV1(MAX_WAIT_FOR_CLIENT_DISCONNECT_WHEN_STOPPING), _compressSentData);
+                byte[] sendBytes = MessageEngine.GenerateSendBytes(new ServerStoppingNotificationV1(Constants.MAX_WAIT_FOR_CLIENT_DISCONNECT_WHEN_STOPPING), _compressSentData);
                 RemoteClient.ClientSocket.Send(sendBytes, sendBytes.Length, SocketFlags.None);
             }
             catch (Exception ex)
@@ -737,7 +736,7 @@ namespace SocketMeister
             }
         }
 
-
+         
 
         internal void IncrementSentTotals(int BytesSent)
         {

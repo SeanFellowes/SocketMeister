@@ -37,13 +37,8 @@ namespace SocketMeister
         private const int POLLING_FREQUENCY = 15;
 
 
-#if NET35
-        // ThreadStatic for .NET 3.5 to give each thread its own Random instance
-        [ThreadStatic]
-        private static Random _threadStaticRandom;
-#else
+#if !NET35
         // ThreadLocal for .NET 4.0+
-        private static ThreadLocal<Random> _threadLocalRandom = new ThreadLocal<Random>(() => new Random(Guid.NewGuid().GetHashCode()));
         private object _cancellationTokenSourceLock = new object();
         private CancellationTokenSource _cancellationTokenSource;
         private readonly ConcurrentDictionary<Task, bool> _backgroundTasks = new ConcurrentDictionary<Task, bool>();
@@ -53,6 +48,7 @@ namespace SocketMeister
         private SocketAsyncEventArgs _asyncEventArgsReceive;
         private SocketAsyncEventArgs _asyncEventArgsSendSubscriptionChanges;
         private string _clientId = "";
+        private bool _connectInProgress;
         private ConnectionStatuses _connectionStatus = ConnectionStatuses.Disconnected;
         private readonly ReaderWriterLockSlim _connectionStatusLock = new ReaderWriterLockSlim();
         private SocketEndPoint _currentEndPoint = null;
@@ -73,7 +69,6 @@ namespace SocketMeister
         private readonly object _lock = new object();
 
         private readonly byte[] _pollingBuffer = new byte[Constants.SEND_RECEIVE_BUFFER_SIZE];
-        private readonly Random _randomizer = new Random();
         private readonly MessageEngine _receiveEngine;
         private readonly SocketAsyncEventArgsPool _sendEventArgsPool;
         private int _serverSocketMeisterVersion;
@@ -144,15 +139,8 @@ namespace SocketMeister
             //  STATIC BUFFERS
             _pollingBuffer = MessageEngine.GenerateSendBytes(new PollingRequestV1(), false);
 
-            //  SETUP ENDPOINTS AND CHOOSE THE ENDPOINT TO START WITH
-            if (_endPoints.Count == 1)
-            {
-                _currentEndPoint = _endPoints[0];   // Safe to use direct access in class constructor
-            }
-            else
-            {
-                _currentEndPoint = _endPoints[GetThreadSafeRandomNumber(0, _endPoints.Count)];   // Safe to use direct access in class constructor
-            }
+            //  Set the default endpoint. This may be changed when the client first connects to the server
+            _currentEndPoint = _endPoints[0];   
 
             //  Setup a pool of SocketAsyncEventArgs for sending messages
             _sendEventArgsPool = new SocketAsyncEventArgsPool();
@@ -218,8 +206,7 @@ namespace SocketMeister
                     new SocketEndPoint(IPAddress2, Port2)
                 },
                 EnableCompression, FriendlyName)
-        {
-        }
+        { }
 
 
         /// <summary>
@@ -378,6 +365,16 @@ namespace SocketMeister
 #endif
 
         /// <summary>
+        /// Whether the client is currently connecting to a server
+        /// </summary>
+        private bool ConnectInProgress
+        {
+            get { lock (_lock) { return _connectInProgress; } }
+            set { lock (_lock) { _connectInProgress = value; } }
+        }
+
+
+        /// <summary>
         /// The connection status of the socket client
         /// </summary>
         public ConnectionStatuses ConnectionStatus
@@ -463,7 +460,7 @@ namespace SocketMeister
         /// </summary>
         public SocketEndPoint CurrentEndPoint
         {
-            get 
+            get
             {
                 try
                 {
@@ -524,7 +521,7 @@ namespace SocketMeister
         /// </summary>
         private DateTime LastPollResponse { get { lock (_lock) { return _lastPollResponse; } } set { lock (_lock) { _lastPollResponse = value; } } }
 
-        private int  ServerSocketMeisterVersion { get { lock (_handshakeLock) { return _serverSocketMeisterVersion; } } set { lock (_handshakeLock) { _serverSocketMeisterVersion = value; } } }
+        private int ServerSocketMeisterVersion { get { lock (_handshakeLock) { return _serverSocketMeisterVersion; } } set { lock (_handshakeLock) { _serverSocketMeisterVersion = value; } } }
 
         private bool ServerSupportsThisClientVersion { get { lock (_handshakeLock) { return _serverSupportsThisClientVersion; } } set { lock (_handshakeLock) { _serverSupportsThisClientVersion = value; } } }
 
@@ -544,7 +541,7 @@ namespace SocketMeister
         internal UnrespondedMessageCollection UnrespondedMessages
         {
             get { return _unrespondedMessages; }
-        }   
+        }
 
 
         /// <summary>
@@ -574,8 +571,7 @@ namespace SocketMeister
             try
             {
                 if (InternalConnectionStatus == ConnectionStatuses.Disconnecting || InternalConnectionStatus == ConnectionStatuses.Disconnected) return;
-                CurrentEndPoint.LastClientDisconnectReason = Reason;
-                CurrentEndPoint.SetDontReconnectUntil();
+                CurrentEndPoint.SetDisconnected(Reason);
 
                 HandshakeCompleted = false;  // Sets all handshake flags to false
 
@@ -697,7 +693,6 @@ namespace SocketMeister
                     IsBackgroundWorkerRunning = true;
                     Stopwatch pollingTimer = Stopwatch.StartNew();
                     Stopwatch sendSubscriptionsTimer = Stopwatch.StartNew();
-                    LastPollResponse = DateTime.UtcNow;
 
                     //  FLAG ALL SUBSCRIPTIONS (Tokens) FOR SENDING TO THE SERVER
                     _subscriptions.FlagAllAfterSocketConnect();
@@ -737,42 +732,61 @@ namespace SocketMeister
         {
             try
             {
+                //  Exit if the client is already connecting
+                if (ConnectInProgress == true) return;
+                ConnectInProgress = true;
+
                 //  This provides visual asthetics that connect operations are in progress
                 if (DateTime.UtcNow < CurrentEndPoint.DontReconnectUntil.AddMilliseconds(-1000)) InternalConnectionStatus = ConnectionStatuses.Connecting;
 
-                //  Exit is it's not time to actually attempt to reconnect
-                if (DateTime.UtcNow < CurrentEndPoint.DontReconnectUntil) return;
-
-                //  CHOOSE THE NEXT ENDPOINT TO TRY
-                if (_endPoints.Count > 1)
+                //  Determine the endpoint which should be current based on the lowest DontReconnectUntil from the collection
+                DateTime lowestDontReconnectUntil = _endPoints[0].DontReconnectUntil;
+                SocketEndPoint bestEndPoint = _endPoints[0];
+                foreach (SocketEndPoint ep in _endPoints)
                 {
-                    SocketEndPoint bestEP = _endPoints[0];
-                    for (int i = 1; i < _endPoints.Count; i++)
+                    if (ep.DontReconnectUntil < lowestDontReconnectUntil)
                     {
-                        if (_endPoints[i].DontReconnectUntil < bestEP.DontReconnectUntil) bestEP = _endPoints[i];
+                        lowestDontReconnectUntil = ep.DontReconnectUntil;
+                        bestEndPoint = ep;
                     }
-                    CurrentEndPoint = bestEP;
-                    //  Delay next connect attempt on this endpoint to ensure we don't keep trying the same endpoint
-                    CurrentEndPoint.DontReconnectUntil = DateTime.UtcNow.AddSeconds(60);
-                    //  Raise an event to notify the caller that the current endpoint has changed
+                }
+
+                //  Exit is it's not time to actually attempt to reconnect
+                if (DateTime.UtcNow < lowestDontReconnectUntil)
+                {
+                    ConnectInProgress = false;
+                    return;
+                }
+
+                //  Set the current endpoint to the best endpoint
+                if (CurrentEndPoint != bestEndPoint)
+                {
+                    CurrentEndPoint = bestEndPoint;
                     CurrentEndPointChanged?.Invoke(this, new EventArgs());
                 }
 
-                //  TRY TO CONNECT
-                _asyncEventArgsConnect.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
-                if (!CurrentEndPoint.Socket.ConnectAsync(_asyncEventArgsConnect)) ProcessConnect(null, _asyncEventArgsConnect);
-                if (StopClientPermanently == true) return;
+                //  Try to connect
+                try
+                {
+                    _asyncEventArgsConnect.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
+                    if (!CurrentEndPoint.Socket.ConnectAsync(_asyncEventArgsConnect))
+                    {
+                        ProcessConnect(null, _asyncEventArgsConnect);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    NotifyTraceEventRaised(ex);
+                    ConnectInProgress = false;
+                }
 
-                //if (InternalConnectionStatus != ConnectionStatuses.Connected)
-                //{
-                //    //  Determine the next time to attempt connection on the current endpoint.
-                //    CurrentEndPoint.SetDontReconnectUntil();
-                //}
-                //else
-                //{
-                //}
+                if (StopClientPermanently == true)
+                {
+                    ConnectInProgress = false;
+                    return;
+                }
             }
-            catch (Exception ex )
+            catch (Exception ex)
             {
                 NotifyTraceEventRaised(ex);
             }
@@ -867,11 +881,9 @@ namespace SocketMeister
         {
             if (StopClientPermanently == true) return;
 
-            double pauseReconnect = 2000;
-            if (e.SocketError == SocketError.Success)
+            try
             {
-                //  ATTEMPT TO START RECEIVING
-                try
+                if (e.SocketError == SocketError.Success)
                 {
 #if !NET35
                     // Instantiate a new CancellationTokenSource
@@ -888,9 +900,12 @@ namespace SocketMeister
 
                     // Start a new thread to complete the handshake.
                     // Note: Server will send Handshake1 message.
-                    Thread pollingThread = new Thread(new ThreadStart(BgCompleteHandshake));
-                    pollingThread.IsBackground = true;
-                    pollingThread.Start();
+                    Thread handshakeThread = new Thread(new ThreadStart(BgCompleteHandshake));
+                    handshakeThread.IsBackground = true;
+                    handshakeThread.Start();
+
+                    //  Reset the last poll response time
+                    LastPollResponse = DateTime.UtcNow;
 
                     //  Internally, we are connected, but ConnectionStatus property must continue to show Connecting until handshake is completed.
                     InternalConnectionStatus = ConnectionStatuses.Connected;
@@ -898,43 +913,51 @@ namespace SocketMeister
                     //  IF SUBSCRIPTIONS EXIST, SEND THEM
                     if (SubscriptionCount > 0) SubscriptionsSendTrigger = true;
                 }
-                catch (Exception ex)
+                else if (e.SocketError == SocketError.TimedOut)
                 {
-                    NotifyTraceEventRaised(ex);
+                    //  NOTE: WHEN FAILING OVER UNDER HIGH LOAD, SocketError.TimedOut OCCURS FOR UP TO 120 SECONDS (WORSE CASE)
+                    //  BEFORE CONNECTION SUCCESSFULLY COMPLETES. IT'S A BIT ANNOYING BUT I HAVE FOUND NO WORK AROUND.
+                    CurrentEndPoint.SetDisconnected(ClientDisconnectReason.SocketError);
+                    NotifyTraceEventRaised(new Exception("Socket Timeout"));
                 }
-            }
-            else if (e.SocketError == SocketError.TimedOut)
-            {
-                //  NOTE: WHEN FAILING OVER UNDER HIGH LOAD, SocketError.TimedOut OCCURS FOR UP TO 120 SECONDS (WORSE CASE)
-                //  BEFORE CONNECTION SUCCESSFULLY COMPLETES. IT'S A BIT ANNOYING BUT I HAVE FOUND NO WORK AROUND.
-                NotifyTraceEventRaised(new Exception("Socket Timeout"));
-            }
-            else if (e.SocketError == SocketError.AddressAlreadyInUse)
-            {
-                NotifyTraceEventRaised(new Exception("Socket address already in use"));
-            }
-            else if (e.SocketError == SocketError.ConnectionRefused)
-            {
-                NotifyTraceEventRaised(new Exception($"Connection refused by server {CurrentEndPoint.Description}"));
-            }
-
-            else
-            {
-                NotifyTraceEventRaised(new Exception("Undefined Socket Error: " + e.SocketError.ToString()));
-            }
-
-            //  RESET
-            try
-            {
-                CurrentEndPoint.DontReconnectUntil = DateTime.UtcNow.AddMilliseconds(pauseReconnect + GetThreadSafeRandomNumber(1, 4000));
+                else if (e.SocketError == SocketError.AddressAlreadyInUse)
+                {
+                    CurrentEndPoint.SetDisconnected(ClientDisconnectReason.SocketError);
+                    NotifyTraceEventRaised(new Exception("Socket address already in use"));
+                }
+                else if (e.SocketError == SocketError.ConnectionRefused)
+                {
+                    CurrentEndPoint.SetDisconnected(ClientDisconnectReason.SocketConnectionRefused);
+                    NotifyTraceEventRaised(new Exception($"Connection refused by server {CurrentEndPoint.Description}"));
+                }
+                else
+                {
+                    CurrentEndPoint.SetDisconnected(ClientDisconnectReason.SocketError);
+                    NotifyTraceEventRaised(new Exception("Undefined Socket Error: " + e.SocketError.ToString()));
+                }
             }
             catch (Exception ex)
             {
-                if (!StopClientPermanently)
-                {
-                    NotifyTraceEventRaised(ex);
-                }
+                CurrentEndPoint.SetDisconnected(ClientDisconnectReason.Unknown);
+                NotifyTraceEventRaised(ex);
             }
+            finally
+            {
+                ConnectInProgress = false;
+            }
+
+            ////  RESET
+            //try
+            //{
+            //    CurrentEndPoint.DontReconnectUntil = DateTime.UtcNow.AddMilliseconds(pauseReconnect + GetThreadSafeRandomNumber(1, 4000));
+            //}
+            //catch (Exception ex)
+            //{
+            //    if (!StopClientPermanently)
+            //    {
+            //        NotifyTraceEventRaised(ex);
+            //    }
+            //}
         }
 
         /// <summary>
@@ -968,12 +991,12 @@ namespace SocketMeister
 
             //  Validate Handshake1 message 
             traceMsg = $"Handshake1 received from server. Server version {ServerSocketMeisterVersion}";
-            if (ServerSocketMeisterVersion < Constants.SocketMeisterVersion)
+            if (ServerSocketMeisterVersion < Constants.SOCKET_MEISTER_VERSION)
             {
-                traceMsg += $" is older than this client version ({Constants.SocketMeisterVersion}).";
+                traceMsg += $" is older than this client version ({Constants.SOCKET_MEISTER_VERSION}).";
             }
-            else if (ServerSocketMeisterVersion > Constants.SocketMeisterVersion)
-                traceMsg += $" is newer than this client version ({Constants.SocketMeisterVersion}).";
+            else if (ServerSocketMeisterVersion > Constants.SOCKET_MEISTER_VERSION)
+                traceMsg += $" is newer than this client version ({Constants.SOCKET_MEISTER_VERSION}).";
             else
             {
                 traceMsg += " matches the client version.";
@@ -983,13 +1006,13 @@ namespace SocketMeister
 
             //  Establish whether this client supports the server version
             bool isServerVersionSupported = false;
-            if (ServerSocketMeisterVersion >= Constants.MinimumServerVersionSupportedByClient)
+            if (ServerSocketMeisterVersion >= Constants.MINIMUM_SERVER_VERSION_SUPPORTED_BY_CLIENT)
             {
                 isServerVersionSupported = true;
             }
 
             //  SEND Handshake2 TO THE SERVER
-            SendFastMessage(new Handshake2(Constants.SocketMeisterVersion, FriendlyName, _subscriptions.Serialize(), isServerVersionSupported));
+            SendFastMessage(new Handshake2(Constants.SOCKET_MEISTER_VERSION, FriendlyName, _subscriptions.Serialize(), isServerVersionSupported));
 
             //  WAIT TO RECEIVE A Handshake2Ack MESSAGE FROM THE SERVER
             while (DateTime.UtcNow < timeout && !Handshake2AckReceived && !StopClientPermanently && InternalConnectionStatus == ConnectionStatuses.Connected)
@@ -1008,18 +1031,18 @@ namespace SocketMeister
                 NotifyTraceEventRaised(new Exception(traceMsg));
                 Disconnect(SocketHasErrored: false, ClientDisconnectReason.HandshakeTimeout, traceMsg);
             }
-            else if (ServerSocketMeisterVersion < Constants.MinimumServerVersionSupportedByClient)
+            else if (ServerSocketMeisterVersion < Constants.MINIMUM_SERVER_VERSION_SUPPORTED_BY_CLIENT)
             {
                 //  Abort if this client does not support the server version
-                traceMsg = $"Disconnecting: Server version {ServerSocketMeisterVersion} not supported by this client. Minimum version required is {Constants.MinimumServerVersionSupportedByClient}";
+                traceMsg = $"Disconnecting: Server version {ServerSocketMeisterVersion} not supported by this client. Minimum version required is {Constants.MINIMUM_SERVER_VERSION_SUPPORTED_BY_CLIENT}";
                 NotifyTraceEventRaised(new Exception(traceMsg));
-                Disconnect(SocketHasErrored: false, ClientDisconnectReason.ServerVersionNotSupportedOnClient, traceMsg);
+                Disconnect(SocketHasErrored: false, ClientDisconnectReason.IncompatibleServerVersion, traceMsg);
             }
             else if (!ServerSupportsThisClientVersion)
             {
-                traceMsg = "Disconnecting: Server does not support this client version.";
+                traceMsg = $"Disconnecting: Server (Version {ServerSocketMeisterVersion}) does not support this client (Version {Constants.SOCKET_MEISTER_VERSION}).";
                 NotifyTraceEventRaised(new Exception(traceMsg));
-                Disconnect(SocketHasErrored: false, ClientDisconnectReason.AcknowledgeServerRejectsClientVersion, traceMsg);
+                Disconnect(SocketHasErrored: false, ClientDisconnectReason.IncompatibleClientVersion, traceMsg);
             }
             else
             {
@@ -1205,7 +1228,7 @@ namespace SocketMeister
                     }
 
 #if NET35
-                Thread.Sleep(10); // Poll for response
+                    Thread.Sleep(10); // Poll for response
 #endif
                 }
             }
@@ -1618,38 +1641,6 @@ namespace SocketMeister
             });
 #endif
         }
-
-
-#if NET35
-        private static Random ThreadSafeRandom
-        {
-            get
-            {
-                // Initialize Random for the current thread if not already initialized
-                if (_threadStaticRandom == null)
-                {
-                    _threadStaticRandom = new Random(Guid.NewGuid().GetHashCode());
-                }
-                return _threadStaticRandom;
-            }
-        }
-#else
-        private static Random ThreadSafeRandom
-        {
-            get
-            {
-                return _threadLocalRandom.Value;
-            }
-        }
-#endif
-
-
-        private static int GetThreadSafeRandomNumber(int min, int max)
-        {
-            return ThreadSafeRandom.Next(min, max);
-        }
-
     }
-
 }
 

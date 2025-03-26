@@ -2,6 +2,7 @@
 using SocketMeister.Messages;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Sockets;
 
 namespace SocketMeister
@@ -17,6 +18,18 @@ namespace SocketMeister
         /// </summary>
         public class Client : IDisposable
         {
+            /// <summary>
+            /// Internal Message: Test case of sending a message type to the client which doesn't exist on the client.
+            /// </summary>
+            //internal class ServerOnlyTestMessage : MessageBase, IMessage
+            //{
+            //    public ServerOnlyTestMessage() : base(MessageType.PollingRequestV1, messageId: 0) { }
+
+            //    public void AppendBytes(BinaryWriter Writer)
+            //    {
+            //    }
+            //}
+
             private readonly Socket _clientSocket;
             private readonly string _clientId;
             private int _clientSocketMeisterVersion;

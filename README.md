@@ -1,20 +1,22 @@
 # SocketMeister
 
-SocketMeister is a socket library for solutions requiring persistent, multiple endpoint TCP/IP connectivity. It is easy to use, high throughput and multithreaded.
+SocketMeister is a socket library for solutions requiring persistent, multiple endpoint TCP/IP connectivity. It is easy to use, resilient, high throughput and multithreaded.
 
-SocketMeister **Client** provides fault tolerance by automatically reconnecting in the event of connection failure and in environment where multiple servers are deployed (i.e. for redundancy and/or high workload), SocketMeister **Client** will automatically round-robin until a server is found. 
+**SocketClient** provides fault tolerance by automatically reconnecting in the event of connection failure. In an environment where multiple servers are deployed (i.e. for redundancy and/or high workload), SocketMeister **Client** will automatically round-robin to find a server it can connect to. 
 
-SocketMeister **Server** provides a simple framework whereby messages and requests (messages expecting a response) are presented in thread independent events. Your code site cleanly in the event handler, where it can read an array of parameters sent by the client and execute your business logic. In the case of a request, your code can provide a response, which is automatically returned to the client. SocketMeister supports binary arrays, strings and most simple data types. It you enable optional compression, data is seamlessly compressed and decompressed using a high throughput compression algorithm.
+**SocketServer** provides a simple framework whereby messages and requests (messages expecting a response) are presented to your code in thread independent events. Your code site cleanly in the event handler, where it can read an array of parameters sent by the client and execute your business logic. In the case of a request, your code can provide a response, which is automatically returned to the client. SocketMeister supports most data types, including binary arrays. It you enable optional compression, data is seamlessly compressed and decompressed using a high throughput compression algorithm.
 
 ## The Flavours of SocketMeister
 
-SocketMeister Client works with most .NET framework versions, from .NET 3.5 and Silverlight 5 to .NET 5 and almost everything in-between. SocketMeister Server can be used with .NET 4.0 and above. There are 3 NuGet packages available:
+SocketMeister Client works with most .NET framework versions from .NET 3.5 to .NET 9. SocketMeister Server can be used with .NET 4.0 and above. There are 2 NuGet packages available:
 
-1. The [SocketMeister](https://www.nuget.org/packages/SocketMeister/) NuGet package contains the DLL for many versions of .NET except Silverlight 5. Frameworks include .NET 3.5, .NET 4.0, .NET 4.5, .NET 4.6, .NET 4.7.2, .NET Standard 2.0, .NET Core 3.1 and .NET 5. SocketMeister Server is not available in .NET 3.5.
+1. The [SocketMeister](https://www.nuget.org/packages/SocketMeister/) NuGet package contains the DLL for .NET 3.5 to .NET 9. The SocketMeister **SocketServer** class is not available in .NET 3.5.
 
-2. The [SocketMeister.Silverlight]() NuGet package contains the DLL for Silverlight 5 projects. SocketMeister server is not included as it wouldn't work in Silverlight.
+2. The [SocketMeister.Sources](https://www.nuget.org/packages/SocketMeister.Sources/) NuGet package contains the C# source files for SocketMeister, enabling you to embed SocketMeister in your own project. This eliminates the need to ship the SocketMeister DLL with your product. Simply add the [SocketMeister.Sources](https://www.nuget.org/packages/SocketMeister.Sources/) NuGet package to your Visual Studio project and a folder containing the code will be added to the project.
 
-3. The [SocketMeister.Sources](https://www.nuget.org/packages/SocketMeister.Sources/) NuGet package contains the C# source files for SocketMeister, enabling you to embed SocketMeister in your own project EXE or DLL. This eliminates the need to ship the SocketMeister DLL with your product. Simply add the [SocketMeister.Sources](https://www.nuget.org/packages/SocketMeister.Sources/) NuGet package to your Visual Studio project and a folder containing the code will be added to the project.
+## Silverlight no longer supported
+
+The [SocketMeister.Silverlight]() NuGet package is no longer maintained and doesn't work with SocketMeister 10 or above.
 
 ## Simple Example
 
@@ -175,7 +177,7 @@ If we wanted to remove the subscription, at the socket client we would add the f
 
 ### Messaging a specific client from the server
 
-From the server you may want to send messages and requests to specific clients. T
+From the server you may want to send messages and requests to specific clients.
 
 
 

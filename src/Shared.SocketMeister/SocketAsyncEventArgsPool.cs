@@ -13,10 +13,10 @@ internal sealed class SocketAsyncEventArgsPool : IDisposable
 
     internal SocketAsyncEventArgsPool()
     {
-        _pool = new Stack<SocketAsyncEventArgs>(Constants.SocketAsyncEventArgsPoolSize);
-        _sharedBuffer = new byte[Constants.SocketAsyncEventArgsPoolSize * Constants.SEND_RECEIVE_BUFFER_SIZE];
+        _pool = new Stack<SocketAsyncEventArgs>(Constants.SOCKET_ASYNC_EVENT_ARGS_POOL_SIZE);
+        _sharedBuffer = new byte[Constants.SOCKET_ASYNC_EVENT_ARGS_POOL_SIZE * Constants.SEND_RECEIVE_BUFFER_SIZE];
 
-        for (int i = 0; i < Constants.SocketAsyncEventArgsPoolSize; i++)
+        for (int i = 0; i < Constants.SOCKET_ASYNC_EVENT_ARGS_POOL_SIZE; i++)
         {
             var eventArgs = new SocketAsyncEventArgs();
             eventArgs.SetBuffer(_sharedBuffer, i * Constants.SEND_RECEIVE_BUFFER_SIZE, Constants.SEND_RECEIVE_BUFFER_SIZE);

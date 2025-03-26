@@ -13,11 +13,11 @@ namespace SocketMeister
     internal class SocketEndPoint : IDisposable
 #endif
     {
-        private DateTime _dontReconnectUntil = DateTime.UtcNow.AddYears(-1);
+        private DateTime _dontReconnectUntil;
         private readonly IPEndPoint _ipEndPoint = null;
         private readonly string _iPAddress = null;
         private bool _isDisposed = false;
-        private ClientDisconnectReason _lastClientDisconnectReason = ClientDisconnectReason.Unknown;
+        private ClientDisconnectReason _lastDisconnectReason = ClientDisconnectReason.Unknown;
         private readonly object _lock = new object();
         private readonly object _lockSocket = new object();
         private readonly ushort _port = 0;
@@ -36,6 +36,11 @@ namespace SocketMeister
 
             _iPAddress = IPAddress;
             _port = Convert.ToUInt16(Port);
+
+            //  In situations where there are multiple endpoints we wan't to randomize the reconnect time so that all endpoints don't try to reconnect at the same time.
+            Random random = new Random(Guid.NewGuid().GetHashCode());
+            _dontReconnectUntil = DateTime.Now.AddHours(-(random.Next(10, 2000)));   
+
 
             //  TRY TO CREATE IpAddress
             IPAddress IPAddr;
@@ -124,10 +129,9 @@ namespace SocketMeister
         /// <summary>
         /// The last reason the client disconnected. Used to calculate reconnect delay.
         /// </summary>
-        internal ClientDisconnectReason LastClientDisconnectReason
+        internal ClientDisconnectReason LastDisconnectReason
         {
-            get { lock (_lock) { return _lastClientDisconnectReason; } }
-            set { lock (_lock) { _lastClientDisconnectReason = value; } }
+            get { lock (_lock) { return _lastDisconnectReason; } }
         }
 
 
@@ -144,14 +148,13 @@ namespace SocketMeister
             get { lock (_lockSocket) { return _socket; } }
         }
 
-        /// <summary>
-        /// Recalculated the 'DontReconnectUntil' value based on the last disconnect reason.
-        /// </summary>
-        internal void SetDontReconnectUntil()
+        internal void SetDisconnected(ClientDisconnectReason reason)
         {
             lock (_lock)
             {
-                switch (_lastClientDisconnectReason)
+                _lastDisconnectReason = reason;
+
+                switch (_lastDisconnectReason)
                 {
                     case ClientDisconnectReason.HandshakeTimeout:
                         _dontReconnectUntil = DateTime.UtcNow.AddSeconds(15);
@@ -159,14 +162,17 @@ namespace SocketMeister
                     case ClientDisconnectReason.PollingTimeout:
                         _dontReconnectUntil = DateTime.UtcNow.AddSeconds(15);
                         break;
-                    case ClientDisconnectReason.ServerVersionNotSupportedOnClient:
-                        _dontReconnectUntil = DateTime.UtcNow.AddSeconds(30);
+                    case ClientDisconnectReason.IncompatibleServerVersion:
+                        _dontReconnectUntil = DateTime.UtcNow.AddSeconds(60);
                         break;
-                    case ClientDisconnectReason.AcknowledgeServerRejectsClientVersion:
-                        _dontReconnectUntil = DateTime.UtcNow.AddSeconds(30);
+                    case ClientDisconnectReason.IncompatibleClientVersion:
+                        _dontReconnectUntil = DateTime.UtcNow.AddSeconds(60);
                         break;
                     case ClientDisconnectReason.SocketError:
-                        _dontReconnectUntil = DateTime.UtcNow.AddSeconds(5);
+                        _dontReconnectUntil = DateTime.UtcNow.AddSeconds(30);
+                        break;
+                    case ClientDisconnectReason.SocketConnectionRefused:
+                        _dontReconnectUntil = DateTime.UtcNow.AddSeconds(8);
                         break;
                     case ClientDisconnectReason.ClientIsStopping:
                         _dontReconnectUntil = DateTime.UtcNow.AddSeconds(600);
@@ -180,6 +186,7 @@ namespace SocketMeister
                 }
             }
         }
+
 
 
         /// <summary>
