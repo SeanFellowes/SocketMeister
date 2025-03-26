@@ -20,9 +20,9 @@
     <DocumentationFile></DocumentationFile>
     <PackageIcon>icon_128.png</PackageIcon>
     <SelfContained>true</SelfContained>
-    <Version>4.1.5</Version>
-    <AssemblyVersion>4.1.5.0</AssemblyVersion>
-    <FileVersion>4.1.5.0</FileVersion>
+    <Version>10.0.0</Version>
+    <AssemblyVersion>10.0.0.0</AssemblyVersion>
+    <FileVersion>10.0.0.0</FileVersion>
     <PackageReadmeFile>NuGetDocumentation.md</PackageReadmeFile>
     <Title>SocketMeister</Title>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
