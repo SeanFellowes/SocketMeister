@@ -27,5 +27,5 @@ There are 2 active NuGet packages available:
 
 ## SocketMeister for Silverlight is no longer maintained.
 
-The [SocketMeister.Silverlight](https://www.nuget.org/packages/SocketMeister.Silverlight/) version is no longer maintained since version 4.0.4 but is compatible with later versions of the SocketMeister `SocketServer` class in later versions of major version 4.
+[SocketMeister.Silverlight](https://www.nuget.org/packages/SocketMeister.Silverlight/) is no longer maintained and will not work with SocketMeister version 10 and above.
 
