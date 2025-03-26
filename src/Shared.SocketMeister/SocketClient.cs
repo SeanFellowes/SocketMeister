@@ -26,12 +26,6 @@ namespace SocketMeister
         private const int DISCONNECT_AFTER_NO_POLL_RESPONSE_SECONDS = 300;
 
         /// <summary>
-        /// When a shutdown occurs, particularly because of network failure or server shutdown, delay attempting to reconnect to that server, giving the server some time to complete it's shutdown process.
-        /// When a shutdown occurs, particularly because of network failure or serveDisconnectr shutdown, delay attempting to reconnect to that server, giving the server some time to complete it's shutdown process.
-        /// </summary>
-        private const int RECONNECT_DELAY_AFTER_SERVER_SHUTDOWN_AND_ONE_ENDPOINT = 30;
-
-        /// <summary>
         /// The frequency, in seconds, that this client will poll the server, to ensure the socket is alive.
         /// </summary>
         private const int POLLING_FREQUENCY = 15;
@@ -1358,12 +1352,6 @@ namespace SocketMeister
 
                         else if (_receiveEngine.MessageType == MessageType.ServerStoppingNotificationV1)
                         {
-                            ////  Server has notified that it is stopping. 
-                            ////  Determine the length of time to wait before attempting reconnection
-                            //if (_endPoints.Count > 1)
-                            //    CurrentEndPoint.DontReconnectUntil = DateTime.UtcNow;
-                            //else
-                            //    CurrentEndPoint.DontReconnectUntil = DateTime.UtcNow.AddSeconds(RECONNECT_DELAY_AFTER_SERVER_SHUTDOWN_AND_ONE_ENDPOINT);
                             NotifyServerStopping();
                             Disconnect(SocketHasErrored: false, ClientDisconnectReason.ServerIsStopping, "Closing because server has notified it is stopping");
                         }
