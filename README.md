@@ -18,6 +18,11 @@ SocketMeister Client works with most .NET framework versions from .NET 3.5 to .N
 
 The [SocketMeister.Silverlight]() NuGet package is no longer maintained and doesn't work with SocketMeister 10 or above.
 
+## SocketMeister Version 10
+SocketMeister Version 10 is a significant upgrade on earlier versions (1.x.x, 2.x.x, 3.x.x and 4.x.x). Although the public interface hasn't changed, previous versions of SocketMeister do not work with Version 10. If you upgrade to version 10 you will need to upgrade and rollout all software using SocketClient and SocketServer. Older clients will fail to connect to SocketServer 10.
+
+SocketMeister 10 introduces robust handshaking and version awareness between clients and servers. Thich will allow for future functionality to be introduced without breaking backward compatibility.
+
 ## Simple Example
 
 The following example shows how easy it is to setup a basic server and client. It achieves the following:
