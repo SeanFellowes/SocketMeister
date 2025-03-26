@@ -11,7 +11,11 @@
     <RepositoryUrl>https://github.com/SeanFellowes/SocketMeister</RepositoryUrl>
     <PackageTags>tcp socket</PackageTags>
     <Company>Sean Fellowes</Company>
-    <PackageReleaseNotes>Fixed Socketclient bug ManualResetEvent is already disposed. Changed geneneral exceptions to ArgumentException when parameters are invalid.</PackageReleaseNotes>
+    <PackageReleaseNotes>SocketMeister Version 10 is a significant upgrade on earlier versions (1.x.x, 2.x.x, 3.x.x and 4.x.x). Although the public interface hasn't changed, previous versions of SocketMeister do not work with Version 10. If you upgrade to version 10 you will need to upgrade and rollout all software using SocketClient and SocketServer. Older clients will fail to connect to SocketServer 10.
+
+SocketMeister 10 introduces robust handshaking and version awareness between clients and servers. Thich will allow for future functionality to be introduced without breaking backward compatibility.
+
+SocketClient class has an additional event called TraceEventRaised, which provides detailed information regarding connection attempts, handshaking, server information and errors.</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseUrl></PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
@@ -20,9 +24,9 @@
     <DocumentationFile></DocumentationFile>
     <PackageIcon>icon_128.png</PackageIcon>
     <SelfContained>true</SelfContained>
-    <Version>10.0.0</Version>
-    <AssemblyVersion>10.0.0.0</AssemblyVersion>
-    <FileVersion>10.0.0.0</FileVersion>
+    <Version>10.0.1</Version>
+    <AssemblyVersion>10.0.1.0</AssemblyVersion>
+    <FileVersion>10.0.1.0</FileVersion>
     <PackageReadmeFile>NuGetDocumentation.md</PackageReadmeFile>
     <Title>SocketMeister</Title>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
