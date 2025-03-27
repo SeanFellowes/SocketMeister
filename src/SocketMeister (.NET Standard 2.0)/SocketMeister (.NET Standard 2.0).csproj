@@ -11,7 +11,9 @@
     <RepositoryUrl>https://github.com/SeanFellowes/SocketMeister</RepositoryUrl>
     <PackageTags>tcp socket</PackageTags>
     <Company>Sean Fellowes</Company>
-    <PackageReleaseNotes>SocketMeister 10.0.2 contains a fix for when a connection was reset before the handshake is completed, the client would stop attempting to reconnect.
+    <PackageReleaseNotes>SocketMeister 10.0.3 adds robust socket recreation when it is disposed during reconnection. Enhanced logging in SocketClient TraceEventRaised event. Reduced SocketClient reconnect time when SocketServer is restarted.
+
+SocketMeister 10.0.2 contains a fix for when a connection was reset before the handshake is completed, the client would stop attempting to reconnect.
 
 SocketMeister Version 10 is a significant upgrade on earlier versions (1.x.x, 2.x.x, 3.x.x and 4.x.x). Although the public interface hasn't changed, previous versions of SocketMeister do not work with Version 10. If you upgrade to version 10 you will need to upgrade and rollout all software using SocketClient and SocketServer. Older clients will fail to connect to SocketServer 10.
 
@@ -26,9 +28,9 @@ SocketClient class has an additional event called TraceEventRaised, which provid
     <DocumentationFile></DocumentationFile>
     <PackageIcon>icon_128.png</PackageIcon>
     <SelfContained>true</SelfContained>
-    <Version>10.0.2</Version>
-    <AssemblyVersion>10.0.2.0</AssemblyVersion>
-    <FileVersion>10.0.2.0</FileVersion>
+    <Version>10.0.3</Version>
+    <AssemblyVersion>10.0.3.0</AssemblyVersion>
+    <FileVersion>10.0.3.0</FileVersion>
     <PackageReadmeFile>NuGetDocumentation.md</PackageReadmeFile>
     <Title>SocketMeister</Title>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
