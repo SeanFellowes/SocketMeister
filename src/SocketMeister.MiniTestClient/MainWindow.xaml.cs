@@ -65,7 +65,7 @@ namespace SocketMeister.MiniTestClient
 
                 Top = 0;
                 Left = 850;
-                Height = 1000;
+                Height = SystemParameters.FullPrimaryScreenHeight; 
                 Visibility = Visibility.Visible;
                 IPAddress.Text = "127.0.0.1";
 

@@ -146,12 +146,12 @@
         /// <summary>
         /// Clients send subscription information to the server. The server updates it's local client details
         /// </summary>
-        SubscriptionChangesNotificationV1 = 200,
+        TokenChangesRequestV1 = 200,
 
         /// <summary>
         /// Server sends a subscription response when a subscription notification is received from a client
         /// </summary>
-        SubscriptionChangesResponseV1 = 210,
+        TokenChangesResponseV1 = 210,
 
         /// <summary>
         /// Clients sent poll requests to determine if a connection is alive

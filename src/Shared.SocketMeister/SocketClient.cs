@@ -130,11 +130,16 @@ namespace SocketMeister
             _subscriptions.TokenChanged += Subscriptions_AddChangedDeleted;
             _subscriptions.TokenDeleted += Subscriptions_AddChangedDeleted;
 
+            foreach (SocketEndPoint ep in _endPoints)
+            {
+                ep.ExceptionRaised += Ep_ExceptionRaised;
+            }
+
             //  STATIC BUFFERS
             _pollingBuffer = MessageEngine.GenerateSendBytes(new PollingRequestV1(), false);
 
             //  Set the default endpoint. This may be changed when the client first connects to the server
-            _currentEndPoint = _endPoints[0];   
+            _currentEndPoint = _endPoints[0];
 
             //  Setup a pool of SocketAsyncEventArgs for sending messages
             _sendEventArgsPool = new SocketAsyncEventArgsPool();
@@ -152,6 +157,11 @@ namespace SocketMeister
             _asyncEventArgsSendSubscriptionChanges.Completed += ProcessSendSubscriptionChanges;
 
             StartBackgroundWorker();
+        }
+
+        private void Ep_ExceptionRaised(object sender, ExceptionEventArgs e)
+        {
+            NotifyTraceEventRaised(e.Exception, e.EventId);
         }
 
         /// <summary>
@@ -506,8 +516,6 @@ namespace SocketMeister
 
         private bool Handshake2AckReceived { get { lock (_handshakeLock) { return _handshake2AckReceived; } } set { lock (_handshakeLock) { _handshake2AckReceived = value; } } }
 
-
-
         private bool IsBackgroundWorkerRunning { get { lock (_lock) { return _isBackgroundWorkerRunning; } } set { lock (_lock) { _isBackgroundWorkerRunning = value; } } }
 
         /// <summary>
@@ -595,7 +603,10 @@ namespace SocketMeister
                         _asyncEventArgsReceive = null;
                     }
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    NotifyTraceEventRaised(ex);
+                }
 
 
 #if !NET35
@@ -643,7 +654,10 @@ namespace SocketMeister
                     {
                         CurrentEndPoint.Socket.Shutdown(SocketShutdown.Send);
                     }
-                    catch { }
+                    catch (Exception ex)
+                    {
+                        NotifyTraceEventRaised(ex);
+                    }
                 }
 
                 //  try another disconnect. It may already be disconnected, so the error will be ignored
@@ -651,7 +665,10 @@ namespace SocketMeister
                 {
                     CurrentEndPoint.Socket.Disconnect(false);
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    NotifyTraceEventRaised(ex);
+                }
 
                 InternalConnectionStatus = ConnectionStatuses.Disconnected;
 
@@ -660,9 +677,11 @@ namespace SocketMeister
                 {
 #if !NET35  // Compiler directive for code which will be compiled to .NET 3.5. This provides a less efficient but workable solution to the desired functional requirements.
                     try { CurrentEndPoint.Socket.Dispose(); }
-                    catch { }
+                    catch (Exception ex)
+                    {
+                        NotifyTraceEventRaised(ex);
+                    }
 #endif
-                    CurrentEndPoint.RecreateSocket();
                 }
             }
             catch (Exception ex)
@@ -671,6 +690,7 @@ namespace SocketMeister
             }
             finally
             {
+                //CurrentEndPoint.RecreateSocket();
                 timer.Stop();
                 string dmsg = $"{nameof(Disconnect)}() took " + timer.ElapsedMilliseconds + " milliseconds.";
                 NotifyTraceEventRaised(dmsg, SeverityType.Information);
@@ -768,6 +788,13 @@ namespace SocketMeister
                         ProcessConnect(null, _asyncEventArgsConnect);
                     }
                 }
+                catch (ObjectDisposedException)
+                {
+                    //  Recreate the socket if it has been displosed
+                    CurrentEndPoint.RecreateSocket();
+                    NotifyTraceEventRaised("Socket recreated", SeverityType.Information);
+                    ConnectInProgress = false;
+                }
                 catch (Exception ex)
                 {
                     NotifyTraceEventRaised(ex);
@@ -801,6 +828,8 @@ namespace SocketMeister
                     Disconnect(SocketHasErrored: false, ClientDisconnectReason.PollingTimeout, msg);
                     return;
                 }
+                NotifyTraceEventRaised($"Sending {typeof(PollingRequestV1).Name} ({_pollingBuffer.Length} bytes)...", SeverityType.Information);
+
                 RestartStopwatch(PollingTimer);
                 _asyncEventArgsPolling.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
                 _asyncEventArgsPolling.SetBuffer(_pollingBuffer, 0, _pollingBuffer.Length);
@@ -826,6 +855,8 @@ namespace SocketMeister
                     if (changesBytes != null)
                     {
                         byte[] sendBytes = MessageEngine.GenerateSendBytes(new TokenChangesRequestV1(changesBytes), false);
+                        NotifyTraceEventRaised($"Sending {typeof(TokenChangesRequestV1).Name} ({sendBytes.Length} bytes)...", SeverityType.Information);
+
                         _asyncEventArgsSendSubscriptionChanges.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
                         _asyncEventArgsSendSubscriptionChanges.SetBuffer(sendBytes, 0, sendBytes.Length);
                         if (!CurrentEndPoint.Socket.SendAsync(_asyncEventArgsSendSubscriptionChanges)) ProcessSendSubscriptionChanges(null, _asyncEventArgsSendSubscriptionChanges);
@@ -939,19 +970,6 @@ namespace SocketMeister
             {
                 ConnectInProgress = false;
             }
-
-            ////  RESET
-            //try
-            //{
-            //    CurrentEndPoint.DontReconnectUntil = DateTime.UtcNow.AddMilliseconds(pauseReconnect + GetThreadSafeRandomNumber(1, 4000));
-            //}
-            //catch (Exception ex)
-            //{
-            //    if (!StopClientPermanently)
-            //    {
-            //        NotifyTraceEventRaised(ex);
-            //    }
-            //}
         }
 
         /// <summary>
@@ -1075,6 +1093,7 @@ namespace SocketMeister
         private void SendResponse(MessageResponseV1 messageResponse, MessageV1 message)
         {
             byte[] sendBytes = MessageEngine.GenerateSendBytes(messageResponse, false);
+            NotifyTraceEventRaised($"Sending MessageResponseV1 {sendBytes.Length} bytes)...", SeverityType.Information);
 
             SocketAsyncEventArgs sendEventArgs;
             while (true)
@@ -1114,7 +1133,6 @@ namespace SocketMeister
                 }
                 Thread.Sleep(200);
             }
-
         }
 
 
@@ -1125,6 +1143,7 @@ namespace SocketMeister
         private void SendFastMessage(IMessage Message)
         {
             byte[] sendBytes = MessageEngine.GenerateSendBytes(Message, false);
+            NotifyTraceEventRaised($"Sending {Message.GetType().Name} ({sendBytes.Length} bytes)...", SeverityType.Information);
 
             if (InternalConnectionStatus != ConnectionStatuses.Connected || !CurrentEndPoint.Socket.Connected) return;
 
@@ -1157,33 +1176,54 @@ namespace SocketMeister
         /// <returns>Nullable array of bytes which was returned from the socket server</returns>
         public byte[] SendMessage(object[] Parameters, int TimeoutMilliseconds = 60000, bool IsLongPolling = false)
         {
-            if (StopClientPermanently) throw new Exception("Message cannot be sent. The socket client is stopped or stopping");
-            if (Parameters == null) throw new ArgumentException("Message parameters cannot be null.", nameof(Parameters));
-            if (Parameters.Length == 0) throw new ArgumentException("At least 1 parameter is required because the message makes no sense.", nameof(Parameters));
+            string msg;
+
+            if (Parameters == null)
+            {
+                msg = $"{nameof(SendMessage)}() failed: Message parameters cannot be null.";
+                ArgumentException ex8 = new ArgumentException(msg, nameof(Parameters));
+                NotifyTraceEventRaised(ex8);
+                throw ex8;
+            }
+            if (Parameters.Length == 0)
+            {
+                msg = $"{nameof(SendMessage)}() failed: At least 1 parameter is required.";
+                ArgumentException ex7 = new ArgumentException(msg, nameof(Parameters));
+                NotifyTraceEventRaised(ex7);
+                throw ex7;
+            }
             DateTime startTime = DateTime.UtcNow;
             DateTime maxWait = startTime.AddMilliseconds(TimeoutMilliseconds);
-            while (ConnectionStatus != ConnectionStatuses.Connected && StopClientPermanently == false)
+            while (ConnectionStatus != ConnectionStatuses.Connected && !StopClientPermanently)
             {
-                Thread.Sleep(200);
-                if (StopClientPermanently) throw new Exception("Message cannot be sent. The socket client is stopped or stopping");
-                if (DateTime.UtcNow > maxWait) throw new TimeoutException();
+                if (StopClientPermanently)
+                {
+                    msg = $"{nameof(SendMessage)}() failed: The socket client is stopped or stopping.";
+                    Exception ex6 = new Exception(msg);
+                    NotifyTraceEventRaised(ex6);
+                    throw ex6;
+                }
+                if (DateTime.UtcNow > maxWait)
+                {
+                    msg = $"{nameof(SendMessage)}() failed: Timeout ({TimeoutMilliseconds} ms).";
+                    TimeoutException ex5 = new TimeoutException(msg);
+                    NotifyTraceEventRaised(ex5);
+                    throw ex5;
+                }
+                Thread.Sleep(100);
             }
             int remainingMilliseconds = TimeoutMilliseconds - Convert.ToInt32((DateTime.UtcNow - startTime).TotalMilliseconds);
-            return SendReceive(new MessageV1(Parameters, remainingMilliseconds, IsLongPolling));
-        }
 
+            //  Create Message
+            MessageV1 message = new MessageV1(Parameters, remainingMilliseconds, IsLongPolling);
 
-        private byte[] SendReceive(MessageV1 message)
-        {
-            if (StopClientPermanently) return null;
-
-            DateTime startTime = DateTime.UtcNow;
+            //  Add the message to the unresponded messages collection
             UnrespondedMessages.Add(message);
 
-            // Generate the sendBytes once outside the loop
+            // Generate the sendBytes
             byte[] sendBytes = MessageEngine.GenerateSendBytes(message, false);
+            NotifyTraceEventRaised($"Parent sending {typeof(MessageV1).Name} ({sendBytes.Length} bytes)...", SeverityType.Information);
 
-            // Improved implementation for .NET 4.0+
             try
             {
                 while (message.TrySendReceive && !StopClientPermanently)
@@ -1216,21 +1256,27 @@ namespace SocketMeister
                     }
                     catch (TimeoutException)
                     {
-                        throw;
+                        msg = $"{nameof(SendMessage)}() failed: Timeout ({message.TimeoutMilliseconds} ms).";
+                        TimeoutException ex4 = new TimeoutException(msg);
+                        NotifyTraceEventRaised(ex4);
+                        throw ex4;
                     }
                     catch (Exception ex)
                     {
                         NotifyTraceEventRaised(ex);
+                        throw;
                     }
-
 #if NET35
                     Thread.Sleep(10); // Poll for response
 #endif
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                throw;
+                msg = $"{nameof(SendMessage)}() failed: {ex.ToString()}";
+                Exception ex3 = new Exception(msg);
+                NotifyTraceEventRaised(ex3);
+                throw ex3;
             }
             finally
             {
@@ -1241,16 +1287,31 @@ namespace SocketMeister
             if (message.Response != null)
             {
                 if (message.Response.Error != null)
-                    throw message.Response.Error;
+                {
+                    msg = $"{nameof(SendMessage)}() failed: {message.Response.Error.ToString()}";
+                    Exception ex2 = new Exception(msg);
+                    NotifyTraceEventRaised(ex2);
+                    throw ex2;
+                }
 
+                // Success. Return the response data.
                 return message.Response.ResponseData;
             }
 
             if (message.Error != null)
-                throw message.Error;
+            {
+                msg = $"{nameof(SendMessage)}() failed: {message.Error.ToString()}";
+                Exception ex1 = new Exception(msg);
+                NotifyTraceEventRaised(ex1);
+                throw ex1;
+            }
 
-            throw new Exception("There was no message response");
+            msg = $"{nameof(SendMessage)}() failed: There was no message response";
+            Exception exception = new Exception(msg);
+            NotifyTraceEventRaised(exception);
+            throw exception;
         }
+
 
 
 
@@ -1341,6 +1402,8 @@ namespace SocketMeister
                     {
                         LastMessageFromServer = DateTime.UtcNow;
 
+                        NotifyTraceEventRaised($"Received {_receiveEngine.MessageType.ToString()} ({e.BytesTransferred} bytes)", SeverityType.Information);
+
                         if (_receiveEngine.MessageType == MessageType.MessageResponseV1)
                         {
                             //  Attempt to find the message this response belongs to and attach the response to the message.
@@ -1379,7 +1442,7 @@ namespace SocketMeister
                             // Note: Validation is performed in BgCompleteHandshake()
                         }
 
-                        else if (_receiveEngine.MessageType == MessageType.SubscriptionChangesResponseV1)
+                        else if (_receiveEngine.MessageType == MessageType.TokenChangesResponseV1)
                         {
                             _subscriptions.ImportTokenChangesResponseV1(_receiveEngine.GetSubscriptionChangesResponseV1());
                             SubscriptionsSendTrigger = true;
@@ -1617,9 +1680,9 @@ namespace SocketMeister
                     Debug.WriteLine(args.Message);
                     if ((ex != null || args.Severity == SeverityType.Error) && ExceptionRaised != null)
                     {
-                        if (ex != null) 
+                        if (ex != null)
                             ExceptionRaised(this, new ExceptionEventArgs(ex, args.EventId));
-                        else 
+                        else
                             ExceptionRaised(this, new ExceptionEventArgs(new Exception(args.Message), args.EventId));
                     }
                     TraceEventRaised?.Invoke(this, args);

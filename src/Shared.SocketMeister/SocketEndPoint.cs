@@ -19,9 +19,15 @@ namespace SocketMeister
         private bool _isDisposed = false;
         private ClientDisconnectReason _lastDisconnectReason = ClientDisconnectReason.Unknown;
         private readonly object _lock = new object();
-        private readonly object _lockSocket = new object();
         private readonly ushort _port = 0;
         private Socket _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        private readonly object _socketLock = new object();
+
+        /// <summary>
+        /// Event raised when an exception occurs
+        /// </summary>
+        public event EventHandler<ExceptionEventArgs> ExceptionRaised;
+
 
         /// <summary>
         /// Default constructor
@@ -39,7 +45,7 @@ namespace SocketMeister
 
             //  In situations where there are multiple endpoints we wan't to randomize the reconnect time so that all endpoints don't try to reconnect at the same time.
             Random random = new Random(Guid.NewGuid().GetHashCode());
-            _dontReconnectUntil = DateTime.Now.AddHours(-(random.Next(10, 2000)));   
+            _dontReconnectUntil = DateTime.Now.AddHours(-(random.Next(10, 2000)));
 
 
             //  TRY TO CREATE IpAddress
@@ -145,54 +151,62 @@ namespace SocketMeister
         /// </summary>
         internal Socket Socket
         {
-            get { lock (_lockSocket) { return _socket; } }
+            get { lock (_socketLock) { return _socket; } }
         }
 
         internal void SetDisconnected(ClientDisconnectReason reason)
         {
-            lock (_lock)
+            try
             {
-                _lastDisconnectReason = reason;
+                //RecreateSocket();
 
-                switch (_lastDisconnectReason)
+                lock (_lock)
                 {
-                    case ClientDisconnectReason.HandshakeTimeout:
-                        _dontReconnectUntil = DateTime.UtcNow.AddSeconds(15);
-                        break;
-                    case ClientDisconnectReason.PollingTimeout:
-                        _dontReconnectUntil = DateTime.UtcNow.AddSeconds(15);
-                        break;
-                    case ClientDisconnectReason.IncompatibleServerVersion:
-                        _dontReconnectUntil = DateTime.UtcNow.AddSeconds(60);
-                        break;
-                    case ClientDisconnectReason.IncompatibleClientVersion:
-                        _dontReconnectUntil = DateTime.UtcNow.AddSeconds(60);
-                        break;
-                    case ClientDisconnectReason.ConnectionReset:
-                        _dontReconnectUntil = DateTime.UtcNow.AddSeconds(10);
-                        break;
-                    case ClientDisconnectReason.SocketError:
-                        _dontReconnectUntil = DateTime.UtcNow.AddSeconds(30);
-                        break;
-                    case ClientDisconnectReason.SocketConnectionRefused:
-                        _dontReconnectUntil = DateTime.UtcNow.AddSeconds(8);
-                        break;
-                    case ClientDisconnectReason.SocketConnectionTimeout:
-                        _dontReconnectUntil = DateTime.UtcNow.AddSeconds(10);
-                        break;
-                    case ClientDisconnectReason.ClientIsStopping:
-                        _dontReconnectUntil = DateTime.MaxValue;    // Do not reconnect
-                        break;
-                    case ClientDisconnectReason.ServerIsStopping:
-                        _dontReconnectUntil = DateTime.UtcNow.AddSeconds(15);
-                        break;
-                    default:
-                        _dontReconnectUntil = DateTime.UtcNow.AddSeconds(10);
-                        break;
+                    _lastDisconnectReason = reason;
+
+                    switch (_lastDisconnectReason)
+                    {
+                        case ClientDisconnectReason.HandshakeTimeout:
+                            _dontReconnectUntil = DateTime.UtcNow.AddSeconds(15);
+                            break;
+                        case ClientDisconnectReason.PollingTimeout:
+                            _dontReconnectUntil = DateTime.UtcNow.AddSeconds(15);
+                            break;
+                        case ClientDisconnectReason.IncompatibleServerVersion:
+                            _dontReconnectUntil = DateTime.UtcNow.AddSeconds(60);
+                            break;
+                        case ClientDisconnectReason.IncompatibleClientVersion:
+                            _dontReconnectUntil = DateTime.UtcNow.AddSeconds(60);
+                            break;
+                        case ClientDisconnectReason.ConnectionReset:
+                            _dontReconnectUntil = DateTime.UtcNow.AddSeconds(10);
+                            break;
+                        case ClientDisconnectReason.SocketError:
+                            _dontReconnectUntil = DateTime.UtcNow.AddSeconds(30);
+                            break;
+                        case ClientDisconnectReason.SocketConnectionRefused:
+                            _dontReconnectUntil = DateTime.UtcNow.AddSeconds(7);
+                            break;
+                        case ClientDisconnectReason.SocketConnectionTimeout:
+                            _dontReconnectUntil = DateTime.UtcNow.AddSeconds(7);
+                            break;
+                        case ClientDisconnectReason.ClientIsStopping:
+                            _dontReconnectUntil = DateTime.MaxValue;    // Do not reconnect
+                            break;
+                        case ClientDisconnectReason.ServerIsStopping:
+                            _dontReconnectUntil = DateTime.UtcNow.AddSeconds(15);
+                            break;
+                        default:
+                            _dontReconnectUntil = DateTime.UtcNow.AddSeconds(10);
+                            break;
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                NotifyExceptionRaised(ex);
+            }
         }
-
 
 
         /// <summary>
@@ -200,11 +214,23 @@ namespace SocketMeister
         /// </summary>
         internal void RecreateSocket()
         {
-            lock (_lockSocket)
+            lock (_socketLock)
             {
                 _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             }
         }
+
+        private void NotifyExceptionRaised(Exception ex)
+        {
+            try
+            {
+                ExceptionRaised?.Invoke(this, new ExceptionEventArgs(ex, 3988));
+            }
+            catch
+            {
+            }
+        }
+
 
     }
 }

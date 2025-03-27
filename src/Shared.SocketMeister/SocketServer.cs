@@ -103,10 +103,10 @@ namespace SocketMeister
                     IsBackground = true
                 };
             }
-            catch 
+            catch
             {
                 _status = SocketServerStatus.Stopped;
-                throw; 
+                throw;
             }
 
         }
@@ -134,7 +134,7 @@ namespace SocketMeister
                 _listener?.Dispose(); // Clean up socket
                 _allDone?.Dispose();
                 ServerStarted?.Dispose();
-               // _connectedClients?.Dispose(); // Ensure clients are disposed
+                // _connectedClients?.Dispose(); // Ensure clients are disposed
             }
         }
 
@@ -145,8 +145,6 @@ namespace SocketMeister
         {
             Dispose(false);
         }
-
-
 
         internal Clients ConnectedClients => _connectedClients;
 
@@ -211,7 +209,7 @@ namespace SocketMeister
 
 
 
-#region Public Methods
+        #region Public Methods
 
         /// <summary>
         /// Send a message to all connected clients. Exceptions will not halt this process, but generate 'ExceptionRaised' events. 
@@ -402,7 +400,7 @@ namespace SocketMeister
                         //  Pause so the client can establish it's receive buffer.
                         //  and this server can also complete setting up buffer
                         //  *** Look for a better solution. i.e retry on Handshake1 (Will require a Handshake1Ack) ***
-                        Thread.Sleep(1000); 
+                        Thread.Sleep(1000);
 
                         //  Send Handshake 1
                         byte[] sendBytes = MessageEngine.GenerateSendBytes(new Handshake1(Constants.SOCKET_MEISTER_VERSION, remoteClient.ClientId.ToString()), _compressSentData);
@@ -417,7 +415,6 @@ namespace SocketMeister
                     {
                         NotifyTraceEventRaised(ex, 5008);
                     }
-
                 });
             }
         }
@@ -485,6 +482,7 @@ namespace SocketMeister
                                 Task.Run(() => BgProcessMessage(message));
                             }
                         }
+
                         else if (receiveEnvelope.MessageType == MessageType.MessageResponseV1)
                         {
                             if (Status == SocketServerStatus.Started)
@@ -493,6 +491,7 @@ namespace SocketMeister
                                 remoteClient.SetMessageResponseInUnrespondedMessages(receiveEnvelope.GetMessageResponseV1());
                             }
                         }
+
                         else if (receiveEnvelope.MessageType == MessageType.ClientDisconnectingNotificationV1)
                         {
                             try
@@ -506,6 +505,7 @@ namespace SocketMeister
                             ClientDisconnectingNotificationV1 msg = receiveEnvelope.GetClientDisconnectingNotificationV1();
                             NotifyTraceEventRaised(new TraceEventArgs(msg.ClientMessage, SeverityType.Information, 2345));
                         }
+
                         else if (receiveEnvelope.MessageType == MessageType.PollingRequestV1)
                         {
                             if (Status == SocketServerStatus.Started)
@@ -523,7 +523,7 @@ namespace SocketMeister
                             }
                         }
 
-                        else if (receiveEnvelope.MessageType == MessageType.SubscriptionChangesNotificationV1)
+                        else if (receiveEnvelope.MessageType == MessageType.TokenChangesRequestV1)
                         {
                             if (Status == SocketServerStatus.Started)
                             {
@@ -548,9 +548,7 @@ namespace SocketMeister
                             NotifyTraceEventRaised(new Exception("ReadCallback() encountered an Unknown message type received (" + receiveEnvelope.MessageType.ToString() + "). The server may be running a newer version of SocketMeister"), 4665);
 
                         }
-
                     }
-
                 }
                 if (remoteClient != null && remoteClient.ClientSocket != null && remoteClient.ClientSocket.Connected == true)
                 {
@@ -712,9 +710,9 @@ namespace SocketMeister
             {
                 try
                 {
-                     TraceEventRaised?.Invoke(this, args);
+                    TraceEventRaised?.Invoke(this, args);
                 }
-                catch 
+                catch
                 {
                     // Ignore any errors in the event handlers
                 }
@@ -736,7 +734,6 @@ namespace SocketMeister
             }
         }
 
-         
 
         internal void IncrementSentTotals(int BytesSent)
         {
