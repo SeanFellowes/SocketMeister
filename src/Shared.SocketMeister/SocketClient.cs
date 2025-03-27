@@ -911,23 +911,23 @@ namespace SocketMeister
                 {
                     //  NOTE: WHEN FAILING OVER UNDER HIGH LOAD, SocketError.TimedOut OCCURS FOR UP TO 120 SECONDS (WORSE CASE)
                     //  BEFORE CONNECTION SUCCESSFULLY COMPLETES. IT'S A BIT ANNOYING BUT I HAVE FOUND NO WORK AROUND.
-                    CurrentEndPoint.SetDisconnected(ClientDisconnectReason.SocketError);
-                    NotifyTraceEventRaised(new Exception("Socket Timeout"));
+                    CurrentEndPoint.SetDisconnected(ClientDisconnectReason.SocketConnectionTimeout);
+                    NotifyTraceEventRaised(new Exception("Connection failed: Socket timeout"));
                 }
                 else if (e.SocketError == SocketError.AddressAlreadyInUse)
                 {
                     CurrentEndPoint.SetDisconnected(ClientDisconnectReason.SocketError);
-                    NotifyTraceEventRaised(new Exception("Socket address already in use"));
+                    NotifyTraceEventRaised(new Exception("Connection failed: Socket address already in use"));
                 }
                 else if (e.SocketError == SocketError.ConnectionRefused)
                 {
                     CurrentEndPoint.SetDisconnected(ClientDisconnectReason.SocketConnectionRefused);
-                    NotifyTraceEventRaised(new Exception($"Connection refused by server {CurrentEndPoint.Description}"));
+                    NotifyTraceEventRaised(new Exception($"Connection failed: Connection refused by server {CurrentEndPoint.Description}"));
                 }
                 else
                 {
                     CurrentEndPoint.SetDisconnected(ClientDisconnectReason.SocketError);
-                    NotifyTraceEventRaised(new Exception("Undefined Socket Error: " + e.SocketError.ToString()));
+                    NotifyTraceEventRaised(new Exception("Connection failed: Undefined Socket Error: " + e.SocketError.ToString()));
                 }
             }
             catch (Exception ex)
@@ -972,7 +972,9 @@ namespace SocketMeister
             }
             if (StopClientPermanently || InternalConnectionStatus != ConnectionStatuses.Connected)
             {
-                NotifyTraceEventRaised(new Exception("Connection reset before Handshake1 received."));
+                traceMsg = $"Connection reset before Handshake1 received.";
+                NotifyTraceEventRaised(new Exception(traceMsg));
+                Disconnect(SocketHasErrored: false, ClientDisconnectReason.ConnectionReset, traceMsg);
                 return;
             }
             if (!Handshake1Received)

@@ -168,14 +168,20 @@ namespace SocketMeister
                     case ClientDisconnectReason.IncompatibleClientVersion:
                         _dontReconnectUntil = DateTime.UtcNow.AddSeconds(60);
                         break;
+                    case ClientDisconnectReason.ConnectionReset:
+                        _dontReconnectUntil = DateTime.UtcNow.AddSeconds(10);
+                        break;
                     case ClientDisconnectReason.SocketError:
                         _dontReconnectUntil = DateTime.UtcNow.AddSeconds(30);
                         break;
                     case ClientDisconnectReason.SocketConnectionRefused:
                         _dontReconnectUntil = DateTime.UtcNow.AddSeconds(8);
                         break;
+                    case ClientDisconnectReason.SocketConnectionTimeout:
+                        _dontReconnectUntil = DateTime.UtcNow.AddSeconds(10);
+                        break;
                     case ClientDisconnectReason.ClientIsStopping:
-                        _dontReconnectUntil = DateTime.UtcNow.AddSeconds(600);
+                        _dontReconnectUntil = DateTime.MaxValue;    // Do not reconnect
                         break;
                     case ClientDisconnectReason.ServerIsStopping:
                         _dontReconnectUntil = DateTime.UtcNow.AddSeconds(15);

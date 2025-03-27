@@ -28,6 +28,11 @@
         IncompatibleClientVersion = 30,
 
         /// <summary>
+        /// Client disconnected because the connection was reset.
+        /// </summary>
+        ConnectionReset = 40,
+
+        /// <summary>
         /// Client is disconnecting due to a socket error
         /// </summary>
         SocketError = 100,
@@ -36,6 +41,11 @@
         /// Socket server is not listening for connections.
         /// </summary>
         SocketConnectionRefused = 101,
+
+        /// <summary>
+        /// Socket timed out during connection attempt.
+        /// </summary>
+        SocketConnectionTimeout = 102,
 
         /// <summary>
         /// Client is disconnecting because the calling program requested it.
