@@ -30,7 +30,7 @@ namespace SocketMeister.Messages
             //  CREATE A LOCAL COPY OF THE LIST
             foreach (TokenChange i in Changes)
             {
-                _changes.Add(new ChangeIdentifier(i.TokenNameUppercase, i.ChangeId));
+                _changes.Add(new ChangeIdentifier(i.TokenNameUppercase, i.ChangeId)); 
             }
         }
 
