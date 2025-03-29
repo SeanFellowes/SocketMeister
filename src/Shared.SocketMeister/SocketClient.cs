@@ -698,9 +698,6 @@ namespace SocketMeister
                     Stopwatch pollingTimer = Stopwatch.StartNew();
                     Stopwatch sendSubscriptionsTimer = Stopwatch.StartNew();
 
-                    ////  FLAG ALL SUBSCRIPTIONS (Tokens) FOR SENDING TO THE SERVER
-                    //_subscriptions.FlagAllAfterSocketConnect();
-
                     while (!StopClientPermanently)
                     {
                         switch (InternalConnectionStatus)

@@ -18,7 +18,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Messages\Handshake2Ack.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\TokenChangesRequestV1.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\TokenChangesResponseV1.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SocketClientLogger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Logger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UnrespondedMessageCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SocketAsyncEventArgsPool.cs" />
