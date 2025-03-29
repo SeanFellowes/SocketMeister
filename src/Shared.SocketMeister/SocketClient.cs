@@ -698,6 +698,9 @@ namespace SocketMeister
         }
 
 
+        /// <summary>
+        /// This background thread runs until the SocketClient is stopped
+        /// </summary>
         private void StartBackgroundWorker()
         {
             Thread bgWorker = new Thread(new ThreadStart(delegate
@@ -708,8 +711,8 @@ namespace SocketMeister
                     Stopwatch pollingTimer = Stopwatch.StartNew();
                     Stopwatch sendSubscriptionsTimer = Stopwatch.StartNew();
 
-                    //  FLAG ALL SUBSCRIPTIONS (Tokens) FOR SENDING TO THE SERVER
-                    _subscriptions.FlagAllAfterSocketConnect();
+                    ////  FLAG ALL SUBSCRIPTIONS (Tokens) FOR SENDING TO THE SERVER
+                    //_subscriptions.FlagAllAfterSocketConnect();
 
                     while (!StopClientPermanently)
                     {
@@ -851,7 +854,7 @@ namespace SocketMeister
                 {
                     RestartStopwatch(sendSubscriptionsTimer);
                     SubscriptionsSendTrigger = false;
-                    byte[] changesBytes = _subscriptions.GetChangeBytes();
+                    byte[] changesBytes = _subscriptions.SerializeTokenChanges();
                     if (changesBytes != null)
                     {
                         byte[] sendBytes = MessageEngine.GenerateSendBytes(new TokenChangesRequestV1(changesBytes), false);
@@ -1026,7 +1029,7 @@ namespace SocketMeister
             }
 
             //  SEND Handshake2 TO THE SERVER
-            SendFastMessage(new Handshake2(Constants.SOCKET_MEISTER_VERSION, FriendlyName, _subscriptions.Serialize(), isServerVersionSupported));
+            SendFastMessage(new Handshake2(Constants.SOCKET_MEISTER_VERSION, FriendlyName, _subscriptions.SerializeTokens(), isServerVersionSupported));
 
             //  WAIT TO RECEIVE A Handshake2Ack MESSAGE FROM THE SERVER
             while (DateTime.UtcNow < timeout && !Handshake2AckReceived && !StopClientPermanently && InternalConnectionStatus == ConnectionStatuses.Connected)

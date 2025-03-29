@@ -11,6 +11,8 @@ namespace SocketMeister
 {
     class SocketClientLogger
     {
+        private readonly TimeSpan _flushInterval = TimeSpan.FromMilliseconds(250);
+
 #if NET35
         public SocketClientLogger()
         {
@@ -19,7 +21,6 @@ namespace SocketMeister
 
         private readonly ConcurrentQueue<LogEntry> _logQueue = new ConcurrentQueue<LogEntry>();
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
-        private readonly TimeSpan _flushInterval = TimeSpan.FromMilliseconds(250);
 
         public SocketClientLogger()
         {

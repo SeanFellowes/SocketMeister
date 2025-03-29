@@ -42,7 +42,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)SocketServer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SocketServer.Events.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TokenChange.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)TokenChangeCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TokenCollectionReadOnly.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Token.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TokenCollection.cs" />

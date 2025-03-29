@@ -16,8 +16,8 @@ namespace SocketMeister
     internal class TokenCollection
 #endif
     {
-        private readonly TokenChangeCollection _changes;
-        private readonly Dictionary<string, Token> _tokenDictionary = new Dictionary<string, Token>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, Token> _dictTokens = new Dictionary<string, Token>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, TokenChange> _dictTokenChanges = new Dictionary<string, TokenChange>();
         private readonly object _lock = new object();
 
         /// <summary>
@@ -25,7 +25,6 @@ namespace SocketMeister
         /// </summary>
         public TokenCollection()
         {
-            _changes = new TokenChangeCollection(this);
         }
 
         /// <summary>
@@ -57,7 +56,7 @@ namespace SocketMeister
                 lock (_lock)
                 {
                     Token fnd;
-                    _tokenDictionary.TryGetValue(Name.ToUpper(CultureInfo.InvariantCulture), out fnd);
+                    _dictTokens.TryGetValue(Name.ToUpper(CultureInfo.InvariantCulture), out fnd);
                     return fnd;
                 }
             }
@@ -67,7 +66,7 @@ namespace SocketMeister
         /// <summary>
         /// Number of tokens in the token collection
         /// </summary>
-        public int Count { get { lock (_lock) { return _tokenDictionary.Count; } } }
+        public int Count { get { lock (_lock) { return _dictTokens.Count; } } }
 
 
         /// <summary>
@@ -80,26 +79,38 @@ namespace SocketMeister
 
             lock (_lock)
             {
-                _tokenDictionary.Add(Token.Name.ToUpper(CultureInfo.InvariantCulture), Token);
+                _dictTokens.Add(Token.Name.ToUpper(CultureInfo.InvariantCulture), Token);
                 Token.Changed += Token_Changed;
+                AddTokenChange(TokenAction.Add, Token);
             }
             TokenAdded?.Invoke(Token, new EventArgs());
         }
 
-
-        /// <summary>
-        /// After a socket connects, all tokens are sent to the other side.
-        /// </summary>
-        internal void FlagAllAfterSocketConnect()
+        private void AddTokenChange(TokenAction Action, Token Token)
         {
-            _changes.FlagAllAfterSocketConnect();
+            if (Token == null) throw new ArgumentException("Token cannot be null", nameof(Token));
+
+            TokenChange foundTokenChange;
+            lock (_lock)
+            {
+                _dictTokenChanges.TryGetValue(Token.Name.ToUpper(CultureInfo.InvariantCulture), out foundTokenChange);
+
+                //  IF EXISTING TokenChange EXISTS, DELETE IT
+                _dictTokenChanges.Remove(Token.Name.ToUpper(CultureInfo.InvariantCulture));
+
+                //  ADD IT BACK IN
+                if (Action == TokenAction.Delete)
+                    _dictTokenChanges.Add(Token.Name.ToUpper(CultureInfo.InvariantCulture), new TokenChange(Action, Token.Name, null));
+                else
+                    _dictTokenChanges.Add(Token.Name.ToUpper(CultureInfo.InvariantCulture), new TokenChange(Action, Token.Name, Token));
+            }
         }
 
         /// <summary>
-        /// Returns the byte array of all tokens
+        /// Serializes all tokens
         /// </summary>
         /// <returns>byte array of the tokens in the collection</returns>
-        internal byte[] Serialize()
+        internal byte[] SerializeTokens()
         {
             List<Token> alltokens = ToList();
 
@@ -120,19 +131,61 @@ namespace SocketMeister
             }
         }
 
+
         /// <summary>
-        /// Returns the byte array of all token changes
+        /// Serializes token changes. If there are no changes, returns null.
         /// </summary>
-        /// <returns></returns>
-        internal byte[] GetChangeBytes()
+        /// <returns>If there are no changes, returns null</returns>
+        public byte[] SerializeTokenChanges()
         {
-            return _changes.Serialize();
+            lock (_lock)
+            {
+                if (_dictTokenChanges.Count == 0) return null;
+
+                using (BinaryWriter writer = new BinaryWriter(new MemoryStream()))
+                {
+                    writer.Write(_dictTokenChanges.Count);
+
+                    foreach (KeyValuePair<string, TokenChange> kvp in _dictTokenChanges)
+                    {
+                        writer.Write(kvp.Key);                  //  NAME
+
+                        writer.Write(kvp.Value.ChangeId);       //  CHANGE ID
+                        writer.Write((short)kvp.Value.Action);  //  ACTION
+
+                        if (kvp.Value.Action == TokenAction.Add || kvp.Value.Action == TokenAction.Modify)
+                        {
+                            kvp.Value.Token.Serialize(writer);  //  TOKEN
+                        }
+                    }
+
+                    using (BinaryReader reader = new BinaryReader(writer.BaseStream))
+                    {
+                        reader.BaseStream.Position = 0;
+                        return reader.ReadBytes(Convert.ToInt32(reader.BaseStream.Length));
+                    }
+                }
+            }
         }
 
 
+        /// <summary>
+        /// Processes a TokenChangesResponseV1 response from the server. 
+        /// Delete the token changes contained in the TokenChangesResponseV1 response from the server
+        /// because the server has accepted the changes.
+        /// </summary>
+        /// <param name="Response">THe response returned to the client from the server</param>
         internal void ImportTokenChangesResponseV1(TokenChangesResponseV1 Response)
         {
-            _changes.ImportTokenChangesResponseV1(Response);
+            lock (_lock)
+            {
+                foreach (TokenChangesResponseV1.ChangeIdentifier i in Response.ChangeIdentifiers)
+                {
+                    TokenChange fnd;
+                    _dictTokenChanges.TryGetValue(i.TokenNameUppercase, out fnd);
+                    if (fnd != null && fnd.ChangeId == i.ChangeId) _dictTokenChanges.Remove(i.TokenNameUppercase);
+                }
+            }
         }
 
 
@@ -148,7 +201,7 @@ namespace SocketMeister
             Token fnd = null;
             lock (_lock)
             {
-                _tokenDictionary.TryGetValue(Name.ToUpper(CultureInfo.InvariantCulture), out fnd);
+                _dictTokens.TryGetValue(Name.ToUpper(CultureInfo.InvariantCulture), out fnd);
             }
 
             if (fnd != null)
@@ -157,8 +210,9 @@ namespace SocketMeister
 
                 lock (_lock)
                 {
-                    _tokenDictionary.Remove(Name.ToUpper(CultureInfo.InvariantCulture));
+                    _dictTokens.Remove(Name.ToUpper(CultureInfo.InvariantCulture));
                 }
+                AddTokenChange(TokenAction.Delete, fnd);
                 TokenDeleted?.Invoke(fnd, new EventArgs());
             }
             return fnd;
@@ -172,7 +226,7 @@ namespace SocketMeister
         {
             lock (_lock)
             {
-                return _tokenDictionary.Values.ToList();
+                return _dictTokens.Values.ToList();
             }
         }
 
@@ -184,13 +238,15 @@ namespace SocketMeister
         {
             lock (_lock)
             {
-                return _tokenDictionary.Values.Select(t => t.Name).ToList();
+                return _dictTokens.Values.Select(t => t.Name).ToList();
             }
         }
 
 
         private void Token_Changed(object sender, EventArgs e)
         {
+            Token t = (Token)sender;
+            AddTokenChange(TokenAction.Modify, t);
             TokenChanged?.Invoke(sender, e);
         }
     }
