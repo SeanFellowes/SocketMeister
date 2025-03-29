@@ -39,7 +39,6 @@ namespace SocketMeister
             TokenNameUppercase = TokenName.ToUpper(CultureInfo.InvariantCulture);
             this.Token = Token;
         }
-
     }
 
 }

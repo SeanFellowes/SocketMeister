@@ -126,10 +126,6 @@ namespace SocketMeister
             if (!string.IsNullOrEmpty(friendlyName)) _friendlyName = friendlyName;
             _receiveEngine = new MessageEngine(EnableCompression);
 
-            _subscriptions.TokenAdded += Subscriptions_AddChangedDeleted;
-            _subscriptions.TokenChanged += Subscriptions_AddChangedDeleted;
-            _subscriptions.TokenDeleted += Subscriptions_AddChangedDeleted;
-
             foreach (SocketEndPoint ep in _endPoints)
             {
                 ep.ExceptionRaised += Ep_ExceptionRaised;
@@ -290,13 +286,6 @@ namespace SocketMeister
         ~SocketClient()
         {
             Dispose(false);
-        }
-
-
-
-        private void Subscriptions_AddChangedDeleted(object sender, EventArgs e)
-        {
-            SubscriptionsSendTrigger = true;
         }
 
 
@@ -534,8 +523,6 @@ namespace SocketMeister
         /// The number of subscriptions for this client
         /// </summary>
         public int SubscriptionCount => _subscriptions.Count;
-
-        private bool SubscriptionsSendTrigger { get { lock (_lock) { return _subscriptionsSendTrigger; } } set { lock (_lock) { _subscriptionsSendTrigger = value; } } }
 
         /// <summary>
         /// Messages sent to the server in which there has been no response
@@ -850,10 +837,9 @@ namespace SocketMeister
             try
             {
                 //  SEND SUBSCRIPTION CHANGES
-                if (SubscriptionsSendTrigger == true)
+                if (_subscriptions.Changed)
                 {
                     RestartStopwatch(sendSubscriptionsTimer);
-                    SubscriptionsSendTrigger = false;
                     byte[] changesBytes = _subscriptions.SerializeTokenChanges();
                     if (changesBytes != null)
                     {
@@ -937,9 +923,6 @@ namespace SocketMeister
 
                     //  Internally, we are connected, but ConnectionStatus property must continue to show Connecting until handshake is completed.
                     InternalConnectionStatus = ConnectionStatuses.Connected;
-
-                    //  IF SUBSCRIPTIONS EXIST, SEND THEM
-                    if (SubscriptionCount > 0) SubscriptionsSendTrigger = true;
                 }
                 else if (e.SocketError == SocketError.TimedOut)
                 {
@@ -1079,10 +1062,6 @@ namespace SocketMeister
         {
             if (StopClientPermanently == true) return;  //  Don't allow this to run more than once
             StopClientPermanently = true;
-
-            _subscriptions.TokenAdded -= Subscriptions_AddChangedDeleted;
-            _subscriptions.TokenChanged -= Subscriptions_AddChangedDeleted;
-            _subscriptions.TokenDeleted -= Subscriptions_AddChangedDeleted;
 
             Disconnect(SocketHasErrored: false, ClientDisconnectReason.ClientIsStopping, "Client is stopping (Requested by calling program).");
 
@@ -1447,8 +1426,11 @@ namespace SocketMeister
 
                         else if (_receiveEngine.MessageType == MessageType.TokenChangesResponseV1)
                         {
-                            _subscriptions.ImportTokenChangesResponseV1(_receiveEngine.GetSubscriptionChangesResponseV1());
-                            SubscriptionsSendTrigger = true;
+                            TokenChangesResponseV1 tcr1 = _receiveEngine.GetSubscriptionChangesResponseV1();
+                            foreach (TokenChangesResponseV1.ChangeIdentifier i in tcr1.ChangeIdentifiers)
+                            {
+                                _subscriptions.RemoveChange(i.TokenNameUppercase, i.ChangeId);
+                            }
                         }
 
                         else if (_receiveEngine.MessageType == MessageType.BroadcastV1)

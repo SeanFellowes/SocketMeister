@@ -16,6 +16,7 @@ namespace SocketMeister
     internal class TokenCollection
 #endif
     {
+        private bool _changed;
         private readonly Dictionary<string, Token> _dictTokens = new Dictionary<string, Token>(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, TokenChange> _dictTokenChanges = new Dictionary<string, TokenChange>();
         private readonly object _lock = new object();
@@ -26,21 +27,6 @@ namespace SocketMeister
         public TokenCollection()
         {
         }
-
-        /// <summary>
-        /// Raised when a token value has added (Token is the source).
-        /// </summary>
-        public event EventHandler<EventArgs> TokenAdded;
-
-        /// <summary>
-        /// Raised when a token value has changed (Token is the source).
-        /// </summary>
-        public event EventHandler<EventArgs> TokenChanged;
-
-        /// <summary>
-        /// Raised when a token value was deleted (Token is the source).
-        /// </summary>
-        public event EventHandler<EventArgs> TokenDeleted;
 
         /// <summary>
         /// Indexed search returning the token or null, for a given token name.
@@ -60,6 +46,14 @@ namespace SocketMeister
                     return fnd;
                 }
             }
+        }
+
+        /// <summary>
+        /// Whether changes have been made to the token collection
+        /// </summary>
+        public bool Changed
+        {
+            get { lock (_lock) { return _changed; } }
         }
 
 
@@ -83,27 +77,32 @@ namespace SocketMeister
                 Token.Changed += Token_Changed;
                 AddTokenChange(TokenAction.Add, Token);
             }
-            TokenAdded?.Invoke(Token, new EventArgs());
         }
 
+        /// <summary>
+        /// Adds a token to the collection. If the token already exists, it will be replaced.
+        /// This must be called within a lock.
+        /// </summary>
+        /// <param name="Action">Add/Modify/Delete</param>
+        /// <param name="Token">Token affected</param>
+        /// <exception cref="ArgumentException">Token must not be null</exception>
         private void AddTokenChange(TokenAction Action, Token Token)
         {
             if (Token == null) throw new ArgumentException("Token cannot be null", nameof(Token));
 
             TokenChange foundTokenChange;
-            lock (_lock)
-            {
-                _dictTokenChanges.TryGetValue(Token.Name.ToUpper(CultureInfo.InvariantCulture), out foundTokenChange);
+            _dictTokenChanges.TryGetValue(Token.Name.ToUpper(CultureInfo.InvariantCulture), out foundTokenChange);
 
-                //  IF EXISTING TokenChange EXISTS, DELETE IT
-                _dictTokenChanges.Remove(Token.Name.ToUpper(CultureInfo.InvariantCulture));
+            //  If the token has already been changed, remove it from the list
+            _dictTokenChanges.Remove(Token.Name.ToUpper(CultureInfo.InvariantCulture));
 
-                //  ADD IT BACK IN
-                if (Action == TokenAction.Delete)
-                    _dictTokenChanges.Add(Token.Name.ToUpper(CultureInfo.InvariantCulture), new TokenChange(Action, Token.Name, null));
-                else
-                    _dictTokenChanges.Add(Token.Name.ToUpper(CultureInfo.InvariantCulture), new TokenChange(Action, Token.Name, Token));
-            }
+            //  Add the token to the list
+            if (Action == TokenAction.Delete)
+                _dictTokenChanges.Add(Token.Name.ToUpper(CultureInfo.InvariantCulture), new TokenChange(Action, Token.Name, null));
+            else
+                _dictTokenChanges.Add(Token.Name.ToUpper(CultureInfo.InvariantCulture), new TokenChange(Action, Token.Name, Token));
+
+            _changed = true;
         }
 
         /// <summary>
@@ -170,26 +169,6 @@ namespace SocketMeister
 
 
         /// <summary>
-        /// Processes a TokenChangesResponseV1 response from the server. 
-        /// Delete the token changes contained in the TokenChangesResponseV1 response from the server
-        /// because the server has accepted the changes.
-        /// </summary>
-        /// <param name="Response">THe response returned to the client from the server</param>
-        internal void ImportTokenChangesResponseV1(TokenChangesResponseV1 Response)
-        {
-            lock (_lock)
-            {
-                foreach (TokenChangesResponseV1.ChangeIdentifier i in Response.ChangeIdentifiers)
-                {
-                    TokenChange fnd;
-                    _dictTokenChanges.TryGetValue(i.TokenNameUppercase, out fnd);
-                    if (fnd != null && fnd.ChangeId == i.ChangeId) _dictTokenChanges.Remove(i.TokenNameUppercase);
-                }
-            }
-        }
-
-
-        /// <summary>
         /// Removes a token from the dictionary
         /// </summary>
         /// <param name="Name">Name of the token (Case insensitive)</param>
@@ -211,12 +190,33 @@ namespace SocketMeister
                 lock (_lock)
                 {
                     _dictTokens.Remove(Name.ToUpper(CultureInfo.InvariantCulture));
+                    AddTokenChange(TokenAction.Delete, fnd);
                 }
-                AddTokenChange(TokenAction.Delete, fnd);
-                TokenDeleted?.Invoke(fnd, new EventArgs());
             }
             return fnd;
         }
+
+
+        /// <summary>
+        /// Removes a token change from the collection of the token name exists and the ChangeId 
+        /// matches the current ChangeId of the change. 
+        /// If there are no more changes, the changed flag is set to false.
+        /// </summary>
+        /// <param name="TokenName">Name property of the token</param>
+        /// <param name="ChangeId">Change identifyer</param>
+        public void RemoveChange(string TokenName, int ChangeId)
+        {
+            lock (_lock)
+            {
+                TokenChange fnd;
+                _dictTokenChanges.TryGetValue(TokenName.ToUpper(), out fnd);
+                if (fnd != null && fnd.ChangeId == ChangeId) _dictTokenChanges.Remove(TokenName.ToUpper());
+
+                //  If there are no more changes, set the changed flag to false
+                if (_dictTokenChanges.Count == 0) _changed = false;
+            }
+        }
+
 
         /// <summary>
         /// Returns a list of all the tokens in the collection
@@ -246,8 +246,12 @@ namespace SocketMeister
         private void Token_Changed(object sender, EventArgs e)
         {
             Token t = (Token)sender;
-            AddTokenChange(TokenAction.Modify, t);
-            TokenChanged?.Invoke(sender, e);
+
+            //  AddTokenCHange must be called within a lock
+            lock (_lock)
+            {
+                AddTokenChange(TokenAction.Modify, t);
+            }
         }
     }
 }
