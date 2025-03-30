@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using SocketMeister;
 
 namespace SocketMeister.Test
 {
@@ -21,16 +22,16 @@ namespace SocketMeister.Test
 
         public LogEntry() { }
 
-        public LogEntry(string source, string message, SeverityType severity, int eventId, string stacktrace = null)
+        public LogEntry(string source, string message, Severity severity, int eventId, string stacktrace = null)
         {
             timeStamp = DateTime.UtcNow;
             this.source = source;
             this.message = message;
             stackTrace = stacktrace;
             if (eventId != 0) this.eventId = eventId.ToString();
-            if (severity == SeverityType.Error) this.severity = "Error";
-            else if (severity == SeverityType.Information) this.severity = "Information";
-            else if (severity == SeverityType.Warning) this.severity = "Warning";
+            if (severity == SocketMeister.Severity.Error) this.severity = "Error";
+            else if (severity == SocketMeister.Severity.Information) this.severity = "Information";
+            else if (severity == SocketMeister.Severity.Warning) this.severity = "Warning";
             NotifyPropertyChanged("TimeStamp");
             NotifyPropertyChanged("Source");
             NotifyPropertyChanged("EventId");

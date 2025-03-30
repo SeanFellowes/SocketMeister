@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interop;
 using System.Windows.Media;
+using SocketMeister;
 
 namespace SocketMeister.MiniTestClient
 {
@@ -14,9 +15,9 @@ namespace SocketMeister.MiniTestClient
     {
         private readonly int _messageId;
         private readonly string _displayText;
-        private readonly SeverityType severity;
+        private readonly Severity severity;
 
-        public ResponseReceived(SeverityType severity, int MessageId, string displayText)
+        public ResponseReceived(Severity severity, int MessageId, string displayText)
         {
             this.severity = severity;
             _displayText = displayText;
@@ -25,7 +26,7 @@ namespace SocketMeister.MiniTestClient
 
         public int MessageId => _messageId;
         public string DisplayText => _displayText;
-        public SeverityType Severity => severity;
+        public Severity Severity => severity;
     }
 
 
@@ -69,7 +70,7 @@ namespace SocketMeister.MiniTestClient
         /// </summary>
         public event EventHandler<EventArgs> ServerStopping;
 
-        public event EventHandler<TraceEventArgs> TraceEventReceived;
+        public event EventHandler<LogEventArgs> LogRaised;
 
 
         public ClientControl()
@@ -180,7 +181,7 @@ namespace SocketMeister.MiniTestClient
 
                         Dispatcher.BeginInvoke((Action)(() =>
                         {
-                            ResponseReceived?.Invoke(this, new ResponseReceived(SeverityType.Information, 0, msg));
+                            ResponseReceived?.Invoke(this, new ResponseReceived(Severity.Information, 0, msg));
                             _messagesSent++;
                             tbRequestsSent.Text = _messagesSent.ToString();
                         }));
@@ -216,11 +217,12 @@ namespace SocketMeister.MiniTestClient
             _client.ServerStopping += Client_ServerStopping;
             _client.BroadcastReceived += Client_BroadcastReceived;
 #if !VERSION4
-            _client.TraceEventRaised += Client_TraceEventRaised;
+            _client.LogRaised += _client_LogRaised;
 #endif
 
             tbPort.Text = _client.CurrentEndPoint.Port.ToString();
         }
+
 
         public void Stop()
         {
@@ -288,13 +290,14 @@ namespace SocketMeister.MiniTestClient
             }));
         }
 
-        private void Client_TraceEventRaised(object sender, TraceEventArgs e)
+        private void _client_LogRaised(object sender, LogEventArgs e)
         {
             Dispatcher.BeginInvoke((Action)(() =>
             {
-                if (cbTrace.IsChecked == true) TraceEventReceived?.Invoke(this, e);
+                if (cbTrace.IsChecked == true) LogRaised?.Invoke(this, e);
             }));
         }
+
 
 
         private void BtnSendMessage_Click(object sender, RoutedEventArgs e)

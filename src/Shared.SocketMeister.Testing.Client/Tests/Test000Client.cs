@@ -23,13 +23,13 @@ namespace SocketMeister.Testing.Tests
                 for (int r = 0; r < 5; r++)
                 {
                     PercentComplete = Convert.ToInt32(((r + 1.0) / 20) * 100.0);
-                    RaiseTraceEventRaised("Loop " + r.ToString(), SeverityType.Information, 1);
+                    RaiseTraceEventRaised("Loop " + r.ToString(), Severity.Information, 1);
 
                     //  IS THIS TO BE STOPPED?
                     if (Status == TestStatus.Stopping)
                     {
                         Status = TestStatus.Stopped;
-                        RaiseTraceEventRaised("Test was stopped before completing", SeverityType.Information, 1);
+                        RaiseTraceEventRaised("Test was stopped before completing", Severity.Information, 1);
                         return;
                     }
 
@@ -40,7 +40,7 @@ namespace SocketMeister.Testing.Tests
                 //throw new FieldAccessException("Bad things hewflkm welfkm ewlkfm welfkmlm Error regfergergregreg erg reg reg re greg re greg re gtsrh yrthjtyfj tyj jy tyfju ytfj ytj ytj tydj tydj dtyjdcfth dfyjcgjy cfyj cgjy ycjvgukgyukyfutkjg fyuk ftyj fyuk ftyjt dyh t");
 
                 Status = TestStatus.Successful;
-                RaiseTraceEventRaised("Test completed successfully", SeverityType.Information, 1);
+                RaiseTraceEventRaised("Test completed successfully", Severity.Information, 1);
 
             }
             catch (Exception ex)

@@ -303,7 +303,7 @@ namespace SocketMeister.Test
                 lblTraceLog.Text = "Trace Log:" + gridItems.Count;
                 lblTraceLog.Refresh();
 
-                if (args.Severity == SeverityType.Error)
+                if (args.Severity == Severity.Error)
                 {
                     _errorCount++;
                     lblErrors.Text = "Errors: " + _errorCount.ToString(); ;

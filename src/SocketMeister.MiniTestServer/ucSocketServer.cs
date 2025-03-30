@@ -170,7 +170,7 @@ namespace SocketMeister
 
         private void Server_TraceEventRaised(object sender, TraceEventArgs e)
         {
-            if (e.Severity == SeverityType.Error)
+            if (e.Severity == Severity.Error)
             {
                 LogEventRaised?.Invoke(this, new LogEventArgs(new Exception(e.Message), "Server #" + ServerId.ToString(), "-"));
             }
@@ -192,9 +192,9 @@ namespace SocketMeister
             byte[] receivedBytes = (byte[])e.Parameters[1];
             string msgRec = Encoding.UTF8.GetString(receivedBytes, 0, receivedBytes.Length);
             if (msgRec.Length > 60)
-                LogEventRaised?.Invoke(this, new LogEventArgs(SeverityType.Information, "Server #" + ServerId.ToString(), "Client " + clientId, "MessageReceived: " + msgRec.Substring(0, 60) + "..."));
+                LogEventRaised?.Invoke(this, new LogEventArgs(Severity.Information, "Server #" + ServerId.ToString(), "Client " + clientId, "MessageReceived: " + msgRec.Substring(0, 60) + "..."));
             else
-                LogEventRaised?.Invoke(this, new LogEventArgs(SeverityType.Information, "Server #" + ServerId.ToString(), "Client " + clientId, "MessageReceived: " + msgRec));
+                LogEventRaised?.Invoke(this, new LogEventArgs(Severity.Information, "Server #" + ServerId.ToString(), "Client " + clientId, "MessageReceived: " + msgRec));
 
             //  Simulate Processing Time
             int msProcessing;
@@ -300,7 +300,7 @@ namespace SocketMeister
             foreach (SocketServer.Client client in items)
             {
                 object[] parms = { bytes };
-                tasks.Add(Task.Run(() =>
+                tasks.Add(Task.Run((Action)(() =>
                 {
                     try
                     {
@@ -309,13 +309,13 @@ namespace SocketMeister
                     catch (Exception e)
                     {
                         LogEventRaised?.Invoke(this, new LogEventArgs(
-                            SeverityType.Warning,
+                            (SocketMeister.Severity)SocketMeister.Severity.Warning,
                             $"Server #{ServerId}",
                             "Client",
                             $"Error: {e}"
                         ));
                     }
-                }));
+                })));
             }
 
             // Wait for all the SendMessage tasks to complete
@@ -328,7 +328,7 @@ namespace SocketMeister
             if (raiseLogOnResponse)
             {
                 LogEventRaised?.Invoke(this, new LogEventArgs(
-                    SeverityType.Information,
+                    Severity.Information,
                     $"Server #{ServerId}",
                     $"Server #{ServerId}",
                     $"Completed 'Send Message (Wait for Response)'"

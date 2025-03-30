@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SocketMeister.Messages;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
@@ -12,7 +13,7 @@ namespace SocketMeister
     /// This logger is thread safe. It reduces the number of background threads used for raising
     /// logging events by batching log entries and processing them in a single background thread.
     /// </summary>
-    class Logger : IDisposable
+    public class Logger : IDisposable
     {
         private bool _disposed = false;
         private readonly object _lock = new object();
@@ -23,7 +24,7 @@ namespace SocketMeister
         /// <summary>
         /// Raised when a log entry has been added.
         /// </summary>
-        public event EventHandler<TraceEventArgs> LogRaised;
+        public event EventHandler<LogEventArgs> LogRaised;
 
         public Logger()
         {
@@ -46,7 +47,6 @@ namespace SocketMeister
             }));
             bgWorker.IsBackground = true;
             bgWorker.Start();
-
         }
 
 
@@ -87,14 +87,10 @@ namespace SocketMeister
 
         private bool StopPermanently { get { lock (_stopPermanentlyLock) { return _stopPermanently; } } set { lock (_stopPermanentlyLock) { _stopPermanently = value; } } }
 
-        public void Log(string message, Severity level)
+
+        public void Log(LogEntry logEntry)
         {
-            _logQueue.Enqueue(new LogEntry
-            {
-                Timestamp = DateTime.UtcNow,
-                Message = message,
-                Level = level
-            });
+            _logQueue.Enqueue(logEntry);
         }
 
 
@@ -118,8 +114,7 @@ namespace SocketMeister
                 // Emit the log entries. This could be an event invocation or direct logging.
                 foreach (var entry in batch)
                 {
-                    // For example, raise an event or write to a file/console.
-                    Console.WriteLine($"[{entry.Timestamp:O}] {entry.Level}: {entry.Message}");
+                    LogRaised?.Invoke(this, new LogEventArgs(entry.Message, entry.Severity, entry.EventType));
                 }
             }
         }
@@ -131,125 +126,71 @@ namespace SocketMeister
         public void Stop()
         {
             StopPermanently = true;
+            //  Pause to allow the background thread to stop
+            Thread.Sleep(500);
         }
-
-
-
     }
 
+    /// <summary>
+    /// Log entry details
+    /// </summary>
     public class LogEntry
     {
-        public DateTime Timestamp { get; set; }
-        public string Message { get; set; }
-        public Severity Level { get; set; }
-    }
-
-    public enum Severity
-    {
-        Info,
-        Warning,
-        Error
-    }
-
-    public class LogEventArgs : EventArgs
-    {
-        private readonly int _eventId;
+        private readonly LogEventType _eventType;
+        private readonly long _messageId;
         private readonly string _message;
-        private readonly Severity _severity;
-        private readonly string _source;
-        private readonly string _stackTrace;
+        private readonly Severity _severity = Severity.Information;
+        private readonly DateTime _timeStamp = DateTime.UtcNow;
 
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="message">Message describing the trace event</param>
-        /// <param name="severity">Severity of the trace event.</param>
-        /// <param name="eventId">Event identifier for this trace event. Useful if writing this to the Windows Event Log (Or equivalent).</param>
-        public LogEventArgs(string message, Severity severity, int eventId)
-        {
-            this._message = message;
-            this._severity = severity;
-            this._eventId = eventId;
-            _source = null;
-            _stackTrace = null;
-        }
+        /// <param name="exception">Exception</param>
+        public LogEntry(Exception exception)
+            : this (exception, 0) { }
 
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="message">Message describing the trace event</param>
-        /// <param name="severity">Severity of the trace event.</param>
-        /// <param name="eventId">Event identifier for this trace event. Useful if writing this to the Windows Event Log (Or equivalent).</param>
-        /// <param name="source">Source of the trace event.</param>
-        public LogEventArgs(string message, Severity severity, int eventId, string source)
+        /// <param name="exception">Exception</param>
+        /// <param name="messageId">SocketMeister message id this relates to</param>
+        public LogEntry(Exception exception, long messageId)
         {
-            this._message = message;
-            this._severity = severity;
-            this._eventId = eventId;
-            this._source = source;
-            _stackTrace = null;
-        }
-
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="exception">Exception which occured.</param>
-        /// <param name="eventId">Event identifier for this trace event. Useful if writing this to the Windows Event Log (Or equivalent).</param>
-        public LogEventArgs(Exception exception, int eventId)
-        {
-            if (exception == null)
-            {
-                throw new ArgumentNullException(nameof(exception));
-            }
-
-            _message = exception.Message;
+            _eventType = LogEventType.Exception;
+            _message = exception.ToString();
+            _messageId = messageId;
             _severity = Severity.Error;
-            this._eventId = eventId;
-            _source = null;
-            if (exception.StackTrace != null) _stackTrace = exception.StackTrace;
         }
 
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="exception">Exception which occured.</param>
-        /// <param name="eventId">Event identifier for this trace event. Useful if writing this to the Windows Event Log (Or equivalent).</param>
-        /// <param name="source">Source of the trace event.</param>
-        public LogEventArgs(Exception exception, int eventId, string source)
-        {
-            if (exception == null) throw new ArgumentNullException(nameof(exception));
+        /// <param name="message">Message</param>
+        /// <param name="severity">Severity</param>
+        /// <param name="eventType">Log event type</param>
+        public LogEntry(string message, Severity severity, LogEventType eventType)
+        : this(message, severity, eventType, 0) { }
 
-            _message = exception.Message;
-            _severity = Severity.Error;
-            this._eventId = eventId;
-            this._source = source;
-            if (exception.StackTrace != null) _stackTrace = exception.StackTrace;
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="message">Message</param>
+        /// <param name="severity">Severity</param>
+        /// <param name="eventType">Log event type</param>
+        /// <param name="messageId">SocketMeister message id this relates to</param>
+        public LogEntry(string message, Severity severity, LogEventType eventType, long messageId)
+        {
+            _eventType = eventType;
+            _message = message;
+            _messageId = messageId;
+            _severity = severity;
         }
 
-        /// <summary>
-        /// Event identifier for this trace event. Useful if writing this to the Windows Event Log (Or equivalent).
-        /// </summary>
-        public int EventId => _eventId;
-
-        /// <summary>
-        /// Message describing the trace event
-        /// </summary>
+        public DateTime Timestamp => _timeStamp;
         public string Message => _message;
-
-        /// <summary>
-        /// Severity of the trace event.
-        /// </summary>
         public Severity Severity => _severity;
-
-        /// <summary>
-        /// Optional source of the trace event.
-        /// </summary>
-        public string Source => _source;
-
-        /// <summary>
-        /// Optional stack trace information.
-        /// </summary>
-        public string StackTrace => _stackTrace;
+        public LogEventType EventType => _eventType;
+        public long MessageId => _messageId;
     }
 
 }

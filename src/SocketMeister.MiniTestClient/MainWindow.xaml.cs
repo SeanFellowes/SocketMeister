@@ -25,7 +25,7 @@ namespace SocketMeister.MiniTestClient
         {
             private readonly DateTime timeStamp = DateTime.UtcNow;
 
-            public SeverityType Severity { get; set; }
+            public Severity Severity { get; set; }
             public string Source { get; set; }
             public string Text { get; set; }
             public string TimeStamp => timeStamp.ToString("HH:mm:ss fff");
@@ -33,8 +33,8 @@ namespace SocketMeister.MiniTestClient
             {
                 get
                 {
-                    if (Severity == SeverityType.Error) return new SolidColorBrush(Color.FromArgb(255, 255, 204, 204));
-                    if (Severity == SeverityType.Warning) return new SolidColorBrush(Color.FromArgb(255, 253, 210, 159));
+                    if (Severity == Severity.Error) return new SolidColorBrush(Color.FromArgb(255, 255, 204, 204));
+                    if (Severity == Severity.Warning) return new SolidColorBrush(Color.FromArgb(255, 253, 210, 159));
                     else return new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
                 }
             }
@@ -42,8 +42,8 @@ namespace SocketMeister.MiniTestClient
             {
                 get
                 {
-                    if (Severity == SeverityType.Error) return "Error";
-                    if (Severity == SeverityType.Warning) return "Warning";
+                    if (Severity == Severity.Error) return "Error";
+                    if (Severity == Severity.Warning) return "Warning";
                     else return "Info";
                 }
             }
@@ -139,14 +139,15 @@ namespace SocketMeister.MiniTestClient
         {
             ClientControl ct = (ClientControl)sender;
             if (ct.TraceEvents == true) return; // Ignore exceptions if trace events are enabled as they will be logged
-            Log(SeverityType.Error, "Client " + ct.ClientId, e.Exception.Message);
+            Log(Severity.Error, "Client " + ct.ClientId, e.Exception.Message);
         }
 
-        private void Client_TraceEventReceived(object sender, TraceEventArgs e)
+        private void Client_LogRaised(object sender, LogEventArgs e)
         {
             ClientControl ct = (ClientControl)sender;
-            Log(e.Severity, e.Source, e.Message);
+            Log(e.Severity, "ToDo", e.Message);
         }
+
 
 
         private void Client_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
@@ -168,7 +169,7 @@ namespace SocketMeister.MiniTestClient
                     msgRec += $" Simulating {(int)processingDelaySlider.Value} ms processing time";
                 }
 
-                Log(SeverityType.Information, $"Client {ct.ClientId}", msgRec);
+                Log(Severity.Information, $"Client {ct.ClientId}", msgRec);
             }));
 
             if (ProcessingSimulationDelayMs > 0)
@@ -186,7 +187,7 @@ namespace SocketMeister.MiniTestClient
         {
             ClientControl ct = (ClientControl)sender;
             if (ct.TraceEvents == true) return; // Ignore if trace events are enabled as they will be logged
-            Log(SeverityType.Warning, "Client " + ct.ClientId, "Server has notified that it is stopping.");
+            Log(Severity.Warning, "Client " + ct.ClientId, "Server has notified that it is stopping.");
         }
 
         private void Client_SendRequestButtonPressed(object sender, EventArgs e)
@@ -201,7 +202,7 @@ namespace SocketMeister.MiniTestClient
 
             byte[] receivedBytes = (byte[])e.Parameters[0];
             string msgRec = Encoding.UTF8.GetString(receivedBytes, 0, receivedBytes.Length);
-            Log(SeverityType.Information, "Client " + ct.ClientId, "BroadcastReceived: " + e.Name + ", " + msgRec);
+            Log(Severity.Information, "Client " + ct.ClientId, "BroadcastReceived: " + e.Name + ", " + msgRec);
         }
 
         private void Client_ResponseReceived(object sender, ResponseReceived e)
@@ -279,7 +280,7 @@ namespace SocketMeister.MiniTestClient
 #endif
 
 
-        private void Log(SeverityType Severity, string Source, string Text)
+        private void Log(Severity Severity, string Source, string Text)
         {
             if (Text.Length > 150) Text = Text.Substring(0, 147) + "...";
             LogItem i = new LogItem() { Severity = Severity, Source = Source, Text = Text };
@@ -302,7 +303,7 @@ namespace SocketMeister.MiniTestClient
                     Client.ServerStopping += Client_ServerStopping;
                     Client.BroadcastReceived += Client_BroadcastReceived;
                     Client.ResponseReceived += Client_ResponseReceived;
-                    Client.TraceEventReceived += Client_TraceEventReceived;
+                    Client.LogRaised += Client_LogRaised;
 
                     List<SocketEndPoint> eps = new List<SocketEndPoint>();
                     if (EndpointRB2.IsChecked == false)
@@ -336,6 +337,7 @@ namespace SocketMeister.MiniTestClient
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
 
         private void ClientsSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {

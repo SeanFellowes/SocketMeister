@@ -5,14 +5,14 @@ namespace SocketMeister
     public class LogEventArgs : EventArgs
     {
         private readonly Exception _exception;
-        private readonly SeverityType _severity;
+        private readonly Severity _severity;
         private readonly string _server;
         private readonly string _source;
         private readonly string _text;
         private readonly DateTime _timeStamp = DateTime.UtcNow;
 
 
-        public LogEventArgs(SeverityType Severity, string Server, string Source, string Text)
+        public LogEventArgs(Severity Severity, string Server, string Source, string Text)
         {
             _severity = Severity;
             _server = Server;
@@ -23,7 +23,7 @@ namespace SocketMeister
 
         public LogEventArgs(Exception Exception, string Server, string Source)
         {
-            _severity = SeverityType.Error;
+            _severity = Severity.Error;
             _server = Server;
             _source = Source;
             _text = Exception.Message;
@@ -31,7 +31,7 @@ namespace SocketMeister
         }
 
         public Exception Exception => _exception;
-        public SeverityType Severity => _severity;
+        public Severity Severity => _severity;
         public string Server => _server;
         public string Source => _source;
         public string Text => _text;

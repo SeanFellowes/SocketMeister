@@ -503,7 +503,7 @@ namespace SocketMeister
                                 NotifyTraceEventRaised(ex, 5008);
                             }
                             ClientDisconnectingNotificationV1 msg = receiveEnvelope.GetClientDisconnectingNotificationV1();
-                            NotifyTraceEventRaised(new TraceEventArgs(msg.ClientMessage, SeverityType.Information, 2345));
+                            NotifyTraceEventRaised(new TraceEventArgs(msg.ClientMessage, Severity.Information, 2345));
                         }
 
                         else if (receiveEnvelope.MessageType == MessageType.PollingRequestV1)

@@ -49,7 +49,7 @@ namespace SocketMeister.Testing.Tests
             }
         }
 
-        public void RaiseTraceEventRaised(string message, SeverityType severity, int eventId)
+        public void RaiseTraceEventRaised(string message, Severity severity, int eventId)
         {
             if (Parent == null) throw new NullReferenceException("Base class property 'Parent'has not been set");
             TraceEventRaised?.Invoke(Parent, new TraceEventArgs(message, severity, eventId));
@@ -71,7 +71,7 @@ namespace SocketMeister.Testing.Tests
         public void Start()
         {
             Status = TestStatus.InProgress;
-            RaiseTraceEventRaised("Starting Test", SeverityType.Information, 1);
+            RaiseTraceEventRaised("Starting Test", Severity.Information, 1);
             if (ExecuteTest != null)
             {
                 new Thread(new ThreadStart(delegate

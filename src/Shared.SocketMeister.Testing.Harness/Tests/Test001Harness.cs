@@ -22,11 +22,11 @@ namespace SocketMeister.Testing.Tests
             try
             {
                 //  START THE SOCKET SERVER ON FixedServer1 
-                RaiseTraceEventRaised("Starting SocketServer on port " + Constants.HarnessFixedServer1Port, SeverityType.Information, 1);
+                RaiseTraceEventRaised("Starting SocketServer on port " + Constants.HarnessFixedServer1Port, Severity.Information, 1);
                 _harnessController.FixedServer1.Commands.SocketServerStart(Constants.HarnessFixedServer1Port);
 
                 //  CONNECT FixedClient1 TO FixedServer1
-                RaiseTraceEventRaised("Starting SocketClient on port " + Constants.HarnessFixedServer1Port, SeverityType.Information, 1);
+                RaiseTraceEventRaised("Starting SocketClient on port " + Constants.HarnessFixedServer1Port, Severity.Information, 1);
                 List<SocketEndPoint> endPoints = new List<SocketEndPoint>
                 {
                     new SocketEndPoint("127.0.0.1", Constants.HarnessFixedServer1Port)
@@ -66,7 +66,7 @@ namespace SocketMeister.Testing.Tests
                     if (Status == TestStatus.Stopping)
                     {
                         Status = TestStatus.Stopped;
-                        RaiseTraceEventRaised("Test was stopped before completing", SeverityType.Information, 1);
+                        RaiseTraceEventRaised("Test was stopped before completing", Severity.Information, 1);
                         return;
                     }
                     Thread.Sleep(1000);
@@ -74,17 +74,17 @@ namespace SocketMeister.Testing.Tests
 
 
                 //  STOP THE FIXED CLIENT
-                RaiseTraceEventRaised("Stopping SocketClient", SeverityType.Information, 1);
+                RaiseTraceEventRaised("Stopping SocketClient", Severity.Information, 1);
                 _harnessController.FixedClient1.Commands.SocketClientStop();
 
 
                 //  STOP THE SOCKET SERVER ON FixedServer1 
-                RaiseTraceEventRaised("Stopping SocketServer", SeverityType.Information, 1);
+                RaiseTraceEventRaised("Stopping SocketServer", Severity.Information, 1);
                 _harnessController.FixedServer1.Commands.SocketServerStop();
 
 
                 Status = TestStatus.Successful;
-                RaiseTraceEventRaised("Test completed successfully", SeverityType.Information, 1);
+                RaiseTraceEventRaised("Test completed successfully", Severity.Information, 1);
 
             }
             catch (Exception ex)

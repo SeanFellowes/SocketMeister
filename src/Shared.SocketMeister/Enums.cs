@@ -181,13 +181,9 @@
 
 
     /// <summary>
-    /// Severity of a trace event
+    /// Severity of a trace/log event
     /// </summary>
-#if SMISPUBLIC
-    public enum SeverityType
-#else
-    internal enum SeverityType
-#endif
+    public enum Severity
     {
         /// <summary>
         /// Information
@@ -201,6 +197,35 @@
         /// Error
         /// </summary>
         Error = 2
+    }
+
+
+    /// <summary>
+    /// Category of a trace/log event
+    /// </summary>
+    public enum LogEventType
+    {
+        /// <summary>
+        /// Connection event
+        /// </summary>
+        ConnectionEvent = 0,
+        /// <summary>
+        /// Exception
+        /// </summary>
+        Exception = 1,
+        /// <summary>
+        /// User message
+        /// </summary>
+        UserMessage = 2,
+        /// <summary>
+        /// Polling event
+        /// </summary>
+        PollingEvent = 3,
+        /// <summary>
+        /// Subscription sync event
+        /// </summary>
+        SubscriptionSyncEvent = 4
+
     }
 
 
