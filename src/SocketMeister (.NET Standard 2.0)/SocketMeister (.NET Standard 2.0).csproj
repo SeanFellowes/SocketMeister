@@ -11,7 +11,9 @@
     <RepositoryUrl>https://github.com/SeanFellowes/SocketMeister</RepositoryUrl>
     <PackageTags>tcp socket</PackageTags>
     <Company>Sean Fellowes</Company>
-    <PackageReleaseNotes>SocketMeister 10.0.3 adds robust socket recreation when it is disposed during reconnection. Enhanced logging in SocketClient TraceEventRaised event. Reduced SocketClient reconnect time when SocketServer is restarted.
+    <PackageReleaseNotes>SocketMeister 10.0.1 SocketClient replaces the TraceEventRaised event with a LogRaised event. The event is deeply connected to the internal operations of SocketClient, providing information on connection activities, polling, handshakes and all incoming and outgoing messages, including system and user messages. Previous logging was very limited and generated numerous threads to avoid interrupting socket operations. The new logging is handled by a single background thread.
+
+SocketMeister 10.0.3 adds robust socket recreation when it is disposed during reconnection. Enhanced logging in SocketClient TraceEventRaised event. Reduced SocketClient reconnect time when SocketServer is restarted.
 
 SocketMeister 10.0.2 contains a fix for when a connection was reset before the handshake is completed, the client would stop attempting to reconnect.
 
@@ -28,9 +30,9 @@ SocketClient class has an additional event called TraceEventRaised, which provid
     <DocumentationFile></DocumentationFile>
     <PackageIcon>icon_128.png</PackageIcon>
     <SelfContained>true</SelfContained>
-    <Version>10.0.3</Version>
-    <AssemblyVersion>10.0.3.0</AssemblyVersion>
-    <FileVersion>10.0.3.0</FileVersion>
+    <Version>10.1.0</Version>
+    <AssemblyVersion>10.1.0.0</AssemblyVersion>
+    <FileVersion>10.1.0.0</FileVersion>
     <PackageReadmeFile>NuGetDocumentation.md</PackageReadmeFile>
     <Title>SocketMeister</Title>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>

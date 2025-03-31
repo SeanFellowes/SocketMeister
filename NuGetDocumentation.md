@@ -1,7 +1,9 @@
 ## SocketMeister Version 10
 SocketMeister Version 10 is a significant upgrade on earlier versions (1.x.x, 2.x.x, 3.x.x and 4.x.x). Although the public interface hasn't changed, previous versions of SocketMeister do not work with Version 10. If you upgrade to version 10 you will need to upgrade and rollout all software using SocketClient and SocketServer. Older clients will fail to connect to SocketServer 10.
 
-SocketMeister 10 introduces robust handshaking and version awareness between clients and servers. Thich will allow for future functionality to be introduced without breaking backward compatibility.
+SocketMeister 10 introduces robust handshaking and version awareness between clients and servers. which will allow for future functionality to be introduced without breaking backward compatibility.
+
+Highly integrated logging via a LogRaised event in the SocketClient provides comprehensive feedback on the state of the client and throughput of messages.
 
 ## SocketMeister Overview
 
