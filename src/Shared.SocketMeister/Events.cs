@@ -8,53 +8,21 @@ namespace SocketMeister
     /// </summary>
     public class LogEventArgs : EventArgs
     {
-        private readonly LogEventType _eventType;
-        private readonly string _message;
-        private readonly Severity _severity;
+        private readonly LogEntry _logEntry;
 
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="message">Message describing the trace event</param>
-        /// <param name="severity">Severity of the trace event.</param>
-        /// <param name="eventType">Category of event.</param>
-        public LogEventArgs(string message, Severity severity, LogEventType eventType)
+        /// <param name="logEntry">Log entry information</param>
+        public LogEventArgs(LogEntry logEntry)
         {
-            _message = message;
-            _severity = severity;
-            _eventType = eventType;
+            _logEntry = logEntry;
         }
 
         /// <summary>
-        /// Constructor
+        /// Log entry information
         /// </summary>
-        /// <param name="exception">Exception which occured.</param>
-        public LogEventArgs(Exception exception)
-        {
-            if (exception == null)
-            {
-                throw new ArgumentNullException(nameof(exception));
-            }
-
-            _message = exception.ToString();
-            _severity = Severity.Error;
-            _eventType = LogEventType.Exception;
-        }
-
-        /// <summary>
-        /// Category of event.
-        /// </summary>
-        public LogEventType EventType => _eventType;
-
-        /// <summary>
-        /// Message describing the trace event
-        /// </summary>
-        public string Message => _message;
-
-        /// <summary>
-        /// Severity of the trace event.
-        /// </summary>
-        public Severity Severity => _severity;
+        public LogEntry LogEntry => _logEntry;
     }
 
 

@@ -229,10 +229,10 @@
                                 <ColumnDefinition Width="70"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text="{Binding TimeStamp}" Grid.Column="0" />
-                            <TextBlock Text="{Binding SeverityDescription}" Grid.Column="1" />
-                            <TextBlock Text="{Binding Source}" Grid.Column="2" />
-                            <TextBlock Text="{Binding Text}" Grid.Column="3"/>
+                            <TextBlock Text="{Binding TimeStamp}" Grid.Column="0" Foreground="{Binding Foreground}" />
+                            <TextBlock Text="{Binding SeverityDescription}" Grid.Column="1" Foreground="{Binding Foreground}"/>
+                            <TextBlock Text="{Binding Source}" Grid.Column="2" Foreground="{Binding Foreground}"/>
+                            <TextBlock Text="{Binding Text}" Grid.Column="3" Foreground="{Binding Foreground}"/>
                         </Grid>
                     </DataTemplate>
                 </ListView.ItemTemplate>

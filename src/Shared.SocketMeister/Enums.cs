@@ -196,7 +196,11 @@
         /// <summary>
         /// Error
         /// </summary>
-        Error = 2
+        Error = 2,
+        /// <summary>
+        /// Can be used for debugging purposes. 
+        /// </summary>
+        Debug = 32767
     }
 
 

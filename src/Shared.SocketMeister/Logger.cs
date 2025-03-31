@@ -106,15 +106,22 @@ namespace SocketMeister
                 }
             }
 
-            if (batch.Count > 0)
+            if (LogRaised != null && batch.Count > 0)
             {
-                // Optionally, sort by Timestamp if necessary.
+                // Sort by Timestamp. Given the multithreading nature of SocketMeister, the log entries may not be in order.
                 batch.Sort((a, b) => a.Timestamp.CompareTo(b.Timestamp));
 
                 // Emit the log entries. This could be an event invocation or direct logging.
                 foreach (var entry in batch)
                 {
-                    LogRaised?.Invoke(this, new LogEventArgs(entry.Message, entry.Severity, entry.EventType));
+                    try
+                    {
+                        LogRaised(this, new LogEventArgs(entry));
+                    }
+                    catch
+                    {
+                        //  Swallow exceptions
+                    }
                 }
             }
         }
@@ -130,67 +137,4 @@ namespace SocketMeister
             Thread.Sleep(500);
         }
     }
-
-    /// <summary>
-    /// Log entry details
-    /// </summary>
-    public class LogEntry
-    {
-        private readonly LogEventType _eventType;
-        private readonly long _messageId;
-        private readonly string _message;
-        private readonly Severity _severity = Severity.Information;
-        private readonly DateTime _timeStamp = DateTime.UtcNow;
-
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="exception">Exception</param>
-        public LogEntry(Exception exception)
-            : this (exception, 0) { }
-
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="exception">Exception</param>
-        /// <param name="messageId">SocketMeister message id this relates to</param>
-        public LogEntry(Exception exception, long messageId)
-        {
-            _eventType = LogEventType.Exception;
-            _message = exception.ToString();
-            _messageId = messageId;
-            _severity = Severity.Error;
-        }
-
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="message">Message</param>
-        /// <param name="severity">Severity</param>
-        /// <param name="eventType">Log event type</param>
-        public LogEntry(string message, Severity severity, LogEventType eventType)
-        : this(message, severity, eventType, 0) { }
-
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="message">Message</param>
-        /// <param name="severity">Severity</param>
-        /// <param name="eventType">Log event type</param>
-        /// <param name="messageId">SocketMeister message id this relates to</param>
-        public LogEntry(string message, Severity severity, LogEventType eventType, long messageId)
-        {
-            _eventType = eventType;
-            _message = message;
-            _messageId = messageId;
-            _severity = severity;
-        }
-
-        public DateTime Timestamp => _timeStamp;
-        public string Message => _message;
-        public Severity Severity => _severity;
-        public LogEventType EventType => _eventType;
-        public long MessageId => _messageId;
-    }
-
 }

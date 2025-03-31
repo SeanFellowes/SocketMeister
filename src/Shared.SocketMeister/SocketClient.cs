@@ -127,13 +127,8 @@ namespace SocketMeister
             if (!string.IsNullOrEmpty(friendlyName)) _friendlyName = friendlyName;
             _receiveEngine = new MessageEngine(EnableCompression);
 
-            foreach (SocketEndPoint ep in _endPoints)
-            {
-                ep.ExceptionRaised += Ep_ExceptionRaised;
-            }
-
             //  Logger
-            _logger.LogRaised += (s, e) => LogRaised?.Invoke(this, e);
+            _logger.LogRaised += _logger_LogRaised;
 
             //  STATIC BUFFERS
             _pollingBuffer = MessageEngine.GenerateSendBytes(new PollingRequestV1(), false);
@@ -159,10 +154,13 @@ namespace SocketMeister
             StartBackgroundWorker();
         }
 
-        private void Ep_ExceptionRaised(object sender, ExceptionEventArgs e)
+        private void _logger_LogRaised(object sender, LogEventArgs e)
         {
-            Log(e.Exception, e.EventId);
+            LogRaised?.Invoke(this, e);
+            if (ExceptionRaised != null && !(e.LogEntry.Exception == null))
+                    ExceptionRaised(this, new ExceptionEventArgs(e.LogEntry.Exception, 0));
         }
+
 
         /// <summary>
         /// Constructor
@@ -706,7 +704,6 @@ namespace SocketMeister
                 {
                     IsBackgroundWorkerRunning = true;
                     Stopwatch pollingTimer = Stopwatch.StartNew();
-                    Stopwatch sendSubscriptionsTimer = Stopwatch.StartNew();
 
                     while (!StopClientPermanently)
                     {
@@ -720,7 +717,7 @@ namespace SocketMeister
                             case ConnectionStatuses.Connected:
                                 if (HandshakeCompleted == false) break;
                                 BgPerformPolling(pollingTimer);
-                                BgSendSubscriptionChanges(sendSubscriptionsTimer);
+                                BgSendSubscriptionChanges();
                                 break;
                         }
                         Thread.Sleep(200);
@@ -825,7 +822,7 @@ namespace SocketMeister
                     Disconnect(SocketHasErrored: false, ClientDisconnectReason.PollingTimeout, msg);
                     return;
                 }
-                Log($"Sending {typeof(PollingRequestV1).Name} ({_pollingBuffer.Length} bytes)...", Severity.Information, LogEventType.PollingEvent);
+                Log($"Sending polling request ({_pollingBuffer.Length} bytes)...", Severity.Information, LogEventType.PollingEvent);
 
                 RestartStopwatch(PollingTimer);
                 _asyncEventArgsPolling.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
@@ -839,19 +836,18 @@ namespace SocketMeister
         }
 
 
-        private void BgSendSubscriptionChanges(Stopwatch sendSubscriptionsTimer)
+        private void BgSendSubscriptionChanges()
         {
             try
             {
                 //  SEND SUBSCRIPTION CHANGES
                 if (_subscriptions.Changed)
                 {
-                    RestartStopwatch(sendSubscriptionsTimer);
                     byte[] changesBytes = _subscriptions.SerializeTokenChanges();
                     if (changesBytes != null)
                     {
                         byte[] sendBytes = MessageEngine.GenerateSendBytes(new TokenChangesRequestV1(changesBytes), false);
-                        Log($"Sending {typeof(TokenChangesRequestV1).Name} ({sendBytes.Length} bytes)...", Severity.Information, LogEventType.SubscriptionSyncEvent);
+                        Log($"Sending subscription changes ({sendBytes.Length} bytes)...", Severity.Information, LogEventType.SubscriptionSyncEvent);
 
                         _asyncEventArgsSendSubscriptionChanges.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
                         _asyncEventArgsSendSubscriptionChanges.SetBuffer(sendBytes, 0, sendBytes.Length);
@@ -936,7 +932,7 @@ namespace SocketMeister
                     //  NOTE: WHEN FAILING OVER UNDER HIGH LOAD, SocketError.TimedOut OCCURS FOR UP TO 120 SECONDS (WORSE CASE)
                     //  BEFORE CONNECTION SUCCESSFULLY COMPLETES. IT'S A BIT ANNOYING BUT I HAVE FOUND NO WORK AROUND.
                     CurrentEndPoint.SetDisconnected(ClientDisconnectReason.SocketConnectionTimeout);
-                    Log(new Exception("Connection failed: Socket timeout"));
+                    Log($"Connection failed: Socket timeout {CurrentEndPoint.Description}", Severity.Warning, LogEventType.ConnectionEvent);
                 }
                 else if (e.SocketError == SocketError.AddressAlreadyInUse)
                 {
@@ -946,7 +942,7 @@ namespace SocketMeister
                 else if (e.SocketError == SocketError.ConnectionRefused)
                 {
                     CurrentEndPoint.SetDisconnected(ClientDisconnectReason.SocketConnectionRefused);
-                    Log(new Exception($"Connection failed: Connection refused by server {CurrentEndPoint.Description}"));
+                    Log($"Connection failed: Connection refused by server {CurrentEndPoint.Description}", Severity.Warning, LogEventType.ConnectionEvent);
                 }
                 else
                 {
@@ -1084,7 +1080,6 @@ namespace SocketMeister
         private void SendResponse(MessageResponseV1 messageResponse, MessageV1 message)
         {
             byte[] sendBytes = MessageEngine.GenerateSendBytes(messageResponse, false);
-            Log($"Sending MessageResponseV1 {sendBytes.Length} bytes)...", Severity.Information, LogEventType.UserMessage);
 
             SocketAsyncEventArgs sendEventArgs;
             while (true)
@@ -1098,11 +1093,12 @@ namespace SocketMeister
                 else if (StopClientPermanently)
                 {
                     //  SHUTDOWN: CLIENT IS SHUTTING DOWN. A SHUTDOWN MESSAGE SHOULD HAVE ALREADY BEEN SENT SO EXIT
-                    Log("Client is stopping. Send MessageResponseV1 without response data from user program.", Severity.Information, LogEventType.UserMessage);
+                    Log("Client is stopping. Sending response without response data from user program.", Severity.Information, LogEventType.UserMessage);
                     SendFastMessage(new MessageResponseV1(message.MessageId, MessageEngineDeliveryResult.Stopping));
                     return;
                 }
 
+                Log($"Sending user response to message {message.MessageId} ({sendBytes.Length} bytes) ", Severity.Information, LogEventType.UserMessage);
                 if (messageResponse.SendReceiveStatus == MessageStatus.Unsent && CanSendReceive() == true)
                 {
                     sendEventArgs = _sendEventArgsPool.Pop();
@@ -1404,7 +1400,7 @@ namespace SocketMeister
                         else if (_receiveEngine.MessageType == MessageType.MessageV1)
                         {
                             MessageV1 msg = _receiveEngine.GetMessageV1();
-                            Log($"Received {_receiveEngine.MessageType.ToString()} ({e.BytesTransferred} bytes)", Severity.Information, LogEventType.UserMessage, msg.MessageId);
+                            Log($"Received user message {msg.MessageId} from server ({e.BytesTransferred} bytes)", Severity.Information, LogEventType.UserMessage, msg.MessageId);
                             ProcessMessageV1BackgroundLauncher(msg);
                         }
 
@@ -1416,29 +1412,31 @@ namespace SocketMeister
                         }
                         else if (_receiveEngine.MessageType == MessageType.PollingResponseV1)
                         {
+                            Log($"Received polling response ({e.BytesTransferred} bytes)", Severity.Information, LogEventType.PollingEvent, 0);
                             LastPollResponse = DateTime.UtcNow;
                         }
 
                         else if (_receiveEngine.MessageType == MessageType.Handshake1)
                         {
-                            Handshake1Received = true;
+                            // Note: Logging and validation is performed in BgCompleteHandshake()
                             Handshake1 hs1 = _receiveEngine.GetHandshake1();
                             ClientId = hs1.ClientId;
                             ServerSocketMeisterVersion = hs1.ServerSocketMeisterVersion;
-                            // Note: Validation is performed in BgCompleteHandshake()
+                            Handshake1Received = true;
                         }
 
                         else if (_receiveEngine.MessageType == MessageType.Handshake2Ack)
                         {
+                            // Note: Logging and validation is performed in BgCompleteHandshake()
                             Handshake2Ack hs1 = _receiveEngine.GetHandshake2Ack();
                             ServerSupportsThisClientVersion = hs1.ServerSupportsClientVersion;
                             HandshakeCompleted = true;   // Sets all handshake flags to true
-                            // Note: Validation is performed in BgCompleteHandshake()
                         }
 
                         else if (_receiveEngine.MessageType == MessageType.TokenChangesResponseV1)
                         {
                             TokenChangesResponseV1 tcr1 = _receiveEngine.GetSubscriptionChangesResponseV1();
+                            Log($"Received subscription changes response ({e.BytesTransferred} bytes)", Severity.Information, LogEventType.SubscriptionSyncEvent, 0);
                             foreach (TokenChangesResponseV1.ChangeIdentifier i in tcr1.ChangeIdentifiers)
                             {
                                 _subscriptions.RemoveChange(i.TokenNameUppercase, i.ChangeId);
@@ -1447,7 +1445,9 @@ namespace SocketMeister
 
                         else if (_receiveEngine.MessageType == MessageType.BroadcastV1)
                         {
-                            NotifyBroadcastReceived(_receiveEngine.GetBroadcastV1());
+                            BroadcastV1 bc = _receiveEngine.GetBroadcastV1();
+                            Log($"Received user broadcast ({e.BytesTransferred} bytes)", Severity.Information, LogEventType.UserMessage, 0);
+                            NotifyBroadcastReceived(bc);
                         }
 
                         else

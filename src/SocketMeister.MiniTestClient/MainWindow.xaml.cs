@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 #endif
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Navigation;
 using System.Windows.Threading;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -23,31 +24,62 @@ namespace SocketMeister.MiniTestClient
     {
         internal class LogItem
         {
-            private readonly DateTime timeStamp = DateTime.UtcNow;
+            private readonly string _source;
+            private readonly LogEntry _logEntry;
 
-            public Severity Severity { get; set; }
-            public string Source { get; set; }
-            public string Text { get; set; }
-            public string TimeStamp => timeStamp.ToString("HH:mm:ss fff");
+            public LogItem(LogEntry logEntry, string Source)
+            {
+                _logEntry = logEntry;
+                _source = Source;
+            }
+
+            public LogEventType EventType { get { return _logEntry.EventType; } }
+            public Severity Severity { get {  return _logEntry.Severity; } }
+            public string Source => _source;
+            public string Text 
+            { 
+                get 
+                {
+                    if (_logEntry.Message.Length > 150) return _logEntry.Message.Substring(0, 147) + "...";
+                    return _logEntry.Message; 
+                } 
+            }
+            public string TimeStamp { get { return _logEntry.Timestamp.ToString("HH:mm:ss fff"); } }
+
             public SolidColorBrush Background
             {
                 get
                 {
-                    if (Severity == Severity.Error) return new SolidColorBrush(Color.FromArgb(255, 255, 204, 204));
-                    if (Severity == Severity.Warning) return new SolidColorBrush(Color.FromArgb(255, 253, 210, 159));
+                    if (Severity == Severity.Debug) return new SolidColorBrush(Color.FromArgb(255, 180, 180, 250));
+                    else if (Severity == Severity.Error) return new SolidColorBrush(Color.FromArgb(255, 255, 204, 204));
+                    else if (Severity == Severity.Warning) return new SolidColorBrush(Color.FromArgb(255, 253, 210, 159));
                     else return new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
                 }
             }
+            public SolidColorBrush Foreground
+            {
+                get
+                {
+                    if (EventType == LogEventType.Exception) return new SolidColorBrush(Color.FromArgb(255, 220, 0, 0));
+                    else if (EventType == LogEventType.ConnectionEvent) return new SolidColorBrush(Color.FromArgb(255, 20, 20, 200));
+                    else if (EventType == LogEventType.PollingEvent) return new SolidColorBrush(Color.FromArgb(255, 140, 140, 140));
+                    else if (EventType == LogEventType.SubscriptionSyncEvent) return new SolidColorBrush(Color.FromArgb(255, 140, 140, 140));
+                    else return new SolidColorBrush(Color.FromArgb(255, 0, 0, 0));
+                }
+            }
+
             public string SeverityDescription
             {
                 get
                 {
                     if (Severity == Severity.Error) return "Error";
                     if (Severity == Severity.Warning) return "Warning";
+                    if (Severity == Severity.Debug) return "Debug";
                     else return "Info";
                 }
             }
         }
+
 
         private readonly DispatcherTimer _dispatcherTimer = new DispatcherTimer();
         private readonly List<ClientControl> _clients = new List<ClientControl>();
@@ -138,16 +170,14 @@ namespace SocketMeister.MiniTestClient
         private void Client_ExceptionRaised(object sender, ExceptionEventArgs e)
         {
             ClientControl ct = (ClientControl)sender;
-            if (ct.TraceEvents == true) return; // Ignore exceptions if trace events are enabled as they will be logged
-            Log(Severity.Error, "Client " + ct.ClientId, e.Exception.Message);
+            Log(new LogEntry("ExceptionRaised event raised: " + e.ToString(), Severity.Debug, LogEventType.UserMessage), "Client " + ct.ClientId);
         }
 
         private void Client_LogRaised(object sender, LogEventArgs e)
         {
             ClientControl ct = (ClientControl)sender;
-            Log(e.Severity, "ToDo", e.Message);
+            Log(e.LogEntry, ct.Name);
         }
-
 
 
         private void Client_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
@@ -169,7 +199,7 @@ namespace SocketMeister.MiniTestClient
                     msgRec += $" Simulating {(int)processingDelaySlider.Value} ms processing time";
                 }
 
-                Log(Severity.Information, $"Client {ct.ClientId}", msgRec);
+                Log(new LogEntry($"MessageReceived event raised: {msgRec}", Severity.Debug, LogEventType.UserMessage), "Client " + ct.ClientId);
             }));
 
             if (ProcessingSimulationDelayMs > 0)
@@ -186,8 +216,7 @@ namespace SocketMeister.MiniTestClient
         private void Client_ServerStopping(object sender, EventArgs e)
         {
             ClientControl ct = (ClientControl)sender;
-            if (ct.TraceEvents == true) return; // Ignore if trace events are enabled as they will be logged
-            Log(Severity.Warning, "Client " + ct.ClientId, "Server has notified that it is stopping.");
+            Log(new LogEntry($"ServerStopping event raised.", Severity.Debug, LogEventType.UserMessage), "Client " + ct.ClientId);
         }
 
         private void Client_SendRequestButtonPressed(object sender, EventArgs e)
@@ -202,13 +231,13 @@ namespace SocketMeister.MiniTestClient
 
             byte[] receivedBytes = (byte[])e.Parameters[0];
             string msgRec = Encoding.UTF8.GetString(receivedBytes, 0, receivedBytes.Length);
-            Log(Severity.Information, "Client " + ct.ClientId, "BroadcastReceived: " + e.Name + ", " + msgRec);
+            Log(new LogEntry("BroadcastReceived: " + e.Name + ", " + msgRec, Severity.Debug, LogEventType.UserMessage), "Client " + ct.ClientId);
         }
 
         private void Client_ResponseReceived(object sender, ResponseReceived e)
         {
             ClientControl ct = (ClientControl)sender;
-            Log(e.Severity, "Client " + ct.ClientId, e.DisplayText);
+            Log(new LogEntry($"ResponseReceived event raised.", Severity.Debug, LogEventType.UserMessage), "Client " + ct.ClientId);
         }
 
 
@@ -280,12 +309,10 @@ namespace SocketMeister.MiniTestClient
 #endif
 
 
-        private void Log(Severity Severity, string Source, string Text)
+        private void Log(LogEntry logEntry, string ClientId)
         {
-            if (Text.Length > 150) Text = Text.Substring(0, 147) + "...";
-            LogItem i = new LogItem() { Severity = Severity, Source = Source, Text = Text };
+            LogItem i = new LogItem(logEntry, ClientId);
             if (_log.Count > 99) _log.RemoveAt(_log.Count - 1);
-
             _log.Insert(0, i);
         }
 

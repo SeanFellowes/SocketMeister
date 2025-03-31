@@ -45,7 +45,7 @@ namespace SocketMeister
                 throw new ArgumentNullException(nameof(changeBytes));
             }
 
-            var tokenChanges = new List<TokenChange>();
+            var processedTokens = new List<TokenChange>();
 
             using (var stream = new MemoryStream(changeBytes))
             using (var reader = new BinaryReader(stream))
@@ -58,14 +58,16 @@ namespace SocketMeister
                     int changeId = reader.ReadInt32();
                     TokenAction action = (TokenAction)reader.ReadInt16();
 
+                    // We will return a list of processed tokens to the client.
+                    // This will allow the client to know what tokens have been processed by the server.
+                    processedTokens.Add(new TokenChange(changeId, action, name, null));
+
+                    //  Try and find the token from the client in this list
                     _tokenDictionary.TryGetValue(name, out var existingToken);
 
                     if (action == TokenAction.Delete || action == TokenAction.Unknown)
                     {
-                        if (existingToken != null && _tokenDictionary.TryRemove(name, out _))
-                        {
-                            tokenChanges.Add(new TokenChange(changeId, action, name, null));
-                        }
+                        if (existingToken != null) _tokenDictionary.TryRemove(name, out _);
                     }
                     else
                     {
@@ -73,18 +75,16 @@ namespace SocketMeister
                         {
                             var newToken = new Token(reader);
                             _tokenDictionary.TryAdd(name, newToken);
-                            tokenChanges.Add(new TokenChange(changeId, action, name, newToken));
                         }
                         else
                         {
                             existingToken.Deserialize(reader);
-                            tokenChanges.Add(new TokenChange(changeId, action, name, existingToken));
                         }
                     }
                 }
             }
 
-            return tokenChanges;
+            return processedTokens;
         }
 
 

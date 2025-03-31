@@ -12,6 +12,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Constants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LogEntry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\BroadcastV1.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\Handshake1.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\Handshake2.cs" />
