@@ -329,7 +329,7 @@ namespace SocketMeister
             0,
             0,
             0});
-            this.nmReceiveProcessing.ValueChanged += new System.EventHandler(this.nmReceiveProcessing_ValueChanged);
+            this.nmReceiveProcessing.ValueChanged += new System.EventHandler(this.NmReceiveProcessing_ValueChanged);
             // 
             // label1
             // 
@@ -367,7 +367,7 @@ namespace SocketMeister
             0,
             0,
             0});
-            this.nmSndTimeout.ValueChanged += new System.EventHandler(this.nmSndTimeout_ValueChanged);
+            this.nmSndTimeout.ValueChanged += new System.EventHandler(this.NmSndTimeout_ValueChanged);
             // 
             // btnBroadcastToSubscribers
             // 

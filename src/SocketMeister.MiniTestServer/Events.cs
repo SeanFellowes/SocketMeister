@@ -2,7 +2,7 @@
 
 namespace SocketMeister
 {
-    public class LogEventArgs : EventArgs
+    public class UiLogEventArgs : EventArgs
     {
         private readonly Exception _exception;
         private readonly Severity _severity;
@@ -12,7 +12,7 @@ namespace SocketMeister
         private readonly DateTime _timeStamp = DateTime.UtcNow;
 
 
-        public LogEventArgs(Severity Severity, string Server, string Source, string Text)
+        public UiLogEventArgs(Severity Severity, string Server, string Source, string Text)
         {
             _severity = Severity;
             _server = Server;
@@ -21,7 +21,7 @@ namespace SocketMeister
             _exception = null;
         }
 
-        public LogEventArgs(Exception Exception, string Server, string Source)
+        public UiLogEventArgs(Exception Exception, string Server, string Source)
         {
             _severity = Severity.Error;
             _server = Server;

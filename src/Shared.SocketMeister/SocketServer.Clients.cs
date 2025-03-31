@@ -30,7 +30,7 @@ namespace SocketMeister
             /// <summary>
             /// Raised when an exception occurs (Raised in a seperate thread)
             /// </summary>
-            public event EventHandler<TraceEventArgs> TraceEventRaised;
+            public event EventHandler<LogEventArgs> LogRaised;
 
             /// <summary>
             /// Total number of syschronous and asynchronous clients connected
@@ -57,10 +57,10 @@ namespace SocketMeister
                 _ = _clientDictionary.TryRemove(client.ClientId, out Client deletedClient);
 
                 try { client.ClientSocket.Shutdown(SocketShutdown.Both); }
-                catch (Exception ex) { NotifyTraceEventRaised(ex); }
+                catch (Exception ex) { NotifyLogRaised(ex); }
 
                 try { client.ClientSocket.Close(); }
-                catch (Exception ex) { NotifyTraceEventRaised(ex); }
+                catch (Exception ex) { NotifyLogRaised(ex); }
 
                 NotifyClientDisconnected(client);
             }
@@ -86,7 +86,7 @@ namespace SocketMeister
                     }
                     catch (Exception ex)
                     {
-                        NotifyTraceEventRaised(ex);
+                        NotifyLogRaised(ex);
                     }
                 });
             }
@@ -101,10 +101,10 @@ namespace SocketMeister
                 Task.Run(() => ClientDisconnected?.Invoke(null, new ClientEventArgs(client)));
             }
 
-            private void NotifyTraceEventRaised(Exception error)
+            private void NotifyLogRaised(Exception error)
             {
                 var msg = error.ToString(); // Includes message, stack trace, and inner exception details.
-                Task.Run(() => TraceEventRaised?.Invoke(this, new TraceEventArgs(error, 5008)));
+                Task.Run(() => LogRaised?.Invoke(this, new LogEventArgs(new LogEntry(error, 5008))));
             }
 
             /// <summary>

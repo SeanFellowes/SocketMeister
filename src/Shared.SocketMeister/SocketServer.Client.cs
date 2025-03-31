@@ -210,12 +210,12 @@ namespace SocketMeister
                 catch (ObjectDisposedException ex)
                 {
                     _socketServer.ConnectedClients.Disconnect(this);
-                    _socketServer.NotifyTraceEventRaised(ex, 5008);
+                    _socketServer.NotifyLogRaised(ex, 5008);
                 }
                 catch (Exception ex)
                 {
                     _socketServer.ConnectedClients.Disconnect(this);
-                    _socketServer.NotifyTraceEventRaised(ex, 5008);
+                    _socketServer.NotifyLogRaised(ex, 5008);
                 }
             }
 
@@ -232,7 +232,7 @@ namespace SocketMeister
                 catch (Exception ex)
                 {
                     _socketServer.ConnectedClients.Disconnect(this);
-                    _socketServer.NotifyTraceEventRaised(ex, 5008);
+                    _socketServer.NotifyLogRaised(ex, 5008);
                 }
             }
 

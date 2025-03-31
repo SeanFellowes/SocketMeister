@@ -8,7 +8,7 @@ namespace SocketMeister
 {
     internal delegate void SetLabelTextDelegate(Label label, string text);
 
-    internal delegate void ListBoxAddItemDelegate(LogEventArgs Item);
+    internal delegate void ListBoxAddItemDelegate(UiLogEventArgs Item);
 
     internal delegate void SetButtonEnabledDelegate(Button button, bool enabled);
 
@@ -17,7 +17,7 @@ namespace SocketMeister
     public partial class Main : Form
     {
         private readonly List<UcSocketServer> _servers = new List<UcSocketServer>();
-        private readonly BindingList<LogEventArgs> _gridItems = new BindingList<LogEventArgs>();
+        private readonly BindingList<UiLogEventArgs> _gridItems = new BindingList<UiLogEventArgs>();
         private readonly object _lock = new object();
         private bool _stopAutomaticMessageGenerator;
 
@@ -47,7 +47,7 @@ namespace SocketMeister
 
                 foreach (UcSocketServer uc in _servers)
                 {
-                    uc.LogEventRaised += ServerUserControl_LogEventRaised;
+                    uc.UiLogRaised += ServerUserControl_LogEventRaised;
                     uc.Start();
                 }
 
@@ -75,12 +75,12 @@ namespace SocketMeister
         }
 
 
-        private void ServerUserControl_LogEventRaised(object sender, LogEventArgs e)
+        private void ServerUserControl_LogEventRaised(object sender, UiLogEventArgs e)
         {
             InsertListboxItem(e);
         }
 
-        private void InsertListboxItem(LogEventArgs Item)
+        private void InsertListboxItem(UiLogEventArgs Item)
         {
             try
             {
@@ -115,7 +115,7 @@ namespace SocketMeister
                     }
                     catch (Exception ex)
                     {
-                        InsertListboxItem(new LogEventArgs(ex, "Server #" + uc.ServerId.ToString(), "Server #" + uc.ServerId.ToString()));
+                        new LogEventArgs(new LogEntry(ex));
                         uc.NextAutomatedSend = DateTime.UtcNow.AddMilliseconds(10000);
                     }
                 }

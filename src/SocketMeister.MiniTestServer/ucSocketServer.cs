@@ -22,7 +22,7 @@ namespace SocketMeister
 
         private SocketServer _server = null;
 
-        public event EventHandler<LogEventArgs> LogEventRaised;
+        public event EventHandler<UiLogEventArgs> UiLogRaised;
 
         public UcSocketServer()
         {
@@ -108,7 +108,7 @@ namespace SocketMeister
                 Server = new SocketServer(_port, cbCompressMessage.Checked);
                 Server.ClientConnected += Server_ClientConnected;
                 Server.ClientDisconnected += Server_ClientDisconnected;
-                Server.TraceEventRaised += Server_TraceEventRaised;
+                Server.LogRaised += UcSocketServer_LogRaised;
                 Server.MessageReceived += Server_MessageReceived;
                 Server.StatusChanged += Server_StatusChanged;
                 Server.Start();
@@ -131,7 +131,7 @@ namespace SocketMeister
                 {
                     Server.ClientConnected -= Server_ClientConnected;
                     Server.ClientDisconnected -= Server_ClientDisconnected;
-                    Server.TraceEventRaised -= Server_TraceEventRaised;
+                    Server.LogRaised -= UcSocketServer_LogRaised;
                     Server.MessageReceived -= Server_MessageReceived;
                     Server.StatusChanged -= Server_StatusChanged;
                     Server.Stop();
@@ -141,7 +141,7 @@ namespace SocketMeister
                     Server.Stop();
                     Server.ClientConnected -= Server_ClientConnected;
                     Server.ClientDisconnected -= Server_ClientDisconnected;
-                    Server.TraceEventRaised -= Server_TraceEventRaised;
+                    Server.LogRaised -= UcSocketServer_LogRaised;
                     Server.MessageReceived -= Server_MessageReceived;
                     Server.StatusChanged -= Server_StatusChanged;
                     SetButtonEnabled(btnStop, false);
@@ -168,11 +168,13 @@ namespace SocketMeister
             SetLabelText(lblTotalConnectedClients, Server.ClientCount.ToString("N0"));
         }
 
-        private void Server_TraceEventRaised(object sender, TraceEventArgs e)
+        private void UcSocketServer_LogRaised(object sender, LogEventArgs e)
         {
-            if (e.Severity == Severity.Error)
+            if (e.LogEntry.Severity == Severity.Error)
             {
-                LogEventRaised?.Invoke(this, new LogEventArgs(new Exception(e.Message), "Server #" + ServerId.ToString(), "-"));
+
+                UiLogEventArgs args = new UiLogEventArgs(e.LogEntry.Exception, "Server", "Server");
+                UiLogRaised?.Invoke(this, args);
             }
         }
 
@@ -191,10 +193,9 @@ namespace SocketMeister
             int clientId = (int)e.Parameters[0];
             byte[] receivedBytes = (byte[])e.Parameters[1];
             string msgRec = Encoding.UTF8.GetString(receivedBytes, 0, receivedBytes.Length);
-            if (msgRec.Length > 60)
-                LogEventRaised?.Invoke(this, new LogEventArgs(Severity.Information, "Server #" + ServerId.ToString(), "Client " + clientId, "MessageReceived: " + msgRec.Substring(0, 60) + "..."));
-            else
-                LogEventRaised?.Invoke(this, new LogEventArgs(Severity.Information, "Server #" + ServerId.ToString(), "Client " + clientId, "MessageReceived: " + msgRec));
+            if (msgRec.Length > 60) msgRec = msgRec.Substring(0, 60);
+            UiLogEventArgs args = new UiLogEventArgs(Severity.Information, "Server " + ServerId, "Client " + clientId, msgRec);
+            UiLogRaised?.Invoke(this, args);
 
             //  Simulate Processing Time
             int msProcessing;
@@ -308,12 +309,8 @@ namespace SocketMeister
                     }
                     catch (Exception e)
                     {
-                        LogEventRaised?.Invoke(this, new LogEventArgs(
-                            (SocketMeister.Severity)SocketMeister.Severity.Warning,
-                            $"Server #{ServerId}",
-                            "Client",
-                            $"Error: {e}"
-                        ));
+                        UiLogEventArgs args = new UiLogEventArgs(e, "Server " + ServerId, "");
+                        UiLogRaised?.Invoke(this, args);
                     }
                 })));
             }
@@ -327,12 +324,8 @@ namespace SocketMeister
 
             if (raiseLogOnResponse)
             {
-                LogEventRaised?.Invoke(this, new LogEventArgs(
-                    Severity.Information,
-                    $"Server #{ServerId}",
-                    $"Server #{ServerId}",
-                    $"Completed 'Send Message (Wait for Response)'"
-                ));
+                UiLogEventArgs args = new UiLogEventArgs(Severity.Information, "Server " + ServerId, "", "Completed 'Send Message (Wait for Response)'");
+                UiLogRaised?.Invoke(this, args);
             }
             return items.Count;
         }
@@ -394,12 +387,12 @@ namespace SocketMeister
             MessageBox.Show(e, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
-        private void nmSndTimeout_ValueChanged(object sender, EventArgs e)
+        private void NmSndTimeout_ValueChanged(object sender, EventArgs e)
         {
             lock (_lock) { _msSendTimeout = (int)nmSndTimeout.Value; }
         }
 
-        private void nmReceiveProcessing_ValueChanged(object sender, EventArgs e)
+        private void NmReceiveProcessing_ValueChanged(object sender, EventArgs e)
         {
             lock (_lock) {  _msProcessing = (int)nmReceiveProcessing.Value;}
         }

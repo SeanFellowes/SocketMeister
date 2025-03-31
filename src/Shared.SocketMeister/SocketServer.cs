@@ -60,9 +60,9 @@ namespace SocketMeister
         public event EventHandler<MessageReceivedEventArgs> MessageReceived;
 
         /// <summary>
-        /// Raised when an trace log event has been raised.
+        /// Raised when an log event has been raised.
         /// </summary>
-        public event EventHandler<TraceEventArgs> TraceEventRaised;
+        public event EventHandler<LogEventArgs> LogRaised;
 
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace SocketMeister
                 //  REGISTER FOR EVENTS
                 _connectedClients.ClientDisconnected += ConnectedClients_ClientDisconnected;
                 _connectedClients.ClientConnected += ConnectedClients_ClientConnected;
-                _connectedClients.TraceEventRaised += ConnectedClients_ExceptionRaised;
+                _connectedClients.LogRaised += ConnectedClients_ExceptionRaised;
 
                 //  SETUP BACKGROUND PROCESS TO FOR LISTENING
                 _threadListener = new Thread(new ThreadStart(BgListen))
@@ -228,7 +228,7 @@ namespace SocketMeister
                 }
                 catch (Exception ex)
                 {
-                    NotifyTraceEventRaised(ex, 5008);
+                    NotifyLogRaised(ex, 5008);
                 }
             }
         }
@@ -253,7 +253,7 @@ namespace SocketMeister
                 }
                 catch (Exception ex)
                 {
-                    NotifyTraceEventRaised(ex, 5008);
+                    NotifyLogRaised(ex, 5008);
                 }
             }
         }
@@ -328,7 +328,7 @@ namespace SocketMeister
                 }
                 catch (Exception ex)
                 {
-                    NotifyTraceEventRaised(ex, 5013);
+                    NotifyLogRaised(ex, 5013);
                 }
             });
 
@@ -413,7 +413,7 @@ namespace SocketMeister
                     }
                     catch (Exception ex)
                     {
-                        NotifyTraceEventRaised(ex, 5008);
+                        NotifyLogRaised(ex, 5008);
                     }
                 });
             }
@@ -500,10 +500,10 @@ namespace SocketMeister
                             }
                             catch (Exception ex)
                             {
-                                NotifyTraceEventRaised(ex, 5008);
+                                NotifyLogRaised(ex, 5008);
                             }
                             ClientDisconnectingNotificationV1 msg = receiveEnvelope.GetClientDisconnectingNotificationV1();
-                            NotifyTraceEventRaised(new TraceEventArgs(msg.ClientMessage, Severity.Information, 2345));
+                            NotifyLogRaised(new LogEventArgs(new LogEntry(msg.ClientMessage, Severity.Information, LogEventType.ConnectionEvent)));
                         }
 
                         else if (receiveEnvelope.MessageType == MessageType.PollingRequestV1)
@@ -545,7 +545,7 @@ namespace SocketMeister
                             }
 
                             //  Unknown message received. The client may be a newer version of SocketMeister. Raise a message and ignore
-                            NotifyTraceEventRaised(new Exception("ReadCallback() encountered an Unknown message type received (" + receiveEnvelope.MessageType.ToString() + "). The server may be running a newer version of SocketMeister"), 4665);
+                            NotifyLogRaised(new Exception("ReadCallback() encountered an Unknown message type received (" + receiveEnvelope.MessageType.ToString() + "). The server may be running a newer version of SocketMeister"), 4665);
 
                         }
                     }
@@ -559,12 +559,12 @@ namespace SocketMeister
             {
                 _connectedClients.Disconnect(remoteClient);
                 //  CONNECTION RESET EVENTS ARE NORMAL. WE DON'T WANT EVENT LOGS FULL OF THESE DISCONNECT MESSAGES
-                if (ex.SocketErrorCode != SocketError.ConnectionReset) NotifyTraceEventRaised(ex, 5008);
+                if (ex.SocketErrorCode != SocketError.ConnectionReset) NotifyLogRaised(ex, 5008);
             }
             catch (Exception ex)
             {
                 _connectedClients.Disconnect(remoteClient);
-                NotifyTraceEventRaised(ex, 5008);
+                NotifyLogRaised(ex, 5008);
             }
         }
 
@@ -594,7 +594,7 @@ namespace SocketMeister
             catch (Exception ex)
             {
                 Status = SocketServerStatus.Stopped;
-                NotifyTraceEventRaised(ex, 5008);
+                NotifyLogRaised(ex, 5008);
             }
         }
 
@@ -608,7 +608,7 @@ namespace SocketMeister
             }
             catch (Exception ex)
             {
-                NotifyTraceEventRaised(ex, 5008);
+                NotifyLogRaised(ex, 5008);
             }
         }
 
@@ -631,7 +631,7 @@ namespace SocketMeister
             }
             catch (Exception ex)
             {
-                NotifyTraceEventRaised(ex, 5008);
+                NotifyLogRaised(ex, 5008);
             }
         }
 
@@ -645,7 +645,7 @@ namespace SocketMeister
             }
             catch (Exception ex)
             {
-                NotifyTraceEventRaised(ex, 5008);
+                NotifyLogRaised(ex, 5008);
             }
         }
 
@@ -676,7 +676,7 @@ namespace SocketMeister
             }
             catch (Exception ex)
             {
-                NotifyTraceEventRaised(ex, 5008);
+                NotifyLogRaised(ex, 5008);
                 MessageResponseV1 response = new MessageResponseV1(message.MessageId, ex);
                 message.RemoteClient.SendIMessage(response, false);
             }
@@ -697,20 +697,20 @@ namespace SocketMeister
         }
 
 
-        private void NotifyTraceEventRaised(Exception ex, int ErrorNumber)
+        private void NotifyLogRaised(Exception ex, int ErrorNumber)
         {
-            NotifyTraceEventRaised(new TraceEventArgs(ex, ErrorNumber));
+            NotifyLogRaised(new LogEventArgs(new LogEntry(ex, ErrorNumber)));
         }
 
 
-        private void NotifyTraceEventRaised(TraceEventArgs args)
+        private void NotifyLogRaised(LogEventArgs args)
         {
             // Raise event in the background using a Task
             Task.Run(() =>
             {
                 try
                 {
-                    TraceEventRaised?.Invoke(this, args);
+                    LogRaised?.Invoke(this, args);
                 }
                 catch
                 {
@@ -730,7 +730,7 @@ namespace SocketMeister
             }
             catch (Exception ex)
             {
-                NotifyTraceEventRaised(ex, 5008);
+                NotifyLogRaised(ex, 5008);
             }
         }
 
@@ -773,9 +773,9 @@ namespace SocketMeister
             });
         }
 
-        private void ConnectedClients_ExceptionRaised(object sender, TraceEventArgs e)
+        private void ConnectedClients_ExceptionRaised(object sender, LogEventArgs e)
         {
-            NotifyTraceEventRaised(e);
+            NotifyLogRaised(e);
         }
 
 
