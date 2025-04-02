@@ -49,20 +49,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="..\SocketMeister.MiniTestClient\ClientControl.xaml.cs">
-      <Link>ClientControl.xaml.cs</Link>
-      <DependentUpon>ClientControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="..\SocketMeister.MiniTestClient\MainWindow.xaml.cs">
-      <Link>MainWindow.xaml.cs</Link>
-      <DependentUpon>MainWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ClientControl.xaml.cs">
+      <DependentUpon>ClientControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -98,13 +96,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="..\SocketMeister.MiniTestClient\ClientControl.xaml">
-      <Link>ClientControl.xaml</Link>
+    <Page Include="ClientControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="..\SocketMeister.MiniTestClient\MainWindow.xaml">
-      <Link>MainWindow.xaml</Link>
+    <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

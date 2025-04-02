@@ -13,7 +13,11 @@ namespace SocketMeister
     /// This logger is thread safe. It reduces the number of background threads used for raising
     /// logging events by batching log entries and processing them in a single background thread.
     /// </summary>
-    public class Logger : IDisposable
+#if SMISPUBLIC
+    public partial class Logger : IDisposable
+#else
+    internal partial class Logger : IDisposable
+#endif
     {
         private bool _disposed = false;
         private readonly object _lock = new object();

@@ -5,7 +5,11 @@ namespace SocketMeister
     /// <summary>
     /// Log entry details, emitted by the logger.
     /// </summary>
-    public class LogEntry
+#if SMISPUBLIC
+    public partial class LogEntry
+#else
+    internal partial class LogEntry
+#endif
     {
         private readonly LogEventType _eventType;
         private readonly Exception _exception;

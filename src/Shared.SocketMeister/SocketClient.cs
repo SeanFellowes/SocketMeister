@@ -71,7 +71,6 @@ namespace SocketMeister
         private bool _stopClientPermanently;
         private readonly object _stopClientPermanentlyLock = new object();
         private readonly TokenCollection _subscriptions = new TokenCollection();
-        private bool _subscriptionsSendTrigger;
         private readonly UnrespondedMessageCollection _unrespondedMessages = new UnrespondedMessageCollection();
 
         /// <summary>
@@ -128,7 +127,7 @@ namespace SocketMeister
             _receiveEngine = new MessageEngine(EnableCompression);
 
             //  Logger
-            _logger.LogRaised += _logger_LogRaised;
+            _logger.LogRaised += Logger_LogRaised;
 
             //  STATIC BUFFERS
             _pollingBuffer = MessageEngine.GenerateSendBytes(new PollingRequestV1(), false);
@@ -154,7 +153,7 @@ namespace SocketMeister
             StartBackgroundWorker();
         }
 
-        private void _logger_LogRaised(object sender, LogEventArgs e)
+        private void Logger_LogRaised(object sender, LogEventArgs e)
         {
             LogRaised?.Invoke(this, e);
             if (ExceptionRaised != null && !(e.LogEntry.Exception == null))

@@ -6,7 +6,11 @@ namespace SocketMeister
     /// <summary>
     /// Log event details.
     /// </summary>
-    public class LogEventArgs : EventArgs
+#if SMISPUBLIC
+    public partial class LogEventArgs : EventArgs
+#else
+    internal partial class LogEventArgs : EventArgs
+#endif
     {
         private readonly LogEntry _logEntry;
 
