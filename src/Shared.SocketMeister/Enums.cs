@@ -1,4 +1,6 @@
-﻿namespace SocketMeister
+﻿using System;
+
+namespace SocketMeister
 {
     internal enum ClientDisconnectReason
     {
@@ -183,7 +185,11 @@
     /// <summary>
     /// Severity of a trace/log event
     /// </summary>
+#if SMISPUBLIC
     public enum Severity
+#else
+    internal enum Severity
+#endif
     {
         /// <summary>
         /// Information
@@ -207,7 +213,11 @@
     /// <summary>
     /// Category of a trace/log event
     /// </summary>
+#if SMISPUBLIC
     public enum LogEventType
+#else
+    internal enum LogEventType
+#endif
     {
         /// <summary>
         /// Connection event

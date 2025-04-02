@@ -11,7 +11,7 @@
     <RepositoryUrl>https://github.com/SeanFellowes/SocketMeister</RepositoryUrl>
     <PackageTags>tcp socket</PackageTags>
     <Company>Sean Fellowes</Company>
-    <PackageReleaseNotes>SocketMeister 10.2.1. Small bug fix. Wrapped access modifier for logging classes and events in compiler directive SMISPUBLIC to match other classes. This resolved an issue where SockeMeister.Sources was included in a DLL then referenced by another program also using SocketMeister.
+    <PackageReleaseNotes>SocketMeister 10.2.1 and 10.2.2. Wrapped access modifier for logging classes and events in compiler directive SMISPUBLIC to match other classes. This resolved an issue where SockeMeister.Sources was included in a DLL then referenced by another program also using SocketMeister.
 
 SocketMeister 10.2.0 SocketServer replaces the TraceEventRaised event with a LogRaised event for consistency with SocketClient in version 10.1.0.
 
@@ -34,9 +34,9 @@ SocketClient class has an additional event called TraceEventRaised, which provid
     <DocumentationFile></DocumentationFile>
     <PackageIcon>icon_128.png</PackageIcon>
     <SelfContained>true</SelfContained>
-    <Version>10.2.1</Version>
-    <AssemblyVersion>10.2.1.0</AssemblyVersion>
-    <FileVersion>10.2.1.0</FileVersion>
+    <Version>10.2.2</Version>
+    <AssemblyVersion>10.2.2.0</AssemblyVersion>
+    <FileVersion>10.2.2.0</FileVersion>
     <PackageReadmeFile>NuGetDocumentation.md</PackageReadmeFile>
     <Title>SocketMeister</Title>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
