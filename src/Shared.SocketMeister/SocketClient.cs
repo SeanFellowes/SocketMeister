@@ -914,6 +914,9 @@ namespace SocketMeister
                         ProcessReceive(null, _asyncEventArgsReceive);
                     }
 
+                    //  Internally, we are connected, but ConnectionStatus property must continue to show Connecting until handshake is completed.
+                    InternalConnectionStatus = ConnectionStatuses.Connected;
+
                     // Start a new thread to complete the handshake.
                     // Note: Server will send Handshake1 message.
                     Thread handshakeThread = new Thread(new ThreadStart(BgCompleteHandshake));
@@ -922,9 +925,6 @@ namespace SocketMeister
 
                     //  Reset the last poll response time
                     LastPollResponse = DateTime.UtcNow;
-
-                    //  Internally, we are connected, but ConnectionStatus property must continue to show Connecting until handshake is completed.
-                    InternalConnectionStatus = ConnectionStatuses.Connected;
                 }
                 else if (e.SocketError == SocketError.TimedOut)
                 {
