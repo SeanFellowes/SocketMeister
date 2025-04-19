@@ -1023,10 +1023,14 @@ namespace SocketMeister
                 Thread.Sleep(25);
             }
 
-            if (StopClientPermanently || InternalConnectionStatus != ConnectionStatuses.Connected)
+            if (StopClientPermanently)
             {
-                Log(new Exception("Connection reset before Handshake response acklowlegement received."));
                 return;
+            }
+            else if (InternalConnectionStatus != ConnectionStatuses.Connected)
+            {
+                Log(new Exception("Connection reset before handshake completed."));
+                Disconnect(SocketHasErrored: false, ClientDisconnectReason.ConnectionReset, traceMsg);
             }
             else if (!HandshakeCompleted)
             {
