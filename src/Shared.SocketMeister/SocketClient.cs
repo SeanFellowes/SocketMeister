@@ -985,14 +985,14 @@ namespace SocketMeister
             }
             if (!Handshake1Received)
             {
-                traceMsg = $"Handshake1 was not received within {timeoutSeconds} seconds. Disconnecting.";
+                traceMsg = $"Handshake was not received within {timeoutSeconds} seconds. Disconnecting.";
                 Log(new Exception(traceMsg));
                 Disconnect(SocketHasErrored: false, ClientDisconnectReason.HandshakeTimeout, traceMsg);
                 return;
             }
 
             //  Validate Handshake1 message 
-            traceMsg = $"Handshake1 received from server. Server version {ServerSocketMeisterVersion}";
+            traceMsg = $"Handshake received. Server version {ServerSocketMeisterVersion}";
             if (ServerSocketMeisterVersion < Constants.SOCKET_MEISTER_VERSION)
             {
                 traceMsg += $" is older than this client version ({Constants.SOCKET_MEISTER_VERSION}).";
@@ -1014,8 +1014,8 @@ namespace SocketMeister
             }
 
             //  SEND Handshake2 TO THE SERVER
-            Log("Sending Handshake2 to server...", Severity.Information, LogEventType.ConnectionEvent);
             SendFastMessage(new Handshake2(Constants.SOCKET_MEISTER_VERSION, FriendlyName, _subscriptions.SerializeTokens(), isServerVersionSupported));
+            Log("Handshake response sent", Severity.Information, LogEventType.ConnectionEvent);
 
             //  WAIT TO RECEIVE A Handshake2Ack MESSAGE FROM THE SERVER
             while (DateTime.UtcNow < timeout && !Handshake2AckReceived && !StopClientPermanently && InternalConnectionStatus == ConnectionStatuses.Connected)
@@ -1025,12 +1025,12 @@ namespace SocketMeister
 
             if (StopClientPermanently || InternalConnectionStatus != ConnectionStatuses.Connected)
             {
-                Log(new Exception("Connection reset before Handshake2Ack received."));
+                Log(new Exception("Connection reset before Handshake response acklowlegement received."));
                 return;
             }
             else if (!HandshakeCompleted)
             {
-                traceMsg = $"Handshake2 could not be completed within {timeoutSeconds} seconds. Disconnecting.";
+                traceMsg = $"Handshake could not be completed within {timeoutSeconds} seconds. Disconnecting.";
                 Log(new Exception(traceMsg));
                 Disconnect(SocketHasErrored: false, ClientDisconnectReason.HandshakeTimeout, traceMsg);
             }
@@ -1641,53 +1641,6 @@ namespace SocketMeister
             LogEntry log = new LogEntry(ex,messageId);
             _logger.Log(log);
         }
-
-
-//        private void CreateLogEvent(TraceEventArgs args, Exception ex = null)
-//        {
-//#if NET35  // Compiler directive for code which will be compiled to .NET 3.5. This provides a less efficient but workable solution to the desired functional requirements.
-//            new Thread(new ThreadStart(delegate
-//            {
-//                try
-//                {
-//                    Debug.WriteLine(args.Message);
-//                    if ((ex != null || args.Severity == Severity.Error) && ExceptionRaised != null)
-//                    {
-//                        if (ex != null)
-//                            ExceptionRaised(this, new ExceptionEventArgs(ex, args.EventId));
-//                        else
-//                            ExceptionRaised(this, new ExceptionEventArgs(new Exception(args.Message), args.EventId));
-//                    }
-//                    //////LogEventRaised?.Invoke(this, args);
-//                }
-//                catch (Exception ex1)
-//                {
-//                    Debug.WriteLine($"Error in {nameof(NotifyTraceEventRaised)}: {ex1}");
-//                }
-//            }))
-//            { IsBackground = true }.Start();
-//#else
-//            Task.Run(() =>
-//            {
-//                try
-//                {
-//                    Debug.WriteLine(args.Message);
-//                    if ((ex != null || args.Severity == Severity.Error) && ExceptionRaised != null)
-//                    {
-//                        if (ex != null)
-//                            ExceptionRaised(this, new ExceptionEventArgs(ex, args.EventId));
-//                        else
-//                            ExceptionRaised(this, new ExceptionEventArgs(new Exception(args.Message), args.EventId));
-//                    }
-//                    //////LogEventRaised?.Invoke(this, args);
-//                }
-//                catch (Exception ex1)
-//                {
-//                    Debug.WriteLine($"Error in {nameof(NotifyTraceEventRaised)}: {ex1}");
-//                }
-//            });
-//#endif
-//        }
     }
 }
 
