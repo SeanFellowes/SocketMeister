@@ -1,8 +1,7 @@
 name: Build & Deploy Docs
 on:
   push:
-    branches: [ main ]
-    paths: [ '**.md', 'docfx.json', 'docs/**', 'src/**.cs', '.github/workflows/docs.yml' ]
+    branches: [ main ]        # or Main – must match exactly
 
 jobs:
   build:
@@ -14,12 +13,16 @@ jobs:
         run: dotnet tool update -g docfx
 
       - name: Build docs
-        run: docfx build -o _site
+        run: docfx build -o _site --template default
 
-      - name: Deploy to gh-pages
-        uses: peaceiris/actions-gh-pages@v4
+      # NEW — bundle the _site folder as artifact "github-pages"
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: ./_site
-          force_orphan: true      # keeps history small; optional
+          path: ./_site         # must match build output
+          name: github-pages    # deploy‑pages looks for this exact name
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
