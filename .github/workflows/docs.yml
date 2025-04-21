@@ -1,16 +1,22 @@
 name: Build & Deploy Docs
+
 on:
   push:
-    branches: [ main ]          # or Main – match the real name
+    branches: [ main ]        # or Main  ← must match exact branch name
+    paths: [ '**.md', 'docs/**', 'docfx.json', 'src/**', '.github/workflows/docs.yml' ]
 
-# NEW ─────────────────────────────────────────────────────────
+# required scopes for Pages
 permissions:
-  contents: read        # checkout & read the repo
-  pages: write          # create/update the Pages deployment
-  id-token: write       # OIDC token required by deploy-pages
-# ─────────────────────────────────────────────────────────────
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: 'pages'
+  cancel-in-progress: true
 
 jobs:
+  # ---------- Build job ----------
   build:
     runs-on: ubuntu-latest
     steps:
@@ -25,8 +31,24 @@ jobs:
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./_site          # folder that contains index.html
-          name: github-pages
+          path: ./_site          # folder containing index.html
 
+  # ---------- Deploy job ----------
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    # THIS is what the error asked for
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+
+    steps:
       - name: Deploy to GitHub Pages
+        id: deployment
         uses: actions/deploy-pages@v4
