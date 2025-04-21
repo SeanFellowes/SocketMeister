@@ -17,31 +17,32 @@ namespace SocketMeister
         internal class Clients
         {
             private readonly ConcurrentDictionary<string, Client> _clientDictionary = new ConcurrentDictionary<string, Client>();
-
             private readonly Logger _logger;
+
             /// <summary>
-            /// Event raised when a client connects to the socket server (Raised in a separate thread)
+            /// Event raised when a client connects to the socket server. This event is raised in a separate thread.
             /// </summary>
             public event EventHandler<ClientEventArgs> ClientConnected;
 
             /// <summary>
-            /// Event raised when a client disconnects from the socket server (Raised in a separate thread)
+            /// Event raised when a client disconnects from the socket server. This event is raised in a separate thread.
             /// </summary>
             public event EventHandler<ClientEventArgs> ClientDisconnected;
 
-            public Clients(Logger logger) 
+            public Clients(Logger logger)
             {
                 _logger = logger;
             }
 
             /// <summary>
-            /// Total number of syschronous and asynchronous clients connected
+            /// Gets the total number of synchronous and asynchronous clients connected.
             /// </summary>
-            public int Count
-            {
-                get { return _clientDictionary.Count; }
-            }
+            public int Count => _clientDictionary.Count;
 
+            /// <summary>
+            /// Adds a client to the collection and notifies that the client has connected.
+            /// </summary>
+            /// <param name="client">The client to add.</param>
             public void Add(Client client)
             {
                 if (client == null) return;
@@ -49,13 +50,15 @@ namespace SocketMeister
                 NotifyClientConnected(client);
             }
 
+            /// <summary>
+            /// Disconnects a client and removes it from the collection.
+            /// </summary>
+            /// <param name="client">The client to disconnect.</param>
             public void Disconnect(Client client)
             {
                 if (client == null) return;
 
-                //  Abort any outbound messages where a response has not been received
-               
-
+                // Abort any outbound messages where a response has not been received
                 _ = _clientDictionary.TryRemove(client.ClientId, out Client deletedClient);
 
                 try { client.ClientSocket.Shutdown(SocketShutdown.Both); }
@@ -68,9 +71,9 @@ namespace SocketMeister
             }
 
             /// <summary>
-            /// Remove a client from the list
+            /// Removes a client from the collection without disconnecting its socket.
             /// </summary>
-            /// <param name="client">Client to remove</param>
+            /// <param name="client">The client to remove.</param>
             public void Remove(Client client)
             {
                 if (client == null) return;
@@ -78,6 +81,9 @@ namespace SocketMeister
                 NotifyClientDisconnected(client);
             }
 
+            /// <summary>
+            /// Disconnects all clients in the collection.
+            /// </summary>
             public void DisconnectAll()
             {
                 Parallel.ForEach(ToList(), client =>
@@ -93,43 +99,52 @@ namespace SocketMeister
                 });
             }
 
+            /// <summary>
+            /// Notifies that a client has connected by raising the <see cref="ClientConnected"/> event.
+            /// </summary>
+            /// <param name="client">The client that connected.</param>
             private void NotifyClientConnected(Client client)
             {
                 Task.Run(() => ClientConnected?.Invoke(null, new ClientEventArgs(client)));
             }
 
+            /// <summary>
+            /// Notifies that a client has disconnected by raising the <see cref="ClientDisconnected"/> event.
+            /// </summary>
+            /// <param name="client">The client that disconnected.</param>
             private void NotifyClientDisconnected(Client client)
             {
                 Task.Run(() => ClientDisconnected?.Invoke(null, new ClientEventArgs(client)));
             }
 
-            //private void NotifyLogRaised(Exception error)
-            //{
-            //    var msg = error.ToString(); // Includes message, stack trace, and inner exception details.
-            //    Task.Run(() => LogRaised?.Invoke(this, new LogEventArgs(new LogEntry(error, 5008))));
-            //}
-
             /// <summary>
-            /// Returns a list of clients which are connected to the socket server
+            /// Returns a list of clients currently connected to the socket server.
             /// </summary>
-            /// <returns>List of clients</returns>
+            /// <returns>A list of connected clients.</returns>
             public List<Client> ToList()
             {
                 return _clientDictionary.Values.ToList();
             }
 
+            /// <summary>
+            /// Gets a list of clients that have subscriptions to a specific subscription name.
+            /// </summary>
+            /// <param name="subscriptionName">The name of the subscription to search for.</param>
+            /// <returns>A list of clients with the specified subscription.</returns>
             internal List<Client> GetClientsWithSubscriptions(string subscriptionName)
             {
-                List<Client> rVal = new List<Client>();
+                List<Client> result = new List<Client>();
                 ICollection<Client> clients = _clientDictionary.Values;
+
                 foreach (var client in clients)
                 {
                     if (client != null && client.SubscriptionCount == 0) continue;
-                    
+
                     if (client.DoesSubscriptionExist(subscriptionName))
-                        rVal.Add(client);
+                        result.Add(client);
                 }
-                return rVal;
+
+                return result;
             }
         }
     }

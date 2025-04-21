@@ -12,50 +12,48 @@ namespace SocketMeister
 #endif
     {
         /// <summary>
-        /// Provided for client specific events.
+        /// Provides information for client-specific events.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Will be resolved in future version")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Will be resolved in a future version")]
         public class ClientEventArgs : EventArgs
         {
-            internal ClientEventArgs(Client Client)
+            internal ClientEventArgs(Client client)
             {
-                this.Client = Client;
+                this.Client = client;
             }
 
             /// <summary>
-            /// The client which connected
+            /// Gets the client that triggered the event.
             /// </summary>
             public Client Client { get; }
         }
 
-
         /// <summary>
-        /// Values provided when a request is received from a client. 
+        /// Provides values when a request is received from a client.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Will be resolved in future version")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Will be resolved in a future version")]
         public class MessageReceivedEventArgs : EventArgs
         {
-            internal MessageReceivedEventArgs(Client Client, object[] Parameters)
+            internal MessageReceivedEventArgs(Client client, object[] parameters)
             {
-                this.Client = Client;
-                this.Parameters = Parameters;
+                this.Client = client;
+                this.Parameters = parameters;
             }
 
             /// <summary>
-            /// The byte array which is to be returned to the client. Null is returned if a 'Response' value is not provided when processing the 'MessageReceived' event.
+            /// Gets or sets the byte array to be returned to the client. If a 'Response' value is not provided when processing the 'MessageReceived' event, null is returned.
             /// </summary>
             public byte[] Response { get; set; } = null;
 
             /// <summary>
-            /// The client which initiated the message.
+            /// Gets the client that initiated the message.
             /// </summary>
             public Client Client { get; private set; }
 
             /// <summary>
-            /// The parameters provided with the message.
+            /// Gets the parameters provided with the message.
             /// </summary>
             public object[] Parameters { get; private set; }
-
         }
     }
 }

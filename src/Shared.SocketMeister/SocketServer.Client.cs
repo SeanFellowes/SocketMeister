@@ -14,7 +14,7 @@ namespace SocketMeister
 #endif
     {
         /// <summary>
-        /// Remote client which has connected to the socket server
+        /// Represents a remote client that has connected to the socket server.
         /// </summary>
         public class Client : IDisposable
         {
@@ -32,18 +32,18 @@ namespace SocketMeister
             private readonly TokenCollectionReadOnly _subscriptions = new TokenCollectionReadOnly();
             private readonly UnrespondedMessageCollection _unrespondedMessages = new UnrespondedMessageCollection();
 
-            internal Client(SocketServer Server, Socket ClientSocket, bool CompressSentData)
+            internal Client(SocketServer server, Socket clientSocket, bool compressSentData)
             {
-                _socketServer = Server;
+                _socketServer = server;
                 _clientId = Guid.NewGuid().ToString();
-                _clientSocket = ClientSocket;
-                _compressSentData = CompressSentData;
-                _receiveEngine = new MessageEngine(CompressSentData);
+                _clientSocket = clientSocket;
+                _compressSentData = compressSentData;
+                _receiveEngine = new MessageEngine(compressSentData);
                 _sendCallback = SendCallback; // Cache the delegate
             }
 
             /// <summary>
-            /// Dispose of the class
+            /// Disposes of the resources used by the class.
             /// </summary>
             public void Dispose()
             {
@@ -57,7 +57,7 @@ namespace SocketMeister
 
                 if (disposing)
                 {
-                    // Dispose managed resources
+                    // Dispose of managed resources
                     _unrespondedMessages.Clear(); // Explicitly clear any remaining references
                     _clientSocket.Dispose();
                     _subscriptions.Dispose();
@@ -67,7 +67,7 @@ namespace SocketMeister
             }
 
             /// <summary>
-            /// Finalizer
+            /// Finalizer to ensure resources are released.
             /// </summary>
             ~Client()
             {
@@ -75,32 +75,31 @@ namespace SocketMeister
             }
 
             /// <summary>
-            /// GUID assigned to the client by the server, when it connects.
+            /// Gets the GUID assigned to the client by the server when it connects.
             /// </summary>
             public string ClientId => _clientId;
 
-
             /// <summary>
-            /// Socket which the client is transmitting data on.
+            /// Gets the socket used by the client for data transmission.
             /// </summary>
             internal Socket ClientSocket => _clientSocket;
 
             /// <summary>
-            /// The version of SocketMeister used by the client.
+            /// Gets or sets the version of SocketMeister used by the client.
             /// </summary>
             public int ClientSocketMeisterVersion
             {
-                get { return _clientSocketMeisterVersion; }
-                set { _clientSocketMeisterVersion = value; }
+                get => _clientSocketMeisterVersion;
+                set => _clientSocketMeisterVersion = value;
             }
 
             /// <summary>
-            /// Date and time which the client connected.
+            /// Gets the date and time when the client connected.
             /// </summary>
             public DateTime ConnectTimestamp => _connectTimestamp;
 
             /// <summary>
-            /// A friendly name for the client. You application can set this to help identify the client in logs and error handling.
+            /// Gets or sets a friendly name for the client. This can be used to help identify the client in logs and error handling.
             /// </summary>
             public string FriendlyName
             {
@@ -108,57 +107,52 @@ namespace SocketMeister
                 set { lock (_friendlyNameLock) { _friendlyName = value; } }
             }
 
-
             /// <summary>
-            /// Byte array to directly receive data from the socket. 
+            /// Byte array used to directly receive data from the socket.
             /// </summary>
             internal byte[] ReceiveBuffer = new byte[Constants.SEND_RECEIVE_BUFFER_SIZE];
 
             /// <summary>
-            /// Class which processes raw data directly from the socket and converts into usable messages.
+            /// Gets the class that processes raw data from the socket and converts it into usable messages.
             /// </summary>
             internal MessageEngine ReceiveEngine => _receiveEngine;
 
             /// <summary>
-            /// The number of subscriptions for this client
+            /// Gets the number of subscriptions for this client.
             /// </summary>
             public int SubscriptionCount => _subscriptions.Count;
 
             /// <summary>
-            /// Messages sent to the client in which there has been no response
+            /// Gets the collection of messages sent to the client that have not yet received a response.
             /// </summary>
-            internal UnrespondedMessageCollection UnrespondedMessages
-            {
-                get { return _unrespondedMessages; }
-            }
-
+            internal UnrespondedMessageCollection UnrespondedMessages => _unrespondedMessages;
 
             /// <summary>
-            /// Whether a subscription exists. 
+            /// Checks whether a subscription exists.
             /// </summary>
-            /// <param name="SubscriptionName">Name of the subscription (Case insensitive).</param>
-            /// <returns>True if exists, false if the subscription does not exist</returns>
-            public bool DoesSubscriptionExist(string SubscriptionName)
+            /// <param name="subscriptionName">The name of the subscription (case-insensitive).</param>
+            /// <returns>True if the subscription exists; otherwise, false.</returns>
+            public bool DoesSubscriptionExist(string subscriptionName)
             {
-                return !string.IsNullOrEmpty(SubscriptionName) && _subscriptions[SubscriptionName] != null;
+                return !string.IsNullOrEmpty(subscriptionName) && _subscriptions[subscriptionName] != null;
             }
 
             /// <summary>
-            /// Get a list of subscription names
+            /// Gets a list of subscription names.
             /// </summary>
-            /// <returns>List of subscription names</returns>
+            /// <returns>A list of subscription names.</returns>
             public List<string> GetSubscriptions()
             {
-               return _subscriptions.ToListOfNames();
+                return _subscriptions.ToListOfNames();
             }
 
             /// <summary>
-            /// When a response is received for a sent message the received respons needs to attached to the original message. SocketServer class calls this
+            /// Associates a received response with the original message. This method is called by the SocketServer class.
             /// </summary>
-            /// <param name="ResponseMessage"></param>
-            internal void SetMessageResponseInUnrespondedMessages(MessageResponseV1 ResponseMessage)
+            /// <param name="responseMessage">The response message.</param>
+            internal void SetMessageResponseInUnrespondedMessages(MessageResponseV1 responseMessage)
             {
-                UnrespondedMessages.FindMessageAndSetResponse(ResponseMessage); //  Locking performed inside the class so not required here
+                UnrespondedMessages.FindMessageAndSetResponse(responseMessage); // Locking is performed inside the class, so it is not required here.
             }
 
             internal TokenChangesResponseV1 ImportSubscriptionChanges(TokenChangesRequestV1 request)
@@ -167,26 +161,25 @@ namespace SocketMeister
             }
 
             /// <summary>
-            /// During handshake the server sends the client its subscriptions. This method imports the subscriptions into the client
+            /// Imports subscriptions into the client during the handshake process.
             /// </summary>
-            /// <param name="subscriptionBytes">byte array containing the token information</param>
+            /// <param name="subscriptionBytes">A byte array containing the token information.</param>
             internal void ImportSubscriptions(byte[] subscriptionBytes)
             {
                 if (subscriptionBytes != null) _subscriptions.Initialize(subscriptionBytes);
             }
 
-
-            internal void SendIMessage(IMessage Message, bool Async = true)
+            internal void SendIMessage(IMessage message, bool async = true)
             {
                 if (_clientSocket?.Connected != true || !_clientSocket.Poll(200000, SelectMode.SelectWrite))
                     return;
 
                 try
                 {
-                    byte[] sendBytes = MessageEngine.GenerateSendBytes(Message, _compressSentData);
+                    byte[] sendBytes = MessageEngine.GenerateSendBytes(message, _compressSentData);
                     _socketServer.IncrementSentTotals(sendBytes.Length);
 
-                    if (Async == true)
+                    if (async)
                     {
                         ClientSocket.BeginSend(sendBytes, 0, sendBytes.Length, 0, _sendCallback, this);
                     }
@@ -211,10 +204,10 @@ namespace SocketMeister
             {
                 try
                 {
-                    // Retrieve the socket from the state object.  
+                    // Retrieve the socket from the state object.
                     Client remoteClient = (Client)ar.AsyncState;
 
-                    // Complete sending the data to the remote device.  
+                    // Complete sending the data to the remote device.
                     int bytesSent = remoteClient.ClientSocket.EndSend(ar);
                 }
                 catch (Exception ex)
@@ -224,27 +217,25 @@ namespace SocketMeister
                 }
             }
 
-
-
             /// <summary>
-            /// Send a message to the client and wait for a response. 
+            /// Sends a message to the client and waits for a response.
             /// </summary>
-            /// <param name="Parameters">Array of parameters to send with the message</param>
-            /// <param name="TimeoutMilliseconds">Maximum number of milliseconds to wait for a response from the server</param>
-            /// <param name="IsLongPolling">If the message is long polling on the server mark this as true and the message will be cancelled instantly when a disconnect occurs</param>
-            /// <returns>Nullable array of bytes which was returned from the socket server</returns>
-            public byte[] SendMessage(object[] Parameters, int TimeoutMilliseconds = 60000, bool IsLongPolling = false)
+            /// <param name="parameters">An array of parameters to send with the message.</param>
+            /// <param name="timeoutMilliseconds">The maximum number of milliseconds to wait for a response from the server.</param>
+            /// <param name="isLongPolling">Indicates whether the message is long-polling on the server. If true, the message will be canceled instantly when a disconnect occurs.</param>
+            /// <returns>A nullable array of bytes returned from the socket server.</returns>
+            public byte[] SendMessage(object[] parameters, int timeoutMilliseconds = 60000, bool isLongPolling = false)
             {
-                if (Parameters == null || Parameters.Length == 0)
-                    throw new ArgumentException("Message parameters cannot be null or empty.", nameof(Parameters));
+                if (parameters == null || parameters.Length == 0)
+                    throw new ArgumentException("Message parameters cannot be null or empty.", nameof(parameters));
 
                 // Wait for the server to start or timeout
                 if (_socketServer.Status == SocketServerStatus.Starting)
                 {
-                    bool serverStarted = _socketServer.ServerStarted.Wait(TimeoutMilliseconds);
+                    bool serverStarted = _socketServer.ServerStarted.Wait(timeoutMilliseconds);
                     if (!serverStarted)
                     {
-                        throw new TimeoutException($"The server did not finish starting within the timeout of {TimeoutMilliseconds} milliseconds. Please check the server logs for potential issues.");
+                        throw new TimeoutException($"The server did not finish starting within the timeout of {timeoutMilliseconds} milliseconds. Please check the server logs for potential issues.");
                     }
                 }
 
@@ -253,11 +244,11 @@ namespace SocketMeister
                     throw new InvalidOperationException("The socket server is not in the 'Started' state.");
 
                 // Create and initialize the message
-                var message = new MessageV1(Parameters, TimeoutMilliseconds, IsLongPolling);
+                var message = new MessageV1(parameters, timeoutMilliseconds, isLongPolling);
 
                 try
                 {
-                    UnrespondedMessages.Add(message);   //  Locking performed inside the class so not required here
+                    UnrespondedMessages.Add(message); // Locking is performed inside the class, so it is not required here.
 
                     // Generate bytes and prepare to send
                     byte[] sendBytes = MessageEngine.GenerateSendBytes(message, false);
@@ -269,7 +260,7 @@ namespace SocketMeister
                     SendIMessage(message, true); // Attempt to send the message
                     message.SetStatusInProgress();
 
-                    // Wait for a response. 
+                    // Wait for a response.
                     message.WaitForResponseOrTimeout();
 
                     if (message.Response != null)
@@ -283,12 +274,12 @@ namespace SocketMeister
                     if (message.Error != null)
                         throw message.Error;
 
-                    throw new Exception("There was no message response");
+                    throw new Exception("No response was received for the message.");
                 }
                 finally
                 {
-                    // Clean up message and associated resources
-                    UnrespondedMessages.Remove(message);   //  Locking performed inside the class so not required here
+                    // Clean up the message and associated resources
+                    UnrespondedMessages.Remove(message); // Locking is performed inside the class, so it is not required here.
                 }
             }
         }
