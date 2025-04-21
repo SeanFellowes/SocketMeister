@@ -7,7 +7,7 @@
     <Authors>Sean Fellowes</Authors>
     <Description>Performant TCP socket server and client for .NET. Client features automated reconnect within single and multiple server environments.</Description>
     <Copyright>Copyright © 2010-2025 Sean Fellowes</Copyright>
-    <PackageProjectUrl>https://github.com/SeanFellowes/SocketMeister</PackageProjectUrl>
+    <PackageProjectUrl>https://seanfellowes.github.io/SocketMeister/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/SeanFellowes/SocketMeister</RepositoryUrl>
     <PackageTags>tcp socket</PackageTags>
     <Company>Sean Fellowes</Company>
