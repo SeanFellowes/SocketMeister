@@ -13,6 +13,8 @@ namespace SocketMeister
 {
     /// <summary>
     /// Asynchronous, persistent TCP/IP socket client supporting multiple endpoints.
+    /// Implements <see cref="System.IDisposable"/>.
+    /// For proper cleanup, see <see cref="Dispose()"/> and <see cref="Dispose(bool)"/>.
     /// </summary>
 #if SMISPUBLIC
     public partial class SocketClient : IDisposable
@@ -231,8 +233,12 @@ namespace SocketMeister
 
 
         /// <summary>
-        /// Dispose of the class
+        /// Disposes of the resources used by this instance.
         /// </summary>
+        /// <remarks>
+        /// This method simply calls <see cref="Dispose(bool)"/> and then suppresses finalization.
+        /// For more details, see <see cref="Dispose(bool)"/> and <see cref="System.IDisposable.Dispose"/>.
+        /// </remarks>
         public void Dispose()
         {
             Dispose(true);
@@ -242,7 +248,10 @@ namespace SocketMeister
         /// <summary>
         /// Disposes of the class resources.
         /// </summary>
-        /// <param name="disposing">True if managed resources should be disposed.</param>
+        /// <param name="disposing">True if managed resources should be disposed; otherwise, false.</param>
+        /// <remarks>
+        /// See also <see cref="Dispose()"/> and <see cref="System.IDisposable.Dispose"/>.
+        /// </remarks>
         protected virtual void Dispose(bool disposing)
         {
             if (!_disposed)
@@ -563,11 +572,11 @@ namespace SocketMeister
                 if (InternalConnectionStatus == ConnectionStatuses.Disconnecting || InternalConnectionStatus == ConnectionStatuses.Disconnected) return;
                 CurrentEndPoint.SetDisconnected(Reason);
 
-                HandshakeCompleted = false;  // Sets all handshake flags to false
+                HandshakeCompleted = false;  // sets all handshake flags to false
 
                 if (SocketHasErrored == false)
                 {
-                    //  Attempt to send a disconnecting message to the server
+                    // attempt to send a disconnecting message to the server
                     try
                     {
                         Log("Sending disconnecting message to server", Severity.Information, LogEventType.ConnectionEvent);
@@ -579,10 +588,10 @@ namespace SocketMeister
                     }
                 }
 
-                //  Initiate Shutdown
+                // initiate shutdown
                 InternalConnectionStatus = ConnectionStatuses.Disconnecting;
 
-                //  Stop raising events when messages are received
+                // stop raising events when messages are received
                 try
                 {
                     if (_asyncEventArgsReceive != null)
@@ -964,7 +973,7 @@ namespace SocketMeister
         {
             string traceMsg;
 
-            //  WAIT FOR HANDSHAKE1 MESSAGE
+            // wait for handshake1 message
             Log($"Connected to {CurrentEndPoint.Description}. Awaiting handshake...", Severity.Information, LogEventType.ConnectionEvent);
             int timeoutSeconds = 30;
             DateTime timeout = DateTime.UtcNow.AddSeconds(timeoutSeconds);
@@ -974,7 +983,7 @@ namespace SocketMeister
             }
             if (StopClientPermanently || InternalConnectionStatus != ConnectionStatuses.Connected)
             {
-                traceMsg = $"Connection reset before receiving Handshake1.";
+                traceMsg = $"Connection reset before receiving handshake1.";
                 Log(new Exception(traceMsg));
                 Disconnect(SocketHasErrored: false, ClientDisconnectReason.ConnectionReset, traceMsg);
                 return;
@@ -987,7 +996,7 @@ namespace SocketMeister
                 return;
             }
 
-            //  Validate Handshake1 message 
+            // validate handshake1 message 
             traceMsg = $"Handshake received. Server version {ServerSocketMeisterVersion}";
             if (ServerSocketMeisterVersion < Constants.SOCKET_MEISTER_VERSION)
             {
@@ -1009,11 +1018,11 @@ namespace SocketMeister
                 isServerVersionSupported = true;
             }
 
-            //  SEND Handshake2 TO THE SERVER
+            // send handshake2 to the server
             SendFastMessage(new Handshake2(Constants.SOCKET_MEISTER_VERSION, FriendlyName, _subscriptions.SerializeTokens(), isServerVersionSupported));
             Log("Handshake response sent", Severity.Information, LogEventType.ConnectionEvent);
 
-            //  WAIT TO RECEIVE A Handshake2Ack MESSAGE FROM THE SERVER
+            // wait to receive a handshake2Ack message from the server
             while (DateTime.UtcNow < timeout && !Handshake2AckReceived && !StopClientPermanently && InternalConnectionStatus == ConnectionStatuses.Connected)
             {
                 Thread.Sleep(25);
@@ -1310,7 +1319,7 @@ namespace SocketMeister
         }
 
 
-        //  CALLED AFTER SendAsync COMPLETES
+        // called after SendAsync completes
         private void ProcessSend(object sender, SocketAsyncEventArgs e)
         {
             IMessage message = (IMessage)e.UserToken;
@@ -1341,9 +1350,9 @@ namespace SocketMeister
 
         private void RecycleSocketAsyncEventArgs(SocketAsyncEventArgs e)
         {
-            //  DESTROY THE SocketAsyncEventArgs USER TOKEN TO MINIMISE CHANCE OF MEMORY LEAK
+            // destroy the SocketAsyncEventArgs user token to minimize chance of memory leak
             e.UserToken = null;
-            //  FREE THE SocketAsyncEventArg SO IT CAN BE REUSED.
+            // free the SocketAsyncEventArgs so it can be reused.
             e.SetBuffer(new byte[2], 0, 2);
             _sendEventArgsPool.Push(e);
         }
@@ -1361,9 +1370,9 @@ namespace SocketMeister
 
             if (e.BytesTransferred == 0)
             {
-                // A graceful close scenario:
-                // 1. The client shutdowns send operations while continuing to receive any remaining data.
-                // 2. The server signals the end of data by eventually transmitting 0 bytes.
+                // a graceful close scenario:
+                // 1. the client shuts down send operations while continuing to receive any remaining data.
+                // 2. the server signals the end of data by eventually transmitting 0 bytes.
                 Disconnect(SocketHasErrored: true, ClientDisconnectReason.SocketError, "");
                 return;
             }

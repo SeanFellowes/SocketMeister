@@ -9,7 +9,7 @@ namespace SocketMeister
 #if SMISPUBLIC
     public class Token
 #else
-        internal class Token
+    internal class Token
 #endif
     {
         private bool _isReadOnly;

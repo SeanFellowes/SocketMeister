@@ -5,7 +5,7 @@ using System.Net.Sockets;
 namespace SocketMeister
 {
     /// <summary>
-    /// Client Socket to a SocketServer end point
+    /// Client <see cref="Socket"/> to a SocketServer end point.
     /// </summary>
 #if SMISPUBLIC
     public class SocketEndPoint : IDisposable
@@ -24,10 +24,11 @@ namespace SocketMeister
         private readonly object _socketLock = new object();
 
         /// <summary>
-        /// Default constructor
+        /// Default constructor.
         /// </summary>
-        /// <param name="IPAddress">IP Address of the server to connect to</param>
-        /// <param name="Port">Port number of the socket listener to connect to</param>
+        /// <param name="IPAddress">IP Address of the server to connect to.</param>
+        /// <param name="Port">Port number of the socket listener to connect to.</param>
+        /// <exception cref="ArgumentException">Thrown when <paramref name="IPAddress"/> is null, empty, or invalid, or when <paramref name="Port"/> is out of range.</exception>
         public SocketEndPoint(string IPAddress, int Port)
         {
             //  VALIDATE
@@ -71,9 +72,9 @@ namespace SocketMeister
         }
 
         /// <summary>
-        /// Dispose of the class
+        /// Dispose of the class.
         /// </summary>
-        /// <param name="disposing"></param>
+        /// <param name="disposing">Indicates whether the method is called from <see cref="Dispose()"/> or a finalizer.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (disposing && IsDisposed == false)
@@ -101,7 +102,7 @@ namespace SocketMeister
 
 
         /// <summary>
-        /// Used to delay reconnecting to a server after a server has disconnected or a socket has failed to a server.
+        /// Used to delay reconnecting to a server after a server has disconnected or a <see cref="Socket"/> has failed to a server.
         /// </summary>
         internal DateTime DontReconnectUntil
         {
@@ -129,6 +130,7 @@ namespace SocketMeister
         /// <summary>
         /// The last reason the client disconnected. Used to calculate reconnect delay.
         /// </summary>
+        /// <seealso cref="ClientDisconnectReason"/>
         internal ClientDisconnectReason LastDisconnectReason
         {
             get { lock (_lock) { return _lastDisconnectReason; } }
@@ -141,13 +143,17 @@ namespace SocketMeister
         public ushort Port => _port;
 
         /// <summary>
-        /// TCP Socket in use for the current destination.
+        /// TCP <see cref="Socket"/> in use for the current destination.
         /// </summary>
         internal Socket Socket
         {
             get { lock (_socketLock) { return _socket; } }
         }
 
+        /// <summary>
+        /// Sets the client as disconnected and updates the reconnect delay based on the specified <see cref="ClientDisconnectReason"/>.
+        /// </summary>
+        /// <param name="reason">The reason for the disconnection.</param>
         internal void SetDisconnected(ClientDisconnectReason reason)
         {
             lock (_lock)
@@ -194,7 +200,7 @@ namespace SocketMeister
         }
 
         /// <summary>
-        /// Creates a new socket.
+        /// Creates a new <see cref="Socket"/>.
         /// </summary>
         internal void RecreateSocket()
         {

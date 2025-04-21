@@ -16,7 +16,7 @@ namespace SocketMeister
 #if SMISPUBLIC
     public partial class Logger : IDisposable
 #else
-        internal partial class Logger : IDisposable
+    internal partial class Logger : IDisposable
 #endif
     {
         private bool _disposed = false;

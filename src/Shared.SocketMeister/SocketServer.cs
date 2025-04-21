@@ -42,21 +42,25 @@ namespace SocketMeister
         /// <summary>
         /// Event raised when a client connects to the socket server. Raised on a separate thread.
         /// </summary>
+        /// <seealso cref="ClientEventArgs"/>
         public event EventHandler<ClientEventArgs> ClientConnected;
 
         /// <summary>
         /// Event raised when a client disconnects from the socket server. Raised on a separate thread.
         /// </summary>
+        /// <seealso cref="ClientEventArgs"/>
         public event EventHandler<ClientEventArgs> ClientDisconnected;
 
         /// <summary>
         /// Event raised when a log event occurs.
         /// </summary>
+        /// <seealso cref="LogEventArgs"/>
         public event EventHandler<LogEventArgs> LogRaised;
 
         /// <summary>
         /// Event raised when a message is received from a client. An optional response can be provided, which will be returned to the client. Raised on a separate thread.
         /// </summary>
+        /// <seealso cref="MessageReceivedEventArgs"/>
         public event EventHandler<MessageReceivedEventArgs> MessageReceived;
 
         /// <summary>
@@ -69,6 +73,8 @@ namespace SocketMeister
         /// </summary>
         /// <param name="Port">Port that this socket server will listen on.</param>
         /// <param name="CompressSentData">Enable compression on message data.</param>
+        /// <seealso cref="Start"/>
+        /// <seealso cref="Stop"/>
         public SocketServer(int Port, bool CompressSentData)
         {
             _compressSentData = CompressSentData;
@@ -115,6 +121,7 @@ namespace SocketMeister
         /// <summary>
         /// Disposes of the class.
         /// </summary>
+        /// <seealso cref="Dispose(bool)"/>
         public void Dispose()
         {
             Dispose(true);
@@ -157,11 +164,13 @@ namespace SocketMeister
         /// <summary>
         /// Central logging for the socket server. This is a simple logger that logs messages to the console and raises log events to calling code.
         /// </summary>
+        /// <seealso cref="Logger"/>
         internal Logger Logger { get; } = new Logger();
 
         /// <summary>
         /// Current status of the SocketServer.
         /// </summary>
+        /// <seealso cref="SocketServerStatus"/>
         public SocketServerStatus Status
         {
             get { lock (_lock) { return _status; } }
@@ -210,10 +219,11 @@ namespace SocketMeister
         #region Public Methods
 
         /// <summary>
-        /// Sends a message to all connected clients. Exceptions will not halt this process but will generate 'ExceptionRaised' events. 
+        /// Sends a message to all connected clients. Exceptions will not halt this process but will generate 'ExceptionRaised' events.
         /// </summary>
         /// <param name="Name">Optional name/tag/identifier for the broadcast.</param>
         /// <param name="Parameters">Parameters to send with the message.</param>
+        /// <seealso cref="BroadcastToSubscribers(string, object[])"/>
         public void Broadcast(string Name, object[] Parameters)
         {
             BroadcastV1 message = new BroadcastV1(Name, Parameters);
@@ -232,10 +242,11 @@ namespace SocketMeister
         }
 
         /// <summary>
-        /// Sends a message to all clients subscribing to a subscription name. Exceptions will not halt this process but will generate 'ExceptionRaised' events. 
+        /// Sends a message to all clients subscribing to a subscription name. Exceptions will not halt this process but will generate 'ExceptionRaised' events.
         /// </summary>
         /// <param name="Name">Optional name/tag/identifier for the broadcast.</param>
         /// <param name="Parameters">Parameters to send with the message.</param>
+        /// <seealso cref="Broadcast(string, object[])"/>
         public void BroadcastToSubscribers(string Name, object[] Parameters)
         {
             if (string.IsNullOrEmpty(Name) == true) throw new ArgumentNullException(nameof(Name));
@@ -259,6 +270,7 @@ namespace SocketMeister
         /// <summary>
         /// Gets the number of clients connected to the socket server.
         /// </summary>
+        /// <seealso cref="GetClients"/>
         public int ClientCount => _connectedClients.Count;
 
         /// <summary>
@@ -281,6 +293,7 @@ namespace SocketMeister
         /// Returns a list of clients that are connected to the socket server.
         /// </summary>
         /// <returns>List of clients.</returns>
+        /// <seealso cref="Client"/>
         public List<Client> GetClients()
         {
             return _connectedClients.ToList();
@@ -289,6 +302,7 @@ namespace SocketMeister
         /// <summary>
         /// Starts the socket server, which begins listening for incoming connections.
         /// </summary>
+        /// <seealso cref="Stop"/>
         public void Start()
         {
             StopSocketServer = false;
@@ -305,6 +319,7 @@ namespace SocketMeister
         /// <summary>
         /// Sends a message to all clients to disconnect, waits for in-progress messages to finish, and then stops the socket server.
         /// </summary>
+        /// <seealso cref="Start"/>
         public void Stop()
         {
             try
