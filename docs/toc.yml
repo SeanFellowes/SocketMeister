@@ -1,13 +1,9 @@
-# docs/toc.yml
-- name: Introduction
-  href: index.md       # or introduction.md if you keep that filename
-
+﻿- name: Introduction
+  href: index.md
 - name: Getting Started
   href: getting-started.md
-
 - name: Architecture
   href: architecture.md
-
 - name: Guides
   items:
     - name: Logging

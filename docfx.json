@@ -10,9 +10,9 @@
   ],
   "build": {
     "content": [
-      { "files": [ "README.md", "CHANGELOG.md" ] },
-      { "files": [ "docs/**/*.md" ], "dest": "docs" }
-    ],
+  { "files": [ "README.md", "CHANGELOG.md" ] },
+  { "files": [ "docs/**.md", "docs/**/toc.yml" ] }
+],
     "resource": [
       { "files": [ "images/**" ] }
     ],
