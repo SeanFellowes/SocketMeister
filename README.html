@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>SocketMeister </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="SocketMeister ">
+      
+      
+      <link rel="icon" href="favicon.ico">
+      <link rel="stylesheet" href="public/docfx.min.css">
+      <link rel="stylesheet" href="public/main.css">
+      <meta name="docfx:navrel" content="">
+      <meta name="docfx:tocrel" content="">
+      
+      <meta name="docfx:rel" content="">
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/SeanFellowes/SocketMeister/blob/main/README.md/#L1">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="index.html">
+            <img id="logo" class="svg" src="logo.svg" alt="">
+            
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+
+      <div class="content">
+        <div class="actionbar">
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="">
+<h1 id="socketmeister">SocketMeister</h1>
+
+<p>SocketMeister is a socket library for solutions requiring persistent, multiple endpoint TCP/IP connectivity. It is easy to use, resilient, high throughput and multithreaded.</p>
+<p><strong>SocketClient</strong> provides fault tolerance by automatically reconnecting in the event of connection failure. In an environment where multiple servers are deployed (i.e. for redundancy and/or high workload), SocketMeister <strong>Client</strong> will automatically round-robin to find a server it can connect to.</p>
+<p><strong>SocketServer</strong> provides a simple framework whereby messages and requests (messages expecting a response) are presented to your code in thread independent events. Your code site cleanly in the event handler, where it can read an array of parameters sent by the client and execute your business logic. In the case of a request, your code can provide a response, which is automatically returned to the client. SocketMeister supports most data types, including binary arrays. It you enable optional compression, data is seamlessly compressed and decompressed using a high throughput compression algorithm.</p>
+<h2 id="the-flavours-of-socketmeister">The Flavours of SocketMeister</h2>
+<p>SocketMeister Client works with most .NET framework versions from .NET 3.5 to .NET 9. SocketMeister Server can be used with .NET 4.0 and above. There are 2 NuGet packages available:</p>
+<ol>
+<li><p>The <a href="https://www.nuget.org/packages/SocketMeister/">SocketMeister</a> NuGet package contains the DLL for .NET 3.5 to .NET 9. The SocketMeister <strong>SocketServer</strong> class is not available in .NET 3.5.</p>
+</li>
+<li><p>The <a href="https://www.nuget.org/packages/SocketMeister.Sources/">SocketMeister.Sources</a> NuGet package contains the C# source files for SocketMeister, enabling you to embed SocketMeister in your own project. This eliminates the need to ship the SocketMeister DLL with your product. Simply add the <a href="https://www.nuget.org/packages/SocketMeister.Sources/">SocketMeister.Sources</a> NuGet package to your Visual Studio project and a folder containing the code will be added to the project.</p>
+</li>
+</ol>
+<h2 id="silverlight-no-longer-supported">Silverlight no longer supported</h2>
+<p>The <a href="">SocketMeister.Silverlight</a> NuGet package is no longer maintained and doesn't work with SocketMeister 10 or above.</p>
+<h2 id="socketmeister-version-10">SocketMeister Version 10</h2>
+<p>SocketMeister Version 10 is a significant upgrade on earlier versions (1.x.x, 2.x.x, 3.x.x and 4.x.x). Although the public interface hasn't changed, previous versions of SocketMeister do not work with Version 10. If you upgrade to version 10 you will need to upgrade and rollout all software using SocketClient and SocketServer. Older clients will fail to connect to SocketServer 10.</p>
+<p>SocketMeister 10 introduces robust handshaking and version awareness between clients and servers. Thich will allow for future functionality to be introduced without breaking backward compatibility.</p>
+<h2 id="simple-example">Simple Example</h2>
+<p>The following example shows how easy it is to setup a basic server and client. It achieves the following:</p>
+<ol>
+<li>Start a socket server application and socket client application.</li>
+<li>Send a request from the client to the server when a button is clicked.</li>
+<li>Process the request on the server and return a response to the client.</li>
+<li>Display the response on the client.</li>
+</ol>
+<h3 id="simple-socketserver-application">Simple SocketServer Application.</h3>
+<p>Making a start with SocketServer requires only a few lines of code. The following will start the socket server on port 4505 and process an example request from clients.</p>
+<pre><code>using System;
+using System.Windows.Forms;
+using SocketMeister;
+
+namespace SocketMeisterDemo
+{
+    public partial class SimpleServer : Form
+    {
+        //  Instatiate SocketServer on port 4505 with compression enabled
+        private readonly SocketServer _socketServer = new SocketServer(4505, true);
+
+        public SimpleServer()
+        {
+            InitializeComponent();
+
+            //  Listen to RequestReceived events
+            _socketServer.RequestReceived += SocketServer_RequestReceived;
+
+            //  Start the socket server
+            _socketServer.Start();
+        }
+		private void SocketServer_RequestReceived(object sender, SocketServer.RequestReceivedEventArgs e)
+		{
+			//  Example request
+			if (Convert.ToString(e.Parameters[0]) == &quot;GetTimezoneDisplayName&quot;)
+			{
+				//  Response is a binary array. Convert string to binary array.
+				e.Response = System.Text.Encoding.ASCII.GetBytes(TimeZoneInfo.Local.DisplayName);
+			}
+		}
+
+        private void ServerForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+			//  Stop the socket server before exiting the application
+			_socketServer.Stop();
+		}
+	}
+}
+
+</code></pre>
+<h3 id="simple-socketclient-application">Simple SocketClient Application.</h3>
+<p>The following code is from a WinForm containing one button called BtnGetTimezoneDisplayName. It automatically connects to the SocketServer running on the local machine. Pressing the button sends a request to the server, then displays a string response.</p>
+<pre><code>using System;
+using System.Windows.Forms;
+using SocketMeister;
+
+namespace SocketMeisterDemo
+{
+    public partial class SimpleClient : Form
+    {
+        //  Start socket client, pointed at 127.0.0.1:4505 with compression enabled (127.0.0.1 is localhost)
+        SocketClient _socketClient = new SocketClient(&quot;127.0.0.1&quot;, 4505, true);
+
+        public SimpleClient()
+        {
+            InitializeComponent();
+        }
+
+        private void BtnGetTimezoneDisplayName_Click(object sender, EventArgs e)
+        {
+            object[] parms = new object[] { &quot;GetTimezoneDisplayName&quot; };
+            byte[] response =_socketClient.SendRequest(parms);
+
+            //  Response is a binary array. Convert it to a string and display the message.
+            MessageBox.Show(System.Text.Encoding.ASCII.GetString(response));
+        }
+
+        private void ClientForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            //  Disconnect from the socket server
+            _socketClient.Stop();
+        }
+    }
+}
+</code></pre>
+<h3 id="broadcasting-a-message-from-the-server-to-all-clients">Broadcasting a message from the server to all clients</h3>
+<p>The <code>SocketServer.BroadcastMessage()</code> method is used to send a message to all connected clients. In this example we are sending a string, but in more complex situations you could send many parameters. Supported data types for each parameter includes strings, most numeric data types and byte arrays.</p>
+<p>On the server application we add the following code to a button click event. This sends a string to all clients:</p>
+<pre><code>    private void btnSendMsgToAllClients_Click(object sender, EventArgs e)
+    {
+        //  Send a string to all connected clients
+        object[] parms = new object[] { &quot;This is a broadcast message to all clients&quot; };
+        _socketServer.BroadcastMessage(parms);
+    }
+</code></pre>
+<p>On the client application we must register to receive <code>SocketClient.MessageReceived</code> events and some code to display the message:</p>
+<pre><code>    public SimpleClient()
+    {
+        InitializeComponent();
+
+        //  Register to receive messages from the server.
+        _socketClient.MessageReceived += SocketClient_MessageReceived;
+    }
+
+    private void SocketClient_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
+    {
+        //  The message is a string contained in the first parameter sent. Display it.
+        MessageBox.Show(Convert.ToString(e.Parameters[0]));
+    }
+</code></pre>
+<h3 id="broadcasting-a-message-from-the-server-to-subscribers">Broadcasting a message from the server to subscribers.</h3>
+<p>SocketMeister clients can register and unregister to receive specific message types from the server. <em>Subscriptions</em> are simply a list of names maintained by the SocketClient, which are automatically synchronised with the SocketServer. As subscription names are added and removed on the SocketClient, these are immediately reflected to the server. If a TCP connection is broken, as soon as the client reconnects, or connects with another server, it automatically sends the list during the connection process. This provides powerful functionality which you can leverage in your applications. Perhaps your server has to deal with different client applications or you want to turn certain message types on or off depending on what is happening at the client.</p>
+<p>On the client side, we will add the subscription &quot;Customer Master Data Changes&quot;. Let's extend the example from above</p>
+<pre><code>    public SimpleClient()
+    {
+        InitializeComponent();
+
+        //  Register to receive messages from the server.
+        _socketClient.MessageReceived += SocketClient_MessageReceived;
+
+        //  Subscribe to 'Customer Master Data Changes'. (Note: names are case insensitive)
+        _socketClient.AddSubscription(&quot;Customer Master Data Changes&quot;);
+    }
+</code></pre>
+<p>On the server example, we have added a button labelled <em>&quot;Send Msg to All 'Customer Master Data Changes' Subscribers&quot;</em></p>
+<pre><code>    private void btnSendMsgToAllCustomerDataChangeSubscribers_Click(object sender, EventArgs e)
+    {
+        //  Send a string to all connected clients
+        object[] parms = new object[] { &quot;This is a broadcast message to all clients subscribing to 'Customer Master Data Changes'&quot; };
+        _socketServer.BroadcastMessageToSubscribers(&quot;Customer Master Data Changes&quot;, parms);
+    }
+</code></pre>
+<p>We already have coded the client to display messages when receiving the event <code>SocketClient_MessageReceived</code>.</p>
+<p>If we wanted to remove the subscription, at the socket client we would add the following line of code.</p>
+<pre><code>            _socketClient.RemoveSubscription(&quot;Customer Master Data Changes&quot;);
+</code></pre>
+<h3 id="messaging-a-specific-client-from-the-server">Messaging a specific client from the server</h3>
+<p>From the server you may want to send messages and requests to specific clients.</p>
+
+</article>
+
+        <div class="contribution d-print-none">
+          <a href="https://github.com/SeanFellowes/SocketMeister/blob/main/README.md/#L1" class="edit-link">Edit this page</a>
+        </div>
+
+        <div class="next-article d-print-none border-top" id="nextArticle"></div>
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          <span>Made with <a href="https://dotnet.github.io/docfx">docfx</a></span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

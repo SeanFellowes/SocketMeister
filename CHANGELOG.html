@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title> </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content=" ">
+      
+      
+      <link rel="icon" href="favicon.ico">
+      <link rel="stylesheet" href="public/docfx.min.css">
+      <link rel="stylesheet" href="public/main.css">
+      <meta name="docfx:navrel" content="">
+      <meta name="docfx:tocrel" content="">
+      
+      <meta name="docfx:rel" content="">
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/SeanFellowes/SocketMeister/blob/main/CHANGELOG.md/#L1">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="index.html">
+            <img id="logo" class="svg" src="logo.svg" alt="">
+            
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+
+      <div class="content">
+        <div class="actionbar">
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="">
+
+<p>Changelog</p>
+<p>All notable changes to SocketMeister are documented in this file.The project follows Semantic Versioning and the format is inspired by Keep a Changelog.</p>
+<p>[Unreleased]</p>
+<p>Nothing yet</p>
+<p>[10.2.4] - 2025‑04‑19</p>
+<p>Fixed</p>
+<p>NuGet Sources package layout/power‑shell target so .cs files appear correctly in SDK‑style projects.</p>
+<p>[10.2.3] - 2025‑04‑14</p>
+<p>Fixed</p>
+<p>Race condition where a very fast client closed the connection immediately after Connect, causing an unexpected disconnect.</p>
+<p>[10.2.2] - 2025‑04‑02</p>
+<p>Fixed</p>
+<p>Access modifiers of logging helpers wrapped in SMISPUBLIC to stop duplicate‑type warnings when the Sources package is embedded in multiple assemblies.</p>
+<p>[10.2.0] - 2025‑03‑31</p>
+<p>Changed</p>
+<p>SocketServer: replaced TraceEventRaised with LogRaised to align with SocketClient (introduced in 10.1.0).</p>
+<p>Removed several unused test projects from the repository.</p>
+<p>[10.1.0] - 2025‑03‑31</p>
+<p>Added</p>
+<p>Single‑threaded logging pipeline and LogRaised event on SocketClient.</p>
+<p>Changed</p>
+<p>Internal refactor to centralise token handling.</p>
+<p>[10.0.3] - 2025‑03‑27</p>
+<p>Added</p>
+<p>Extra log events for TraceEventRaised.</p>
+<p>Fixed</p>
+<p>Robust socket recreation when ObjectDisposedException occurs.</p>
+<p>[10.0.2] - 2025‑03‑27</p>
+<p>Fixed</p>
+<p>Client could stop attempting to reconnect if the socket was reset before the handshake completed.</p>
+<p>[10.0.1] - 2025‑03‑26</p>
+<p>Fixed</p>
+<p>Minor bugs discovered during rollout of 10.0.0.</p>
+<p>[10.0.0] - 2025‑03‑26</p>
+<p>Breaking</p>
+<p>Major internal rewrite. Message framing, handshake sequence and many private members were overhauled for throughput and resilience.</p>
+<p>Older clients (≤4.x) will not connect to a 10.x server.</p>
+<p>[4.1.5] - 2025‑03‑11</p>
+<p>Fixed</p>
+<p>Client now waits until server receive buffer is allocated before reporting Connected.</p>
+<p>[4.1.2] - 2024‑12‑30</p>
+<p>Fixed</p>
+<p>Null payloads are now accepted by SocketClient.</p>
+<p>Corrected message‑timeout handling on both client and server.</p>
+<p>[4.1.1] - 2024‑12‑28</p>
+<p>Added</p>
+<p>Response logging in server test harness.</p>
+<p>[4.1.0] - 2024‑12‑26</p>
+<p>Added</p>
+<p>Target‑framework monikers updated to include .NET 9.</p>
+<p>[4.0.6] - 2023‑12‑31</p>
+<p>Removed</p>
+<p>Legacy FxCop analyser; added TFM support up to .NET 8.</p>
+<p>[4.0.1] - 2021‑03‑26</p>
+<p>Fixed / Changed</p>
+<p>First maintenance release on v4 line – general cleanup and compiler‑warning passes.</p>
+<p>[4.0.0] - 2021‑03‑15</p>
+<p>Breaking</p>
+<p>First big API tidy‑up since inception: renamed many types/members for clarity, dropped obsolete properties/events, unified exception model.</p>
+<p>[2.2.1] - 2021‑02‑24</p>
+<p>Fixed</p>
+<p>.NET Core 3.1 assemblies could not see SocketServer/SocketClient due to incorrect visibility.</p>
+<p>[2.2.0] - 2021‑02‑23</p>
+<p>Fixed</p>
+<p>Large‑payload transfer timeout; improved reconnection latency when server restarts.</p>
+<p>[2.1.2] - 2021‑02‑17</p>
+<p>Fixed</p>
+<p>Infinite‑loop edge case during disconnect.</p>
+<p>[2.0.7] - 2021‑01‑20</p>
+<p>Added / Changed</p>
+<p>Mini test server/client utilities; incremental server robustness tweaks.</p>
+<p>[2.0.6] - 2021‑01‑15</p>
+<p>Fixed</p>
+<p>Thread‑pool exhaustion under very high load by introducing dedicated worker threads.</p>
+<p>[2.0.5] - 2020‑10‑07</p>
+<p>Fixed</p>
+<p>Handshake reliability and compiler warnings for Silverlight builds.</p>
+<p>Earlier 1.x releases (2015‑2020)</p>
+<p>The 1.x line predates public NuGet distribution and consisted mainly of exploratory internal releases. They are no longer supported.</p>
+<p>Generated automatically from commit history &amp; NuGet metadata on 2025‑04‑21.</p>
+
+</article>
+
+        <div class="contribution d-print-none">
+          <a href="https://github.com/SeanFellowes/SocketMeister/blob/main/CHANGELOG.md/#L1" class="edit-link">Edit this page</a>
+        </div>
+
+        <div class="next-article d-print-none border-top" id="nextArticle"></div>
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          <span>Made with <a href="https://dotnet.github.io/docfx">docfx</a></span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
