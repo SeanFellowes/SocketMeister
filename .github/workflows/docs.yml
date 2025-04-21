@@ -1,7 +1,14 @@
 name: Build & Deploy Docs
 on:
   push:
-    branches: [ main ]        # or Main – must match exactly
+    branches: [ main ]          # or Main – match the real name
+
+# NEW ─────────────────────────────────────────────────────────
+permissions:
+  contents: read        # checkout & read the repo
+  pages: write          # create/update the Pages deployment
+  id-token: write       # OIDC token required by deploy-pages
+# ─────────────────────────────────────────────────────────────
 
 jobs:
   build:
@@ -15,14 +22,11 @@ jobs:
       - name: Build docs
         run: docfx build -o _site --template default
 
-      # NEW — bundle the _site folder as artifact "github-pages"
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./_site         # must match build output
-          name: github-pages    # deploy‑pages looks for this exact name
+          path: ./_site          # folder that contains index.html
+          name: github-pages
 
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
