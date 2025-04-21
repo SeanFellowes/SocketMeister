@@ -9,13 +9,12 @@
     }
   ],
   "build": {
-   "content": [
-  { "files": [ "index.md", "README.md", "CHANGELOG.md" ] },
-  { "files": [ "docs/**.md", "docs/**/toc.yml" ] }
-],
-
+    "content": [
+      { "files": [ "README.md" ], "src": "." },
+      { "files": [ "**/*.md" ], "src": "docs", "exclude": [ "obj/**", "toc.yml" ] }
+    ],
     "resource": [
-      { "files": [ "images/**" ] }
+      { "files": [ "**/images/**" ], "src": "docs" }
     ],
     "output": "_site",
     "template": [
