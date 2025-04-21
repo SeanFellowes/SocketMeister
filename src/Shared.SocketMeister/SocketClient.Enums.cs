@@ -3,36 +3,35 @@
 namespace SocketMeister
 {
     /// <summary>
-    /// Asynchronous, persistent TCP/IP socket client supporting multiple destinations
+    /// An asynchronous, persistent TCP/IP socket client that supports multiple destinations.
     /// </summary>
 #if SMISPUBLIC
     public partial class SocketClient : IDisposable
 #else
-    internal partial class SocketClient : IDisposable
+        internal partial class SocketClient : IDisposable
 #endif
     {
         /// <summary>
-        /// A SocketClient's connection status to a SocketServer.
+        /// Represents the connection status of a SocketClient to a SocketServer.
         /// </summary>
         public enum ConnectionStatuses
         {
             /// <summary>
-            /// Socket is disconnected.
+            /// The socket is disconnected.
             /// </summary>
             Disconnected = 0,
             /// <summary>
-            /// Socket is attempting to connect.
+            /// The socket is attempting to connect.
             /// </summary>
             Connecting = 1,
             /// <summary>
-            /// Socket is connected.
+            /// The socket is connected.
             /// </summary>
             Connected = 2,
             /// <summary>
-            /// Socket is disconnecting;
+            /// The socket is disconnecting.
             /// </summary>
             Disconnecting = 3
         }
-
     }
 }

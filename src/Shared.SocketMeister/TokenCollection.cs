@@ -8,12 +8,12 @@ using System.Linq;
 namespace SocketMeister
 {
     /// <summary>
-    /// Dictionary based collection of tokens. Data is updatable.
+    /// A dictionary-based collection of tokens. The data in the collection is updatable.
     /// </summary>
 #if SMISPUBLIC
     public class TokenCollection
 #else
-    internal class TokenCollection
+        internal class TokenCollection
 #endif
     {
         private bool _changed;
@@ -22,22 +22,22 @@ namespace SocketMeister
         private readonly object _lock = new object();
 
         /// <summary>
-        /// Constructor
+        /// Initializes a new instance of the <see cref="TokenCollection"/> class.
         /// </summary>
         public TokenCollection()
         {
         }
 
         /// <summary>
-        /// Indexed search returning the token or null, for a given token name.
+        /// Provides indexed access to a token by its name. Returns the token or null if not found.
         /// </summary>
-        /// <param name="Name">Token requested.</param>
-        /// <returns>Found token or null if not found</returns>
+        /// <param name="Name">The name of the token to retrieve.</param>
+        /// <returns>The token if found, or null if not found.</returns>
         public Token this[string Name]
         {
             get
             {
-                if (string.IsNullOrEmpty(Name)) throw new ArgumentException("Name cannot be null or empty", nameof(Name));
+                if (string.IsNullOrEmpty(Name)) throw new ArgumentException("Name cannot be null or empty.", nameof(Name));
 
                 lock (_lock)
                 {
@@ -49,27 +49,25 @@ namespace SocketMeister
         }
 
         /// <summary>
-        /// Whether changes have been made to the token collection
+        /// Gets a value indicating whether changes have been made to the token collection.
         /// </summary>
         public bool Changed
         {
             get { lock (_lock) { return _changed; } }
         }
 
-
         /// <summary>
-        /// Number of tokens in the token collection
+        /// Gets the number of tokens in the token collection.
         /// </summary>
         public int Count { get { lock (_lock) { return _dictTokens.Count; } } }
 
-
         /// <summary>
-        /// Add a token to the token collection. Throws ArgumentException if Token.Name (case insensitive) already exists.
+        /// Adds a token to the token collection. Throws an <see cref="ArgumentException"/> if a token with the same name (case-insensitive) already exists.
         /// </summary>
-        /// <param name="Token">Token to add</param>
+        /// <param name="Token">The token to add.</param>
         internal void Add(Token Token)
         {
-            if (Token == null) throw new ArgumentException("Token cannot be null", nameof(Token));
+            if (Token == null) throw new ArgumentException("Token cannot be null.", nameof(Token));
 
             lock (_lock)
             {
@@ -80,23 +78,23 @@ namespace SocketMeister
         }
 
         /// <summary>
-        /// Adds a token to the collection. If the token already exists, it will be replaced.
-        /// This must be called within a lock.
+        /// Adds a token change to the collection. If the token already exists, it will be replaced.
+        /// This method must be called within a lock.
         /// </summary>
-        /// <param name="Action">Add/Modify/Delete</param>
-        /// <param name="Token">Token affected</param>
-        /// <exception cref="ArgumentException">Token must not be null</exception>
+        /// <param name="Action">The action to perform (Add, Modify, or Delete).</param>
+        /// <param name="Token">The token affected by the change.</param>
+        /// <exception cref="ArgumentException">Thrown if the token is null.</exception>
         private void AddTokenChange(TokenAction Action, Token Token)
         {
-            if (Token == null) throw new ArgumentException("Token cannot be null", nameof(Token));
+            if (Token == null) throw new ArgumentException("Token cannot be null.", nameof(Token));
 
             TokenChange foundTokenChange;
             _dictTokenChanges.TryGetValue(Token.Name.ToUpper(CultureInfo.InvariantCulture), out foundTokenChange);
 
-            //  If the token has already been changed, remove it from the list
+            // If the token has already been changed, remove it from the list.
             _dictTokenChanges.Remove(Token.Name.ToUpper(CultureInfo.InvariantCulture));
 
-            //  Add the token to the list
+            // Add the token to the list.
             if (Action == TokenAction.Delete)
                 _dictTokenChanges.Add(Token.Name.ToUpper(CultureInfo.InvariantCulture), new TokenChange(Action, Token.Name, null));
             else
@@ -106,9 +104,9 @@ namespace SocketMeister
         }
 
         /// <summary>
-        /// Serializes all tokens
+        /// Serializes all tokens in the collection.
         /// </summary>
-        /// <returns>byte array of the tokens in the collection</returns>
+        /// <returns>A byte array containing the serialized tokens.</returns>
         internal byte[] SerializeTokens()
         {
             List<Token> alltokens = ToList();
@@ -119,7 +117,7 @@ namespace SocketMeister
 
                 foreach (Token t in alltokens)
                 {
-                    t.Serialize(writer);  //  TOKEN
+                    t.Serialize(writer); // Serialize the token.
                 }
 
                 using (BinaryReader reader = new BinaryReader(writer.BaseStream))
@@ -130,11 +128,10 @@ namespace SocketMeister
             }
         }
 
-
         /// <summary>
-        /// Serializes token changes. If there are no changes, returns null.
+        /// Serializes the changes made to the tokens. If there are no changes, returns null.
         /// </summary>
-        /// <returns>If there are no changes, returns null</returns>
+        /// <returns>A byte array containing the serialized token changes, or null if there are no changes.</returns>
         public byte[] SerializeTokenChanges()
         {
             lock (_lock)
@@ -147,14 +144,13 @@ namespace SocketMeister
 
                     foreach (KeyValuePair<string, TokenChange> kvp in _dictTokenChanges)
                     {
-                        writer.Write(kvp.Key);                  //  NAME
-
-                        writer.Write(kvp.Value.ChangeId);       //  CHANGE ID
-                        writer.Write((short)kvp.Value.Action);  //  ACTION
+                        writer.Write(kvp.Key);                  // Token name.
+                        writer.Write(kvp.Value.ChangeId);       // Change ID.
+                        writer.Write((short)kvp.Value.Action);  // Action.
 
                         if (kvp.Value.Action == TokenAction.Add || kvp.Value.Action == TokenAction.Modify)
                         {
-                            kvp.Value.Token.Serialize(writer);  //  TOKEN
+                            kvp.Value.Token.Serialize(writer);  // Serialize the token.
                         }
                     }
 
@@ -167,15 +163,14 @@ namespace SocketMeister
             }
         }
 
-
         /// <summary>
-        /// Removes a token from the dictionary
+        /// Removes a token from the collection.
         /// </summary>
-        /// <param name="Name">Name of the token (Case insensitive)</param>
-        /// <returns>The token which was removed (Null if nothing removed)</returns>
+        /// <param name="Name">The name of the token to remove (case-insensitive).</param>
+        /// <returns>The removed token, or null if no token was removed.</returns>
         public Token Remove(string Name)
         {
-            if (string.IsNullOrEmpty(Name)) throw new ArgumentException("Token name cannot be null or empty", nameof(Name));
+            if (string.IsNullOrEmpty(Name)) throw new ArgumentException("Token name cannot be null or empty.", nameof(Name));
 
             Token fnd = null;
             lock (_lock)
@@ -196,14 +191,12 @@ namespace SocketMeister
             return fnd;
         }
 
-
         /// <summary>
-        /// Removes a token change from the collection of the token name exists and the ChangeId 
-        /// matches the current ChangeId of the change. 
+        /// Removes a token change from the collection if the token name exists and the ChangeId matches the current ChangeId of the change.
         /// If there are no more changes, the changed flag is set to false.
         /// </summary>
-        /// <param name="TokenName">Name property of the token</param>
-        /// <param name="ChangeId">Change identifyer</param>
+        /// <param name="TokenName">The name of the token.</param>
+        /// <param name="ChangeId">The change identifier.</param>
         public void RemoveChange(string TokenName, int ChangeId)
         {
             lock (_lock)
@@ -212,16 +205,15 @@ namespace SocketMeister
                 _dictTokenChanges.TryGetValue(TokenName.ToUpper(), out fnd);
                 if (fnd != null && fnd.ChangeId == ChangeId) _dictTokenChanges.Remove(TokenName.ToUpper());
 
-                //  If there are no more changes, set the changed flag to false
+                // If there are no more changes, set the changed flag to false.
                 if (_dictTokenChanges.Count == 0) _changed = false;
             }
         }
 
-
         /// <summary>
-        /// Returns a list of all the tokens in the collection
+        /// Returns a list of all tokens in the collection.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A list of all tokens.</returns>
         public List<Token> ToList()
         {
             lock (_lock)
@@ -231,9 +223,9 @@ namespace SocketMeister
         }
 
         /// <summary>
-        /// Returns a list of token names
+        /// Returns a list of all token names in the collection.
         /// </summary>
-        /// <returns>List of strings containing the token names.</returns>
+        /// <returns>A list of strings containing the token names.</returns>
         public List<string> GetNames()
         {
             lock (_lock)
@@ -242,12 +234,11 @@ namespace SocketMeister
             }
         }
 
-
         private void Token_Changed(object sender, EventArgs e)
         {
             Token t = (Token)sender;
 
-            //  AddTokenCHange must be called within a lock
+            // AddTokenChange must be called within a lock.
             lock (_lock)
             {
                 AddTokenChange(TokenAction.Modify, t);

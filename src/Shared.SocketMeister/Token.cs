@@ -4,12 +4,12 @@ using System.IO;
 namespace SocketMeister
 {
     /// <summary>
-    /// Value which is automatically synchronised between SocketClient and SocketServer. Multiple Tokens are 
+    /// A value that is automatically synchronized between a SocketClient and a SocketServer. Multiple tokens can be used.
     /// </summary>
 #if SMISPUBLIC
     public class Token
 #else
-    internal class Token
+        internal class Token
 #endif
     {
         private bool _isReadOnly;
@@ -18,36 +18,34 @@ namespace SocketMeister
         private ValueType _valueType = ValueType.NullValue;
         private readonly object _lock = new object();
 
-
         /// <summary>
         /// Raised when the value is changed.
         /// </summary>
         public event EventHandler<EventArgs> Changed;
 
         /// <summary>
-        /// Constructor
+        /// Initializes a new instance of the <see cref="Token"/> class.
         /// </summary>
-        /// <param name="Name">Name of the token</param>
+        /// <param name="Name">The name of the token.</param>
         public Token(string Name)
         {
-            if (string.IsNullOrEmpty(Name)) throw new ArgumentException("Name cannot be null or empty", nameof(Name));
+            if (string.IsNullOrEmpty(Name)) throw new ArgumentException("Name cannot be null or empty.", nameof(Name));
 
             _name = Name;
         }
 
         /// <summary>
-        /// Constructor
+        /// Initializes a new instance of the <see cref="Token"/> class with a specified value.
         /// </summary>
-        /// <param name="Name">Name of the token</param>
-        /// <param name="Value">Value to assign to the token</param>
+        /// <param name="Name">The name of the token.</param>
+        /// <param name="Value">The value to assign to the token.</param>
         public Token(string Name, object Value)
         {
-            if (string.IsNullOrEmpty(Name)) throw new ArgumentException("Name cannot be null or empty", nameof(Name));
+            if (string.IsNullOrEmpty(Name)) throw new ArgumentException("Name cannot be null or empty.", nameof(Name));
 
             _name = Name;
             this.Value = Value;
         }
-
 
         internal Token(BinaryReader Reader)
         {
@@ -55,12 +53,12 @@ namespace SocketMeister
         }
 
         /// <summary>
-        /// Readonly name of the token
+        /// Gets the read-only name of the token.
         /// </summary>
         public string Name { get { lock (_lock) { return _name; } } }
 
         /// <summary>
-        /// Value for the token. Supports null, bool, DateTime, double, short, int, long, ushort, uint, ulong, string, byte, byte[]
+        /// Gets or sets the value of the token. Supports null, bool, DateTime, double, short, int, long, ushort, uint, ulong, string, byte, and byte[].
         /// </summary>
         public object Value
         {
@@ -69,7 +67,7 @@ namespace SocketMeister
             {
                 lock (_lock)
                 {
-                    if (_isReadOnly == true) throw new InvalidOperationException("This token is readonly. It's value is syncronized with a master token.");
+                    if (_isReadOnly) throw new InvalidOperationException("This token is read-only. Its value is synchronized with a master token.");
                     if (value == null) _valueType = ValueType.NullValue;
                     else
                     {
@@ -86,7 +84,7 @@ namespace SocketMeister
                         else if (ParamType == typeof(string)) _valueType = ValueType.StringValue;
                         else if (ParamType == typeof(byte)) _valueType = ValueType.ByteValue;
                         else if (ParamType == typeof(byte[])) _valueType = ValueType.ByteArrayValue;
-                        else throw new ArgumentException("Type " + ParamType.Name + " unsupported. Supported types are Supports null, bool, DateTime, double, short, int, long, ushort, uint, ulong, string, byte, byte[]", nameof(Value));
+                        else throw new ArgumentException($"Type {ParamType.Name} is unsupported. Supported types are null, bool, DateTime, double, short, int, long, ushort, uint, ulong, string, byte, and byte[].", nameof(Value));
                     }
                     _value = Value;
                 }
@@ -95,7 +93,7 @@ namespace SocketMeister
         }
 
         /// <summary>
-        /// The type of data stored in the value
+        /// Gets the type of data stored in the value.
         /// </summary>
         public ValueType ValueType
         {
@@ -103,9 +101,9 @@ namespace SocketMeister
         }
 
         /// <summary>
-        /// Used internally to update the value from the other side 
+        /// Updates the value from the other side using a binary reader.
         /// </summary>
-        /// <param name="Reader"></param>
+        /// <param name="Reader">The binary reader to read data from.</param>
         internal void Deserialize(BinaryReader Reader)
         {
             if (Reader == null) throw new ArgumentNullException(nameof(Reader));
@@ -131,17 +129,16 @@ namespace SocketMeister
                 else if (_valueType == ValueType.DoubleValue) _value = Reader.ReadDouble();
                 else if (_valueType == ValueType.ByteValue) _value = Reader.ReadByte();
                 else if (_valueType == ValueType.ByteArrayValue) _value = Reader.ReadBytes(Reader.ReadInt32());
-                else throw new NotImplementedException("No code for " + nameof(ValueType) + " = " + readVal);
+                else throw new NotImplementedException($"No code for {nameof(ValueType)} = {readVal}.");
             }
 
             Changed?.Invoke(this, new EventArgs());
         }
 
-
         /// <summary>
-        /// Appends the binary data for this token to an open BinaryWriter
+        /// Appends the binary data for this token to an open binary writer.
         /// </summary>
-        /// <param name="Writer"></param>
+        /// <param name="Writer">The binary writer to write data to.</param>
         public void Serialize(BinaryWriter Writer)
         {
             if (Writer == null) throw new ArgumentNullException(nameof(Writer));
@@ -177,17 +174,14 @@ namespace SocketMeister
                     Writer.Write((byte)_value);
                 else if (_valueType == ValueType.ByteArrayValue)
                 {
-                    //  PREFIX THE DATA WITH AN int OF THE LENGTH, FOLLOWED BY THE DATA (WE NEED THE PREFIX TO DESERIALIZE)
+                    // Prefix the data with an int of the length, followed by the data (required for deserialization).
                     byte[] ToWrite = (byte[])_value;
                     Writer.Write(ToWrite.Length);
                     Writer.Write(ToWrite);
                 }
                 else
-                    throw new NotImplementedException("No code for " + nameof(ValueType) + " = " + _valueType.ToString());
+                    throw new NotImplementedException($"No code for {nameof(ValueType)} = {_valueType}.");
             }
         }
-
-
-
     }
 }

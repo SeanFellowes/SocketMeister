@@ -4,35 +4,35 @@
 namespace SocketMeister
 {
     /// <summary>
-    /// Raised when an exception occured.
+    /// Provides details about an exception that occurred.
     /// </summary>
 #if SMISPUBLIC
     public class ExceptionEventArgs : EventArgs
 #else
-    internal class ExceptionEventArgs : EventArgs
+        internal class ExceptionEventArgs : EventArgs
 #endif
     {
         private readonly int _eventId;
         private readonly Exception _exception;
 
         /// <summary>
-        /// Constructor
+        /// Initializes a new instance of the <see cref="ExceptionEventArgs"/> class.
         /// </summary>
-        /// <param name="Exception">Exception which occured.</param>
-        /// <param name="EventId">Event identifier for this exception. Useful if writing this to the Windows Event Log (Or equivalent).</param>
-        public ExceptionEventArgs(Exception Exception, int EventId)
+        /// <param name="exception">The exception that occurred.</param>
+        /// <param name="eventId">The event identifier for this exception. Useful when writing to the Windows Event Log or equivalent.</param>
+        public ExceptionEventArgs(Exception exception, int eventId)
         {
-            _exception = Exception;
-            _eventId = EventId;
+            _exception = exception;
+            _eventId = eventId;
         }
 
         /// <summary>
-        /// Event identifier for this exception. Useful if writing this to the Windows Event Log.
+        /// Gets the event identifier for this exception. Useful when writing to the Windows Event Log or equivalent.
         /// </summary>
         public int EventId => _eventId;
 
         /// <summary>
-        /// Exception that occured
+        /// Gets the exception that occurred.
         /// </summary>
         public Exception Exception => _exception;
     }

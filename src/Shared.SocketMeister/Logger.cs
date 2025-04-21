@@ -9,14 +9,14 @@ using System.Threading;
 namespace SocketMeister
 {
     /// <summary>
-    /// A simple logger that logs messages to the console and raises log events to calling code.
-    /// This logger is thread safe. It reduces the number of background threads used for raising
+    /// A simple logger that logs messages to the console and raises log events to the calling code.
+    /// This logger is thread-safe. It reduces the number of background threads used for raising
     /// logging events by batching log entries and processing them in a single background thread.
     /// </summary>
 #if SMISPUBLIC
     public partial class Logger : IDisposable
 #else
-    internal partial class Logger : IDisposable
+        internal partial class Logger : IDisposable
 #endif
     {
         private bool _disposed = false;
@@ -26,10 +26,13 @@ namespace SocketMeister
         private readonly object _stopPermanentlyLock = new object();
 
         /// <summary>
-        /// Raised when a log entry has been added.
+        /// Raised when a log entry is added.
         /// </summary>
         public event EventHandler<LogEventArgs> LogRaised;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Logger"/> class.
+        /// </summary>
         public Logger()
         {
             Thread bgWorker = new Thread(new ThreadStart(delegate
@@ -39,24 +42,24 @@ namespace SocketMeister
                     while (!StopPermanently)
                     {
                         ProcessBatch();
-                        //  Wait for the flush interval
+                        // Wait for the flush interval.
                         Thread.Sleep(200);
                     }
                 }
-                catch (Exception e) 
+                catch (Exception e)
                 {
-                    //  Swallow exceptions
+                    // Swallow exceptions to prevent the background thread from crashing.
                     Debug.Write(e.ToString());
                 }
-            }));
-            bgWorker.IsBackground = true;
+            }))
+            {
+                IsBackground = true
+            };
             bgWorker.Start();
         }
 
-
-
         /// <summary>
-        /// Dispose of the class
+        /// Disposes of the resources used by the logger.
         /// </summary>
         public void Dispose()
         {
@@ -65,9 +68,9 @@ namespace SocketMeister
         }
 
         /// <summary>
-        /// Dispose of the class
+        /// Disposes of the resources used by the logger.
         /// </summary>
-        /// <param name="disposing"></param>
+        /// <param name="disposing">Indicates whether the method is called from Dispose or the finalizer.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (!_disposed)
@@ -81,28 +84,39 @@ namespace SocketMeister
         }
 
         /// <summary>
-        /// Disposes of the resources used by the class.
+        /// Finalizer to ensure resources are released.
         /// </summary>
         ~Logger()
         {
             Dispose(false);
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether the logger should stop permanently.
+        /// </summary>
+        private bool StopPermanently
+        {
+            get { lock (_stopPermanentlyLock) { return _stopPermanently; } }
+            set { lock (_stopPermanentlyLock) { _stopPermanently = value; } }
+        }
 
-        private bool StopPermanently { get { lock (_stopPermanentlyLock) { return _stopPermanently; } } set { lock (_stopPermanentlyLock) { _stopPermanently = value; } } }
-
-
+        /// <summary>
+        /// Adds a log entry to the queue for processing.
+        /// </summary>
+        /// <param name="logEntry">The log entry to add.</param>
         public void Log(LogEntry logEntry)
         {
             _logQueue.Enqueue(logEntry);
         }
 
-
+        /// <summary>
+        /// Processes a batch of log entries from the queue and raises the <see cref="LogRaised"/> event.
+        /// </summary>
         private void ProcessBatch()
         {
             var batch = new List<LogEntry>();
 
-            lock(_lock)
+            lock (_lock)
             {
                 while (_logQueue.Count > 0)
                 {
@@ -112,10 +126,10 @@ namespace SocketMeister
 
             if (LogRaised != null && batch.Count > 0)
             {
-                // Sort by Timestamp. Given the multithreading nature of SocketMeister, the log entries may not be in order.
+                // Sort log entries by timestamp to ensure chronological order.
                 batch.Sort((a, b) => a.Timestamp.CompareTo(b.Timestamp));
 
-                // Emit the log entries. This could be an event invocation or direct logging.
+                // Emit the log entries.
                 foreach (var entry in batch)
                 {
                     try
@@ -124,20 +138,19 @@ namespace SocketMeister
                     }
                     catch
                     {
-                        //  Swallow exceptions
+                        // Swallow exceptions to prevent the logger from crashing.
                     }
                 }
             }
         }
 
-
         /// <summary>
-        /// Stop the logger
+        /// Stops the logger and allows the background thread to terminate gracefully.
         /// </summary>
         public void Stop()
         {
             StopPermanently = true;
-            //  Pause to allow the background thread to stop
+            // Pause to allow the background thread to stop.
             Thread.Sleep(500);
         }
     }

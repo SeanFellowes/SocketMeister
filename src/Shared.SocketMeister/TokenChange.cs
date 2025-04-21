@@ -3,6 +3,9 @@ using System.Globalization;
 
 namespace SocketMeister
 {
+    /// <summary>
+    /// Represents a change to a token, including the action performed, the token itself, and its name.
+    /// </summary>
     internal class TokenChange
     {
         private static int _maxTokenChangeId;
@@ -13,6 +16,13 @@ namespace SocketMeister
         public Token Token { get; }
         public string TokenNameUppercase { get; }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="TokenChange"/> class.
+        /// </summary>
+        /// <param name="Action"></param>
+        /// <param name="TokenName"></param>
+        /// <param name="Token"></param>
+        /// <exception cref="ArgumentNullException"></exception>
         public TokenChange(TokenAction Action, string TokenName, Token Token)
         {
             if (string.IsNullOrEmpty(TokenName) == true) throw new ArgumentNullException(nameof(TokenName));
@@ -30,6 +40,14 @@ namespace SocketMeister
             this.Token = Token;
         }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="TokenChange"/> class with a specified change ID.
+        /// </summary>
+        /// <param name="ChangeId"></param>
+        /// <param name="Action"></param>
+        /// <param name="TokenName"></param>
+        /// <param name="Token"></param>
+        /// <exception cref="ArgumentNullException"></exception>
         public TokenChange(int ChangeId, TokenAction Action, string TokenName, Token Token)
         {
             if (string.IsNullOrEmpty(TokenName) == true) throw new ArgumentNullException(nameof(TokenName));

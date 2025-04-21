@@ -3,12 +3,12 @@
 namespace SocketMeister
 {
     /// <summary>
-    /// Log entry details, emitted by the logger.
+    /// Represents the details of a log entry emitted by the logger.
     /// </summary>
 #if SMISPUBLIC
     public partial class LogEntry
 #else
-    internal partial class LogEntry
+        internal partial class LogEntry
 #endif
     {
         private readonly LogEventType _eventType;
@@ -19,17 +19,17 @@ namespace SocketMeister
         private readonly DateTime _timeStamp = DateTime.UtcNow;
 
         /// <summary>
-        /// Constructor
+        /// Initializes a new instance of the <see cref="LogEntry"/> class for an exception.
         /// </summary>
-        /// <param name="exception">Exception</param>
+        /// <param name="exception">The exception associated with the log entry.</param>
         public LogEntry(Exception exception)
             : this(exception, 0) { }
 
         /// <summary>
-        /// Constructor
+        /// Initializes a new instance of the <see cref="LogEntry"/> class for an exception with a specific message ID.
         /// </summary>
-        /// <param name="exception">Exception</param>
-        /// <param name="messageId">SocketMeister message id this relates to</param>
+        /// <param name="exception">The exception associated with the log entry.</param>
+        /// <param name="messageId">The SocketMeister message ID related to this log entry.</param>
         public LogEntry(Exception exception, long messageId)
         {
             _eventType = LogEventType.Exception;
@@ -40,21 +40,21 @@ namespace SocketMeister
         }
 
         /// <summary>
-        /// Constructor
+        /// Initializes a new instance of the <see cref="LogEntry"/> class with a message, severity, and event type.
         /// </summary>
-        /// <param name="message">Message</param>
-        /// <param name="severity">Severity</param>
-        /// <param name="eventType">Log event type</param>
+        /// <param name="message">The message describing the log event.</param>
+        /// <param name="severity">The severity level of the log event.</param>
+        /// <param name="eventType">The category of the log event.</param>
         public LogEntry(string message, Severity severity, LogEventType eventType)
-        : this(message, severity, eventType, 0) { }
+            : this(message, severity, eventType, 0) { }
 
         /// <summary>
-        /// Constructor
+        /// Initializes a new instance of the <see cref="LogEntry"/> class with a message, severity, event type, and message ID.
         /// </summary>
-        /// <param name="message">Message</param>
-        /// <param name="severity">Severity</param>
-        /// <param name="eventType">Log event type</param>
-        /// <param name="messageId">SocketMeister message id this relates to</param>
+        /// <param name="message">The message describing the log event.</param>
+        /// <param name="severity">The severity level of the log event.</param>
+        /// <param name="eventType">The category of the log event.</param>
+        /// <param name="messageId">The SocketMeister message ID related to this log entry.</param>
         public LogEntry(string message, Severity severity, LogEventType eventType, long messageId)
         {
             _eventType = eventType;
@@ -64,32 +64,32 @@ namespace SocketMeister
         }
 
         /// <summary>
-        /// If the log entry is an exception, this will be the exception object.
+        /// Gets the exception associated with the log entry, if applicable.
         /// </summary>
         public Exception Exception => _exception;
 
         /// <summary>
-        /// Timestamp of the log entry  
+        /// Gets the timestamp of the log entry.
         /// </summary>
         public DateTime Timestamp => _timeStamp;
 
         /// <summary>
-        /// Message describing the log event
+        /// Gets the message describing the log event.
         /// </summary>
         public string Message => _message;
 
         /// <summary>
-        /// Severity of the log event
+        /// Gets the severity level of the log event.
         /// </summary>
         public Severity Severity => _severity;
 
         /// <summary>
-        /// Category of the log event
+        /// Gets the category of the log event.
         /// </summary>
         public LogEventType EventType => _eventType;
 
         /// <summary>
-        /// If the log entry is related to a messages, the internal SocketMeister MessageId
+        /// Gets the SocketMeister message ID related to this log entry, if applicable.
         /// </summary>
         public long MessageId => _messageId;
     }

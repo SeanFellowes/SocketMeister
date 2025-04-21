@@ -1,71 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Text;
 
 namespace SocketMeister.Messages
 {
     /// <summary>
-    /// This is the core engine for creating bytes to send down a socket and to receive bytes from a socket.
+    /// Core engine for processing socket communication. Handles the serialization of messages for transmission 
+    /// and the reconstruction of received messages from byte streams.
     /// </summary>
     internal sealed partial class MessageEngine
     {
-        internal class Parse
-        {
-            public Parse(long MessageNumber, string MessageType, int MessageLength, int MessageLengthUncompressed)
-            {
-                this.MessageLength = MessageLength;
-                this.MessageLengthUncompressed = MessageLengthUncompressed;
-                this.MessageNumber = MessageNumber;
-                this.MessageType = MessageType;
-                ReceivedDateTime = DateTime.UtcNow;
-            }
-
-            public long MessageNumber { get; set; }
-            public string MessageType { get; set; }
-            public int MessageLength { get; set; }
-            public int MessageLengthUncompressed { get; set; }
-            public bool MessageReceived { get; set; }
-            public int SocketBufferLength { get; set; }
-            public int SocketBytesRead { get; set; }
-            public DateTime ReceivedDateTime { get; set; }
-        }
-
-
-        internal class ParseHistory
-        {
-            private readonly Queue<Parse> _items = new Queue<Parse>(20);
-
-            public void Add(Parse message)
-            {
-                if (_items.Count >= 20) _items.Dequeue();
-                _items.Enqueue(message);
-            }
-
-            public string Text
-            {
-                get
-                {
-                    var sb = new StringBuilder(1024);
-                    sb.AppendLine("\nReceive History");
-                    foreach (var m in _items)
-                    {
-                        sb.AppendFormat(CultureInfo.InvariantCulture,
-                            "# {0} {1:HH:mm:ss.fff}, MessageType: {2}, MessageLength: {3} ({4} uncompressed), SocketBytesRead: {5}(BufSize: {6}), MsgComplete: {7}",
-                            m.MessageNumber, m.ReceivedDateTime, m.MessageType, m.MessageLength, m.MessageLengthUncompressed, m.SocketBytesRead, m.SocketBufferLength, m.MessageReceived ? "Y" : "N")
-                          .AppendLine();
-                    }
-                    return sb.ToString();
-                }
-            }
-        }
-
-
+        /// <summary>
+        /// Length of the message header in bytes.
+        /// </summary>
         public const int HEADERLENGTH = 11;
 
-        private readonly bool _enableCompression;
-        private readonly ParseHistory _history = new ParseHistory();
         private bool _messageIsCompressed = false;
         private int _messageLength = 0;
         private int _messageLengthUncompressed = 0;
@@ -76,19 +25,21 @@ namespace SocketMeister.Messages
         private byte[] _receiveBuffer = new byte[1024];
         private int _receiveBufferPtr = 0;
         private long _statMessageNumber = 1;
-        private bool _statMessageReceived;
         private byte[] _uncompressedBuffer = new byte[1024];
 
-        internal MessageEngine(bool EnableCompression)
-        {
-            _enableCompression = EnableCompression;
-        }
-
+        /// <summary>
+        /// Processes bytes from the socket receive buffer into a message. Continues accumulating data
+        /// until a complete message (including header and content) has been received.
+        /// </summary>
+        /// <param name="socketBytesRead">Number of bytes read from the socket</param>
+        /// <param name="socketReceiveBuffer">Buffer containing received socket data</param>
+        /// <param name="socketReceiveBufferPtr">Current position in the socket receive buffer</param>
+        /// <returns>True if a complete message has been received; otherwise, false</returns>
         internal bool AddBytesFromSocketReceiveBuffer(int socketBytesRead, byte[] socketReceiveBuffer, ref int socketReceiveBufferPtr)
         {
             try
             {
-                // Handle header
+                // Process message header if not yet received
                 if (!_headerReceived)
                 {
                     int bytesRequired = HEADERLENGTH - _headerBufferPtr;
@@ -105,7 +56,7 @@ namespace SocketMeister.Messages
                     }
                 }
 
-                // Handle message body
+                // Process message body after header is received
                 if (_headerReceived)
                 {
                     int bytesRequired = _messageLength - _receiveBufferPtr;
@@ -117,9 +68,7 @@ namespace SocketMeister.Messages
 
                     if (_receiveBufferPtr == _messageLength)
                     {
-                        _statMessageReceived = true;
                         Reset();
-                        AddParseAttemptDetails();
                         _statMessageNumber++;
                         return true;
                     }
@@ -133,49 +82,43 @@ namespace SocketMeister.Messages
             return false;
         }
 
-
-
         /// <summary>
-        /// Generate send bytes for a transmit operation.
+        /// Generates a byte array for transmission over a socket, including header and message content.
+        /// Optionally compresses the message content if size threshold is met.
         /// </summary>
-        /// <param name = "SendObject" > Object to be sent</param>
-        /// <param name = "Compress" > Compress the data</param>
-        /// <returns>Byte array of the data to be sent</returns>
+        /// <param name="SendObject">Message object to be sent</param>
+        /// <param name="Compress">Whether to enable compression for large messages</param>
+        /// <returns>Byte array containing the complete message ready for transmission</returns>
         public static byte[] GenerateSendBytes(IMessage SendObject, bool Compress)
         {
             using (var memoryStream = new MemoryStream())
             using (var writer = new BinaryWriter(memoryStream))
             {
-                // Write the initial header with placeholder values
-                writer.Write(Convert.ToInt16(SendObject.MessageType, CultureInfo.InvariantCulture)); // Message type (2 bytes)
-                writer.Write(false);   // Compression flag (1 byte)
-                writer.Write(0);       // Placeholder for compressed length (4 bytes)
-                writer.Write(0);       // Placeholder for uncompressed length (4 bytes)
+                // Write header with placeholder values
+                writer.Write(Convert.ToInt16(SendObject.MessageType, CultureInfo.InvariantCulture));
+                writer.Write(false);   // Initial compression flag
+                writer.Write(0);       // Placeholder for compressed length
+                writer.Write(0);       // Placeholder for uncompressed length
 
-                // Mark the start of the message body
                 int messageBodyStartPosition = (int)memoryStream.Position;
 
-                // Write the message body
+                // Serialize message content
                 SendObject.AppendBytes(writer);
                 int messageBodyLength = (int)(memoryStream.Position - messageBodyStartPosition);
 
-                // Decide whether to compress
                 byte[] finalBodyBytes;
                 int finalBodyLength;
 
-                // Compression threshold: Avoid compressing small messages to reduce CPU overhead
+                // Apply compression for messages larger than 1KB if compression is enabled
                 if (Compress && messageBodyLength > 1024)
                 {
-                    // Extract uncompressed bytes
                     byte[] uncompressedBytes = new byte[messageBodyLength];
                     memoryStream.Position = messageBodyStartPosition;
                     memoryStream.Read(uncompressedBytes, 0, messageBodyLength);
 
-                    // Compress the bytes
                     byte[] compressedBytes = CLZF2.Compress(uncompressedBytes);
 
-                    // Replace message body with compressed data
-                    memoryStream.SetLength(messageBodyStartPosition); // Truncate stream to remove uncompressed data
+                    memoryStream.SetLength(messageBodyStartPosition);
                     memoryStream.Position = messageBodyStartPosition;
                     memoryStream.Write(compressedBytes, 0, compressedBytes.Length);
 
@@ -183,38 +126,41 @@ namespace SocketMeister.Messages
                     finalBodyLength = compressedBytes.Length;
 
                     // Update header for compressed data
-                    memoryStream.Position = 2; // After MessageType (2 bytes)
-                    writer.Write(true);             // Compression flag (set to true)
-                    writer.Write(finalBodyLength);  // Compressed length
-                    writer.Write(messageBodyLength); // Uncompressed length
+                    memoryStream.Position = 2;
+                    writer.Write(true);
+                    writer.Write(finalBodyLength);
+                    writer.Write(messageBodyLength);
                 }
                 else
                 {
-                    // No compression: Use the existing uncompressed data
-                    finalBodyBytes = null; // Not used
+                    finalBodyBytes = null;
                     finalBodyLength = messageBodyLength;
 
                     // Update header for uncompressed data
-                    memoryStream.Position = 3;          // After MessageType + Compression flag
-                    writer.Write(finalBodyLength);      // Compressed length (same as uncompressed)
-                    writer.Write(finalBodyLength);      // Uncompressed length
+                    memoryStream.Position = 3;
+                    writer.Write(finalBodyLength);
+                    writer.Write(finalBodyLength);
                 }
 
-                // Return the full byte array
                 memoryStream.Position = 0;
                 return memoryStream.ToArray();
             }
         }
 
         /// <summary>
-        /// The type of message. 
+        /// Gets the message type of the current message.
         /// </summary>
         internal MessageType MessageType => _messageType;
 
+        /// <summary>
+        /// Gets the length of the current message in bytes (possibly compressed).
+        /// </summary>
         internal int MessageLength => _messageLength;
 
+        /// <summary>
+        /// Gets the uncompressed length of the current message in bytes.
+        /// </summary>
         internal int MessageLengthUncompressed => _messageLengthUncompressed;
-
 
         internal ServerStoppingNotificationV1 GetServerStoppingNotificationV1()
         {
@@ -234,7 +180,9 @@ namespace SocketMeister.Messages
             }
         }
 
-
+        /// <summary>
+        /// Extracts a MessageResponseV1 from the current message buffer.
+        /// </summary>
         internal MessageResponseV1 GetMessageResponseV1()
         {
             using (var stream = new MemoryStream(GetBuffer()))
@@ -244,6 +192,9 @@ namespace SocketMeister.Messages
             }
         }
 
+        /// <summary>
+        /// Extracts a TokenChangesResponseV1 from the current message buffer.
+        /// </summary>
         internal TokenChangesResponseV1 GetSubscriptionChangesResponseV1()
         {
             using (var stream = new MemoryStream(GetBuffer()))
@@ -253,6 +204,9 @@ namespace SocketMeister.Messages
             }
         }
 
+        /// <summary>
+        /// Extracts a BroadcastV1 from the current message buffer.
+        /// </summary>
         internal BroadcastV1 GetBroadcastV1()
         {
             using (var stream = new MemoryStream(GetBuffer()))
@@ -262,6 +216,9 @@ namespace SocketMeister.Messages
             }
         }
 
+        /// <summary>
+        /// Extracts a ClientDisconnectingNotificationV1 from the current message buffer.
+        /// </summary>
         internal ClientDisconnectingNotificationV1 GetClientDisconnectingNotificationV1()
         {
             using (var stream = new MemoryStream(GetBuffer()))
@@ -271,7 +228,9 @@ namespace SocketMeister.Messages
             }
         }
 
-
+        /// <summary>
+        /// Extracts a Handshake1 message from the current message buffer.
+        /// </summary>
         internal Handshake1 GetHandshake1()
         {
             using (var stream = new MemoryStream(GetBuffer()))
@@ -281,6 +240,9 @@ namespace SocketMeister.Messages
             }
         }
 
+        /// <summary>
+        /// Extracts a Handshake2 message from the current message buffer.
+        /// </summary>
         internal Handshake2 GetHandshake2()
         {
             using (var stream = new MemoryStream(GetBuffer()))
@@ -290,6 +252,9 @@ namespace SocketMeister.Messages
             }
         }
 
+        /// <summary>
+        /// Extracts a Handshake2Ack message from the current message buffer.
+        /// </summary>
         internal Handshake2Ack GetHandshake2Ack()
         {
             using (var stream = new MemoryStream(GetBuffer()))
@@ -299,8 +264,9 @@ namespace SocketMeister.Messages
             }
         }
 
-
-
+        /// <summary>
+        /// Extracts a TokenChangesRequestV1 from the current message buffer.
+        /// </summary>
         internal TokenChangesRequestV1 GetSubscriptionChangesNotificationV1()
         {
             using (var stream = new MemoryStream(GetBuffer()))
@@ -310,6 +276,9 @@ namespace SocketMeister.Messages
             }
         }
 
+        /// <summary>
+        /// Extracts a MessageV1 from the current message buffer.
+        /// </summary>
         internal MessageV1 GetMessageV1()
         {
             using (var stream = new MemoryStream(GetBuffer()))
@@ -319,6 +288,10 @@ namespace SocketMeister.Messages
             }
         }
 
+        /// <summary>
+        /// Returns the appropriate buffer containing the message data. If the message is compressed,
+        /// returns the uncompressed data; otherwise, returns the receive buffer directly.
+        /// </summary>
         private byte[] GetBuffer()
         {
             if (!_messageIsCompressed) return _receiveBuffer;
@@ -330,6 +303,9 @@ namespace SocketMeister.Messages
             return _uncompressedBuffer;
         }
 
+        /// <summary>
+        /// Resets the message engine state to prepare for receiving the next message.
+        /// </summary>
         public void Reset()
         {
             _headerBufferPtr = 0;
@@ -337,7 +313,9 @@ namespace SocketMeister.Messages
             _headerReceived = false;
         }
 
-
+        /// <summary>
+        /// Parses the message header to extract message type, compression status, and size information.
+        /// </summary>
         private void ParseHeader()
         {
             _messageType = (MessageType)BitConverter.ToInt16(_headerBuffer, 0);
@@ -349,18 +327,12 @@ namespace SocketMeister.Messages
                 Array.Resize(ref _receiveBuffer, _messageLength);
         }
 
+        /// <summary>
+        /// Creates a detailed exception message including the current message number.
+        /// </summary>
         private Exception BuildDetailedException(Exception ex)
         {
             return new Exception($"Error processing message {_statMessageNumber}: {ex.Message}");
-        }
-
-
-        private void AddParseAttemptDetails()
-        {
-            _history.Add(new Parse(_statMessageNumber, _messageType.ToString(), _messageLength, _messageLengthUncompressed)
-            {
-                MessageReceived = _statMessageReceived
-            });
         }
     }
 }

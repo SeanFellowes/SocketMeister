@@ -38,7 +38,7 @@ namespace SocketMeister
                 _clientId = Guid.NewGuid().ToString();
                 _clientSocket = clientSocket;
                 _compressSentData = compressSentData;
-                _receiveEngine = new MessageEngine(compressSentData);
+                _receiveEngine = new MessageEngine();
                 _sendCallback = SendCallback; // Cache the delegate
             }
 

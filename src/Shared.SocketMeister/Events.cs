@@ -4,27 +4,27 @@ namespace SocketMeister
 {
 
     /// <summary>
-    /// Log event details.
+    /// Provides details about a log event.
     /// </summary>
 #if SMISPUBLIC
     public partial class LogEventArgs : EventArgs
 #else
-    internal partial class LogEventArgs : EventArgs
+        internal partial class LogEventArgs : EventArgs
 #endif
     {
         private readonly LogEntry _logEntry;
 
         /// <summary>
-        /// Constructor
+        /// Initializes a new instance of the <see cref="LogEventArgs"/> class.
         /// </summary>
-        /// <param name="logEntry">Log entry information</param>
+        /// <param name="logEntry">The log entry containing details about the event.</param>
         public LogEventArgs(LogEntry logEntry)
         {
             _logEntry = logEntry;
         }
 
         /// <summary>
-        /// Log entry information
+        /// Gets the log entry containing details about the event.
         /// </summary>
         public LogEntry LogEntry => _logEntry;
     }

@@ -12,7 +12,7 @@ using System.Threading;
 namespace SocketMeister
 {
     /// <summary>
-    /// Asynchronous, persistent TCP/IP socket client supporting multiple destinations
+    /// Asynchronous, persistent TCP/IP socket client supporting multiple endpoints.
     /// </summary>
 #if SMISPUBLIC
     public partial class SocketClient : IDisposable
@@ -21,20 +21,20 @@ namespace SocketMeister
 #endif
     {
         /// <summary>
-        /// If a poll response has not been received from the server after a number of seconds, the socket client will be disconnected.
+        /// Disconnect the client if no poll response is received within this number of seconds.
         /// </summary>
         private const int DISCONNECT_AFTER_NO_POLL_RESPONSE_SECONDS = 300;
 
         /// <summary>
-        /// The frequency, in seconds, that this client will poll the server, to ensure the socket is alive.
+        /// Frequency (in seconds) at which the client polls the server to verify the socket is active.
         /// </summary>
         private const int POLLING_FREQUENCY = 15;
 
-
 #if !NET35
-        // ThreadLocal for .NET 4.0+
+        // Synchronization for cancellation token source (for .NET 4.0+)
         private object _cancellationTokenSourceLock = new object();
         private CancellationTokenSource _cancellationTokenSource;
+        // Tracks background tasks for graceful shutdown
         private readonly ConcurrentDictionary<Task, bool> _backgroundTasks = new ConcurrentDictionary<Task, bool>();
 #endif
         private SocketAsyncEventArgs _asyncEventArgsConnect;
@@ -74,27 +74,27 @@ namespace SocketMeister
         private readonly UnrespondedMessageCollection _unrespondedMessages = new UnrespondedMessageCollection();
 
         /// <summary>
-        /// Event raised when the status of a socket connection changes
+        /// Event raised when the status of a socket connection changes.
         /// </summary>
         public event EventHandler<EventArgs> ConnectionStatusChanged;
 
         /// <summary>
-        /// Event raised when the current EndPoint channges
+        /// Event raised when the current endpoint changes.
         /// </summary>
         public event EventHandler<EventArgs> CurrentEndPointChanged;
 
         /// <summary>
-        /// Event raised when an exception occurs
+        /// Event raised when an exception occurs.
         /// </summary>
         public event EventHandler<ExceptionEventArgs> ExceptionRaised;
 
         /// <summary>
-        /// Raised when a  message is received from the server. When processing this event, an optional response can be provided which will be returned to the server.
+        /// Raised when a message is received from the server. When processing this event, an optional response can be provided which will be returned to the server.
         /// </summary>
         public event EventHandler<MessageReceivedEventArgs> MessageReceived;
 
         /// <summary>
-        /// Event raised when a the server stops
+        /// Event raised when the server stops.
         /// </summary>
         public event EventHandler<EventArgs> ServerStopping;
 
@@ -104,18 +104,18 @@ namespace SocketMeister
         public event EventHandler<BroadcastReceivedEventArgs> BroadcastReceived;
 
         /// <summary>
-        /// Raised when an log event has been raised.
+        /// Raised when a log event has been raised.
         /// </summary>
         public event EventHandler<LogEventArgs> LogRaised;
 
 
 
         /// <summary>
-        /// Constructor
+        /// Initializes a new instance of the SocketClient class.
         /// </summary>
-        /// <param name="EndPoints">Collection of endpoints that are available to connect to</param>
-        /// <param name="EnableCompression">Whether compression will be applied to data.</param>
-        /// <param name="friendlyName">Friendly name is sent to the SocketServer to be displayed in errors and logging.</param>
+        /// <param name="EndPoints">List of endpoints available for connection.</param>
+        /// <param name="EnableCompression">Whether to apply compression to data.</param>
+        /// <param name="friendlyName">Friendly name sent to the server for logging and error reporting purposes.</param>
         public SocketClient(List<SocketEndPoint> EndPoints, bool EnableCompression, string friendlyName)
         {
             if (EndPoints == null) throw new ArgumentNullException(nameof(EndPoints));
@@ -124,7 +124,7 @@ namespace SocketMeister
 
             _enableCompression = EnableCompression;
             if (!string.IsNullOrEmpty(friendlyName)) _friendlyName = friendlyName;
-            _receiveEngine = new MessageEngine(EnableCompression);
+            _receiveEngine = new MessageEngine();
 
             //  Logger
             _logger.LogRaised += Logger_LogRaised;
@@ -240,9 +240,9 @@ namespace SocketMeister
         }
 
         /// <summary>
-        /// Dispose of the class
+        /// Disposes of the class resources.
         /// </summary>
-        /// <param name="disposing"></param>
+        /// <param name="disposing">True if managed resources should be disposed.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (!_disposed)
@@ -254,7 +254,7 @@ namespace SocketMeister
                     _connectionStatusLock.Dispose();
                     _currentEndPointLock.Dispose();
 
-                    _asyncEventArgsConnect?.Dispose();
+                    _asyncEventArgsConnect?.Dispose(); // Fixed disposed typo.
                     _asyncEventArgsConnect = null;
 
                     _asyncEventArgsPolling?.Dispose();
@@ -513,11 +513,6 @@ namespace SocketMeister
         /// </summary>
         private DateTime LastPollResponse { get { lock (_lock) { return _lastPollResponse; } } set { lock (_lock) { _lastPollResponse = value; } } }
 
-        ///// <summary>
-        ///// Logging engine for the client
-        ///// </summary>
-        //public Logger Logger => _logger;
-
         private int ServerSocketMeisterVersion { get { lock (_handshakeLock) { return _serverSocketMeisterVersion; } } set { lock (_handshakeLock) { _serverSocketMeisterVersion = value; } } }
 
         private bool ServerSupportsThisClientVersion { get { lock (_handshakeLock) { return _serverSupportsThisClientVersion; } } set { lock (_handshakeLock) { _serverSupportsThisClientVersion = value; } } }
@@ -684,7 +679,6 @@ namespace SocketMeister
             }
             finally
             {
-                //CurrentEndPoint.RecreateSocket();
                 timer.Stop();
                 string dmsg = $"{nameof(Disconnect)}() took " + timer.ElapsedMilliseconds + " milliseconds.";
                 Log(dmsg, Severity.Information, LogEventType.ConnectionEvent);
@@ -735,6 +729,9 @@ namespace SocketMeister
 
 
 
+        /// <summary>
+        /// Attempts to re-establish a connection using the endpoint with the shortest wait time.
+        /// </summary>
         private void BgPerformAttemptConnect()
         {
             try
@@ -743,7 +740,7 @@ namespace SocketMeister
                 if (ConnectInProgress == true) return;
                 ConnectInProgress = true;
 
-                //  This provides visual asthetics that connect operations are in progress
+                //  This provides visual feedback that a connection attempt is underway
                 if (DateTime.UtcNow < CurrentEndPoint.DontReconnectUntil.AddMilliseconds(-1000)) InternalConnectionStatus = ConnectionStatuses.Connecting;
 
                 //  Determine the endpoint which should be current based on the lowest DontReconnectUntil from the collection
@@ -783,7 +780,7 @@ namespace SocketMeister
                 }
                 catch (ObjectDisposedException)
                 {
-                    //  Recreate the socket if it has been displosed
+                    //  Recreate the socket if it has been disposed
                     CurrentEndPoint.RecreateSocket();
                     Log("Socket recreated", Severity.Information, LogEventType.ConnectionEvent);
                     ConnectInProgress = false;
@@ -961,8 +958,7 @@ namespace SocketMeister
         }
 
         /// <summary>
-        /// Once a connection has been established, wait for the socket server to send a SocketServerHandshake1 message, then
-        /// complete handshake activities.
+        /// Completes the handshake with the server after an initial connection.
         /// </summary>
         private void BgCompleteHandshake()
         {
@@ -978,7 +974,7 @@ namespace SocketMeister
             }
             if (StopClientPermanently || InternalConnectionStatus != ConnectionStatuses.Connected)
             {
-                traceMsg = $"Connection reset before Handshake1 received.";
+                traceMsg = $"Connection reset before receiving Handshake1.";
                 Log(new Exception(traceMsg));
                 Disconnect(SocketHasErrored: false, ClientDisconnectReason.ConnectionReset, traceMsg);
                 return;
@@ -1041,7 +1037,7 @@ namespace SocketMeister
             else if (ServerSocketMeisterVersion < Constants.MINIMUM_SERVER_VERSION_SUPPORTED_BY_CLIENT)
             {
                 //  Abort if this client does not support the server version
-                traceMsg = $"Disconnecting: Server version {ServerSocketMeisterVersion} not supported by this client. Minimum version required is {Constants.MINIMUM_SERVER_VERSION_SUPPORTED_BY_CLIENT}";
+                traceMsg = $"Disconnecting: Server version {ServerSocketMeisterVersion} is not supported. Minimum required version is {Constants.MINIMUM_SERVER_VERSION_SUPPORTED_BY_CLIENT}";
                 Log(new Exception(traceMsg));
                 Disconnect(SocketHasErrored: false, ClientDisconnectReason.IncompatibleServerVersion, traceMsg);
             }
@@ -1355,7 +1351,7 @@ namespace SocketMeister
 
 
         /// <summary>
-        /// A block of data has been received through the socket. It may contain part of a message, a message, or multiple messages. Process the incoming bytes and when a full message has been received, process the complete message.
+        /// Processes received data from the socket. It handles partial messages, full messages, and multiple messages.
         /// </summary>
         /// <param name="sender">Sending Socket</param>
         /// <param name="e">Socket Arguments</param>
@@ -1365,19 +1361,16 @@ namespace SocketMeister
 
             if (e.BytesTransferred == 0)
             {
-                //  A GRACEFUL CLOSE SHOULD OCCUR LIKE THIS (* IS THIS STEP/S)
-                //  1.   The client socket calls Shutdown(SocketShutdown.Send)) but should keep receiving
-                //  2.   On the server, EndReceive returns 0 bytes read(the client signals there is no more data from its side)
-                //  3.   The server A) sends its last data B) calls Shutdown(SocketShutdown.Send)) C) calls Close on the socket, optionally with a timeout to allow the data to be read from the client
-                //  4. * The client A) reads the remaining data from the server and then receives 0 bytes(the server signals there is no more data from its side) B) calls Close on the socket
-
+                // A graceful close scenario:
+                // 1. The client shutdowns send operations while continuing to receive any remaining data.
+                // 2. The server signals the end of data by eventually transmitting 0 bytes.
                 Disconnect(SocketHasErrored: true, ClientDisconnectReason.SocketError, "");
                 return;
             }
 
             if (e.SocketError != SocketError.Success)
             {
-                Log(new Exception("Disconnecting: ProcessReceive received socket error code " + (int)e.SocketError));
+                Log(new Exception("Disconnecting: ProcessReceive encountered socket error " + (int)e.SocketError));
                 Disconnect(SocketHasErrored: true, ClientDisconnectReason.SocketError, "");
                 return;
             }

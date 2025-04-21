@@ -5,7 +5,7 @@ using System.Threading;
 namespace SocketMeister
 {
     /// <summary>
-    /// Messages waiting for a response
+    /// A collection of messages that are waiting for a response.
     /// </summary>
     internal class UnrespondedMessageCollection
     {
@@ -13,7 +13,7 @@ namespace SocketMeister
         private readonly ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
 
         /// <summary>
-        /// Clears the collection. Called during parent Dispose
+        /// Clears all messages from the collection. This is typically called during the disposal of the parent object.
         /// </summary>
         internal void Clear()
         {
@@ -28,10 +28,10 @@ namespace SocketMeister
             }
         }
 
-
         /// <summary>
         /// Adds a new message to the collection.
         /// </summary>
+        /// <param name="AddItem">The message to add.</param>
         internal void Add(MessageV1 AddItem)
         {
             _lock.EnterWriteLock();
@@ -48,6 +48,7 @@ namespace SocketMeister
         /// <summary>
         /// Removes a message from the collection.
         /// </summary>
+        /// <param name="RemoveItem">The message to remove.</param>
         internal void Remove(MessageV1 RemoveItem)
         {
             _lock.EnterWriteLock();
@@ -62,7 +63,7 @@ namespace SocketMeister
         }
 
         /// <summary>
-        /// After a disconnect, reset applicable messages to Unsent, so the messages can be resent if the client reconnects to the server
+        /// Resets applicable messages to the "Unsent" status after a disconnect, allowing them to be resent if the client reconnects to the server.
         /// </summary>
         internal void ResetAfterDisconnect()
         {
@@ -78,19 +79,19 @@ namespace SocketMeister
                 _lock.ExitReadLock();
             }
 
-            // Process outside the lock
+            // Process messages outside the lock.
             foreach (var message in messagesCopy)
             {
                 message.SetStatusUnsent();
             }
         }
 
-
         /// <summary>
-        /// Safely finds the original message in this class using the MessageId included in a response. If found it sets the ResponseMessage on the original message
+        /// Finds the original message in the collection using the MessageId from a response. 
+        /// If found, sets the response message on the original message.
         /// </summary>
-        /// <param name="ResponseMessage"></param>
-        /// <returns>true is successful</returns>
+        /// <param name="ResponseMessage">The response message to associate with the original message.</param>
+        /// <returns>True if the original message was found and updated; otherwise, false.</returns>
         internal bool FindMessageAndSetResponse(MessageResponseV1 ResponseMessage)
         {
             _lock.EnterReadLock();
@@ -104,7 +105,7 @@ namespace SocketMeister
                 _lock.ExitReadLock();
             }
 
-            // Update response outside the lock
+            // Update the response outside the lock.
             if (message != null)
             {
                 message.SetStatusCompleted(ResponseMessage);
