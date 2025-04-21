@@ -1,0 +1,25 @@
+name: Build & Deploy Docs
+on:
+  push:
+    branches: [ main ]
+    paths: [ '**.md', 'docfx.json', 'docs/**', 'src/**.cs', '.github/workflows/docs.yml' ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install DocFX
+        run: dotnet tool update -g docfx
+
+      - name: Build docs
+        run: docfx build -o _site
+
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: _site
+          force_orphan: true      # keeps history small; optional
