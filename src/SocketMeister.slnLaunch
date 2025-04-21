@@ -1,6 +1,15 @@
 [
   {
-    "Name": "New Profile",
-    "Projects": []
+    "Name": "Test",
+    "Projects": [
+      {
+        "Path": "SocketMeister.MiniTestServer\\SocketMeister.MiniTestServer.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "SocketMeister.MiniTestClient\\SocketMeister.MiniTestClient.csproj",
+        "Action": "Start"
+      }
+    ]
   }
 ]

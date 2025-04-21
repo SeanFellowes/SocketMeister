@@ -1281,17 +1281,17 @@
         </member>
         <member name="E:SocketMeister.SocketServer.Clients.ClientConnected">
             <summary>
-            Event raised when a client connects to the socket server (Raised in a seperate thread)
+            Event raised when a client connects to the socket server (Raised in a separate thread)
             </summary>
         </member>
         <member name="E:SocketMeister.SocketServer.Clients.ClientDisconnected">
             <summary>
-            Event raised when a client disconnects from the socket server (Raised in a seperate thread)
+            Event raised when a client disconnects from the socket server (Raised in a separate thread)
             </summary>
         </member>
         <member name="E:SocketMeister.SocketServer.Clients.TraceEventRaised">
             <summary>
-            Raised when an exception occurs (Raised in a seperate thread)
+            Raised when an exception occurs (Raised in a separate thread)
             </summary>
         </member>
         <member name="P:SocketMeister.SocketServer.Clients.Count">
@@ -1318,22 +1318,22 @@
         </member>
         <member name="E:SocketMeister.SocketServer.ClientConnected">
             <summary>
-            Event raised when a client connects to the socket server. Raised in a seperate thread
+            Event raised when a client connects to the socket server. Raised in a separate thread
             </summary>
         </member>
         <member name="E:SocketMeister.SocketServer.ClientDisconnected">
             <summary>
-            Event raised when a client disconnects from the socket server. Raised in a seperate thread
+            Event raised when a client disconnects from the socket server. Raised in a separate thread
             </summary>
         </member>
         <member name="E:SocketMeister.SocketServer.StatusChanged">
             <summary>
-            Raised when the status of the socket listener changes. Raised in a seperate thread
+            Raised when the status of the socket listener changes. Raised in a separate thread
             </summary>
         </member>
         <member name="E:SocketMeister.SocketServer.MessageReceived">
             <summary>
-            Raised when a  message is received from a client. An optional response can be provided which will be returned to the client. Raised in a seperate thread.
+            Raised when a  message is received from a client. An optional response can be provided which will be returned to the client. Raised in a separate thread.
             </summary>
         </member>
         <member name="E:SocketMeister.SocketServer.TraceEventRaised">

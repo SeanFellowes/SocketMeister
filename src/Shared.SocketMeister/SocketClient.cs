@@ -513,10 +513,10 @@ namespace SocketMeister
         /// </summary>
         private DateTime LastPollResponse { get { lock (_lock) { return _lastPollResponse; } } set { lock (_lock) { _lastPollResponse = value; } } }
 
-        /// <summary>
-        /// Logging engine for the client
-        /// </summary>
-        public Logger Logger => _logger;
+        ///// <summary>
+        ///// Logging engine for the client
+        ///// </summary>
+        //public Logger Logger => _logger;
 
         private int ServerSocketMeisterVersion { get { lock (_handshakeLock) { return _serverSocketMeisterVersion; } } set { lock (_handshakeLock) { _serverSocketMeisterVersion = value; } } }
 

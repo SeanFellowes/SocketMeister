@@ -239,7 +239,6 @@ namespace SocketMeister
         /// Subscription sync event
         /// </summary>
         SubscriptionSyncEvent = 4
-
     }
 
 

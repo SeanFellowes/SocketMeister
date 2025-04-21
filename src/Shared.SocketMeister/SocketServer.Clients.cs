@@ -17,20 +17,22 @@ namespace SocketMeister
         internal class Clients
         {
             private readonly ConcurrentDictionary<string, Client> _clientDictionary = new ConcurrentDictionary<string, Client>();
+
+            private readonly Logger _logger;
             /// <summary>
-            /// Event raised when a client connects to the socket server (Raised in a seperate thread)
+            /// Event raised when a client connects to the socket server (Raised in a separate thread)
             /// </summary>
             public event EventHandler<ClientEventArgs> ClientConnected;
 
             /// <summary>
-            /// Event raised when a client disconnects from the socket server (Raised in a seperate thread)
+            /// Event raised when a client disconnects from the socket server (Raised in a separate thread)
             /// </summary>
             public event EventHandler<ClientEventArgs> ClientDisconnected;
 
-            /// <summary>
-            /// Raised when an exception occurs (Raised in a seperate thread)
-            /// </summary>
-            public event EventHandler<LogEventArgs> LogRaised;
+            public Clients(Logger logger) 
+            {
+                _logger = logger;
+            }
 
             /// <summary>
             /// Total number of syschronous and asynchronous clients connected
@@ -57,10 +59,10 @@ namespace SocketMeister
                 _ = _clientDictionary.TryRemove(client.ClientId, out Client deletedClient);
 
                 try { client.ClientSocket.Shutdown(SocketShutdown.Both); }
-                catch (Exception ex) { NotifyLogRaised(ex); }
+                catch (Exception ex) { _logger.Log(new LogEntry(ex)); }
 
                 try { client.ClientSocket.Close(); }
-                catch (Exception ex) { NotifyLogRaised(ex); }
+                catch (Exception ex) { _logger.Log(new LogEntry(ex)); }
 
                 NotifyClientDisconnected(client);
             }
@@ -86,7 +88,7 @@ namespace SocketMeister
                     }
                     catch (Exception ex)
                     {
-                        NotifyLogRaised(ex);
+                        _logger.Log(new LogEntry(ex));
                     }
                 });
             }
@@ -101,11 +103,11 @@ namespace SocketMeister
                 Task.Run(() => ClientDisconnected?.Invoke(null, new ClientEventArgs(client)));
             }
 
-            private void NotifyLogRaised(Exception error)
-            {
-                var msg = error.ToString(); // Includes message, stack trace, and inner exception details.
-                Task.Run(() => LogRaised?.Invoke(this, new LogEventArgs(new LogEntry(error, 5008))));
-            }
+            //private void NotifyLogRaised(Exception error)
+            //{
+            //    var msg = error.ToString(); // Includes message, stack trace, and inner exception details.
+            //    Task.Run(() => LogRaised?.Invoke(this, new LogEventArgs(new LogEntry(error, 5008))));
+            //}
 
             /// <summary>
             /// Returns a list of clients which are connected to the socket server
