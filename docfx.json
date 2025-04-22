@@ -10,9 +10,9 @@
   ],
   "build": {
     "content": [
-      { "files": [ "README.md" ], "src": "." },
-      { "files": [ "**/*.md" ], "src": "docs", "exclude": [ "obj/**" ] }
-    ],
+     { "files": [ "README.md" ], "src": "." },
+     { "files": [ "**/*.md", "toc.yml" ], "src": "docs", "exclude": [ "obj/**" ] }
+   ],
     "resource": [
       { "files": [ "**/images/**" ], "src": "docs" }
     ],
