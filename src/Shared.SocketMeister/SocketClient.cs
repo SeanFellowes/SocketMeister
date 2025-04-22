@@ -1087,7 +1087,7 @@ namespace SocketMeister
 
         private void SendResponse(MessageResponseV1 messageResponse, MessageV1 message)
         {
-            byte[] sendBytes = MessageEngine.GenerateSendBytes(messageResponse, false);
+            byte[] sendBytes = MessageEngine.GenerateSendBytes(messageResponse, _enableCompression);
 
             SocketAsyncEventArgs sendEventArgs;
             while (true)
@@ -1216,7 +1216,7 @@ namespace SocketMeister
             UnrespondedMessages.Add(message);
 
             // Generate the sendBytes
-            byte[] sendBytes = MessageEngine.GenerateSendBytes(message, false);
+            byte[] sendBytes = MessageEngine.GenerateSendBytes(message, _enableCompression);
             Log($"Parent sending {typeof(MessageV1).Name} ({sendBytes.Length} bytes)...", Severity.Information, LogEventType.UserMessage, message.MessageId);
 
             try
