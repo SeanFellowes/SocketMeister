@@ -1,24 +1,23 @@
 {
   "$schema": "https://raw.githubusercontent.com/dotnet/docfx/main/schemas/docfx.schema.json",
   "metadata": [
-  {
-    "src": [
-      {
-        "files": [ "src/SocketMeister/SocketMeister.csproj" ],
-        "exclude": [ "**/bin/**", "**/obj/**" ],
-        "properties": 
-        { "TargetFramework": "netstandard2.0" }
-      }
-    ],
-    "dest": "api"
-  }
-],
+    {
+      "src": [
+        {
+          "files": [ "src/SocketMeister/SocketMeister.csproj" ],
+          "exclude": [ "**/bin/**", "**/obj/**" ]
+        }
+      ],
+      "dest": "api",
+      "properties": { "TargetFramework": "netstandard2.0" }
+    }
+  ],
   "build": {
-       "content": [
-         { "files": [ "README.md" ],             "src": "." },
-         { "files": [ "**/*.md", "toc.yml" ],     "src": "docs", "exclude": [ "obj/**" ] },
-         { "files": [ "**/*.yml" ],               "src": "api" }
-   ],
+    "content": [
+      { "files": [ "README.md" ], "src": "." },
+      { "files": [ "**/*.md", "toc.yml" ], "src": "docs", "exclude": [ "obj/**" ] },
+      { "files": [ "**/*.yml" ], "src": "api" }
+    ],
     "resource": [
       { "files": [ "**/images/**" ], "src": "docs" }
     ],
