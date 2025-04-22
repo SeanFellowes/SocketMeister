@@ -5,27 +5,24 @@
       "src": [
         {
           "files": [ "src/SocketMeister/SocketMeister.csproj" ],
-          "exclude": [ "**/bin/**", "**/obj/**" ]
+          "exclude": [ "**/bin/**", "**/obj/**" ],
+          "targetFramework": "netstandard2.0"
         }
       ],
-      "output": "api",
-      "properties": { "TargetFramework": "netstandard2.0" }
+      "output": "api"
     }
   ],
   "build": {
     "content": [
-      { "files": [ "README.md" ], "src": "." },
+      { "files": [ "README.md" ],           "src": "." },
       { "files": [ "**/*.md", "toc.yml" ], "src": "docs", "exclude": [ "obj/**" ] },
-      { "files": [ "**/*.yml" ], "src": "api" }
+      { "files": [ "**/*.yml" ],             "src": "api" }
     ],
     "resource": [
-      { "files": [ "**/images/**" ], "src": "docs" }
+      { "files": [ "**/images/**" ],        "src": "docs" }
     ],
     "output": "_site",
-    "template": [
-      "default",
-      "statictoc"
-    ],
+    "template": [ "default", "statictoc" ],
     "globalMetadata": {
       "_appName": "SocketMeister",
       "_appTitle": "SocketMeister Documentation",
