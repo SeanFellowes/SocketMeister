@@ -18,7 +18,7 @@ SocketMeister is a socket library for solutions requiring persistent, fault‑to
 
 ## Installation
 
-Install the main SocketMeister package via NuGet: citeturn0search0
+Install the main SocketMeister package via NuGet: 
 
 ```powershell
 Install-Package SocketMeister -Version 10.2.4
