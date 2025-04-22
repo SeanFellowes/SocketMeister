@@ -1,0 +1,62 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<!-- Multi-target frameworks -->
+		<TargetFrameworks>net8.0</TargetFrameworks>
+
+		<!-- Package metadata -->
+		<AssemblyName>SocketMeister</AssemblyName>
+		<RootNamespace>SocketMeister</RootNamespace>
+		<Authors>Sean Fellowes</Authors>
+		<Company>Sean Fellowes</Company>
+		<Description>Performant TCP socket client and server for .NET with automatic reconnect, load balancing, and high throughput.</Description>
+		<PackageProjectUrl>https://seanfellowes.github.io/SocketMeister/</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/SeanFellowes/SocketMeister</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageTags>tcp;socket;networking;dotnet</PackageTags>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageReleaseNotes>See CHANGELOG.md for details: https://github.com/SeanFellowes/SocketMeister/blob/main/CHANGELOG.md</PackageReleaseNotes>
+		<PackageReadmeFile>NuGetDocumentation.md</PackageReadmeFile>
+
+		<!-- Versioning -->
+		<Version>10.2.4</Version>
+		<AssemblyVersion>10.2.4.0</AssemblyVersion>
+		<FileVersion>10.2.4.0</FileVersion>
+
+		<!-- Build settings -->
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+
+		<!-- XML docs for API reference -->
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<DocumentationFile>$(OutputPath)SocketMeister.xml</DocumentationFile>
+
+		<!-- Icon -->
+		<PackageIcon>icon_128.png</PackageIcon>
+
+		<!-- Self-contained is not needed for libraries -->
+	</PropertyGroup>
+
+	<!-- Conditional constants per framework -->
+	<PropertyGroup Condition="'$(TargetFramework)'=='net35'">
+		<DefineConstants>SMNOSERVER;SMISPUBLIC</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(TargetFramework)'!='net35'">
+		<DefineConstants>SMISPUBLIC</DefineConstants>
+	</PropertyGroup>
+
+	<!-- Pack items -->
+	<ItemGroup>
+		<None Include="..\..\images\icon_128.png">
+			<Pack>true</Pack>
+			<PackagePath></PackagePath>
+		</None>
+		<None Include="..\..\NuGetDocumentation.md">
+			<Pack>true</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
+
+</Project>

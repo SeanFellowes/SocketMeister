@@ -4,9 +4,8 @@
     {
       "src": [
         {
-          "files": [ "src/SocketMeister/SocketMeister.csproj" ],
-          "exclude": [ "**/bin/**", "**/obj/**" ],
-          "properties": { "TargetFramework": "netstandard2.0" }
+          "files": [ "src/SocketMeisterAPI/SocketMeisterAPI.csproj" ],
+          "exclude": [ "**/bin/**", "**/obj/**" ]
         }
       ],
       "output": "api"

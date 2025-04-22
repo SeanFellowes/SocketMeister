@@ -1,0 +1,2149 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>SocketMeister</name>
+    </assembly>
+    <members>
+        <member name="F:SocketMeister.Constants.SOCKET_MEISTER_VERSION">
+            <summary>
+            The version number used by the server and client to determine compatibility.
+            This value is used for version-specific operations.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Constants.MAX_WAIT_FOR_CLIENT_DISCONNECT_WHEN_STOPPING">
+            <summary>
+            The maximum number of milliseconds to wait for clients to disconnect when stopping the socket server.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Constants.MINIMUM_SERVER_VERSION_SUPPORTED_BY_CLIENT">
+            <summary>
+            The minimum version of the SocketServer that a client can connect to.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Constants.MINIMUM_CLIENT_VERSION_SUPPORTED_BY_SERVER">
+            <summary>
+            The minimum version of the SocketClient that the server can connect to.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Constants.SEND_RECEIVE_BUFFER_SIZE">
+            <summary>
+            The buffer size (in bytes) used for sending and receiving data.
+            Note: This value is also used by the 'SocketServer' class.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Constants.SEND_RESPONSE_TIMEOUT_SECONDS">
+            <summary>
+            The number of seconds to wait before generating a timeout error when sending a response to a request.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Constants.SOCKET_ASYNC_EVENT_ARGS_POOL_SIZE">
+            <summary>
+            The number of simultaneous send operations that can take place.
+            The value should be between 2 and 20.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.ClientDisconnectReason.Unknown">
+            <summary>
+            The reason for the client disconnect is unknown.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.ClientDisconnectReason.HandshakeTimeout">
+            <summary>
+            The client disconnected because the handshake between the client and server timed out.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.ClientDisconnectReason.PollingTimeout">
+            <summary>
+            The client disconnected because the server did not respond to a poll request.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.ClientDisconnectReason.IncompatibleServerVersion">
+            <summary>
+            The client disconnected because the server version is not supported by this client.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.ClientDisconnectReason.IncompatibleClientVersion">
+            <summary>
+            The client disconnected because the server does not support this client version.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.ClientDisconnectReason.ConnectionReset">
+            <summary>
+            The client disconnected because the connection was reset.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.ClientDisconnectReason.SocketError">
+            <summary>
+            The client disconnected due to a socket error.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.ClientDisconnectReason.SocketConnectionRefused">
+            <summary>
+            The socket server is not listening for connections.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.ClientDisconnectReason.SocketConnectionTimeout">
+            <summary>
+            The socket timed out during the connection attempt.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.ClientDisconnectReason.ClientIsStopping">
+            <summary>
+            The client disconnected because the calling program requested it.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.ClientDisconnectReason.ServerIsStopping">
+            <summary>
+            The client disconnected because it received a server stopping notification.
+            </summary>
+        </member>
+        <member name="T:SocketMeister.MessageEngineDeliveryResult">
+            <summary>
+            The result of an attempt to process a message. This is included in the MessageResponse.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.MessageEngineDeliveryResult.Success">
+            <summary>
+            The message was processed successfully.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.MessageEngineDeliveryResult.Stopping">
+            <summary>
+            The client or server is shutting down, so the message was not processed.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.MessageEngineDeliveryResult.NoMessageReceivedEventListener">
+            <summary>
+            There is no process listening for 'MessageReceived' events.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.MessageEngineDeliveryResult.Exception">
+            <summary>
+            An exception occurred while processing the message.
+            </summary>
+        </member>
+        <member name="T:SocketMeister.MessageStatus">
+            <summary>
+            The status of the message.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.MessageStatus.Unsent">
+            <summary>
+            The message has not been sent or is flagged to be resent (due to a socket connection failure).
+            </summary>
+        </member>
+        <member name="F:SocketMeister.MessageStatus.InProgress">
+            <summary>
+            The message is in progress.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.MessageStatus.Completed">
+            <summary>
+            The send operation has finished (it could be either successful or unsuccessful).
+            </summary>
+        </member>
+        <member name="T:SocketMeister.MessageType">
+            <summary>
+            Internal message types.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.MessageType.Unknown">
+            <summary>
+            An unknown message type, usually associated with an error.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.MessageType.BroadcastV1">
+            <summary>
+            The server sends a broadcast.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.MessageType.MessageV1">
+            <summary>
+            A message expecting a response (even a null response is valid).
+            </summary>
+        </member>
+        <member name="F:SocketMeister.MessageType.MessageResponseV1">
+            <summary>
+            A response to a message.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.MessageType.ServerStoppingNotificationV1">
+            <summary>
+            The server is shutting down.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.MessageType.ClientDisconnectingNotificationV1">
+            <summary>
+            The client is disconnecting.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.MessageType.TokenChangesRequestV1">
+            <summary>
+            Clients send subscription information to the server, and the server updates its local client details.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.MessageType.TokenChangesResponseV1">
+            <summary>
+            The server sends a subscription response when a subscription notification is received from a client.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.MessageType.PollingRequestV1">
+            <summary>
+            Clients send poll requests to determine if a connection is alive.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.MessageType.PollingResponseV1">
+            <summary>
+            The server sends a poll response when a poll request is received from a client.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.MessageType.Handshake1">
+            <summary>
+            The server sends its version number to the client.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.MessageType.Handshake2">
+            <summary>
+            The client sends its version number to the server after receiving Handshake1.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.MessageType.Handshake2Ack">
+            <summary>
+            The server sends a Handshake2Ack to the client after receiving Handshake2.
+            </summary>
+        </member>
+        <member name="T:SocketMeister.Severity">
+            <summary>
+            The severity of a trace/log event.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Severity.Information">
+            <summary>
+            Informational messages.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Severity.Warning">
+            <summary>
+            Warning messages.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Severity.Error">
+            <summary>
+            Error messages.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Severity.Debug">
+            <summary>
+            Debugging messages.
+            </summary>
+        </member>
+        <member name="T:SocketMeister.LogEventType">
+            <summary>
+            The category of a trace/log event.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.LogEventType.ConnectionEvent">
+            <summary>
+            Connection-related events.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.LogEventType.Exception">
+            <summary>
+            Exception events.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.LogEventType.UserMessage">
+            <summary>
+            User-generated messages.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.LogEventType.PollingEvent">
+            <summary>
+            Polling-related events.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.LogEventType.SubscriptionSyncEvent">
+            <summary>
+            Subscription synchronization events.
+            </summary>
+        </member>
+        <member name="T:SocketMeister.SocketServerStatus">
+            <summary>
+            The execution status of a service.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.SocketServerStatus.Stopped">
+            <summary>
+            The service is stopped.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.SocketServerStatus.Starting">
+            <summary>
+            The service is starting.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.SocketServerStatus.Started">
+            <summary>
+            The service is started.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.SocketServerStatus.Stopping">
+            <summary>
+            The service is stopping.
+            </summary>
+        </member>
+        <member name="T:SocketMeister.TokenAction">
+            <summary>
+            The action taken with a token.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.TokenAction.Unknown">
+            <summary>
+            The action is unknown.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.TokenAction.Add">
+            <summary>
+            Add a token.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.TokenAction.Modify">
+            <summary>
+            Modify a token.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.TokenAction.Delete">
+            <summary>
+            Delete a token.
+            </summary>
+        </member>
+        <member name="T:SocketMeister.ValueType">
+            <summary>
+            The type of value stored in a token.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.ValueType.Unknown">
+            <summary>
+            An unknown value type.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.ValueType.BoolValue">
+            <summary>
+            A boolean value.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.ValueType.DateTimeValue">
+            <summary>
+            A DateTime value.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.ValueType.DoubleValue">
+            <summary>
+            A double value.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.ValueType.Int16Value">
+            <summary>
+            A 16-bit integer value.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.ValueType.Int32Value">
+            <summary>
+            A 32-bit integer value.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.ValueType.Int64Value">
+            <summary>
+            A 64-bit integer value.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.ValueType.UInt16Value">
+            <summary>
+            A 16-bit unsigned integer value.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.ValueType.UInt32Value">
+            <summary>
+            A 32-bit unsigned integer value.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.ValueType.UInt64Value">
+            <summary>
+            A 64-bit unsigned integer value.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.ValueType.StringValue">
+            <summary>
+            A string value.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.ValueType.ByteValue">
+            <summary>
+            A byte value.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.ValueType.ByteArrayValue">
+            <summary>
+            A byte array value.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.ValueType.NullValue">
+            <summary>
+            A null value.
+            </summary>
+        </member>
+        <member name="T:SocketMeister.LogEventArgs">
+            <summary>
+            Provides details about a log event.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.LogEventArgs.#ctor(SocketMeister.LogEntry)">
+            <summary>
+            Initializes a new instance of the <see cref="T:SocketMeister.LogEventArgs"/> class.
+            </summary>
+            <param name="logEntry">The log entry containing details about the event.</param>
+        </member>
+        <member name="P:SocketMeister.LogEventArgs.LogEntry">
+            <summary>
+            Gets the log entry containing details about the event.
+            </summary>
+        </member>
+        <member name="T:SocketMeister.ExceptionEventArgs">
+            <summary>
+            Provides details about an exception that occurred.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.ExceptionEventArgs.#ctor(System.Exception,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:SocketMeister.ExceptionEventArgs"/> class.
+            </summary>
+            <param name="exception">The exception that occurred.</param>
+            <param name="eventId">The event identifier for this exception. Useful when writing to the Windows Event Log or equivalent.</param>
+        </member>
+        <member name="P:SocketMeister.ExceptionEventArgs.EventId">
+            <summary>
+            Gets the event identifier for this exception. Useful when writing to the Windows Event Log or equivalent.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.ExceptionEventArgs.Exception">
+            <summary>
+            Gets the exception that occurred.
+            </summary>
+        </member>
+        <member name="T:SocketMeister.LogEntry">
+            <summary>
+            Represents the details of a log entry emitted by the logger.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.LogEntry.#ctor(System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:SocketMeister.LogEntry"/> class for an exception.
+            </summary>
+            <param name="exception">The exception associated with the log entry.</param>
+        </member>
+        <member name="M:SocketMeister.LogEntry.#ctor(System.Exception,System.Int64)">
+            <summary>
+            Initializes a new instance of the <see cref="T:SocketMeister.LogEntry"/> class for an exception with a specific message ID.
+            </summary>
+            <param name="exception">The exception associated with the log entry.</param>
+            <param name="messageId">The SocketMeister message ID related to this log entry.</param>
+        </member>
+        <member name="M:SocketMeister.LogEntry.#ctor(System.String,SocketMeister.Severity,SocketMeister.LogEventType)">
+            <summary>
+            Initializes a new instance of the <see cref="T:SocketMeister.LogEntry"/> class with a message, severity, and event type.
+            </summary>
+            <param name="message">The message describing the log event.</param>
+            <param name="severity">The severity level of the log event.</param>
+            <param name="eventType">The category of the log event.</param>
+        </member>
+        <member name="M:SocketMeister.LogEntry.#ctor(System.String,SocketMeister.Severity,SocketMeister.LogEventType,System.Int64)">
+            <summary>
+            Initializes a new instance of the <see cref="T:SocketMeister.LogEntry"/> class with a message, severity, event type, and message ID.
+            </summary>
+            <param name="message">The message describing the log event.</param>
+            <param name="severity">The severity level of the log event.</param>
+            <param name="eventType">The category of the log event.</param>
+            <param name="messageId">The SocketMeister message ID related to this log entry.</param>
+        </member>
+        <member name="P:SocketMeister.LogEntry.Exception">
+            <summary>
+            Gets the exception associated with the log entry, if applicable.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.LogEntry.Timestamp">
+            <summary>
+            Gets the timestamp of the log entry.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.LogEntry.Message">
+            <summary>
+            Gets the message describing the log event.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.LogEntry.Severity">
+            <summary>
+            Gets the severity level of the log event.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.LogEntry.EventType">
+            <summary>
+            Gets the category of the log event.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.LogEntry.MessageId">
+            <summary>
+            Gets the SocketMeister message ID related to this log entry, if applicable.
+            </summary>
+        </member>
+        <member name="T:SocketMeister.Logger">
+            <summary>
+            A simple logger that logs messages to the console and raises log events to the calling code.
+            This logger is thread-safe. It reduces the number of background threads used for raising
+            logging events by batching log entries and processing them in a single background thread.
+            </summary>
+        </member>
+        <member name="E:SocketMeister.Logger.LogRaised">
+            <summary>
+            Raised when a log entry is added.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Logger.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:SocketMeister.Logger"/> class.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Logger.Dispose">
+            <summary>
+            Disposes of the resources used by the logger.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Logger.Dispose(System.Boolean)">
+            <summary>
+            Disposes of the resources used by the logger.
+            </summary>
+            <param name="disposing">Indicates whether the method is called from Dispose or the finalizer.</param>
+        </member>
+        <member name="M:SocketMeister.Logger.Finalize">
+            <summary>
+            Finalizer to ensure resources are released.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Logger.StopPermanently">
+            <summary>
+            Gets or sets a value indicating whether the logger should stop permanently.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Logger.Log(SocketMeister.LogEntry)">
+            <summary>
+            Adds a log entry to the queue for processing.
+            </summary>
+            <param name="logEntry">The log entry to add.</param>
+        </member>
+        <member name="M:SocketMeister.Logger.ProcessBatch">
+            <summary>
+            Processes a batch of log entries from the queue and raises the <see cref="E:SocketMeister.Logger.LogRaised"/> event.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Logger.Stop">
+            <summary>
+            Stops the logger and allows the background thread to terminate gracefully.
+            </summary>
+        </member>
+        <member name="T:SocketMeister.Messages.MessageEngine">
+            <summary>
+            This is the core engine for creating bytes to send down a socket and to receive bytes from a socket.
+            </summary>
+            <summary>
+            Core engine for processing socket communication. Handles the serialization of messages for transmission 
+            and the reconstruction of received messages from byte streams.
+            </summary>
+        </member>
+        <member name="T:SocketMeister.Messages.MessageEngine.CLZF2">
+            <summary>
+            Improved C# LZF Compressor, a very small data compression library. The compression algorithm is extremely fast.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Messages.MessageEngine.CLZF2.BUFFER_SIZE_ESTIMATE">
+            <summary>
+            Multiple of input size used to estimate work/output buffer size.
+            Larger values increase initial memory usage but potentially reduces number of allocations.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Messages.MessageEngine.CLZF2.HLOG">
+            <summary>
+            Size of hashtable is 2^HLOG bytes. 
+            Decompression is independent of the hash table size.
+            The difference between 15 and 14 is very small
+            for small blocks (and 14 is usually a bit faster).
+            For a low-memory/faster configuration, use HLOG == 13;
+            For best compression, use 15 or 16 (or more, up to 22).
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Messages.MessageEngine.CLZF2.HashTable">
+            <summary>
+            Hashtable, that can be allocated only once.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Messages.MessageEngine.CLZF2.locker">
+            <summary>
+            Lock object for access to hashtable so that we can keep things thread safe.
+            Still up to the caller to make sure any shared outputBuffer use is thread safe.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageEngine.CLZF2.Compress(System.Byte[])">
+            <summary>
+            Compress input bytes.
+            </summary>
+            <param name="inputBytes">Bytes to compress.</param>
+            <returns>Compressed bytes.</returns>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageEngine.CLZF2.Compress(System.Byte[],System.Int32)">
+            <summary>
+            Compress input bytes.
+            </summary>
+            <param name="inputBytes">Bytes to compress.</param>
+            <param name="inputLength">Length of data in inputBytes to decompress.</param>
+            <returns>Compressed bytes.</returns>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageEngine.CLZF2.Compress(System.Byte[],System.Byte[]@)">
+            <summary>
+            Compress input bytes.
+            </summary>
+            <param name="inputBytes">Bytes to compress.</param>
+            <param name="outputBuffer">Output/work buffer. Upon completion, will contain the output.</param>
+            <returns>Length of output.</returns>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageEngine.CLZF2.Compress(System.Byte[],System.Byte[]@,System.Int32)">
+            <summary>
+            Compress input bytes.
+            </summary>
+            <param name="inputBytes">Bytes to compress.</param>
+            <param name="outputBuffer">Output/work buffer. Upon completion, will contain the output.</param>
+            <param name="inputLength">Length of data in inputBytes.</param>
+            <returns>Length of output.</returns>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageEngine.CLZF2.Decompress(System.Byte[])">
+            <summary>
+            Decompress input bytes.
+            </summary>
+            <param name="inputBytes">Bytes to decompress.</param>
+            <returns>Decompressed bytes.</returns>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageEngine.CLZF2.Decompress(System.Byte[],System.Int32)">
+            <summary>
+            Decompress input bytes.
+            </summary>
+            <param name="inputBytes">Bytes to decompress.</param>
+            <param name="inputLength">Length of data in inputBytes to decompress.</param>
+            <returns>Decompressed bytes.</returns>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageEngine.CLZF2.Decompress(System.Byte[],System.Byte[]@)">
+            <summary>
+            Decompress input bytes.
+            </summary>
+            <param name="inputBytes">Bytes to decompress.</param>
+            <param name="outputBuffer">Output/work buffer. Upon completion, will contain the output.</param>
+            <returns>Length of output.</returns>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageEngine.CLZF2.Decompress(System.Byte[],System.Byte[]@,System.Int32)">
+            <summary>
+            Decompress input bytes.
+            </summary>
+            <param name="inputBytes">Bytes to decompress.</param>
+            <param name="outputBuffer">Output/work buffer. Upon completion, will contain the output.</param>
+            <param name="inputLength">Length of data in inputBytes.</param>
+            <returns>Length of output.</returns>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageEngine.CLZF2.Lzf_compress(System.Byte[],System.Byte[]@,System.Int32)">
+            <summary>
+            Compresses the data using LibLZF algorithm.
+            </summary>
+            <param name="input">Reference to the data to compress.</param>
+            <param name="output">Reference to a buffer which will contain the compressed data.</param>
+            <param name="inputLength">Length of input bytes to process.</param>
+            <returns>The size of the compressed archive in the output buffer.</returns>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageEngine.CLZF2.Lzf_decompress(System.Byte[],System.Byte[]@,System.Int32)">
+            <summary>
+            Decompresses the data using LibLZF algorithm.
+            </summary>
+            <param name="input">Reference to the data to decompress.</param>
+            <param name="output">Reference to a buffer which will contain the decompressed data.</param>
+            <param name="inputLength">Length of input bytes to process.</param>
+            <returns>The size of the decompressed archive in the output buffer.</returns>
+        </member>
+        <member name="F:SocketMeister.Messages.MessageEngine.HEADERLENGTH">
+            <summary>
+            Length of the message header in bytes.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageEngine.AddBytesFromSocketReceiveBuffer(System.Int32,System.Byte[],System.Int32@)">
+            <summary>
+            Processes bytes from the socket receive buffer into a message. Continues accumulating data
+            until a complete message (including header and content) has been received.
+            </summary>
+            <param name="socketBytesRead">Number of bytes read from the socket</param>
+            <param name="socketReceiveBuffer">Buffer containing received socket data</param>
+            <param name="socketReceiveBufferPtr">Current position in the socket receive buffer</param>
+            <returns>True if a complete message has been received; otherwise, false</returns>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageEngine.GenerateSendBytes(SocketMeister.Messages.IMessage,System.Boolean)">
+            <summary>
+            Generates a byte array for transmission over a socket, including header and message content.
+            Optionally compresses the message content if size threshold is met.
+            </summary>
+            <param name="SendObject">Message object to be sent</param>
+            <param name="Compress">Whether to enable compression for large messages</param>
+            <returns>Byte array containing the complete message ready for transmission</returns>
+        </member>
+        <member name="P:SocketMeister.Messages.MessageEngine.MessageType">
+            <summary>
+            Gets the message type of the current message.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.MessageEngine.MessageLength">
+            <summary>
+            Gets the length of the current message in bytes (possibly compressed).
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.MessageEngine.MessageLengthUncompressed">
+            <summary>
+            Gets the uncompressed length of the current message in bytes.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageEngine.GetMessageResponseV1">
+            <summary>
+            Extracts a MessageResponseV1 from the current message buffer.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageEngine.GetSubscriptionChangesResponseV1">
+            <summary>
+            Extracts a TokenChangesResponseV1 from the current message buffer.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageEngine.GetBroadcastV1">
+            <summary>
+            Extracts a BroadcastV1 from the current message buffer.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageEngine.GetClientDisconnectingNotificationV1">
+            <summary>
+            Extracts a ClientDisconnectingNotificationV1 from the current message buffer.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageEngine.GetHandshake1">
+            <summary>
+            Extracts a Handshake1 message from the current message buffer.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageEngine.GetHandshake2">
+            <summary>
+            Extracts a Handshake2 message from the current message buffer.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageEngine.GetHandshake2Ack">
+            <summary>
+            Extracts a Handshake2Ack message from the current message buffer.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageEngine.GetSubscriptionChangesNotificationV1">
+            <summary>
+            Extracts a TokenChangesRequestV1 from the current message buffer.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageEngine.GetMessageV1">
+            <summary>
+            Extracts a MessageV1 from the current message buffer.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageEngine.GetBuffer">
+            <summary>
+            Returns the appropriate buffer containing the message data. If the message is compressed,
+            returns the uncompressed data; otherwise, returns the receive buffer directly.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageEngine.Reset">
+            <summary>
+            Resets the message engine state to prepare for receiving the next message.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageEngine.ParseHeader">
+            <summary>
+            Parses the message header to extract message type, compression status, and size information.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageEngine.BuildDetailedException(System.Exception)">
+            <summary>
+            Creates a detailed exception message including the current message number.
+            </summary>
+        </member>
+        <member name="T:SocketMeister.Messages.BroadcastV1">
+            <summary>
+            SocketServer sends broadcasts to clients.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Messages.BroadcastV1.#ctor(System.String,System.Object[])">
+            <summary>
+            Broadcast constructor
+            </summary>
+            <param name="Name">Optional Name/Tag/Identifier for the broadcast.</param>
+            <param name="Parameters">Array of parameters to send with the broadcast. There must be at least 1 parameter.</param>
+        </member>
+        <member name="P:SocketMeister.Messages.BroadcastV1.Parameters">
+            <summary>
+            Parameters provided with this broadcast
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.BroadcastV1.Name">
+            <summary>
+            Optional Name/Tag/Identifier given to the broadcast
+            </summary>
+        </member>
+        <member name="T:SocketMeister.Messages.ClientDisconnectingNotificationV1">
+            <summary>
+            Sent when a client is disconnecting
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Messages.ClientDisconnectingNotificationV1.#ctor(System.IO.BinaryReader)">
+            <summary>
+            Fastest was to build this is to create it directly from the SocketEnvelope buffer.
+            </summary>
+            <param name="Reader">Binary Reader</param>
+        </member>
+        <member name="T:SocketMeister.Messages.Handshake1">
+            <summary>
+            Internal Message: SocketServer sends the client the version number of the SocketServer 
+            when it is ready to receive data. 
+            Introduced in version 10 of SocketMeister for robust handshaking.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Messages.Handshake1.#ctor(System.IO.BinaryReader)">
+            <summary>
+            Fastest was to build this is to create it directly from the SocketEnvelope buffer.
+            </summary>
+            <param name="Reader">Binary Reader</param>
+        </member>
+        <member name="T:SocketMeister.Messages.Handshake2">
+            <summary>
+            Internal Message: SocketClient sends client related information the server as part of
+            the handshake process.
+            This Handshake2 message is sent when the client receives Handshake1 from the server.
+            Introduced in version 10 of SocketMeister for robust handshaking.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Messages.Handshake2.#ctor(System.IO.BinaryReader)">
+            <summary>
+            Fastest was to build this is to create it directly from the SocketEnvelope buffer.
+            </summary>
+            <param name="Reader">Binary Reader</param>
+        </member>
+        <member name="T:SocketMeister.Messages.Handshake2Ack">
+            <summary>
+            Internal Message: SocketServer sends SocketClient a Handshake2Ack after receiving a
+            Handshake2 message from the client.
+            Introduced in version 10 of SocketMeister for robust handshaking.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Messages.Handshake2Ack.#ctor(System.IO.BinaryReader)">
+            <summary>
+            Fastest was to build this is to create it directly from the SocketEnvelope buffer.
+            </summary>
+            <param name="Reader">Binary Reader</param>
+        </member>
+        <member name="T:SocketMeister.Messages.IMessage">
+            <summary>
+            Interface for internal messages, sent between socket clients and the socket server. Internal messages are not visible outside the socket library.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.IMessage.CreatedDateTime">
+            <summary>
+            UTC datetime the message was created.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.IMessage.MessageId">
+            <summary>
+            Unique identifier for the message
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.IMessage.MessageType">
+            <summary>
+            Type of message
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.IMessage.SendReceiveStatus">
+            <summary>
+            Status of the message. 
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.IMessage.TimeoutMilliseconds">
+            <summary>
+            Number of milliseconds after the message was created before the message should timeout
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Messages.IMessage.AppendBytes(System.IO.BinaryWriter)">
+            <summary>
+            Mandatory method to append binary data to the IMessage object,
+            </summary>
+            <param name="Writer"></param>
+        </member>
+        <member name="P:SocketMeister.Messages.IMessage.Response">
+            <summary>
+            Response message, where applicable, so null by default
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Messages.IMessage.Dispose">
+            <summary>
+            Message displosal
+            </summary>
+        </member>
+        <member name="E:SocketMeister.Messages.MessageBase.SendReceiveStatusChanged">
+            <summary>
+            Event raised when the current EndPoint channges
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageBase.Dispose">
+            <summary>
+            Dispose of the class
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageBase.Dispose(System.Boolean)">
+            <summary>
+            Dispose of the class
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="P:SocketMeister.Messages.MessageBase.CreatedDateTime">
+            <summary>
+            Timestamp, in UTC, when the message was created (Set during message instantiation)
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.MessageBase.Error">
+            <summary>
+            Error which occured when the message failed
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.MessageBase.TimeoutMilliseconds">
+            <summary>
+            Number of milliseconds until the message will timeout. Also sets TimeoutDateTime
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.MessageBase.IsAborted">
+            <summary>
+            Message is aborted, usually due to a SocketServer or SocketClient shutdown or disposal().
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.MessageBase.IsTimeout">
+            <summary>
+            Whether the Message has timed out
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.MessageBase.MessageType">
+            <summary>
+            Type of message
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.MessageBase.Response">
+            <summary>
+            Response message, where a response is required (waitForResponse = true)
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.MessageBase.SendReceiveStatus">
+            <summary>
+            Calculated SendReceive status of the message (Will consider timeout accurately)
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.MessageBase.TrySendReceive">
+            <summary>
+            Whether the method SendReceive(Message Message) should continute trying
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageBase.WaitForResponseOrTimeout">
+            <summary>
+                Waits for SetCompleted() has been called or the message times out.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:SocketMeister.Messages.MessageResponseV1.RemoteClient">
+            <summary>
+            The remote client which sent this Message (value null on SocketClient)
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageResponseV1.#ctor(System.IO.BinaryReader)">
+            <summary>
+            Fastest was to build this is to create it directly from the SocketEnvelope buffer.
+            </summary>
+            <param name="Reader">Binary Reader</param>
+        </member>
+        <member name="T:SocketMeister.Messages.MessageV1">
+            <summary>
+            A message, sent from socket client to socket server. A response is expected and will cause problems if it is not sent.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.MessageV1.RemoteClient">
+            <summary>
+            The remote client which sent this Message (value null on SocketClient)
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Messages.MessageV1.#ctor(System.Object[],System.Int32,System.Boolean)">
+            <summary>
+            Message constructor
+            </summary>
+            <param name="Parameters">Array of parameters to send with the message. There must be at least 1 parameter.</param>
+            <param name="TimeoutMilliseconds">The maximum number of milliseconds to wait for a response before timing out.</param>
+            <param name="IsLongPolling">The maximum number of milliseconds to wait for a response before timing out.</param>
+        </member>
+        <member name="P:SocketMeister.Messages.MessageV1.Parameters">
+            <summary>
+            Parameters provided with this message
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.MessageV1.IsLongPolling">
+            <summary>
+            True is this message is long polling on the server side. Long polling messages will be closed immediately in the event of a close from either the client or server side.
+            </summary>
+        </member>
+        <member name="T:SocketMeister.Messages.PollingRequestV1">
+            <summary>
+            Internal Message: Socket client regulary sends a poll request to the server to check that the server is alive.
+            </summary>
+        </member>
+        <member name="T:SocketMeister.Messages.PollingResponseV1">
+            <summary>
+            Internal Message: Socket server sends a response to a 'PollRequest' message to indicate (to the client) that the server is alive.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Messages.ServerStoppingNotificationV1.#ctor(System.IO.BinaryReader)">
+            <summary>
+            Fastest was to build this is to create it directly from the SocketEnvelope buffer.
+            </summary>
+            <param name="Reader">Binary Reader</param>
+        </member>
+        <member name="P:SocketMeister.Messages.ServerStoppingNotificationV1.MaxWaitMilliseconds">
+            <summary>
+            The maximum number of milliseconds the client should wait for unresponded messages to be completed. The server will not send back responses for unresponded messages after this time.
+            </summary>
+        </member>
+        <member name="T:SocketMeister.Messages.TokenChangesRequestV1">
+            <summary>
+            Internal Message: Response when tokens are changed. Contains ChangeIds of token changes.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Messages.TokenChangesRequestV1.#ctor(System.IO.BinaryReader)">
+            <summary>
+            Fastest was to build this is to create it directly from the SocketEnvelope buffer.
+            </summary>
+            <param name="Reader">Binary Reader</param>
+        </member>
+        <member name="T:SocketMeister.Messages.TokenChangesResponseV1">
+            <summary>
+            Internal Message: Contains information related to changed tokens.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Messages.TokenChangesResponseV1.#ctor(System.IO.BinaryReader)">
+            <summary>
+            Fastest was to build this is to create it directly from the SocketEnvelope buffer.
+            </summary>
+            <param name="Reader">Binary Reader</param>
+        </member>
+        <member name="T:SocketMeister.Serializer">
+            <summary>
+            Provides serialization and deserialization routines for SocketMeister.
+            </summary>
+        </member>
+        <member name="T:SocketMeister.Serializer.ParameterType">
+            <summary>
+            Enumerates the data types supported for parameters sent with messages.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.BoolParam">
+            <summary>Boolean</summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.DateTimeParam">
+            <summary>DateTime</summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.DoubleParam">
+            <summary>Double</summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.Int16Param">
+            <summary>Int16</summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.Int32Param">
+            <summary>Int32</summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.Int64Param">
+            <summary>Int64</summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.UInt16Param">
+            <summary>Unsigned Int16</summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.UInt32Param">
+            <summary>Unsigned Int32</summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.UInt64Param">
+            <summary>Unsigned Int64</summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.StringParam">
+            <summary>String</summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.ByteParam">
+            <summary>Byte</summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.ByteArrayParam">
+            <summary>Byte array</summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.Null">
+            <summary>Null</summary>
+        </member>
+        <member name="M:SocketMeister.Serializer.DeserializeParameters(System.Byte[])">
+            <summary>
+            Deserializes a byte array that was serialized using the <see cref="M:SocketMeister.Serializer.SerializeParameters(System.Object[])"/> method.
+            </summary>
+            <param name="Data">The binary array to deserialize.</param>
+            <returns>An array of deserialized parameters.</returns>
+        </member>
+        <member name="M:SocketMeister.Serializer.DeserializeParameters(System.IO.BinaryReader)">
+            <summary>
+            Deserializes parameters embedded within other data. The data must have been serialized using the 
+            <see cref="M:SocketMeister.Serializer.SerializeParameters(System.IO.BinaryWriter,System.Object[])"/> method.
+            </summary>
+            <param name="Reader">An open <see cref="T:System.IO.BinaryReader"/> positioned at the start of the serialized parameters.</param>
+            <returns>An array of deserialized parameters.</returns>
+        </member>
+        <member name="M:SocketMeister.Serializer.SerializeParameters(System.Object[])">
+            <summary>
+            Serializes an array of parameters into a byte array.
+            </summary>
+            <param name="Parameters">An array of objects to serialize. Only simple types are supported.</param>
+            <returns>A byte array containing the serialized parameters.</returns>
+        </member>
+        <member name="M:SocketMeister.Serializer.SerializeParameters(System.IO.BinaryWriter,System.Object[])">
+            <summary>
+            Serializes an array of parameters and appends the data to a <see cref="T:System.IO.BinaryWriter"/>.
+            </summary>
+            <param name="Writer">The <see cref="T:System.IO.BinaryWriter"/> to which the serialized data will be appended.</param>
+            <param name="Parameters">An array of objects to serialize. Only simple types are supported.</param>
+        </member>
+        <member name="T:SocketMeister.SocketClient">
+            <summary>
+            Asynchronous, persistent TCP/IP socket client supporting multiple endpoints.
+            Implements <see cref="T:System.IDisposable"/>.
+            For proper cleanup, see <see cref="M:SocketMeister.SocketClient.Dispose"/> and <see cref="M:SocketMeister.SocketClient.Dispose(System.Boolean)"/>.
+            </summary>
+            <summary>
+            An asynchronous, persistent TCP/IP socket client that supports multiple destinations.
+            </summary>
+            <summary>
+            Asynchronous, persistent TCP/IP socket client supporting multiple destinations
+            </summary>
+        </member>
+        <member name="F:SocketMeister.SocketClient.DISCONNECT_AFTER_NO_POLL_RESPONSE_SECONDS">
+            <summary>
+            Disconnect the client if no poll response is received within this number of seconds.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.SocketClient.POLLING_FREQUENCY">
+            <summary>
+            Frequency (in seconds) at which the client polls the server to verify the socket is active.
+            </summary>
+        </member>
+        <member name="E:SocketMeister.SocketClient.ConnectionStatusChanged">
+            <summary>
+            Event raised when the status of a socket connection changes.
+            </summary>
+        </member>
+        <member name="E:SocketMeister.SocketClient.CurrentEndPointChanged">
+            <summary>
+            Event raised when the current endpoint changes.
+            </summary>
+        </member>
+        <member name="E:SocketMeister.SocketClient.ExceptionRaised">
+            <summary>
+            Event raised when an exception occurs.
+            </summary>
+        </member>
+        <member name="E:SocketMeister.SocketClient.MessageReceived">
+            <summary>
+            Raised when a message is received from the server. When processing this event, an optional response can be provided which will be returned to the server.
+            </summary>
+        </member>
+        <member name="E:SocketMeister.SocketClient.ServerStopping">
+            <summary>
+            Event raised when the server stops.
+            </summary>
+        </member>
+        <member name="E:SocketMeister.SocketClient.BroadcastReceived">
+            <summary>
+            Event raised whenever a broadcast is received from the server.
+            </summary>
+        </member>
+        <member name="E:SocketMeister.SocketClient.LogRaised">
+            <summary>
+            Raised when a log event has been raised.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketClient.#ctor(System.Collections.Generic.List{SocketMeister.SocketEndPoint},System.Boolean,System.String)">
+            <summary>
+            Initializes a new instance of the SocketClient class.
+            </summary>
+            <param name="EndPoints">List of endpoints available for connection.</param>
+            <param name="EnableCompression">Whether to apply compression to data.</param>
+            <param name="friendlyName">Friendly name sent to the server for logging and error reporting purposes.</param>
+        </member>
+        <member name="M:SocketMeister.SocketClient.#ctor(System.Collections.Generic.List{SocketMeister.SocketEndPoint},System.Boolean)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="EndPoints">Collection of endpoints that are available to connect to</param>
+            <param name="EnableCompression">Whether compression will be applied to data.</param>
+        </member>
+        <member name="M:SocketMeister.SocketClient.#ctor(System.String,System.Int32,System.Boolean,System.String)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="IPAddress1">IP Address to of the SocketMeister server to connect to</param>
+            <param name="Port1">TCP port the server is listening on</param>
+            <param name="EnableCompression">Whether compression will be applied to data.</param>
+            <param name="FriendlyName">Friendly name is sent to the SocketServer to be displayed in errors and logging.</param>
+        </member>
+        <member name="M:SocketMeister.SocketClient.#ctor(System.String,System.Int32,System.Boolean)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="IPAddress1">IP Address to of the SocketMeister server to connect to</param>
+            <param name="Port1">TCP port the server is listening on</param>
+            <param name="EnableCompression">Whether compression will be applied to data.</param>
+        </member>
+        <member name="M:SocketMeister.SocketClient.#ctor(System.String,System.Int32,System.String,System.Int32,System.Boolean,System.String)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="IPAddress1">IP Address to of the first SocketMeister server to connect to</param>
+            <param name="Port1">TCP port the first server is listening on</param>
+            <param name="IPAddress2">IP Address to of the second SocketMeister server to connect to</param>
+            <param name="Port2">TCP port the second server is listening on</param>
+            <param name="EnableCompression">Whether compression will be applied to data.</param>
+            <param name="FriendlyName">Friendly name is sent to the SocketServer to be displayed in errors and logging.</param>
+        </member>
+        <member name="M:SocketMeister.SocketClient.#ctor(System.String,System.Int32,System.String,System.Int32,System.Boolean)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="IPAddress1">IP Address to of the first SocketMeister server to connect to</param>
+            <param name="Port1">TCP port the first server is listening on</param>
+            <param name="IPAddress2">IP Address to of the second SocketMeister server to connect to</param>
+            <param name="Port2">TCP port the second server is listening on</param>
+            <param name="EnableCompression">Whether compression will be applied to data.</param>
+        </member>
+        <member name="M:SocketMeister.SocketClient.Dispose">
+            <summary>
+            Disposes of the resources used by this instance.
+            </summary>
+            <remarks>
+            This method simply calls <see cref="M:SocketMeister.SocketClient.Dispose(System.Boolean)"/> and then suppresses finalization.
+            For more details, see <see cref="M:SocketMeister.SocketClient.Dispose(System.Boolean)"/> and <see cref="M:System.IDisposable.Dispose"/>.
+            </remarks>
+        </member>
+        <member name="M:SocketMeister.SocketClient.Dispose(System.Boolean)">
+            <summary>
+            Disposes of the class resources.
+            </summary>
+            <param name="disposing">True if managed resources should be disposed; otherwise, false.</param>
+            <remarks>
+            See also <see cref="M:SocketMeister.SocketClient.Dispose"/> and <see cref="M:System.IDisposable.Dispose"/>.
+            </remarks>
+        </member>
+        <member name="M:SocketMeister.SocketClient.Finalize">
+            <summary>
+            Disposes of the resources used by the class.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketClient.AddSubscription(System.String)">
+            <summary>
+            Adds a subscription name to the list of subscriptions. Throws an error if the name (case insensitive) exists.
+            </summary>
+            <param name="SubscriptionName"></param>
+        </member>
+        <member name="P:SocketMeister.SocketClient.LastMessageFromServer">
+            <summary>
+            The last time any contact was received from the server. This includes polling message/responses, instigated intermittently from the client.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketClient.RemoveSubscription(System.String)">
+            <summary>
+            Removes a subscription name from the list of subscriptions
+            </summary>
+            <param name="SubscriptionName">Name of the subscription to remove</param>
+            <returns>True if the subscription was removed</returns>
+        </member>
+        <member name="P:SocketMeister.SocketClient.ClientId">
+            <summary>
+            GUID identifier for the client, set by the server and sent to the client during connection handshaking
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketClient.ConnectInProgress">
+            <summary>
+            Whether the client is currently connecting to a server
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketClient.ConnectionStatus">
+            <summary>
+            The connection status of the socket client
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketClient.FriendlyName">
+            <summary>
+            A friendly name for the client which can be. If available, the SocketServer will use this in logging and error handling
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketClient.InternalConnectionStatus">
+            <summary>
+            Used internally. Returns the real connection status.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketClient.CurrentEndPoint">
+            <summary>
+            The current socket endpoint which the client is using
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketClient.LastPollResponse">
+            <summary>
+            The last time a polling response was received from the socket server.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketClient.SubscriptionCount">
+            <summary>
+            The number of subscriptions for this client
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketClient.UnrespondedMessages">
+            <summary>
+            Messages sent to the server in which there has been no response
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketClient.DoesSubscriptionNameExist(System.String)">
+            <summary>
+            Whether a subscription name exists in the list of subscriptions. 
+            </summary>
+            <param name="SubscriptionName">Name of the subscription (Case insensitive).</param>
+            <returns>True if exists, false if the subscription does not exist</returns>
+        </member>
+        <member name="M:SocketMeister.SocketClient.GetSubscriptions">
+            <summary>
+            Get a list of subscription names
+            </summary>
+            <returns>List of subscription names</returns>
+        </member>
+        <member name="M:SocketMeister.SocketClient.StartBackgroundWorker">
+            <summary>
+            This background thread runs until the SocketClient is stopped
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketClient.BgPerformAttemptConnect">
+            <summary>
+            Attempts to re-establish a connection using the endpoint with the shortest wait time.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketClient.RestartStopwatch(System.Diagnostics.Stopwatch)">
+            <summary>
+            Provides a Stopwatch restart mechanism for .NET 3.5 and everything else through compiler directives.
+            </summary>
+            <param name="stopwatch"></param>
+        </member>
+        <member name="M:SocketMeister.SocketClient.ProcessConnect(System.Object,System.Net.Sockets.SocketAsyncEventArgs)">
+            <summary>
+            Connect operation has completed
+            </summary>
+            <param name="sender">Sending Socket</param>
+            <param name="e">Socket Arguments</param>
+        </member>
+        <member name="M:SocketMeister.SocketClient.BgCompleteHandshake">
+            <summary>
+            Completes the handshake with the server after an initial connection.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketClient.Stop">
+            <summary>
+            Stops the client permenently. There is no option from here to restart without creating a new instance of SocketClient.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketClient.SendFastMessage(SocketMeister.Messages.IMessage)">
+            <summary>
+            Used for system messages where the normal checks and balances do not apply.
+            </summary>
+            <param name="Message">Message to be sent</param>
+        </member>
+        <member name="M:SocketMeister.SocketClient.SendMessage(System.Object[],System.Int32,System.Boolean)">
+            <summary>
+            Send a message to the server and wait for a response. 
+            </summary>
+            <param name="Parameters">Array of parameters to send with the message</param>
+            <param name="TimeoutMilliseconds">Maximum number of milliseconds to wait for a response from the server</param>
+            <param name="IsLongPolling">If the message is long polling on the server mark this as true and the message will be cancelled instantly when a disconnect occurs</param>
+            <returns>Nullable array of bytes which was returned from the socket server</returns>
+        </member>
+        <member name="M:SocketMeister.SocketClient.ProcessReceive(System.Object,System.Net.Sockets.SocketAsyncEventArgs)">
+            <summary>
+            Processes received data from the socket. It handles partial messages, full messages, and multiple messages.
+            </summary>
+            <param name="sender">Sending Socket</param>
+            <param name="e">Socket Arguments</param>
+        </member>
+        <member name="T:SocketMeister.SocketClient.ConnectionStatuses">
+            <summary>
+            Represents the connection status of a SocketClient to a SocketServer.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.SocketClient.ConnectionStatuses.Disconnected">
+            <summary>
+            The socket is disconnected.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.SocketClient.ConnectionStatuses.Connecting">
+            <summary>
+            The socket is attempting to connect.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.SocketClient.ConnectionStatuses.Connected">
+            <summary>
+            The socket is connected.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.SocketClient.ConnectionStatuses.Disconnecting">
+            <summary>
+            The socket is disconnecting.
+            </summary>
+        </member>
+        <member name="T:SocketMeister.SocketClient.MessageReceivedEventArgs">
+            <summary>
+            Values provided when a message is received from a server. 
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketClient.MessageReceivedEventArgs.MessageId">
+            <summary>
+            The message identifier. This is a unique identifier for the message.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketClient.MessageReceivedEventArgs.Parameters">
+            <summary>
+            The parameters provided with the message.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketClient.MessageReceivedEventArgs.Response">
+            <summary>
+            The byte array which can optionally be returned to the client. Null is returned if a 'Response' value is not provided.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketClient.MessageReceivedEventArgs.TimeoutAtServerUTC">
+            <summary>
+            The UTC datetime when the message will timeout at the server.
+            </summary>
+        </member>
+        <member name="T:SocketMeister.SocketClient.BroadcastReceivedEventArgs">
+            <summary>
+            Values provided when a broadcast is received from the socket server. 
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketClient.BroadcastReceivedEventArgs.Parameters">
+            <summary>
+            The parameters provided with the message.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketClient.BroadcastReceivedEventArgs.Name">
+            <summary>
+            Optional Name/Tag/Identifier for the broadcast 
+            </summary>
+        </member>
+        <member name="T:SocketMeister.SocketEndPoint">
+            <summary>
+            Client <see cref="P:SocketMeister.SocketEndPoint.Socket"/> to a SocketServer end point.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketEndPoint.#ctor(System.String,System.Int32)">
+            <summary>
+            Default constructor.
+            </summary>
+            <param name="IPAddress">IP Address of the server to connect to.</param>
+            <param name="Port">Port number of the socket listener to connect to.</param>
+            <exception cref="T:System.ArgumentException">Thrown when <paramref name="IPAddress"/> is null, empty, or invalid, or when <paramref name="Port"/> is out of range.</exception>
+        </member>
+        <member name="M:SocketMeister.SocketEndPoint.Dispose">
+            <summary>
+            Dispose of the class
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketEndPoint.Dispose(System.Boolean)">
+            <summary>
+            Dispose of the class.
+            </summary>
+            <param name="disposing">Indicates whether the method is called from <see cref="M:SocketMeister.SocketEndPoint.Dispose"/> or a finalizer.</param>
+        </member>
+        <member name="P:SocketMeister.SocketEndPoint.Description">
+            <summary>
+            Description of the IP Address and Port. For example, 123.123.123.123:5000
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketEndPoint.DontReconnectUntil">
+            <summary>
+            Used to delay reconnecting to a server after a server has disconnected or a <see cref="P:SocketMeister.SocketEndPoint.Socket"/> has failed to a server.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketEndPoint.IPAddress">
+            <summary>
+            IP Address of the server to connect to
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketEndPoint.IPEndPoint">
+            <summary>
+            IPEndpoint
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketEndPoint.LastDisconnectReason">
+            <summary>
+            The last reason the client disconnected. Used to calculate reconnect delay.
+            </summary>
+            <seealso cref="T:SocketMeister.ClientDisconnectReason"/>
+        </member>
+        <member name="P:SocketMeister.SocketEndPoint.Port">
+            <summary>
+            Port number of the socket listener to connect to
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketEndPoint.Socket">
+            <summary>
+            TCP <see cref="P:SocketMeister.SocketEndPoint.Socket"/> in use for the current destination.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketEndPoint.SetDisconnected(SocketMeister.ClientDisconnectReason)">
+            <summary>
+            Sets the client as disconnected and updates the reconnect delay based on the specified <see cref="T:SocketMeister.ClientDisconnectReason"/>.
+            </summary>
+            <param name="reason">The reason for the disconnection.</param>
+        </member>
+        <member name="M:SocketMeister.SocketEndPoint.RecreateSocket">
+            <summary>
+            Creates a new <see cref="P:SocketMeister.SocketEndPoint.Socket"/>.
+            </summary>
+        </member>
+        <member name="T:SocketMeister.SocketServer">
+            <summary>
+            TCP/IP socket server that listens for client connections and raises events when messages are received.
+            </summary>
+        </member>
+        <member name="T:SocketMeister.SocketServer.Client">
+            <summary>
+            Represents a remote client that has connected to the socket server.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketServer.Client.Dispose">
+            <summary>
+            Disposes of the resources used by the class.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketServer.Client.Finalize">
+            <summary>
+            Finalizer to ensure resources are released.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketServer.Client.ClientId">
+            <summary>
+            Gets the GUID assigned to the client by the server when it connects.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketServer.Client.ClientSocket">
+            <summary>
+            Gets the socket used by the client for data transmission.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketServer.Client.ClientSocketMeisterVersion">
+            <summary>
+            Gets or sets the version of SocketMeister used by the client.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketServer.Client.ConnectTimestamp">
+            <summary>
+            Gets the date and time when the client connected.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketServer.Client.FriendlyName">
+            <summary>
+            Gets or sets a friendly name for the client. This can be used to help identify the client in logs and error handling.
+            </summary>
+        </member>
+        <member name="F:SocketMeister.SocketServer.Client.ReceiveBuffer">
+            <summary>
+            Byte array used to directly receive data from the socket.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketServer.Client.ReceiveEngine">
+            <summary>
+            Gets the class that processes raw data from the socket and converts it into usable messages.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketServer.Client.SubscriptionCount">
+            <summary>
+            Gets the number of subscriptions for this client.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketServer.Client.UnrespondedMessages">
+            <summary>
+            Gets the collection of messages sent to the client that have not yet received a response.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketServer.Client.DoesSubscriptionExist(System.String)">
+            <summary>
+            Checks whether a subscription exists.
+            </summary>
+            <param name="subscriptionName">The name of the subscription (case-insensitive).</param>
+            <returns>True if the subscription exists; otherwise, false.</returns>
+        </member>
+        <member name="M:SocketMeister.SocketServer.Client.GetSubscriptions">
+            <summary>
+            Gets a list of subscription names.
+            </summary>
+            <returns>A list of subscription names.</returns>
+        </member>
+        <member name="M:SocketMeister.SocketServer.Client.SetMessageResponseInUnrespondedMessages(SocketMeister.Messages.MessageResponseV1)">
+            <summary>
+            Associates a received response with the original message. This method is called by the SocketServer class.
+            </summary>
+            <param name="responseMessage">The response message.</param>
+        </member>
+        <member name="M:SocketMeister.SocketServer.Client.ImportSubscriptions(System.Byte[])">
+            <summary>
+            Imports subscriptions into the client during the handshake process.
+            </summary>
+            <param name="subscriptionBytes">A byte array containing the token information.</param>
+        </member>
+        <member name="M:SocketMeister.SocketServer.Client.SendMessage(System.Object[],System.Int32,System.Boolean)">
+            <summary>
+            Sends a message to the client and waits for a response.
+            </summary>
+            <param name="parameters">An array of parameters to send with the message.</param>
+            <param name="timeoutMilliseconds">The maximum number of milliseconds to wait for a response from the server.</param>
+            <param name="isLongPolling">Indicates whether the message is long-polling on the server. If true, the message will be canceled instantly when a disconnect occurs.</param>
+            <returns>A nullable array of bytes returned from the socket server.</returns>
+        </member>
+        <member name="E:SocketMeister.SocketServer.Clients.ClientConnected">
+            <summary>
+            Event raised when a client connects to the socket server. This event is raised in a separate thread.
+            </summary>
+        </member>
+        <member name="E:SocketMeister.SocketServer.Clients.ClientDisconnected">
+            <summary>
+            Event raised when a client disconnects from the socket server. This event is raised in a separate thread.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketServer.Clients.Count">
+            <summary>
+            Gets the total number of synchronous and asynchronous clients connected.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketServer.Clients.Add(SocketMeister.SocketServer.Client)">
+            <summary>
+            Adds a client to the collection and notifies that the client has connected.
+            </summary>
+            <param name="client">The client to add.</param>
+        </member>
+        <member name="M:SocketMeister.SocketServer.Clients.Disconnect(SocketMeister.SocketServer.Client)">
+            <summary>
+            Disconnects a client and removes it from the collection.
+            </summary>
+            <param name="client">The client to disconnect.</param>
+        </member>
+        <member name="M:SocketMeister.SocketServer.Clients.Remove(SocketMeister.SocketServer.Client)">
+            <summary>
+            Removes a client from the collection without disconnecting its socket.
+            </summary>
+            <param name="client">The client to remove.</param>
+        </member>
+        <member name="M:SocketMeister.SocketServer.Clients.DisconnectAll">
+            <summary>
+            Disconnects all clients in the collection.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketServer.Clients.NotifyClientConnected(SocketMeister.SocketServer.Client)">
+            <summary>
+            Notifies that a client has connected by raising the <see cref="E:SocketMeister.SocketServer.Clients.ClientConnected"/> event.
+            </summary>
+            <param name="client">The client that connected.</param>
+        </member>
+        <member name="M:SocketMeister.SocketServer.Clients.NotifyClientDisconnected(SocketMeister.SocketServer.Client)">
+            <summary>
+            Notifies that a client has disconnected by raising the <see cref="E:SocketMeister.SocketServer.Clients.ClientDisconnected"/> event.
+            </summary>
+            <param name="client">The client that disconnected.</param>
+        </member>
+        <member name="M:SocketMeister.SocketServer.Clients.ToList">
+            <summary>
+            Returns a list of clients currently connected to the socket server.
+            </summary>
+            <returns>A list of connected clients.</returns>
+        </member>
+        <member name="M:SocketMeister.SocketServer.Clients.GetClientsWithSubscriptions(System.String)">
+            <summary>
+            Gets a list of clients that have subscriptions to a specific subscription name.
+            </summary>
+            <param name="subscriptionName">The name of the subscription to search for.</param>
+            <returns>A list of clients with the specified subscription.</returns>
+        </member>
+        <member name="E:SocketMeister.SocketServer.ClientConnected">
+            <summary>
+            Event raised when a client connects to the socket server. Raised on a separate thread.
+            </summary>
+            <seealso cref="T:SocketMeister.SocketServer.ClientEventArgs"/>
+        </member>
+        <member name="E:SocketMeister.SocketServer.ClientDisconnected">
+            <summary>
+            Event raised when a client disconnects from the socket server. Raised on a separate thread.
+            </summary>
+            <seealso cref="T:SocketMeister.SocketServer.ClientEventArgs"/>
+        </member>
+        <member name="E:SocketMeister.SocketServer.LogRaised">
+            <summary>
+            Event raised when a log event occurs.
+            </summary>
+            <seealso cref="T:SocketMeister.LogEventArgs"/>
+        </member>
+        <member name="E:SocketMeister.SocketServer.MessageReceived">
+            <summary>
+            Event raised when a message is received from a client. An optional response can be provided, which will be returned to the client. Raised on a separate thread.
+            </summary>
+            <seealso cref="T:SocketMeister.SocketServer.MessageReceivedEventArgs"/>
+        </member>
+        <member name="E:SocketMeister.SocketServer.StatusChanged">
+            <summary>
+            Event raised when the status of the socket listener changes. Raised on a separate thread.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketServer.#ctor(System.Int32,System.Boolean)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="Port">Port that this socket server will listen on.</param>
+            <param name="CompressSentData">Enable compression on message data.</param>
+            <seealso cref="M:SocketMeister.SocketServer.Start"/>
+            <seealso cref="M:SocketMeister.SocketServer.Stop"/>
+        </member>
+        <member name="M:SocketMeister.SocketServer.Dispose">
+            <summary>
+            Disposes of the class.
+            </summary>
+            <seealso cref="M:SocketMeister.SocketServer.Dispose(System.Boolean)"/>
+        </member>
+        <member name="M:SocketMeister.SocketServer.Dispose(System.Boolean)">
+            <summary>
+            Disposes of the class.
+            </summary>
+            <param name="disposing">Whether this is called from Dispose (true) or finalizer (false).</param>
+        </member>
+        <member name="M:SocketMeister.SocketServer.Finalize">
+            <summary>
+            Disposes of the class.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketServer.EndPoint">
+            <summary>
+            The IP address and port that this socket server is using to communicate (e.g. 10.200.50.25:6000).
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketServer.Logger">
+            <summary>
+            Central logging for the socket server. This is a simple logger that logs messages to the console and raises log events to calling code.
+            </summary>
+            <seealso cref="P:SocketMeister.SocketServer.Logger"/>
+        </member>
+        <member name="P:SocketMeister.SocketServer.Status">
+            <summary>
+            Current status of the SocketServer.
+            </summary>
+            <seealso cref="T:SocketMeister.SocketServerStatus"/>
+        </member>
+        <member name="P:SocketMeister.SocketServer.TotalBytesReceived">
+            <summary>
+            The total number of bytes that have been received through the socket server since it started.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketServer.TotalBytesSent">
+            <summary>
+            The total number of bytes that have been sent through the socket server since it started.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketServer.TotalMessagesSent">
+            <summary>
+            The total number of messages that have been sent through the socket server since it started.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketServer.TotalMessagesReceived">
+            <summary>
+            The total number of messages that have been received through the socket server since it started.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketServer.StopSocketServer">
+            <summary>
+            Indicates whether the socket service is in the process of stopping.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketServer.Broadcast(System.String,System.Object[])">
+            <summary>
+            Sends a message to all connected clients. Exceptions will not halt this process but will generate 'ExceptionRaised' events.
+            </summary>
+            <param name="Name">Optional name/tag/identifier for the broadcast.</param>
+            <param name="Parameters">Parameters to send with the message.</param>
+            <seealso cref="M:SocketMeister.SocketServer.BroadcastToSubscribers(System.String,System.Object[])"/>
+        </member>
+        <member name="M:SocketMeister.SocketServer.BroadcastToSubscribers(System.String,System.Object[])">
+            <summary>
+            Sends a message to all clients subscribing to a subscription name. Exceptions will not halt this process but will generate 'ExceptionRaised' events.
+            </summary>
+            <param name="Name">Optional name/tag/identifier for the broadcast.</param>
+            <param name="Parameters">Parameters to send with the message.</param>
+            <seealso cref="M:SocketMeister.SocketServer.Broadcast(System.String,System.Object[])"/>
+        </member>
+        <member name="P:SocketMeister.SocketServer.ClientCount">
+            <summary>
+            Gets the number of clients connected to the socket server.
+            </summary>
+            <seealso cref="M:SocketMeister.SocketServer.GetClients"/>
+        </member>
+        <member name="M:SocketMeister.SocketServer.DoSubscribersExist(System.String)">
+            <summary>
+            Determines whether there are any clients subscribing to a subscription name.
+            </summary>
+            <param name="SubscriptionName">Name of the subscription (case-insensitive).</param>
+            <returns>True if at least one client is subscribed to the given name; otherwise, false.</returns>
+        </member>
+        <member name="M:SocketMeister.SocketServer.GetClients">
+            <summary>
+            Returns a list of clients that are connected to the socket server.
+            </summary>
+            <returns>List of clients.</returns>
+            <seealso cref="T:SocketMeister.SocketServer.Client"/>
+        </member>
+        <member name="M:SocketMeister.SocketServer.Start">
+            <summary>
+            Starts the socket server, which begins listening for incoming connections.
+            </summary>
+            <seealso cref="M:SocketMeister.SocketServer.Stop"/>
+        </member>
+        <member name="M:SocketMeister.SocketServer.Stop">
+            <summary>
+            Sends a message to all clients to disconnect, waits for in-progress messages to finish, and then stops the socket server.
+            </summary>
+            <seealso cref="M:SocketMeister.SocketServer.Start"/>
+        </member>
+        <member name="T:SocketMeister.SocketServer.ClientEventArgs">
+            <summary>
+            Provides information for client-specific events.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketServer.ClientEventArgs.Client">
+            <summary>
+            Gets the client that triggered the event.
+            </summary>
+        </member>
+        <member name="T:SocketMeister.SocketServer.MessageReceivedEventArgs">
+            <summary>
+            Provides values when a request is received from a client.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketServer.MessageReceivedEventArgs.Response">
+            <summary>
+            Gets or sets the byte array to be returned to the client. If a 'Response' value is not provided when processing the 'MessageReceived' event, null is returned.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketServer.MessageReceivedEventArgs.Client">
+            <summary>
+            Gets the client that initiated the message.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketServer.MessageReceivedEventArgs.Parameters">
+            <summary>
+            Gets the parameters provided with the message.
+            </summary>
+        </member>
+        <member name="T:SocketMeister.Token">
+            <summary>
+            A value that is automatically synchronized between a SocketClient and a SocketServer. Multiple tokens can be used.
+            </summary>
+        </member>
+        <member name="E:SocketMeister.Token.Changed">
+            <summary>
+            Raised when the value is changed.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Token.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:SocketMeister.Token"/> class.
+            </summary>
+            <param name="Name">The name of the token.</param>
+        </member>
+        <member name="M:SocketMeister.Token.#ctor(System.String,System.Object)">
+            <summary>
+            Initializes a new instance of the <see cref="T:SocketMeister.Token"/> class with a specified value.
+            </summary>
+            <param name="Name">The name of the token.</param>
+            <param name="Value">The value to assign to the token.</param>
+        </member>
+        <member name="P:SocketMeister.Token.Name">
+            <summary>
+            Gets the read-only name of the token.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Token.Value">
+            <summary>
+            Gets or sets the value of the token. Supports null, bool, DateTime, double, short, int, long, ushort, uint, ulong, string, byte, and byte[].
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Token.ValueType">
+            <summary>
+            Gets the type of data stored in the value.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.Token.Deserialize(System.IO.BinaryReader)">
+            <summary>
+            Updates the value from the other side using a binary reader.
+            </summary>
+            <param name="Reader">The binary reader to read data from.</param>
+        </member>
+        <member name="M:SocketMeister.Token.Serialize(System.IO.BinaryWriter)">
+            <summary>
+            Appends the binary data for this token to an open binary writer.
+            </summary>
+            <param name="Writer">The binary writer to write data to.</param>
+        </member>
+        <member name="T:SocketMeister.TokenChange">
+            <summary>
+            Represents a change to a token, including the action performed, the token itself, and its name.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.TokenChange.#ctor(SocketMeister.TokenAction,System.String,SocketMeister.Token)">
+            <summary>
+            Creates a new instance of the <see cref="T:SocketMeister.TokenChange"/> class.
+            </summary>
+            <param name="Action"></param>
+            <param name="TokenName"></param>
+            <param name="Token"></param>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
+        <member name="M:SocketMeister.TokenChange.#ctor(System.Int32,SocketMeister.TokenAction,System.String,SocketMeister.Token)">
+            <summary>
+            Creates a new instance of the <see cref="T:SocketMeister.TokenChange"/> class with a specified change ID.
+            </summary>
+            <param name="ChangeId"></param>
+            <param name="Action"></param>
+            <param name="TokenName"></param>
+            <param name="Token"></param>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
+        <member name="T:SocketMeister.TokenCollection">
+            <summary>
+            A dictionary-based collection of tokens. The data in the collection is updatable.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.TokenCollection.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:SocketMeister.TokenCollection"/> class.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.TokenCollection.Item(System.String)">
+            <summary>
+            Provides indexed access to a token by its name. Returns the token or null if not found.
+            </summary>
+            <param name="Name">The name of the token to retrieve.</param>
+            <returns>The token if found, or null if not found.</returns>
+        </member>
+        <member name="P:SocketMeister.TokenCollection.Changed">
+            <summary>
+            Gets a value indicating whether changes have been made to the token collection.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.TokenCollection.Count">
+            <summary>
+            Gets the number of tokens in the token collection.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.TokenCollection.Add(SocketMeister.Token)">
+            <summary>
+            Adds a token to the token collection. Throws an <see cref="T:System.ArgumentException"/> if a token with the same name (case-insensitive) already exists.
+            </summary>
+            <param name="Token">The token to add.</param>
+        </member>
+        <member name="M:SocketMeister.TokenCollection.AddTokenChange(SocketMeister.TokenAction,SocketMeister.Token)">
+            <summary>
+            Adds a token change to the collection. If the token already exists, it will be replaced.
+            This method must be called within a lock.
+            </summary>
+            <param name="Action">The action to perform (Add, Modify, or Delete).</param>
+            <param name="Token">The token affected by the change.</param>
+            <exception cref="T:System.ArgumentException">Thrown if the token is null.</exception>
+        </member>
+        <member name="M:SocketMeister.TokenCollection.SerializeTokens">
+            <summary>
+            Serializes all tokens in the collection.
+            </summary>
+            <returns>A byte array containing the serialized tokens.</returns>
+        </member>
+        <member name="M:SocketMeister.TokenCollection.SerializeTokenChanges">
+            <summary>
+            Serializes the changes made to the tokens. If there are no changes, returns null.
+            </summary>
+            <returns>A byte array containing the serialized token changes, or null if there are no changes.</returns>
+        </member>
+        <member name="M:SocketMeister.TokenCollection.Remove(System.String)">
+            <summary>
+            Removes a token from the collection.
+            </summary>
+            <param name="Name">The name of the token to remove (case-insensitive).</param>
+            <returns>The removed token, or null if no token was removed.</returns>
+        </member>
+        <member name="M:SocketMeister.TokenCollection.RemoveChange(System.String,System.Int32)">
+            <summary>
+            Removes a token change from the collection if the token name exists and the ChangeId matches the current ChangeId of the change.
+            If there are no more changes, the changed flag is set to false.
+            </summary>
+            <param name="TokenName">The name of the token.</param>
+            <param name="ChangeId">The change identifier.</param>
+        </member>
+        <member name="M:SocketMeister.TokenCollection.ToList">
+            <summary>
+            Returns a list of all tokens in the collection.
+            </summary>
+            <returns>A list of all tokens.</returns>
+        </member>
+        <member name="M:SocketMeister.TokenCollection.GetNames">
+            <summary>
+            Returns a list of all token names in the collection.
+            </summary>
+            <returns>A list of strings containing the token names.</returns>
+        </member>
+        <member name="T:SocketMeister.TokenCollectionReadOnly">
+            <summary>
+            A dictionary-based collection of tokens. The data in this collection is read-only.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.TokenCollectionReadOnly.Item(System.String)">
+            <summary>
+            Provides indexed access to a token by its name. Returns the token or null if not found.
+            </summary>
+            <param name="Name">The name of the token to retrieve.</param>
+            <returns>The token if found, or null if not found.</returns>
+        </member>
+        <member name="P:SocketMeister.TokenCollectionReadOnly.Count">
+            <summary>
+            Gets the number of tokens in the collection.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.TokenCollectionReadOnly.ImportTokenChanges(System.Byte[])">
+            <summary>
+            Imports token changes from a byte array. This method is used to update the collection with changes from the client.
+            </summary>
+            <param name="changeBytes">A byte array containing the serialized token changes.</param>
+            <returns>A list of <see cref="T:SocketMeister.TokenChange"/> objects representing the processed changes.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="changeBytes"/> is null.</exception>
+        </member>
+        <member name="M:SocketMeister.TokenCollectionReadOnly.Initialize(System.Byte[])">
+            <summary>
+            Initializes the collection with tokens from a byte array created using the Serialize method.
+            </summary>
+            <param name="tokenBytes">A byte array containing the serialized tokens.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="tokenBytes"/> is null.</exception>
+        </member>
+        <member name="M:SocketMeister.TokenCollectionReadOnly.ToListOfNames">
+            <summary>
+            Returns a list of all token names in the collection.
+            </summary>
+            <returns>A list of strings containing the token names.</returns>
+        </member>
+        <member name="M:SocketMeister.TokenCollectionReadOnly.Dispose(System.Boolean)">
+            <summary>
+            Releases the resources used by the <see cref="T:SocketMeister.TokenCollectionReadOnly"/> class.
+            </summary>
+            <param name="disposing">Indicates whether the method is called from the Dispose method.</param>
+        </member>
+        <member name="M:SocketMeister.TokenCollectionReadOnly.Dispose">
+            <summary>
+            Releases the resources used by the <see cref="T:SocketMeister.TokenCollectionReadOnly"/> class.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.TokenCollectionReadOnly.Finalize">
+            <summary>
+            Finalizer to release resources.
+            </summary>
+        </member>
+        <member name="T:SocketMeister.UnrespondedMessageCollection">
+            <summary>
+            A collection of messages that are waiting for a response.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.UnrespondedMessageCollection.Clear">
+            <summary>
+            Clears all messages from the collection. This is typically called during the disposal of the parent object.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.UnrespondedMessageCollection.Add(SocketMeister.Messages.MessageV1)">
+            <summary>
+            Adds a new message to the collection.
+            </summary>
+            <param name="AddItem">The message to add.</param>
+        </member>
+        <member name="M:SocketMeister.UnrespondedMessageCollection.Remove(SocketMeister.Messages.MessageV1)">
+            <summary>
+            Removes a message from the collection.
+            </summary>
+            <param name="RemoveItem">The message to remove.</param>
+        </member>
+        <member name="M:SocketMeister.UnrespondedMessageCollection.ResetAfterDisconnect">
+            <summary>
+            Resets applicable messages to the "Unsent" status after a disconnect, allowing them to be resent if the client reconnects to the server.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.UnrespondedMessageCollection.FindMessageAndSetResponse(SocketMeister.Messages.MessageResponseV1)">
+            <summary>
+            Finds the original message in the collection using the MessageId from a response. 
+            If found, sets the response message on the original message.
+            </summary>
+            <param name="ResponseMessage">The response message to associate with the original message.</param>
+            <returns>True if the original message was found and updated; otherwise, false.</returns>
+        </member>
+        <member name="T:SocketAsyncEventArgsPool">
+            <summary>
+            A reusable pool of <see cref="T:System.Net.Sockets.SocketAsyncEventArgs"/> objects to optimize socket operations by reducing allocations.
+            </summary>
+        </member>
+        <member name="E:SocketAsyncEventArgsPool.Completed">
+            <summary>
+            Event triggered when a <see cref="T:System.Net.Sockets.SocketAsyncEventArgs"/> operation is completed.
+            </summary>
+        </member>
+        <member name="M:SocketAsyncEventArgsPool.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:SocketAsyncEventArgsPool"/> class.
+            Pre-allocates a pool of <see cref="T:System.Net.Sockets.SocketAsyncEventArgs"/> objects and a shared buffer.
+            </summary>
+        </member>
+        <member name="M:SocketAsyncEventArgsPool.EventArgs_Completed(System.Object,System.Net.Sockets.SocketAsyncEventArgs)">
+            <summary>
+            Handles the <see cref="E:System.Net.Sockets.SocketAsyncEventArgs.Completed"/> event and forwards it to subscribers.
+            </summary>
+            <param name="sender">The source of the event.</param>
+            <param name="e">The <see cref="T:System.Net.Sockets.SocketAsyncEventArgs"/> instance associated with the event.</param>
+        </member>
+        <member name="M:SocketAsyncEventArgsPool.Pop">
+            <summary>
+            Retrieves a <see cref="T:System.Net.Sockets.SocketAsyncEventArgs"/> object from the pool.
+            </summary>
+            <returns>A <see cref="T:System.Net.Sockets.SocketAsyncEventArgs"/> object, or <c>null</c> if the pool is empty.</returns>
+        </member>
+        <member name="M:SocketAsyncEventArgsPool.Push(System.Net.Sockets.SocketAsyncEventArgs)">
+            <summary>
+            Returns a <see cref="T:System.Net.Sockets.SocketAsyncEventArgs"/> object to the pool after use.
+            </summary>
+            <param name="item">The <see cref="T:System.Net.Sockets.SocketAsyncEventArgs"/> object to return to the pool.</param>
+        </member>
+        <member name="M:SocketAsyncEventArgsPool.Dispose">
+            <summary>
+            Releases all resources used by the <see cref="T:SocketAsyncEventArgsPool"/> instance.
+            </summary>
+        </member>
+    </members>
+</doc>
