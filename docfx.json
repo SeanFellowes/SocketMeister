@@ -8,7 +8,7 @@
           "exclude": [ "**/bin/**", "**/obj/**" ]
         }
       ],
-      "dest": "api",
+      "output": "api",
       "properties": { "TargetFramework": "netstandard2.0" }
     }
   ],
