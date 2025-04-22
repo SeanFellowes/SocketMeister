@@ -18,7 +18,8 @@
     ],
     "output": "_site",
     "template": [
-      "default"
+      "default",
+      "statictoc"
     ],
     "globalMetadata": {
       "_appName": "SocketMeister",
