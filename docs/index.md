@@ -1,6 +1,6 @@
 ﻿# SocketMeister
 
-SocketMeister is a socket library for solutions requiring persistent, fault‑tolerant, multiple‑endpoint TCP/IP connectivity. It is easy to use, resilient, high throughput and multithreaded. citeturn0search1turn0search6
+SocketMeister is a socket library for solutions requiring persistent, fault‑tolerant, multiple‑endpoint TCP/IP connectivity. It is easy to use, resilient, high throughput and multithreaded.
 
 ## Key Features
 

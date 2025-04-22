@@ -11,7 +11,7 @@
   "build": {
     "content": [
       { "files": [ "README.md" ], "src": "." },
-      { "files": [ "**/*.md" ], "src": "docs", "exclude": [ "obj/**", "toc.yml" ] }
+      { "files": [ "**/*.md" ], "src": "docs", "exclude": [ "obj/**" ] }
     ],
     "resource": [
       { "files": [ "**/images/**" ], "src": "docs" }
