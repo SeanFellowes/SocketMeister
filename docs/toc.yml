@@ -9,15 +9,6 @@
 
 - name: Samples
   href: samples/index.md
-  items:
-    - name: Multi‑Endpoint Failover
-      href: samples/multi-endpoint.md
-    - name: Built‑in Compression
-      href: samples/compression.md
-    - name: Request/Response Pattern
-      href: samples/request-response.md
-    - name: Custom Serialization
-      href: samples/custom-serialization.md
 
 - name: API Reference
   href: api/index.html
