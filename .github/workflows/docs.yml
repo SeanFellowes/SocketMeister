@@ -2,7 +2,7 @@ name: Build & Deploy Docs
 
 on:
   push:
-    branches: [ main ]        # or Main  ← must match exact branch name
+    branches: [ main ]
     paths: [ '**.md', 'docs/**', 'docfx.json', 'src/**', '.github/workflows/docs.yml' ]
 
 # required scopes for Pages
@@ -25,6 +25,9 @@ jobs:
       - name: Install DocFX
         run: dotnet tool update -g docfx
 
+      - name: Generate API metadata
+        run: docfx metadata
+
       - name: Build docs
         run: docfx build -o _site --template default
 
@@ -38,7 +41,6 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
 
-    # THIS is what the error asked for
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
