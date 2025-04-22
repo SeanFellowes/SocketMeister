@@ -13,12 +13,26 @@
   ],
   "build": {
     "content": [
-      { "files": [ "README.md" ],            "src": "." },
-      { "files": [ "**/*.md", "toc.yml" ],  "src": "docs", "exclude": [ "obj/**" ] },
-      { "files": [ "**/*.yml" ],              "src": "api", "exclude": [ "toc.yml" ] }
+      {
+        "files": [ "README.md" ],
+        "src": "."
+      },
+      {
+        "files": [ "**/*.md", "toc.yml" ],
+        "src": "docs",
+        "exclude": [ "obj/**" ]
+      },
+      {
+        "files": [ "**/*.yml" ],
+        "src": "api",
+        "exclude": [ "toc.yml" ]
+      }
     ],
     "resource": [
-      { "files": [ "**/images/**" ],         "src": "docs" }
+      {
+        "files": [ "**/images/**" ],
+        "src": "docs"
+      }
     ],
     "output": "_site",
     "template": [ "default", "statictoc" ],
