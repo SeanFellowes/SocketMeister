@@ -9,9 +9,10 @@
     }
   ],
   "build": {
-    "content": [
-     { "files": [ "README.md" ], "src": "." },
-     { "files": [ "**/*.md", "toc.yml" ], "src": "docs", "exclude": [ "obj/**" ] }
+       "content": [
+         { "files": [ "README.md" ],             "src": "." },
+         { "files": [ "**/*.md", "toc.yml" ],     "src": "docs", "exclude": [ "obj/**" ] },
+         { "files": [ "**/*.yml" ],               "src": "api" }
    ],
     "resource": [
       { "files": [ "**/images/**" ], "src": "docs" }
