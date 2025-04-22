@@ -1,137 +1,62 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFrameworks>net35;net45;net46;net472;net48;net6.0;net7.0;net8.0;net9.0;netstandard2.0;</TargetFrameworks>
-    <RootNamespace>SocketMeister</RootNamespace>
-    <AssemblyName>SocketMeister</AssemblyName>
-    <Authors>Sean Fellowes</Authors>
-    <Description>Performant TCP socket server and client for .NET. Client features automated reconnect within single and multiple server environments.</Description>
-    <Copyright>Copyright © 2010-2025 Sean Fellowes</Copyright>
-    <PackageProjectUrl>https://seanfellowes.github.io/SocketMeister/</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/SeanFellowes/SocketMeister</RepositoryUrl>
-    <PackageTags>tcp socket</PackageTags>
-    <Company>Sean Fellowes</Company>
-    <PackageReleaseNotes>See CHANGELOG.md for details → https://github.com/SeanFellowes/SocketMeister/blob/main/CHANGELOG.md</PackageReleaseNotes>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageLicenseUrl></PackageLicenseUrl>
-    <RepositoryType>git</RepositoryType>
-    <PackageIconUrl></PackageIconUrl>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <DocumentationFile></DocumentationFile>
-    <PackageIcon>icon_128.png</PackageIcon>
-    <SelfContained>true</SelfContained>
-    <Version>10.2.4</Version>
-    <AssemblyVersion>10.2.4.0</AssemblyVersion>
-    <FileVersion>10.2.4.0</FileVersion>
-    <PackageReadmeFile>NuGetDocumentation.md</PackageReadmeFile>
-    <Title>SocketMeister</Title>
-    <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
-  </PropertyGroup>
+	<PropertyGroup>
+		<!-- Multi-target frameworks -->
+		<TargetFrameworks>net35;netstandard2.0;net472;net48;net6.0;net7.0;net8.0;net9.0</TargetFrameworks>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net35|AnyCPU'">
-    <DefineConstants>SMNOSERVER;SMISPUBLIC</DefineConstants>
-  </PropertyGroup>
+		<!-- Package metadata -->
+		<AssemblyName>SocketMeister</AssemblyName>
+		<RootNamespace>SocketMeister</RootNamespace>
+		<Authors>Sean Fellowes</Authors>
+		<Company>Sean Fellowes</Company>
+		<Description>Performant TCP socket client and server for .NET with automatic reconnect, load balancing, and high throughput.</Description>
+		<PackageProjectUrl>https://seanfellowes.github.io/SocketMeister/</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/SeanFellowes/SocketMeister</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageTags>tcp;socket;networking;dotnet</PackageTags>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageReleaseNotes>See CHANGELOG.md for details: https://github.com/SeanFellowes/SocketMeister/blob/main/CHANGELOG.md</PackageReleaseNotes>
+		<PackageReadmeFile>NuGetDocumentation.md</PackageReadmeFile>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net35|AnyCPU'">
-    <DefineConstants>DEBUG;SMNOSERVER;SMISPUBLIC</DefineConstants>
-  </PropertyGroup>
+		<!-- Versioning -->
+		<Version>10.2.4</Version>
+		<AssemblyVersion>10.2.4.0</AssemblyVersion>
+		<FileVersion>10.2.4.0</FileVersion>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net45|AnyCPU'">
-    <DefineConstants>SMISPUBLIC</DefineConstants>
-  </PropertyGroup>
+		<!-- Build settings -->
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net45|AnyCPU'">
-    <DefineConstants>DEBUG;SMISPUBLIC</DefineConstants>
-  </PropertyGroup>
+		<!-- XML docs for API reference -->
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<DocumentationFile>$(OutputPath)SocketMeister.xml</DocumentationFile>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net46|AnyCPU'">
-    <DefineConstants>DEBUG;SMISPUBLIC</DefineConstants>
-  </PropertyGroup>
+		<!-- Icon -->
+		<PackageIcon>icon_128.png</PackageIcon>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net46|AnyCPU'">
-    <DefineConstants>SMISPUBLIC</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net472|AnyCPU'">
-    <DefineConstants>DEBUG;SMISPUBLIC</DefineConstants>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net472|AnyCPU'">
-    <DefineConstants>SMISPUBLIC</DefineConstants>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-
-    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net48|AnyCPU'">
-	    <DefineConstants>DEBUG;SMISPUBLIC</DefineConstants>
-    </PropertyGroup>
-
-    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net48|AnyCPU'">
-	    <DefineConstants>SMISPUBLIC</DefineConstants>
-    </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
-    <DefineConstants>DEBUG;SMISPUBLIC</DefineConstants>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
-    <DefineConstants>SMISPUBLIC</DefineConstants>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0|AnyCPU'">
-    <DefineConstants>DEBUG;SMISPUBLIC</DefineConstants>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net6.0|AnyCPU'">
-    <DefineConstants>SMISPUBLIC</DefineConstants>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0|AnyCPU'">
-		<DefineConstants>DEBUG;SMISPUBLIC</DefineConstants>
-		<WarningLevel>4</WarningLevel>
+		<!-- Self-contained is not needed for libraries -->
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0|AnyCPU'">
+	<!-- Conditional constants per framework -->
+	<PropertyGroup Condition="'$(TargetFramework)'=='net35'">
+		<DefineConstants>SMNOSERVER;SMISPUBLIC</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(TargetFramework)'!='net35'">
 		<DefineConstants>SMISPUBLIC</DefineConstants>
-		<WarningLevel>4</WarningLevel>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net8.0|AnyCPU'">
-		<DefineConstants>DEBUG;SMISPUBLIC</DefineConstants>
-		<WarningLevel>4</WarningLevel>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0|AnyCPU'">
-		<DefineConstants>SMISPUBLIC</DefineConstants>
-		<WarningLevel>4</WarningLevel>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0|AnyCPU'">
-		<DefineConstants>DEBUG;SMISPUBLIC</DefineConstants>
-		<WarningLevel>4</WarningLevel>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0|AnyCPU'">
-		<DefineConstants>SMISPUBLIC</DefineConstants>
-		<WarningLevel>4</WarningLevel>
-	</PropertyGroup>
-
-
-
+	<!-- Pack items -->
 	<ItemGroup>
-    <None Include="..\..\images\icon_128.png">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-    <None Include="..\..\NuGetDocumentation.md">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-  </ItemGroup>
-
+		<None Include="..\..\images\icon_128.png">
+			<Pack>true</Pack>
+			<PackagePath></PackagePath>
+		</None>
+		<None Include="..\..\NuGetDocumentation.md">
+			<Pack>true</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
 
 </Project>
