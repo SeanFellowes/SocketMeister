@@ -1,9 +1,8 @@
 ﻿- name: Home
   href: README.md
-- name: Getting Started
+- name: Getting Started
   href: getting-started.md
 - name: Architecture
   href: architecture.md
 - name: API Reference
   href: api/index.html
-- uid: auto
