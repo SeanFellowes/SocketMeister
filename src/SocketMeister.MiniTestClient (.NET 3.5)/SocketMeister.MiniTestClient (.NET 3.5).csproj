@@ -90,12 +90,6 @@
     <Resource Include="icon_128.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SocketMeister %28.NET 3.5%29\SocketMeister %28.NET 3.5%29.csproj">
-      <Project>{4dedd745-2f5a-4b4a-acfe-a1d8c07110d4}</Project>
-      <Name>SocketMeister %28.NET 3.5%29</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Page Include="ClientControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -104,6 +98,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SocketMeister\SocketMeister.csproj">
+      <Project>{420b608a-3abf-4165-18fe-63ad938b9205}</Project>
+      <Name>SocketMeister</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

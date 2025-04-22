@@ -64,12 +64,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Code\GlobalAssemblyInfo.cs">
-      <Link>Properties\GlobalAssemblyInfo.cs</Link>
-    </Compile>
     <Compile Include="Enums.cs" />
     <Compile Include="Events.cs" />
-    <Compile Include="Global.cs" />
     <Compile Include="GridItem.cs" />
     <Compile Include="Main.cs">
       <SubType>Form</SubType>
@@ -137,9 +133,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SocketMeister %28.NET 4.7.2%29\SocketMeister %28.NET 4.7.2%29.csproj">
-      <Project>{719e367c-132f-4c9d-ad8e-db25f59e707b}</Project>
-      <Name>SocketMeister %28.NET 4.7.2%29</Name>
+    <ProjectReference Include="..\SocketMeister\SocketMeister.csproj">
+      <Project>{420b608a-3abf-4165-18fe-63ad938b9205}</Project>
+      <Name>SocketMeister</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

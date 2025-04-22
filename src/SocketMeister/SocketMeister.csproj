@@ -134,6 +134,4 @@
   </ItemGroup>
 
 
-  <Import Project="..\Shared.SocketMeister\Shared.SocketMeister.projitems" Label="Shared" />
-
 </Project>

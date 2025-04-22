@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SocketMeister (.NET Standard 2.0)\SocketMeister (.NET Standard 2.0).csproj" />
+    <ProjectReference Include="..\SocketMeister\SocketMeister.csproj" />
   </ItemGroup>
 
   <ItemGroup>
