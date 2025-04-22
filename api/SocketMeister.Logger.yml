@@ -1,0 +1,667 @@
+### YamlMime:ManagedReference
+items:
+- uid: SocketMeister.Logger
+  commentId: T:SocketMeister.Logger
+  id: Logger
+  parent: SocketMeister
+  children:
+  - SocketMeister.Logger.#ctor
+  - SocketMeister.Logger.Dispose
+  - SocketMeister.Logger.Dispose(System.Boolean)
+  - SocketMeister.Logger.Finalize
+  - SocketMeister.Logger.Log(SocketMeister.LogEntry)
+  - SocketMeister.Logger.LogRaised
+  - SocketMeister.Logger.Stop
+  langs:
+  - csharp
+  - vb
+  name: Logger
+  nameWithType: Logger
+  fullName: SocketMeister.Logger
+  type: Class
+  source:
+    remote:
+      path: src/SocketMeisterAPI/Logger.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: Logger
+    path: src/SocketMeisterAPI/Logger.cs
+    startLine: 16
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: >-
+    A simple logger that logs messages to the console and raises log events to the calling code.
+
+    This logger is thread-safe. It reduces the number of background threads used for raising
+
+    logging events by batching log entries and processing them in a single background thread.
+  example: []
+  syntax:
+    content: 'public class Logger : IDisposable'
+    content.vb: Public Class Logger Implements IDisposable
+  inheritance:
+  - System.Object
+  implements:
+  - System.IDisposable
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: SocketMeister.Logger.LogRaised
+  commentId: E:SocketMeister.Logger.LogRaised
+  id: LogRaised
+  parent: SocketMeister.Logger
+  langs:
+  - csharp
+  - vb
+  name: LogRaised
+  nameWithType: Logger.LogRaised
+  fullName: SocketMeister.Logger.LogRaised
+  type: Event
+  source:
+    remote:
+      path: src/SocketMeisterAPI/Logger.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: LogRaised
+    path: src/SocketMeisterAPI/Logger.cs
+    startLine: 30
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: Raised when a log entry is added.
+  example: []
+  syntax:
+    content: public event EventHandler<LogEventArgs> LogRaised
+    return:
+      type: System.EventHandler{SocketMeister.LogEventArgs}
+    content.vb: Public Event LogRaised As EventHandler(Of LogEventArgs)
+- uid: SocketMeister.Logger.#ctor
+  commentId: M:SocketMeister.Logger.#ctor
+  id: '#ctor'
+  parent: SocketMeister.Logger
+  langs:
+  - csharp
+  - vb
+  name: Logger()
+  nameWithType: Logger.Logger()
+  fullName: SocketMeister.Logger.Logger()
+  type: Constructor
+  source:
+    remote:
+      path: src/SocketMeisterAPI/Logger.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: .ctor
+    path: src/SocketMeisterAPI/Logger.cs
+    startLine: 35
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: Initializes a new instance of the <xref href="SocketMeister.Logger" data-throw-if-not-resolved="false"></xref> class.
+  example: []
+  syntax:
+    content: public Logger()
+    content.vb: Public Sub New()
+  overload: SocketMeister.Logger.#ctor*
+  nameWithType.vb: Logger.New()
+  fullName.vb: SocketMeister.Logger.New()
+  name.vb: New()
+- uid: SocketMeister.Logger.Dispose
+  commentId: M:SocketMeister.Logger.Dispose
+  id: Dispose
+  parent: SocketMeister.Logger
+  langs:
+  - csharp
+  - vb
+  name: Dispose()
+  nameWithType: Logger.Dispose()
+  fullName: SocketMeister.Logger.Dispose()
+  type: Method
+  source:
+    remote:
+      path: src/SocketMeisterAPI/Logger.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: Dispose
+    path: src/SocketMeisterAPI/Logger.cs
+    startLine: 63
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: Disposes of the resources used by the logger.
+  example: []
+  syntax:
+    content: public void Dispose()
+    content.vb: Public Sub Dispose()
+  overload: SocketMeister.Logger.Dispose*
+  implements:
+  - System.IDisposable.Dispose
+- uid: SocketMeister.Logger.Dispose(System.Boolean)
+  commentId: M:SocketMeister.Logger.Dispose(System.Boolean)
+  id: Dispose(System.Boolean)
+  parent: SocketMeister.Logger
+  langs:
+  - csharp
+  - vb
+  name: Dispose(bool)
+  nameWithType: Logger.Dispose(bool)
+  fullName: SocketMeister.Logger.Dispose(bool)
+  type: Method
+  source:
+    remote:
+      path: src/SocketMeisterAPI/Logger.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: Dispose
+    path: src/SocketMeisterAPI/Logger.cs
+    startLine: 73
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: Disposes of the resources used by the logger.
+  example: []
+  syntax:
+    content: protected virtual void Dispose(bool disposing)
+    parameters:
+    - id: disposing
+      type: System.Boolean
+      description: Indicates whether the method is called from Dispose or the finalizer.
+    content.vb: Protected Overridable Sub Dispose(disposing As Boolean)
+  overload: SocketMeister.Logger.Dispose*
+  nameWithType.vb: Logger.Dispose(Boolean)
+  fullName.vb: SocketMeister.Logger.Dispose(Boolean)
+  name.vb: Dispose(Boolean)
+- uid: SocketMeister.Logger.Finalize
+  commentId: M:SocketMeister.Logger.Finalize
+  id: Finalize
+  parent: SocketMeister.Logger
+  langs:
+  - csharp
+  - vb
+  name: ~Logger()
+  nameWithType: Logger.~Logger()
+  fullName: SocketMeister.Logger.~Logger()
+  type: Method
+  source:
+    remote:
+      path: src/SocketMeisterAPI/Logger.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: Finalize
+    path: src/SocketMeisterAPI/Logger.cs
+    startLine: 88
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: Finalizer to ensure resources are released.
+  example: []
+  syntax:
+    content: protected ~Logger()
+    content.vb: 'Protected '
+  overload: SocketMeister.Logger.Finalize*
+  nameWithType.vb: ''
+  fullName.vb: ''
+  name.vb: ''
+- uid: SocketMeister.Logger.Log(SocketMeister.LogEntry)
+  commentId: M:SocketMeister.Logger.Log(SocketMeister.LogEntry)
+  id: Log(SocketMeister.LogEntry)
+  parent: SocketMeister.Logger
+  langs:
+  - csharp
+  - vb
+  name: Log(LogEntry)
+  nameWithType: Logger.Log(LogEntry)
+  fullName: SocketMeister.Logger.Log(SocketMeister.LogEntry)
+  type: Method
+  source:
+    remote:
+      path: src/SocketMeisterAPI/Logger.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: Log
+    path: src/SocketMeisterAPI/Logger.cs
+    startLine: 106
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: Adds a log entry to the queue for processing.
+  example: []
+  syntax:
+    content: public void Log(LogEntry logEntry)
+    parameters:
+    - id: logEntry
+      type: SocketMeister.LogEntry
+      description: The log entry to add.
+    content.vb: Public Sub Log(logEntry As LogEntry)
+  overload: SocketMeister.Logger.Log*
+- uid: SocketMeister.Logger.Stop
+  commentId: M:SocketMeister.Logger.Stop
+  id: Stop
+  parent: SocketMeister.Logger
+  langs:
+  - csharp
+  - vb
+  name: Stop()
+  nameWithType: Logger.Stop()
+  fullName: SocketMeister.Logger.Stop()
+  type: Method
+  source:
+    remote:
+      path: src/SocketMeisterAPI/Logger.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: Stop
+    path: src/SocketMeisterAPI/Logger.cs
+    startLine: 149
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: Stops the logger and allows the background thread to terminate gracefully.
+  example: []
+  syntax:
+    content: public void Stop()
+    content.vb: Public Sub [Stop]()
+  overload: SocketMeister.Logger.Stop*
+references:
+- uid: SocketMeister
+  commentId: N:SocketMeister
+  href: SocketMeister.html
+  name: SocketMeister
+  nameWithType: SocketMeister
+  fullName: SocketMeister
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.IDisposable
+  commentId: T:System.IDisposable
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.idisposable
+  name: IDisposable
+  nameWithType: IDisposable
+  fullName: System.IDisposable
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.MemberwiseClone
+  commentId: M:System.Object.MemberwiseClone
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  name: MemberwiseClone()
+  nameWithType: object.MemberwiseClone()
+  fullName: object.MemberwiseClone()
+  nameWithType.vb: Object.MemberwiseClone()
+  fullName.vb: Object.MemberwiseClone()
+  spec.csharp:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: System.EventHandler{SocketMeister.LogEventArgs}
+  commentId: T:System.EventHandler{SocketMeister.LogEventArgs}
+  parent: System
+  definition: System.EventHandler`1
+  href: https://learn.microsoft.com/dotnet/api/system.eventhandler-1
+  name: EventHandler<LogEventArgs>
+  nameWithType: EventHandler<LogEventArgs>
+  fullName: System.EventHandler<SocketMeister.LogEventArgs>
+  nameWithType.vb: EventHandler(Of LogEventArgs)
+  fullName.vb: System.EventHandler(Of SocketMeister.LogEventArgs)
+  name.vb: EventHandler(Of LogEventArgs)
+  spec.csharp:
+  - uid: System.EventHandler`1
+    name: EventHandler
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.eventhandler-1
+  - name: <
+  - uid: SocketMeister.LogEventArgs
+    name: LogEventArgs
+    href: SocketMeister.LogEventArgs.html
+  - name: '>'
+  spec.vb:
+  - uid: System.EventHandler`1
+    name: EventHandler
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.eventhandler-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: SocketMeister.LogEventArgs
+    name: LogEventArgs
+    href: SocketMeister.LogEventArgs.html
+  - name: )
+- uid: System.EventHandler`1
+  commentId: T:System.EventHandler`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.eventhandler-1
+  name: EventHandler<TEventArgs>
+  nameWithType: EventHandler<TEventArgs>
+  fullName: System.EventHandler<TEventArgs>
+  nameWithType.vb: EventHandler(Of TEventArgs)
+  fullName.vb: System.EventHandler(Of TEventArgs)
+  name.vb: EventHandler(Of TEventArgs)
+  spec.csharp:
+  - uid: System.EventHandler`1
+    name: EventHandler
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.eventhandler-1
+  - name: <
+  - name: TEventArgs
+  - name: '>'
+  spec.vb:
+  - uid: System.EventHandler`1
+    name: EventHandler
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.eventhandler-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: TEventArgs
+  - name: )
+- uid: SocketMeister.Logger
+  commentId: T:SocketMeister.Logger
+  href: SocketMeister.Logger.html
+  name: Logger
+  nameWithType: Logger
+  fullName: SocketMeister.Logger
+- uid: SocketMeister.Logger.#ctor*
+  commentId: Overload:SocketMeister.Logger.#ctor
+  href: SocketMeister.Logger.html#SocketMeister_Logger__ctor
+  name: Logger
+  nameWithType: Logger.Logger
+  fullName: SocketMeister.Logger.Logger
+  nameWithType.vb: Logger.New
+  fullName.vb: SocketMeister.Logger.New
+  name.vb: New
+- uid: SocketMeister.Logger.Dispose*
+  commentId: Overload:SocketMeister.Logger.Dispose
+  href: SocketMeister.Logger.html#SocketMeister_Logger_Dispose
+  name: Dispose
+  nameWithType: Logger.Dispose
+  fullName: SocketMeister.Logger.Dispose
+- uid: System.IDisposable.Dispose
+  commentId: M:System.IDisposable.Dispose
+  parent: System.IDisposable
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.idisposable.dispose
+  name: Dispose()
+  nameWithType: IDisposable.Dispose()
+  fullName: System.IDisposable.Dispose()
+  spec.csharp:
+  - uid: System.IDisposable.Dispose
+    name: Dispose
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.idisposable.dispose
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.IDisposable.Dispose
+    name: Dispose
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.idisposable.dispose
+  - name: (
+  - name: )
+- uid: System.Boolean
+  commentId: T:System.Boolean
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.boolean
+  name: bool
+  nameWithType: bool
+  fullName: bool
+  nameWithType.vb: Boolean
+  fullName.vb: Boolean
+  name.vb: Boolean
+- uid: SocketMeister.Logger.Finalize*
+  commentId: Overload:SocketMeister.Logger.Finalize
+  href: SocketMeister.Logger.html#SocketMeister_Logger_Finalize
+  name: ~Logger
+  nameWithType: Logger.~Logger
+  fullName: SocketMeister.Logger.~Logger
+  spec.csharp:
+  - name: "~"
+  - uid: SocketMeister.Logger.Finalize*
+    name: Logger
+    href: SocketMeister.Logger.html#SocketMeister_Logger_Finalize
+- uid: SocketMeister.Logger.Log*
+  commentId: Overload:SocketMeister.Logger.Log
+  href: SocketMeister.Logger.html#SocketMeister_Logger_Log_SocketMeister_LogEntry_
+  name: Log
+  nameWithType: Logger.Log
+  fullName: SocketMeister.Logger.Log
+- uid: SocketMeister.LogEntry
+  commentId: T:SocketMeister.LogEntry
+  parent: SocketMeister
+  href: SocketMeister.LogEntry.html
+  name: LogEntry
+  nameWithType: LogEntry
+  fullName: SocketMeister.LogEntry
+- uid: SocketMeister.Logger.Stop*
+  commentId: Overload:SocketMeister.Logger.Stop
+  href: SocketMeister.Logger.html#SocketMeister_Logger_Stop
+  name: Stop
+  nameWithType: Logger.Stop
+  fullName: SocketMeister.Logger.Stop
