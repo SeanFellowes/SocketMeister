@@ -8,7 +8,7 @@
           "exclude": [ "**/bin/**", "**/obj/**" ]
         }
       ],
-      "output": "api"
+      "dest": "api"
     }
   ],
   "build": {
