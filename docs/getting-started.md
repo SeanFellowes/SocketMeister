@@ -92,7 +92,7 @@ static void Main(string[] args)
 
 ## Next Steps
 
-- Visit the [API reference](api/index.html) to explore all classes and methods.
+- Visit the [API reference](/api/index.html) to explore all classes and methods.
 - Check out the [architecture overview](architecture.md) for insights into threading, scalability, and fault tolerance.
 - Dive into advanced samples under `docs/samples/` to see real‑world scenarios.
 

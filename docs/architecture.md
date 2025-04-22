@@ -79,5 +79,5 @@ This document delves into the internal design of SocketMeister, outlining how it
   
 ---
 
-For detailed APIs and configuration options, see the [API reference](api/index.html). For code examples, check out the [Getting Started guide](getting-started.md) and our [samples folder](/docs/samples).
+For detailed APIs and configuration options, see the [API reference](/api/index.html). For code examples, check out the [Getting Started guide](getting-started.md) and our [samples folder](/docs/samples).
 

@@ -61,5 +61,5 @@ var response = client.Receive();
 Console.WriteLine($"Server replied: {response}");
 ```
 
-For more examples and the full API reference, see the [API documentation](api/index.html) and the [Getting Started guide](getting-started.md).
+For more examples and the full API reference, see the [API documentation](/api/index.html) and the [Getting Started guide](getting-started.md).
 
