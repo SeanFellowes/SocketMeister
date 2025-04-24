@@ -29,7 +29,7 @@ jobs:
         run: docfx metadata
 
       - name: Build docs
-        run: docfx build
+        run: docfx build -o _site --template default
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
