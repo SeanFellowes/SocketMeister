@@ -23,9 +23,8 @@
         "exclude": [ "obj/**" ]
       },
       {
-        "files": [ "**/*.yml" ],
-        "src": "api",
-        "exclude": [ "toc.yml" ]
+        "files": [ "**/*.yml", "toc.yml" ],
+        "src":   "api"
       }
     ],
     "resource": [
