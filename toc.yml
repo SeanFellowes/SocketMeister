@@ -1,0 +1,4 @@
+- name: Guide
+  href: docs/toc.yml         # everything in the docs folder
+- name: API Reference
+  href: api/toc.yml          # generated API tree
