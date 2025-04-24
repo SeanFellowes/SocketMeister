@@ -1,0 +1,450 @@
+### YamlMime:ManagedReference
+items:
+- uid: SocketMeister.ValueType
+  commentId: T:SocketMeister.ValueType
+  id: ValueType
+  parent: SocketMeister
+  children:
+  - SocketMeister.ValueType.BoolValue
+  - SocketMeister.ValueType.ByteArrayValue
+  - SocketMeister.ValueType.ByteValue
+  - SocketMeister.ValueType.DateTimeValue
+  - SocketMeister.ValueType.DoubleValue
+  - SocketMeister.ValueType.Int16Value
+  - SocketMeister.ValueType.Int32Value
+  - SocketMeister.ValueType.Int64Value
+  - SocketMeister.ValueType.NullValue
+  - SocketMeister.ValueType.StringValue
+  - SocketMeister.ValueType.UInt16Value
+  - SocketMeister.ValueType.UInt32Value
+  - SocketMeister.ValueType.UInt64Value
+  - SocketMeister.ValueType.Unknown
+  langs:
+  - csharp
+  - vb
+  name: ValueType
+  nameWithType: ValueType
+  fullName: SocketMeister.ValueType
+  type: Enum
+  source:
+    remote:
+      path: src/SocketMeisterAPI/Enums.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: ValueType
+    path: src/SocketMeisterAPI/Enums.cs
+    startLine: 317
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: The type of value stored in a token.
+  example: []
+  syntax:
+    content: public enum ValueType
+    content.vb: Public Enum ValueType
+- uid: SocketMeister.ValueType.Unknown
+  commentId: F:SocketMeister.ValueType.Unknown
+  id: Unknown
+  parent: SocketMeister.ValueType
+  langs:
+  - csharp
+  - vb
+  name: Unknown
+  nameWithType: ValueType.Unknown
+  fullName: SocketMeister.ValueType.Unknown
+  type: Field
+  source:
+    remote:
+      path: src/SocketMeisterAPI/Enums.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: Unknown
+    path: src/SocketMeisterAPI/Enums.cs
+    startLine: 325
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: An unknown value type.
+  example: []
+  syntax:
+    content: Unknown = 0
+    return:
+      type: SocketMeister.ValueType
+- uid: SocketMeister.ValueType.BoolValue
+  commentId: F:SocketMeister.ValueType.BoolValue
+  id: BoolValue
+  parent: SocketMeister.ValueType
+  langs:
+  - csharp
+  - vb
+  name: BoolValue
+  nameWithType: ValueType.BoolValue
+  fullName: SocketMeister.ValueType.BoolValue
+  type: Field
+  source:
+    remote:
+      path: src/SocketMeisterAPI/Enums.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: BoolValue
+    path: src/SocketMeisterAPI/Enums.cs
+    startLine: 330
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: A boolean value.
+  example: []
+  syntax:
+    content: BoolValue = 10
+    return:
+      type: SocketMeister.ValueType
+- uid: SocketMeister.ValueType.DateTimeValue
+  commentId: F:SocketMeister.ValueType.DateTimeValue
+  id: DateTimeValue
+  parent: SocketMeister.ValueType
+  langs:
+  - csharp
+  - vb
+  name: DateTimeValue
+  nameWithType: ValueType.DateTimeValue
+  fullName: SocketMeister.ValueType.DateTimeValue
+  type: Field
+  source:
+    remote:
+      path: src/SocketMeisterAPI/Enums.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: DateTimeValue
+    path: src/SocketMeisterAPI/Enums.cs
+    startLine: 335
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: A DateTime value.
+  example: []
+  syntax:
+    content: DateTimeValue = 20
+    return:
+      type: SocketMeister.ValueType
+- uid: SocketMeister.ValueType.DoubleValue
+  commentId: F:SocketMeister.ValueType.DoubleValue
+  id: DoubleValue
+  parent: SocketMeister.ValueType
+  langs:
+  - csharp
+  - vb
+  name: DoubleValue
+  nameWithType: ValueType.DoubleValue
+  fullName: SocketMeister.ValueType.DoubleValue
+  type: Field
+  source:
+    remote:
+      path: src/SocketMeisterAPI/Enums.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: DoubleValue
+    path: src/SocketMeisterAPI/Enums.cs
+    startLine: 340
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: A double value.
+  example: []
+  syntax:
+    content: DoubleValue = 30
+    return:
+      type: SocketMeister.ValueType
+- uid: SocketMeister.ValueType.Int16Value
+  commentId: F:SocketMeister.ValueType.Int16Value
+  id: Int16Value
+  parent: SocketMeister.ValueType
+  langs:
+  - csharp
+  - vb
+  name: Int16Value
+  nameWithType: ValueType.Int16Value
+  fullName: SocketMeister.ValueType.Int16Value
+  type: Field
+  source:
+    remote:
+      path: src/SocketMeisterAPI/Enums.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: Int16Value
+    path: src/SocketMeisterAPI/Enums.cs
+    startLine: 345
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: A 16-bit integer value.
+  example: []
+  syntax:
+    content: Int16Value = 40
+    return:
+      type: SocketMeister.ValueType
+- uid: SocketMeister.ValueType.Int32Value
+  commentId: F:SocketMeister.ValueType.Int32Value
+  id: Int32Value
+  parent: SocketMeister.ValueType
+  langs:
+  - csharp
+  - vb
+  name: Int32Value
+  nameWithType: ValueType.Int32Value
+  fullName: SocketMeister.ValueType.Int32Value
+  type: Field
+  source:
+    remote:
+      path: src/SocketMeisterAPI/Enums.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: Int32Value
+    path: src/SocketMeisterAPI/Enums.cs
+    startLine: 350
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: A 32-bit integer value.
+  example: []
+  syntax:
+    content: Int32Value = 41
+    return:
+      type: SocketMeister.ValueType
+- uid: SocketMeister.ValueType.Int64Value
+  commentId: F:SocketMeister.ValueType.Int64Value
+  id: Int64Value
+  parent: SocketMeister.ValueType
+  langs:
+  - csharp
+  - vb
+  name: Int64Value
+  nameWithType: ValueType.Int64Value
+  fullName: SocketMeister.ValueType.Int64Value
+  type: Field
+  source:
+    remote:
+      path: src/SocketMeisterAPI/Enums.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: Int64Value
+    path: src/SocketMeisterAPI/Enums.cs
+    startLine: 355
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: A 64-bit integer value.
+  example: []
+  syntax:
+    content: Int64Value = 42
+    return:
+      type: SocketMeister.ValueType
+- uid: SocketMeister.ValueType.UInt16Value
+  commentId: F:SocketMeister.ValueType.UInt16Value
+  id: UInt16Value
+  parent: SocketMeister.ValueType
+  langs:
+  - csharp
+  - vb
+  name: UInt16Value
+  nameWithType: ValueType.UInt16Value
+  fullName: SocketMeister.ValueType.UInt16Value
+  type: Field
+  source:
+    remote:
+      path: src/SocketMeisterAPI/Enums.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: UInt16Value
+    path: src/SocketMeisterAPI/Enums.cs
+    startLine: 360
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: A 16-bit unsigned integer value.
+  example: []
+  syntax:
+    content: UInt16Value = 50
+    return:
+      type: SocketMeister.ValueType
+- uid: SocketMeister.ValueType.UInt32Value
+  commentId: F:SocketMeister.ValueType.UInt32Value
+  id: UInt32Value
+  parent: SocketMeister.ValueType
+  langs:
+  - csharp
+  - vb
+  name: UInt32Value
+  nameWithType: ValueType.UInt32Value
+  fullName: SocketMeister.ValueType.UInt32Value
+  type: Field
+  source:
+    remote:
+      path: src/SocketMeisterAPI/Enums.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: UInt32Value
+    path: src/SocketMeisterAPI/Enums.cs
+    startLine: 365
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: A 32-bit unsigned integer value.
+  example: []
+  syntax:
+    content: UInt32Value = 51
+    return:
+      type: SocketMeister.ValueType
+- uid: SocketMeister.ValueType.UInt64Value
+  commentId: F:SocketMeister.ValueType.UInt64Value
+  id: UInt64Value
+  parent: SocketMeister.ValueType
+  langs:
+  - csharp
+  - vb
+  name: UInt64Value
+  nameWithType: ValueType.UInt64Value
+  fullName: SocketMeister.ValueType.UInt64Value
+  type: Field
+  source:
+    remote:
+      path: src/SocketMeisterAPI/Enums.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: UInt64Value
+    path: src/SocketMeisterAPI/Enums.cs
+    startLine: 370
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: A 64-bit unsigned integer value.
+  example: []
+  syntax:
+    content: UInt64Value = 52
+    return:
+      type: SocketMeister.ValueType
+- uid: SocketMeister.ValueType.StringValue
+  commentId: F:SocketMeister.ValueType.StringValue
+  id: StringValue
+  parent: SocketMeister.ValueType
+  langs:
+  - csharp
+  - vb
+  name: StringValue
+  nameWithType: ValueType.StringValue
+  fullName: SocketMeister.ValueType.StringValue
+  type: Field
+  source:
+    remote:
+      path: src/SocketMeisterAPI/Enums.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: StringValue
+    path: src/SocketMeisterAPI/Enums.cs
+    startLine: 375
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: A string value.
+  example: []
+  syntax:
+    content: StringValue = 60
+    return:
+      type: SocketMeister.ValueType
+- uid: SocketMeister.ValueType.ByteValue
+  commentId: F:SocketMeister.ValueType.ByteValue
+  id: ByteValue
+  parent: SocketMeister.ValueType
+  langs:
+  - csharp
+  - vb
+  name: ByteValue
+  nameWithType: ValueType.ByteValue
+  fullName: SocketMeister.ValueType.ByteValue
+  type: Field
+  source:
+    remote:
+      path: src/SocketMeisterAPI/Enums.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: ByteValue
+    path: src/SocketMeisterAPI/Enums.cs
+    startLine: 380
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: A byte value.
+  example: []
+  syntax:
+    content: ByteValue = 70
+    return:
+      type: SocketMeister.ValueType
+- uid: SocketMeister.ValueType.ByteArrayValue
+  commentId: F:SocketMeister.ValueType.ByteArrayValue
+  id: ByteArrayValue
+  parent: SocketMeister.ValueType
+  langs:
+  - csharp
+  - vb
+  name: ByteArrayValue
+  nameWithType: ValueType.ByteArrayValue
+  fullName: SocketMeister.ValueType.ByteArrayValue
+  type: Field
+  source:
+    remote:
+      path: src/SocketMeisterAPI/Enums.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: ByteArrayValue
+    path: src/SocketMeisterAPI/Enums.cs
+    startLine: 385
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: A byte array value.
+  example: []
+  syntax:
+    content: ByteArrayValue = 71
+    return:
+      type: SocketMeister.ValueType
+- uid: SocketMeister.ValueType.NullValue
+  commentId: F:SocketMeister.ValueType.NullValue
+  id: NullValue
+  parent: SocketMeister.ValueType
+  langs:
+  - csharp
+  - vb
+  name: NullValue
+  nameWithType: ValueType.NullValue
+  fullName: SocketMeister.ValueType.NullValue
+  type: Field
+  source:
+    remote:
+      path: src/SocketMeisterAPI/Enums.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: NullValue
+    path: src/SocketMeisterAPI/Enums.cs
+    startLine: 390
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: A null value.
+  example: []
+  syntax:
+    content: NullValue = 99
+    return:
+      type: SocketMeister.ValueType
+references:
+- uid: SocketMeister
+  commentId: N:SocketMeister
+  href: SocketMeister.html
+  name: SocketMeister
+  nameWithType: SocketMeister
+  fullName: SocketMeister
+- uid: SocketMeister.ValueType
+  commentId: T:SocketMeister.ValueType
+  parent: SocketMeister
+  href: SocketMeister.ValueType.html
+  name: ValueType
+  nameWithType: ValueType
+  fullName: SocketMeister.ValueType

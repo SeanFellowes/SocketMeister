@@ -1,0 +1,437 @@
+### YamlMime:ManagedReference
+items:
+- uid: SocketMeister.Serializer.ParameterType
+  commentId: T:SocketMeister.Serializer.ParameterType
+  id: Serializer.ParameterType
+  parent: SocketMeister
+  children:
+  - SocketMeister.Serializer.ParameterType.BoolParam
+  - SocketMeister.Serializer.ParameterType.ByteArrayParam
+  - SocketMeister.Serializer.ParameterType.ByteParam
+  - SocketMeister.Serializer.ParameterType.DateTimeParam
+  - SocketMeister.Serializer.ParameterType.DoubleParam
+  - SocketMeister.Serializer.ParameterType.Int16Param
+  - SocketMeister.Serializer.ParameterType.Int32Param
+  - SocketMeister.Serializer.ParameterType.Int64Param
+  - SocketMeister.Serializer.ParameterType.Null
+  - SocketMeister.Serializer.ParameterType.StringParam
+  - SocketMeister.Serializer.ParameterType.UInt16Param
+  - SocketMeister.Serializer.ParameterType.UInt32Param
+  - SocketMeister.Serializer.ParameterType.UInt64Param
+  langs:
+  - csharp
+  - vb
+  name: Serializer.ParameterType
+  nameWithType: Serializer.ParameterType
+  fullName: SocketMeister.Serializer.ParameterType
+  type: Enum
+  source:
+    remote:
+      path: src/SocketMeisterAPI/Serializer.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: ParameterType
+    path: src/SocketMeisterAPI/Serializer.cs
+    startLine: 17
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: Enumerates the data types supported for parameters sent with messages.
+  example: []
+  syntax:
+    content: public enum Serializer.ParameterType
+    content.vb: Public Enum Serializer.ParameterType
+- uid: SocketMeister.Serializer.ParameterType.BoolParam
+  commentId: F:SocketMeister.Serializer.ParameterType.BoolParam
+  id: BoolParam
+  parent: SocketMeister.Serializer.ParameterType
+  langs:
+  - csharp
+  - vb
+  name: BoolParam
+  nameWithType: Serializer.ParameterType.BoolParam
+  fullName: SocketMeister.Serializer.ParameterType.BoolParam
+  type: Field
+  source:
+    remote:
+      path: src/SocketMeisterAPI/Serializer.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: BoolParam
+    path: src/SocketMeisterAPI/Serializer.cs
+    startLine: 20
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: Boolean
+  example: []
+  syntax:
+    content: BoolParam = 0
+    return:
+      type: SocketMeister.Serializer.ParameterType
+- uid: SocketMeister.Serializer.ParameterType.DateTimeParam
+  commentId: F:SocketMeister.Serializer.ParameterType.DateTimeParam
+  id: DateTimeParam
+  parent: SocketMeister.Serializer.ParameterType
+  langs:
+  - csharp
+  - vb
+  name: DateTimeParam
+  nameWithType: Serializer.ParameterType.DateTimeParam
+  fullName: SocketMeister.Serializer.ParameterType.DateTimeParam
+  type: Field
+  source:
+    remote:
+      path: src/SocketMeisterAPI/Serializer.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: DateTimeParam
+    path: src/SocketMeisterAPI/Serializer.cs
+    startLine: 22
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: DateTime
+  example: []
+  syntax:
+    content: DateTimeParam = 1
+    return:
+      type: SocketMeister.Serializer.ParameterType
+- uid: SocketMeister.Serializer.ParameterType.DoubleParam
+  commentId: F:SocketMeister.Serializer.ParameterType.DoubleParam
+  id: DoubleParam
+  parent: SocketMeister.Serializer.ParameterType
+  langs:
+  - csharp
+  - vb
+  name: DoubleParam
+  nameWithType: Serializer.ParameterType.DoubleParam
+  fullName: SocketMeister.Serializer.ParameterType.DoubleParam
+  type: Field
+  source:
+    remote:
+      path: src/SocketMeisterAPI/Serializer.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: DoubleParam
+    path: src/SocketMeisterAPI/Serializer.cs
+    startLine: 24
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: Double
+  example: []
+  syntax:
+    content: DoubleParam = 2
+    return:
+      type: SocketMeister.Serializer.ParameterType
+- uid: SocketMeister.Serializer.ParameterType.Int16Param
+  commentId: F:SocketMeister.Serializer.ParameterType.Int16Param
+  id: Int16Param
+  parent: SocketMeister.Serializer.ParameterType
+  langs:
+  - csharp
+  - vb
+  name: Int16Param
+  nameWithType: Serializer.ParameterType.Int16Param
+  fullName: SocketMeister.Serializer.ParameterType.Int16Param
+  type: Field
+  source:
+    remote:
+      path: src/SocketMeisterAPI/Serializer.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: Int16Param
+    path: src/SocketMeisterAPI/Serializer.cs
+    startLine: 26
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: Int16
+  example: []
+  syntax:
+    content: Int16Param = 3
+    return:
+      type: SocketMeister.Serializer.ParameterType
+- uid: SocketMeister.Serializer.ParameterType.Int32Param
+  commentId: F:SocketMeister.Serializer.ParameterType.Int32Param
+  id: Int32Param
+  parent: SocketMeister.Serializer.ParameterType
+  langs:
+  - csharp
+  - vb
+  name: Int32Param
+  nameWithType: Serializer.ParameterType.Int32Param
+  fullName: SocketMeister.Serializer.ParameterType.Int32Param
+  type: Field
+  source:
+    remote:
+      path: src/SocketMeisterAPI/Serializer.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: Int32Param
+    path: src/SocketMeisterAPI/Serializer.cs
+    startLine: 28
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: Int32
+  example: []
+  syntax:
+    content: Int32Param = 4
+    return:
+      type: SocketMeister.Serializer.ParameterType
+- uid: SocketMeister.Serializer.ParameterType.Int64Param
+  commentId: F:SocketMeister.Serializer.ParameterType.Int64Param
+  id: Int64Param
+  parent: SocketMeister.Serializer.ParameterType
+  langs:
+  - csharp
+  - vb
+  name: Int64Param
+  nameWithType: Serializer.ParameterType.Int64Param
+  fullName: SocketMeister.Serializer.ParameterType.Int64Param
+  type: Field
+  source:
+    remote:
+      path: src/SocketMeisterAPI/Serializer.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: Int64Param
+    path: src/SocketMeisterAPI/Serializer.cs
+    startLine: 30
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: Int64
+  example: []
+  syntax:
+    content: Int64Param = 5
+    return:
+      type: SocketMeister.Serializer.ParameterType
+- uid: SocketMeister.Serializer.ParameterType.UInt16Param
+  commentId: F:SocketMeister.Serializer.ParameterType.UInt16Param
+  id: UInt16Param
+  parent: SocketMeister.Serializer.ParameterType
+  langs:
+  - csharp
+  - vb
+  name: UInt16Param
+  nameWithType: Serializer.ParameterType.UInt16Param
+  fullName: SocketMeister.Serializer.ParameterType.UInt16Param
+  type: Field
+  source:
+    remote:
+      path: src/SocketMeisterAPI/Serializer.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: UInt16Param
+    path: src/SocketMeisterAPI/Serializer.cs
+    startLine: 32
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: Unsigned Int16
+  example: []
+  syntax:
+    content: UInt16Param = 6
+    return:
+      type: SocketMeister.Serializer.ParameterType
+- uid: SocketMeister.Serializer.ParameterType.UInt32Param
+  commentId: F:SocketMeister.Serializer.ParameterType.UInt32Param
+  id: UInt32Param
+  parent: SocketMeister.Serializer.ParameterType
+  langs:
+  - csharp
+  - vb
+  name: UInt32Param
+  nameWithType: Serializer.ParameterType.UInt32Param
+  fullName: SocketMeister.Serializer.ParameterType.UInt32Param
+  type: Field
+  source:
+    remote:
+      path: src/SocketMeisterAPI/Serializer.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: UInt32Param
+    path: src/SocketMeisterAPI/Serializer.cs
+    startLine: 34
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: Unsigned Int32
+  example: []
+  syntax:
+    content: UInt32Param = 7
+    return:
+      type: SocketMeister.Serializer.ParameterType
+- uid: SocketMeister.Serializer.ParameterType.UInt64Param
+  commentId: F:SocketMeister.Serializer.ParameterType.UInt64Param
+  id: UInt64Param
+  parent: SocketMeister.Serializer.ParameterType
+  langs:
+  - csharp
+  - vb
+  name: UInt64Param
+  nameWithType: Serializer.ParameterType.UInt64Param
+  fullName: SocketMeister.Serializer.ParameterType.UInt64Param
+  type: Field
+  source:
+    remote:
+      path: src/SocketMeisterAPI/Serializer.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: UInt64Param
+    path: src/SocketMeisterAPI/Serializer.cs
+    startLine: 36
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: Unsigned Int64
+  example: []
+  syntax:
+    content: UInt64Param = 8
+    return:
+      type: SocketMeister.Serializer.ParameterType
+- uid: SocketMeister.Serializer.ParameterType.StringParam
+  commentId: F:SocketMeister.Serializer.ParameterType.StringParam
+  id: StringParam
+  parent: SocketMeister.Serializer.ParameterType
+  langs:
+  - csharp
+  - vb
+  name: StringParam
+  nameWithType: Serializer.ParameterType.StringParam
+  fullName: SocketMeister.Serializer.ParameterType.StringParam
+  type: Field
+  source:
+    remote:
+      path: src/SocketMeisterAPI/Serializer.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: StringParam
+    path: src/SocketMeisterAPI/Serializer.cs
+    startLine: 38
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: String
+  example: []
+  syntax:
+    content: StringParam = 9
+    return:
+      type: SocketMeister.Serializer.ParameterType
+- uid: SocketMeister.Serializer.ParameterType.ByteParam
+  commentId: F:SocketMeister.Serializer.ParameterType.ByteParam
+  id: ByteParam
+  parent: SocketMeister.Serializer.ParameterType
+  langs:
+  - csharp
+  - vb
+  name: ByteParam
+  nameWithType: Serializer.ParameterType.ByteParam
+  fullName: SocketMeister.Serializer.ParameterType.ByteParam
+  type: Field
+  source:
+    remote:
+      path: src/SocketMeisterAPI/Serializer.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: ByteParam
+    path: src/SocketMeisterAPI/Serializer.cs
+    startLine: 40
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: Byte
+  example: []
+  syntax:
+    content: ByteParam = 10
+    return:
+      type: SocketMeister.Serializer.ParameterType
+- uid: SocketMeister.Serializer.ParameterType.ByteArrayParam
+  commentId: F:SocketMeister.Serializer.ParameterType.ByteArrayParam
+  id: ByteArrayParam
+  parent: SocketMeister.Serializer.ParameterType
+  langs:
+  - csharp
+  - vb
+  name: ByteArrayParam
+  nameWithType: Serializer.ParameterType.ByteArrayParam
+  fullName: SocketMeister.Serializer.ParameterType.ByteArrayParam
+  type: Field
+  source:
+    remote:
+      path: src/SocketMeisterAPI/Serializer.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: ByteArrayParam
+    path: src/SocketMeisterAPI/Serializer.cs
+    startLine: 42
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: Byte array
+  example: []
+  syntax:
+    content: ByteArrayParam = 11
+    return:
+      type: SocketMeister.Serializer.ParameterType
+- uid: SocketMeister.Serializer.ParameterType.Null
+  commentId: F:SocketMeister.Serializer.ParameterType.Null
+  id: "Null"
+  parent: SocketMeister.Serializer.ParameterType
+  langs:
+  - csharp
+  - vb
+  name: "Null"
+  nameWithType: Serializer.ParameterType.Null
+  fullName: SocketMeister.Serializer.ParameterType.Null
+  type: Field
+  source:
+    remote:
+      path: src/SocketMeisterAPI/Serializer.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: "Null"
+    path: src/SocketMeisterAPI/Serializer.cs
+    startLine: 44
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: "Null"
+  example: []
+  syntax:
+    content: Null = 99
+    return:
+      type: SocketMeister.Serializer.ParameterType
+references:
+- uid: SocketMeister
+  commentId: N:SocketMeister
+  href: SocketMeister.html
+  name: SocketMeister
+  nameWithType: SocketMeister
+  fullName: SocketMeister
+- uid: SocketMeister.Serializer.ParameterType
+  commentId: T:SocketMeister.Serializer.ParameterType
+  parent: SocketMeister
+  href: SocketMeister.Serializer.html
+  name: Serializer.ParameterType
+  nameWithType: Serializer.ParameterType
+  fullName: SocketMeister.Serializer.ParameterType
+  spec.csharp:
+  - uid: SocketMeister.Serializer
+    name: Serializer
+    href: SocketMeister.Serializer.html
+  - name: .
+  - uid: SocketMeister.Serializer.ParameterType
+    name: ParameterType
+    href: SocketMeister.Serializer.ParameterType.html
+  spec.vb:
+  - uid: SocketMeister.Serializer
+    name: Serializer
+    href: SocketMeister.Serializer.html
+  - name: .
+  - uid: SocketMeister.Serializer.ParameterType
+    name: ParameterType
+    href: SocketMeister.Serializer.ParameterType.html

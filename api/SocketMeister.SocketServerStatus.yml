@@ -1,0 +1,160 @@
+### YamlMime:ManagedReference
+items:
+- uid: SocketMeister.SocketServerStatus
+  commentId: T:SocketMeister.SocketServerStatus
+  id: SocketServerStatus
+  parent: SocketMeister
+  children:
+  - SocketMeister.SocketServerStatus.Started
+  - SocketMeister.SocketServerStatus.Starting
+  - SocketMeister.SocketServerStatus.Stopped
+  - SocketMeister.SocketServerStatus.Stopping
+  langs:
+  - csharp
+  - vb
+  name: SocketServerStatus
+  nameWithType: SocketServerStatus
+  fullName: SocketMeister.SocketServerStatus
+  type: Enum
+  source:
+    remote:
+      path: src/SocketMeisterAPI/Enums.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: SocketServerStatus
+    path: src/SocketMeisterAPI/Enums.cs
+    startLine: 259
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: The execution status of a service.
+  example: []
+  syntax:
+    content: public enum SocketServerStatus
+    content.vb: Public Enum SocketServerStatus
+- uid: SocketMeister.SocketServerStatus.Stopped
+  commentId: F:SocketMeister.SocketServerStatus.Stopped
+  id: Stopped
+  parent: SocketMeister.SocketServerStatus
+  langs:
+  - csharp
+  - vb
+  name: Stopped
+  nameWithType: SocketServerStatus.Stopped
+  fullName: SocketMeister.SocketServerStatus.Stopped
+  type: Field
+  source:
+    remote:
+      path: src/SocketMeisterAPI/Enums.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: Stopped
+    path: src/SocketMeisterAPI/Enums.cs
+    startLine: 267
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: The service is stopped.
+  example: []
+  syntax:
+    content: Stopped = 0
+    return:
+      type: SocketMeister.SocketServerStatus
+- uid: SocketMeister.SocketServerStatus.Starting
+  commentId: F:SocketMeister.SocketServerStatus.Starting
+  id: Starting
+  parent: SocketMeister.SocketServerStatus
+  langs:
+  - csharp
+  - vb
+  name: Starting
+  nameWithType: SocketServerStatus.Starting
+  fullName: SocketMeister.SocketServerStatus.Starting
+  type: Field
+  source:
+    remote:
+      path: src/SocketMeisterAPI/Enums.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: Starting
+    path: src/SocketMeisterAPI/Enums.cs
+    startLine: 272
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: The service is starting.
+  example: []
+  syntax:
+    content: Starting = 1
+    return:
+      type: SocketMeister.SocketServerStatus
+- uid: SocketMeister.SocketServerStatus.Started
+  commentId: F:SocketMeister.SocketServerStatus.Started
+  id: Started
+  parent: SocketMeister.SocketServerStatus
+  langs:
+  - csharp
+  - vb
+  name: Started
+  nameWithType: SocketServerStatus.Started
+  fullName: SocketMeister.SocketServerStatus.Started
+  type: Field
+  source:
+    remote:
+      path: src/SocketMeisterAPI/Enums.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: Started
+    path: src/SocketMeisterAPI/Enums.cs
+    startLine: 277
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: The service is started.
+  example: []
+  syntax:
+    content: Started = 2
+    return:
+      type: SocketMeister.SocketServerStatus
+- uid: SocketMeister.SocketServerStatus.Stopping
+  commentId: F:SocketMeister.SocketServerStatus.Stopping
+  id: Stopping
+  parent: SocketMeister.SocketServerStatus
+  langs:
+  - csharp
+  - vb
+  name: Stopping
+  nameWithType: SocketServerStatus.Stopping
+  fullName: SocketMeister.SocketServerStatus.Stopping
+  type: Field
+  source:
+    remote:
+      path: src/SocketMeisterAPI/Enums.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: Stopping
+    path: src/SocketMeisterAPI/Enums.cs
+    startLine: 282
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: The service is stopping.
+  example: []
+  syntax:
+    content: Stopping = 3
+    return:
+      type: SocketMeister.SocketServerStatus
+references:
+- uid: SocketMeister
+  commentId: N:SocketMeister
+  href: SocketMeister.html
+  name: SocketMeister
+  nameWithType: SocketMeister
+  fullName: SocketMeister
+- uid: SocketMeister.SocketServerStatus
+  commentId: T:SocketMeister.SocketServerStatus
+  parent: SocketMeister
+  href: SocketMeister.SocketServerStatus.html
+  name: SocketServerStatus
+  nameWithType: SocketServerStatus
+  fullName: SocketMeister.SocketServerStatus

@@ -1,0 +1,298 @@
+### YamlMime:ManagedReference
+items:
+- uid: SocketMeister
+  commentId: N:SocketMeister
+  id: SocketMeister
+  children:
+  - SocketMeister.ExceptionEventArgs
+  - SocketMeister.LogEntry
+  - SocketMeister.LogEventArgs
+  - SocketMeister.LogEventType
+  - SocketMeister.Logger
+  - SocketMeister.Serializer
+  - SocketMeister.Serializer.ParameterType
+  - SocketMeister.Severity
+  - SocketMeister.SocketClient
+  - SocketMeister.SocketClient.BroadcastReceivedEventArgs
+  - SocketMeister.SocketClient.ConnectionStatuses
+  - SocketMeister.SocketClient.MessageReceivedEventArgs
+  - SocketMeister.SocketEndPoint
+  - SocketMeister.SocketServer
+  - SocketMeister.SocketServer.Client
+  - SocketMeister.SocketServer.ClientEventArgs
+  - SocketMeister.SocketServer.MessageReceivedEventArgs
+  - SocketMeister.SocketServerStatus
+  - SocketMeister.Token
+  - SocketMeister.TokenCollection
+  - SocketMeister.TokenCollectionReadOnly
+  - SocketMeister.ValueType
+  langs:
+  - csharp
+  - vb
+  name: SocketMeister
+  nameWithType: SocketMeister
+  fullName: SocketMeister
+  type: Namespace
+  assemblies:
+  - SocketMeister
+references:
+- uid: SocketMeister.Severity
+  commentId: T:SocketMeister.Severity
+  parent: SocketMeister
+  href: SocketMeister.Severity.html
+  name: Severity
+  nameWithType: Severity
+  fullName: SocketMeister.Severity
+- uid: SocketMeister.LogEventType
+  commentId: T:SocketMeister.LogEventType
+  parent: SocketMeister
+  href: SocketMeister.LogEventType.html
+  name: LogEventType
+  nameWithType: LogEventType
+  fullName: SocketMeister.LogEventType
+- uid: SocketMeister.SocketServerStatus
+  commentId: T:SocketMeister.SocketServerStatus
+  parent: SocketMeister
+  href: SocketMeister.SocketServerStatus.html
+  name: SocketServerStatus
+  nameWithType: SocketServerStatus
+  fullName: SocketMeister.SocketServerStatus
+- uid: SocketMeister.ValueType
+  commentId: T:SocketMeister.ValueType
+  parent: SocketMeister
+  href: SocketMeister.ValueType.html
+  name: ValueType
+  nameWithType: ValueType
+  fullName: SocketMeister.ValueType
+- uid: SocketMeister.LogEventArgs
+  commentId: T:SocketMeister.LogEventArgs
+  href: SocketMeister.LogEventArgs.html
+  name: LogEventArgs
+  nameWithType: LogEventArgs
+  fullName: SocketMeister.LogEventArgs
+- uid: SocketMeister.ExceptionEventArgs
+  commentId: T:SocketMeister.ExceptionEventArgs
+  href: SocketMeister.ExceptionEventArgs.html
+  name: ExceptionEventArgs
+  nameWithType: ExceptionEventArgs
+  fullName: SocketMeister.ExceptionEventArgs
+- uid: SocketMeister.LogEntry
+  commentId: T:SocketMeister.LogEntry
+  parent: SocketMeister
+  href: SocketMeister.LogEntry.html
+  name: LogEntry
+  nameWithType: LogEntry
+  fullName: SocketMeister.LogEntry
+- uid: SocketMeister.Logger
+  commentId: T:SocketMeister.Logger
+  href: SocketMeister.Logger.html
+  name: Logger
+  nameWithType: Logger
+  fullName: SocketMeister.Logger
+- uid: SocketMeister.Serializer
+  commentId: T:SocketMeister.Serializer
+  href: SocketMeister.Serializer.html
+  name: Serializer
+  nameWithType: Serializer
+  fullName: SocketMeister.Serializer
+- uid: SocketMeister.Serializer.ParameterType
+  commentId: T:SocketMeister.Serializer.ParameterType
+  parent: SocketMeister
+  href: SocketMeister.Serializer.html
+  name: Serializer.ParameterType
+  nameWithType: Serializer.ParameterType
+  fullName: SocketMeister.Serializer.ParameterType
+  spec.csharp:
+  - uid: SocketMeister.Serializer
+    name: Serializer
+    href: SocketMeister.Serializer.html
+  - name: .
+  - uid: SocketMeister.Serializer.ParameterType
+    name: ParameterType
+    href: SocketMeister.Serializer.ParameterType.html
+  spec.vb:
+  - uid: SocketMeister.Serializer
+    name: Serializer
+    href: SocketMeister.Serializer.html
+  - name: .
+  - uid: SocketMeister.Serializer.ParameterType
+    name: ParameterType
+    href: SocketMeister.Serializer.ParameterType.html
+- uid: SocketMeister.SocketClient
+  commentId: T:SocketMeister.SocketClient
+  href: SocketMeister.SocketClient.html
+  name: SocketClient
+  nameWithType: SocketClient
+  fullName: SocketMeister.SocketClient
+- uid: SocketMeister.SocketClient.ConnectionStatuses
+  commentId: T:SocketMeister.SocketClient.ConnectionStatuses
+  parent: SocketMeister
+  href: SocketMeister.SocketClient.html
+  name: SocketClient.ConnectionStatuses
+  nameWithType: SocketClient.ConnectionStatuses
+  fullName: SocketMeister.SocketClient.ConnectionStatuses
+  spec.csharp:
+  - uid: SocketMeister.SocketClient
+    name: SocketClient
+    href: SocketMeister.SocketClient.html
+  - name: .
+  - uid: SocketMeister.SocketClient.ConnectionStatuses
+    name: ConnectionStatuses
+    href: SocketMeister.SocketClient.ConnectionStatuses.html
+  spec.vb:
+  - uid: SocketMeister.SocketClient
+    name: SocketClient
+    href: SocketMeister.SocketClient.html
+  - name: .
+  - uid: SocketMeister.SocketClient.ConnectionStatuses
+    name: ConnectionStatuses
+    href: SocketMeister.SocketClient.ConnectionStatuses.html
+- uid: SocketMeister.SocketClient.MessageReceivedEventArgs
+  commentId: T:SocketMeister.SocketClient.MessageReceivedEventArgs
+  href: SocketMeister.SocketClient.html
+  name: SocketClient.MessageReceivedEventArgs
+  nameWithType: SocketClient.MessageReceivedEventArgs
+  fullName: SocketMeister.SocketClient.MessageReceivedEventArgs
+  spec.csharp:
+  - uid: SocketMeister.SocketClient
+    name: SocketClient
+    href: SocketMeister.SocketClient.html
+  - name: .
+  - uid: SocketMeister.SocketClient.MessageReceivedEventArgs
+    name: MessageReceivedEventArgs
+    href: SocketMeister.SocketClient.MessageReceivedEventArgs.html
+  spec.vb:
+  - uid: SocketMeister.SocketClient
+    name: SocketClient
+    href: SocketMeister.SocketClient.html
+  - name: .
+  - uid: SocketMeister.SocketClient.MessageReceivedEventArgs
+    name: MessageReceivedEventArgs
+    href: SocketMeister.SocketClient.MessageReceivedEventArgs.html
+- uid: SocketMeister.SocketClient.BroadcastReceivedEventArgs
+  commentId: T:SocketMeister.SocketClient.BroadcastReceivedEventArgs
+  href: SocketMeister.SocketClient.html
+  name: SocketClient.BroadcastReceivedEventArgs
+  nameWithType: SocketClient.BroadcastReceivedEventArgs
+  fullName: SocketMeister.SocketClient.BroadcastReceivedEventArgs
+  spec.csharp:
+  - uid: SocketMeister.SocketClient
+    name: SocketClient
+    href: SocketMeister.SocketClient.html
+  - name: .
+  - uid: SocketMeister.SocketClient.BroadcastReceivedEventArgs
+    name: BroadcastReceivedEventArgs
+    href: SocketMeister.SocketClient.BroadcastReceivedEventArgs.html
+  spec.vb:
+  - uid: SocketMeister.SocketClient
+    name: SocketClient
+    href: SocketMeister.SocketClient.html
+  - name: .
+  - uid: SocketMeister.SocketClient.BroadcastReceivedEventArgs
+    name: BroadcastReceivedEventArgs
+    href: SocketMeister.SocketClient.BroadcastReceivedEventArgs.html
+- uid: SocketMeister.SocketEndPoint
+  commentId: T:SocketMeister.SocketEndPoint
+  parent: SocketMeister
+  href: SocketMeister.SocketEndPoint.html
+  name: SocketEndPoint
+  nameWithType: SocketEndPoint
+  fullName: SocketMeister.SocketEndPoint
+- uid: SocketMeister.SocketServer
+  commentId: T:SocketMeister.SocketServer
+  href: SocketMeister.SocketServer.html
+  name: SocketServer
+  nameWithType: SocketServer
+  fullName: SocketMeister.SocketServer
+- uid: SocketMeister.SocketServer.Client
+  commentId: T:SocketMeister.SocketServer.Client
+  parent: SocketMeister
+  href: SocketMeister.SocketServer.html
+  name: SocketServer.Client
+  nameWithType: SocketServer.Client
+  fullName: SocketMeister.SocketServer.Client
+  spec.csharp:
+  - uid: SocketMeister.SocketServer
+    name: SocketServer
+    href: SocketMeister.SocketServer.html
+  - name: .
+  - uid: SocketMeister.SocketServer.Client
+    name: Client
+    href: SocketMeister.SocketServer.Client.html
+  spec.vb:
+  - uid: SocketMeister.SocketServer
+    name: SocketServer
+    href: SocketMeister.SocketServer.html
+  - name: .
+  - uid: SocketMeister.SocketServer.Client
+    name: Client
+    href: SocketMeister.SocketServer.Client.html
+- uid: SocketMeister.SocketServer.ClientEventArgs
+  commentId: T:SocketMeister.SocketServer.ClientEventArgs
+  href: SocketMeister.SocketServer.html
+  name: SocketServer.ClientEventArgs
+  nameWithType: SocketServer.ClientEventArgs
+  fullName: SocketMeister.SocketServer.ClientEventArgs
+  spec.csharp:
+  - uid: SocketMeister.SocketServer
+    name: SocketServer
+    href: SocketMeister.SocketServer.html
+  - name: .
+  - uid: SocketMeister.SocketServer.ClientEventArgs
+    name: ClientEventArgs
+    href: SocketMeister.SocketServer.ClientEventArgs.html
+  spec.vb:
+  - uid: SocketMeister.SocketServer
+    name: SocketServer
+    href: SocketMeister.SocketServer.html
+  - name: .
+  - uid: SocketMeister.SocketServer.ClientEventArgs
+    name: ClientEventArgs
+    href: SocketMeister.SocketServer.ClientEventArgs.html
+- uid: SocketMeister.SocketServer.MessageReceivedEventArgs
+  commentId: T:SocketMeister.SocketServer.MessageReceivedEventArgs
+  href: SocketMeister.SocketServer.html
+  name: SocketServer.MessageReceivedEventArgs
+  nameWithType: SocketServer.MessageReceivedEventArgs
+  fullName: SocketMeister.SocketServer.MessageReceivedEventArgs
+  spec.csharp:
+  - uid: SocketMeister.SocketServer
+    name: SocketServer
+    href: SocketMeister.SocketServer.html
+  - name: .
+  - uid: SocketMeister.SocketServer.MessageReceivedEventArgs
+    name: MessageReceivedEventArgs
+    href: SocketMeister.SocketServer.MessageReceivedEventArgs.html
+  spec.vb:
+  - uid: SocketMeister.SocketServer
+    name: SocketServer
+    href: SocketMeister.SocketServer.html
+  - name: .
+  - uid: SocketMeister.SocketServer.MessageReceivedEventArgs
+    name: MessageReceivedEventArgs
+    href: SocketMeister.SocketServer.MessageReceivedEventArgs.html
+- uid: SocketMeister.Token
+  commentId: T:SocketMeister.Token
+  parent: SocketMeister
+  href: SocketMeister.Token.html
+  name: Token
+  nameWithType: Token
+  fullName: SocketMeister.Token
+- uid: SocketMeister.TokenCollection
+  commentId: T:SocketMeister.TokenCollection
+  href: SocketMeister.TokenCollection.html
+  name: TokenCollection
+  nameWithType: TokenCollection
+  fullName: SocketMeister.TokenCollection
+- uid: SocketMeister.TokenCollectionReadOnly
+  commentId: T:SocketMeister.TokenCollectionReadOnly
+  href: SocketMeister.TokenCollectionReadOnly.html
+  name: TokenCollectionReadOnly
+  nameWithType: TokenCollectionReadOnly
+  fullName: SocketMeister.TokenCollectionReadOnly
+- uid: SocketMeister
+  commentId: N:SocketMeister
+  href: SocketMeister.html
+  name: SocketMeister
+  nameWithType: SocketMeister
+  fullName: SocketMeister

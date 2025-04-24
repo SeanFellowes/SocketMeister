@@ -1,0 +1,702 @@
+### YamlMime:ManagedReference
+items:
+- uid: SocketMeister.TokenCollectionReadOnly
+  commentId: T:SocketMeister.TokenCollectionReadOnly
+  id: TokenCollectionReadOnly
+  parent: SocketMeister
+  children:
+  - SocketMeister.TokenCollectionReadOnly.Count
+  - SocketMeister.TokenCollectionReadOnly.Dispose
+  - SocketMeister.TokenCollectionReadOnly.Dispose(System.Boolean)
+  - SocketMeister.TokenCollectionReadOnly.Finalize
+  - SocketMeister.TokenCollectionReadOnly.Item(System.String)
+  - SocketMeister.TokenCollectionReadOnly.ToListOfNames
+  langs:
+  - csharp
+  - vb
+  name: TokenCollectionReadOnly
+  nameWithType: TokenCollectionReadOnly
+  fullName: SocketMeister.TokenCollectionReadOnly
+  type: Class
+  source:
+    remote:
+      path: src/SocketMeisterAPI/TokenCollectionReadOnly.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: TokenCollectionReadOnly
+    path: src/SocketMeisterAPI/TokenCollectionReadOnly.cs
+    startLine: 14
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: A dictionary-based collection of tokens. The data in this collection is read-only.
+  example: []
+  syntax:
+    content: 'public class TokenCollectionReadOnly : IDisposable'
+    content.vb: Public Class TokenCollectionReadOnly Implements IDisposable
+  inheritance:
+  - System.Object
+  implements:
+  - System.IDisposable
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: SocketMeister.TokenCollectionReadOnly.Item(System.String)
+  commentId: P:SocketMeister.TokenCollectionReadOnly.Item(System.String)
+  id: Item(System.String)
+  parent: SocketMeister.TokenCollectionReadOnly
+  langs:
+  - csharp
+  - vb
+  name: this[string]
+  nameWithType: TokenCollectionReadOnly.this[string]
+  fullName: SocketMeister.TokenCollectionReadOnly.this[string]
+  type: Property
+  source:
+    remote:
+      path: src/SocketMeisterAPI/TokenCollectionReadOnly.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: this[]
+    path: src/SocketMeisterAPI/TokenCollectionReadOnly.cs
+    startLine: 27
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: Provides indexed access to a token by its name. Returns the token or null if not found.
+  example: []
+  syntax:
+    content: public Token this[string Name] { get; }
+    parameters:
+    - id: Name
+      type: System.String
+      description: The name of the token to retrieve.
+    return:
+      type: SocketMeister.Token
+      description: The token if found, or null if not found.
+    content.vb: Public ReadOnly Default Property this[](Name As String) As Token
+  overload: SocketMeister.TokenCollectionReadOnly.Item*
+  nameWithType.vb: TokenCollectionReadOnly.this[](String)
+  fullName.vb: SocketMeister.TokenCollectionReadOnly.this[](String)
+  name.vb: this[](String)
+- uid: SocketMeister.TokenCollectionReadOnly.Count
+  commentId: P:SocketMeister.TokenCollectionReadOnly.Count
+  id: Count
+  parent: SocketMeister.TokenCollectionReadOnly
+  langs:
+  - csharp
+  - vb
+  name: Count
+  nameWithType: TokenCollectionReadOnly.Count
+  fullName: SocketMeister.TokenCollectionReadOnly.Count
+  type: Property
+  source:
+    remote:
+      path: src/SocketMeisterAPI/TokenCollectionReadOnly.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: Count
+    path: src/SocketMeisterAPI/TokenCollectionReadOnly.cs
+    startLine: 38
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: Gets the number of tokens in the collection.
+  example: []
+  syntax:
+    content: public int Count { get; }
+    parameters: []
+    return:
+      type: System.Int32
+    content.vb: Public ReadOnly Property Count As Integer
+  overload: SocketMeister.TokenCollectionReadOnly.Count*
+- uid: SocketMeister.TokenCollectionReadOnly.ToListOfNames
+  commentId: M:SocketMeister.TokenCollectionReadOnly.ToListOfNames
+  id: ToListOfNames
+  parent: SocketMeister.TokenCollectionReadOnly
+  langs:
+  - csharp
+  - vb
+  name: ToListOfNames()
+  nameWithType: TokenCollectionReadOnly.ToListOfNames()
+  fullName: SocketMeister.TokenCollectionReadOnly.ToListOfNames()
+  type: Method
+  source:
+    remote:
+      path: src/SocketMeisterAPI/TokenCollectionReadOnly.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: ToListOfNames
+    path: src/SocketMeisterAPI/TokenCollectionReadOnly.cs
+    startLine: 120
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: Returns a list of all token names in the collection.
+  example: []
+  syntax:
+    content: public List<string> ToListOfNames()
+    return:
+      type: System.Collections.Generic.List{System.String}
+      description: A list of strings containing the token names.
+    content.vb: Public Function ToListOfNames() As List(Of String)
+  overload: SocketMeister.TokenCollectionReadOnly.ToListOfNames*
+- uid: SocketMeister.TokenCollectionReadOnly.Dispose(System.Boolean)
+  commentId: M:SocketMeister.TokenCollectionReadOnly.Dispose(System.Boolean)
+  id: Dispose(System.Boolean)
+  parent: SocketMeister.TokenCollectionReadOnly
+  langs:
+  - csharp
+  - vb
+  name: Dispose(bool)
+  nameWithType: TokenCollectionReadOnly.Dispose(bool)
+  fullName: SocketMeister.TokenCollectionReadOnly.Dispose(bool)
+  type: Method
+  source:
+    remote:
+      path: src/SocketMeisterAPI/TokenCollectionReadOnly.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: Dispose
+    path: src/SocketMeisterAPI/TokenCollectionReadOnly.cs
+    startLine: 139
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: Releases the resources used by the <xref href="SocketMeister.TokenCollectionReadOnly" data-throw-if-not-resolved="false"></xref> class.
+  example: []
+  syntax:
+    content: protected virtual void Dispose(bool disposing)
+    parameters:
+    - id: disposing
+      type: System.Boolean
+      description: Indicates whether the method is called from the Dispose method.
+    content.vb: Protected Overridable Sub Dispose(disposing As Boolean)
+  overload: SocketMeister.TokenCollectionReadOnly.Dispose*
+  nameWithType.vb: TokenCollectionReadOnly.Dispose(Boolean)
+  fullName.vb: SocketMeister.TokenCollectionReadOnly.Dispose(Boolean)
+  name.vb: Dispose(Boolean)
+- uid: SocketMeister.TokenCollectionReadOnly.Dispose
+  commentId: M:SocketMeister.TokenCollectionReadOnly.Dispose
+  id: Dispose
+  parent: SocketMeister.TokenCollectionReadOnly
+  langs:
+  - csharp
+  - vb
+  name: Dispose()
+  nameWithType: TokenCollectionReadOnly.Dispose()
+  fullName: SocketMeister.TokenCollectionReadOnly.Dispose()
+  type: Method
+  source:
+    remote:
+      path: src/SocketMeisterAPI/TokenCollectionReadOnly.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: Dispose
+    path: src/SocketMeisterAPI/TokenCollectionReadOnly.cs
+    startLine: 156
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: Releases the resources used by the <xref href="SocketMeister.TokenCollectionReadOnly" data-throw-if-not-resolved="false"></xref> class.
+  example: []
+  syntax:
+    content: public void Dispose()
+    content.vb: Public Sub Dispose()
+  overload: SocketMeister.TokenCollectionReadOnly.Dispose*
+  implements:
+  - System.IDisposable.Dispose
+- uid: SocketMeister.TokenCollectionReadOnly.Finalize
+  commentId: M:SocketMeister.TokenCollectionReadOnly.Finalize
+  id: Finalize
+  parent: SocketMeister.TokenCollectionReadOnly
+  langs:
+  - csharp
+  - vb
+  name: ~TokenCollectionReadOnly()
+  nameWithType: TokenCollectionReadOnly.~TokenCollectionReadOnly()
+  fullName: SocketMeister.TokenCollectionReadOnly.~TokenCollectionReadOnly()
+  type: Method
+  source:
+    remote:
+      path: src/SocketMeisterAPI/TokenCollectionReadOnly.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: Finalize
+    path: src/SocketMeisterAPI/TokenCollectionReadOnly.cs
+    startLine: 165
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: Finalizer to release resources.
+  example: []
+  syntax:
+    content: protected ~TokenCollectionReadOnly()
+    content.vb: 'Protected '
+  overload: SocketMeister.TokenCollectionReadOnly.Finalize*
+  nameWithType.vb: ''
+  fullName.vb: ''
+  name.vb: ''
+references:
+- uid: SocketMeister
+  commentId: N:SocketMeister
+  href: SocketMeister.html
+  name: SocketMeister
+  nameWithType: SocketMeister
+  fullName: SocketMeister
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.IDisposable
+  commentId: T:System.IDisposable
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.idisposable
+  name: IDisposable
+  nameWithType: IDisposable
+  fullName: System.IDisposable
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.MemberwiseClone
+  commentId: M:System.Object.MemberwiseClone
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  name: MemberwiseClone()
+  nameWithType: object.MemberwiseClone()
+  fullName: object.MemberwiseClone()
+  nameWithType.vb: Object.MemberwiseClone()
+  fullName.vb: Object.MemberwiseClone()
+  spec.csharp:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: SocketMeister.TokenCollectionReadOnly.Item*
+  commentId: Overload:SocketMeister.TokenCollectionReadOnly.Item
+  href: SocketMeister.TokenCollectionReadOnly.html#SocketMeister_TokenCollectionReadOnly_Item_System_String_
+  name: this
+  nameWithType: TokenCollectionReadOnly.this
+  fullName: SocketMeister.TokenCollectionReadOnly.this
+  nameWithType.vb: TokenCollectionReadOnly.this[]
+  fullName.vb: SocketMeister.TokenCollectionReadOnly.this[]
+  name.vb: this[]
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.string
+  name: string
+  nameWithType: string
+  fullName: string
+  nameWithType.vb: String
+  fullName.vb: String
+  name.vb: String
+- uid: SocketMeister.Token
+  commentId: T:SocketMeister.Token
+  parent: SocketMeister
+  href: SocketMeister.Token.html
+  name: Token
+  nameWithType: Token
+  fullName: SocketMeister.Token
+- uid: SocketMeister.TokenCollectionReadOnly.Count*
+  commentId: Overload:SocketMeister.TokenCollectionReadOnly.Count
+  href: SocketMeister.TokenCollectionReadOnly.html#SocketMeister_TokenCollectionReadOnly_Count
+  name: Count
+  nameWithType: TokenCollectionReadOnly.Count
+  fullName: SocketMeister.TokenCollectionReadOnly.Count
+- uid: System.Int32
+  commentId: T:System.Int32
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.int32
+  name: int
+  nameWithType: int
+  fullName: int
+  nameWithType.vb: Integer
+  fullName.vb: Integer
+  name.vb: Integer
+- uid: SocketMeister.TokenCollectionReadOnly.ToListOfNames*
+  commentId: Overload:SocketMeister.TokenCollectionReadOnly.ToListOfNames
+  href: SocketMeister.TokenCollectionReadOnly.html#SocketMeister_TokenCollectionReadOnly_ToListOfNames
+  name: ToListOfNames
+  nameWithType: TokenCollectionReadOnly.ToListOfNames
+  fullName: SocketMeister.TokenCollectionReadOnly.ToListOfNames
+- uid: System.Collections.Generic.List{System.String}
+  commentId: T:System.Collections.Generic.List{System.String}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.List`1
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  name: List<string>
+  nameWithType: List<string>
+  fullName: System.Collections.Generic.List<string>
+  nameWithType.vb: List(Of String)
+  fullName.vb: System.Collections.Generic.List(Of String)
+  name.vb: List(Of String)
+  spec.csharp:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: <
+  - uid: System.String
+    name: string
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: System.String
+    name: String
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: )
+- uid: System.Collections.Generic.List`1
+  commentId: T:System.Collections.Generic.List`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  name: List<T>
+  nameWithType: List<T>
+  fullName: System.Collections.Generic.List<T>
+  nameWithType.vb: List(Of T)
+  fullName.vb: System.Collections.Generic.List(Of T)
+  name.vb: List(Of T)
+  spec.csharp:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+- uid: System.Collections.Generic
+  commentId: N:System.Collections.Generic
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Collections.Generic
+  nameWithType: System.Collections.Generic
+  fullName: System.Collections.Generic
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Collections
+    name: Collections
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections
+  - name: .
+  - uid: System.Collections.Generic
+    name: Generic
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Collections
+    name: Collections
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections
+  - name: .
+  - uid: System.Collections.Generic
+    name: Generic
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic
+- uid: SocketMeister.TokenCollectionReadOnly
+  commentId: T:SocketMeister.TokenCollectionReadOnly
+  href: SocketMeister.TokenCollectionReadOnly.html
+  name: TokenCollectionReadOnly
+  nameWithType: TokenCollectionReadOnly
+  fullName: SocketMeister.TokenCollectionReadOnly
+- uid: SocketMeister.TokenCollectionReadOnly.Dispose*
+  commentId: Overload:SocketMeister.TokenCollectionReadOnly.Dispose
+  href: SocketMeister.TokenCollectionReadOnly.html#SocketMeister_TokenCollectionReadOnly_Dispose_System_Boolean_
+  name: Dispose
+  nameWithType: TokenCollectionReadOnly.Dispose
+  fullName: SocketMeister.TokenCollectionReadOnly.Dispose
+- uid: System.Boolean
+  commentId: T:System.Boolean
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.boolean
+  name: bool
+  nameWithType: bool
+  fullName: bool
+  nameWithType.vb: Boolean
+  fullName.vb: Boolean
+  name.vb: Boolean
+- uid: System.IDisposable.Dispose
+  commentId: M:System.IDisposable.Dispose
+  parent: System.IDisposable
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.idisposable.dispose
+  name: Dispose()
+  nameWithType: IDisposable.Dispose()
+  fullName: System.IDisposable.Dispose()
+  spec.csharp:
+  - uid: System.IDisposable.Dispose
+    name: Dispose
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.idisposable.dispose
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.IDisposable.Dispose
+    name: Dispose
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.idisposable.dispose
+  - name: (
+  - name: )
+- uid: SocketMeister.TokenCollectionReadOnly.Finalize*
+  commentId: Overload:SocketMeister.TokenCollectionReadOnly.Finalize
+  href: SocketMeister.TokenCollectionReadOnly.html#SocketMeister_TokenCollectionReadOnly_Finalize
+  name: ~TokenCollectionReadOnly
+  nameWithType: TokenCollectionReadOnly.~TokenCollectionReadOnly
+  fullName: SocketMeister.TokenCollectionReadOnly.~TokenCollectionReadOnly
+  spec.csharp:
+  - name: "~"
+  - uid: SocketMeister.TokenCollectionReadOnly.Finalize*
+    name: TokenCollectionReadOnly
+    href: SocketMeister.TokenCollectionReadOnly.html#SocketMeister_TokenCollectionReadOnly_Finalize

@@ -1,0 +1,1787 @@
+### YamlMime:ManagedReference
+items:
+- uid: SocketMeister.SocketServer
+  commentId: T:SocketMeister.SocketServer
+  id: SocketServer
+  parent: SocketMeister
+  children:
+  - SocketMeister.SocketServer.#ctor(System.Int32,System.Boolean)
+  - SocketMeister.SocketServer.Broadcast(System.String,System.Object[])
+  - SocketMeister.SocketServer.BroadcastToSubscribers(System.String,System.Object[])
+  - SocketMeister.SocketServer.ClientConnected
+  - SocketMeister.SocketServer.ClientCount
+  - SocketMeister.SocketServer.ClientDisconnected
+  - SocketMeister.SocketServer.Dispose
+  - SocketMeister.SocketServer.Dispose(System.Boolean)
+  - SocketMeister.SocketServer.DoSubscribersExist(System.String)
+  - SocketMeister.SocketServer.EndPoint
+  - SocketMeister.SocketServer.Finalize
+  - SocketMeister.SocketServer.GetClients
+  - SocketMeister.SocketServer.LogRaised
+  - SocketMeister.SocketServer.MessageReceived
+  - SocketMeister.SocketServer.Start
+  - SocketMeister.SocketServer.Status
+  - SocketMeister.SocketServer.StatusChanged
+  - SocketMeister.SocketServer.Stop
+  - SocketMeister.SocketServer.TotalBytesReceived
+  - SocketMeister.SocketServer.TotalBytesSent
+  - SocketMeister.SocketServer.TotalMessagesReceived
+  - SocketMeister.SocketServer.TotalMessagesSent
+  langs:
+  - csharp
+  - vb
+  name: SocketServer
+  nameWithType: SocketServer
+  fullName: SocketMeister.SocketServer
+  type: Class
+  source:
+    remote:
+      path: src/SocketMeisterAPI/SocketServer.Events.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: SocketServer
+    path: src/SocketMeisterAPI/SocketServer.Events.cs
+    startLine: 8
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: TCP/IP socket server that listens for client connections and raises events when messages are received.
+  example: []
+  syntax:
+    content: 'public class SocketServer : IDisposable'
+    content.vb: Public Class SocketServer Implements IDisposable
+  inheritance:
+  - System.Object
+  implements:
+  - System.IDisposable
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: SocketMeister.SocketServer.ClientConnected
+  commentId: E:SocketMeister.SocketServer.ClientConnected
+  id: ClientConnected
+  parent: SocketMeister.SocketServer
+  langs:
+  - csharp
+  - vb
+  name: ClientConnected
+  nameWithType: SocketServer.ClientConnected
+  fullName: SocketMeister.SocketServer.ClientConnected
+  type: Event
+  source:
+    remote:
+      path: src/SocketMeisterAPI/SocketServer.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: ClientConnected
+    path: src/SocketMeisterAPI/SocketServer.cs
+    startLine: 45
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: Event raised when a client connects to the socket server. Raised on a separate thread.
+  example: []
+  syntax:
+    content: public event EventHandler<SocketServer.ClientEventArgs> ClientConnected
+    return:
+      type: System.EventHandler{SocketMeister.SocketServer.ClientEventArgs}
+    content.vb: Public Event ClientConnected As EventHandler(Of SocketServer.ClientEventArgs)
+  seealso:
+  - linkId: SocketMeister.SocketServer.ClientEventArgs
+    commentId: T:SocketMeister.SocketServer.ClientEventArgs
+- uid: SocketMeister.SocketServer.ClientDisconnected
+  commentId: E:SocketMeister.SocketServer.ClientDisconnected
+  id: ClientDisconnected
+  parent: SocketMeister.SocketServer
+  langs:
+  - csharp
+  - vb
+  name: ClientDisconnected
+  nameWithType: SocketServer.ClientDisconnected
+  fullName: SocketMeister.SocketServer.ClientDisconnected
+  type: Event
+  source:
+    remote:
+      path: src/SocketMeisterAPI/SocketServer.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: ClientDisconnected
+    path: src/SocketMeisterAPI/SocketServer.cs
+    startLine: 51
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: Event raised when a client disconnects from the socket server. Raised on a separate thread.
+  example: []
+  syntax:
+    content: public event EventHandler<SocketServer.ClientEventArgs> ClientDisconnected
+    return:
+      type: System.EventHandler{SocketMeister.SocketServer.ClientEventArgs}
+    content.vb: Public Event ClientDisconnected As EventHandler(Of SocketServer.ClientEventArgs)
+  seealso:
+  - linkId: SocketMeister.SocketServer.ClientEventArgs
+    commentId: T:SocketMeister.SocketServer.ClientEventArgs
+- uid: SocketMeister.SocketServer.LogRaised
+  commentId: E:SocketMeister.SocketServer.LogRaised
+  id: LogRaised
+  parent: SocketMeister.SocketServer
+  langs:
+  - csharp
+  - vb
+  name: LogRaised
+  nameWithType: SocketServer.LogRaised
+  fullName: SocketMeister.SocketServer.LogRaised
+  type: Event
+  source:
+    remote:
+      path: src/SocketMeisterAPI/SocketServer.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: LogRaised
+    path: src/SocketMeisterAPI/SocketServer.cs
+    startLine: 57
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: Event raised when a log event occurs.
+  example: []
+  syntax:
+    content: public event EventHandler<LogEventArgs> LogRaised
+    return:
+      type: System.EventHandler{SocketMeister.LogEventArgs}
+    content.vb: Public Event LogRaised As EventHandler(Of LogEventArgs)
+  seealso:
+  - linkId: SocketMeister.LogEventArgs
+    commentId: T:SocketMeister.LogEventArgs
+- uid: SocketMeister.SocketServer.MessageReceived
+  commentId: E:SocketMeister.SocketServer.MessageReceived
+  id: MessageReceived
+  parent: SocketMeister.SocketServer
+  langs:
+  - csharp
+  - vb
+  name: MessageReceived
+  nameWithType: SocketServer.MessageReceived
+  fullName: SocketMeister.SocketServer.MessageReceived
+  type: Event
+  source:
+    remote:
+      path: src/SocketMeisterAPI/SocketServer.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: MessageReceived
+    path: src/SocketMeisterAPI/SocketServer.cs
+    startLine: 63
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: Event raised when a message is received from a client. An optional response can be provided, which will be returned to the client. Raised on a separate thread.
+  example: []
+  syntax:
+    content: public event EventHandler<SocketServer.MessageReceivedEventArgs> MessageReceived
+    return:
+      type: System.EventHandler{SocketMeister.SocketServer.MessageReceivedEventArgs}
+    content.vb: Public Event MessageReceived As EventHandler(Of SocketServer.MessageReceivedEventArgs)
+  seealso:
+  - linkId: SocketMeister.SocketServer.MessageReceivedEventArgs
+    commentId: T:SocketMeister.SocketServer.MessageReceivedEventArgs
+- uid: SocketMeister.SocketServer.StatusChanged
+  commentId: E:SocketMeister.SocketServer.StatusChanged
+  id: StatusChanged
+  parent: SocketMeister.SocketServer
+  langs:
+  - csharp
+  - vb
+  name: StatusChanged
+  nameWithType: SocketServer.StatusChanged
+  fullName: SocketMeister.SocketServer.StatusChanged
+  type: Event
+  source:
+    remote:
+      path: src/SocketMeisterAPI/SocketServer.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: StatusChanged
+    path: src/SocketMeisterAPI/SocketServer.cs
+    startLine: 68
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: Event raised when the status of the socket listener changes. Raised on a separate thread.
+  example: []
+  syntax:
+    content: public event EventHandler<EventArgs> StatusChanged
+    return:
+      type: System.EventHandler{System.EventArgs}
+    content.vb: Public Event StatusChanged As EventHandler(Of EventArgs)
+- uid: SocketMeister.SocketServer.#ctor(System.Int32,System.Boolean)
+  commentId: M:SocketMeister.SocketServer.#ctor(System.Int32,System.Boolean)
+  id: '#ctor(System.Int32,System.Boolean)'
+  parent: SocketMeister.SocketServer
+  langs:
+  - csharp
+  - vb
+  name: SocketServer(int, bool)
+  nameWithType: SocketServer.SocketServer(int, bool)
+  fullName: SocketMeister.SocketServer.SocketServer(int, bool)
+  type: Constructor
+  source:
+    remote:
+      path: src/SocketMeisterAPI/SocketServer.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: .ctor
+    path: src/SocketMeisterAPI/SocketServer.cs
+    startLine: 77
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: Constructor.
+  example: []
+  syntax:
+    content: public SocketServer(int Port, bool CompressSentData)
+    parameters:
+    - id: Port
+      type: System.Int32
+      description: Port that this socket server will listen on.
+    - id: CompressSentData
+      type: System.Boolean
+      description: Enable compression on message data.
+    content.vb: Public Sub New(Port As Integer, CompressSentData As Boolean)
+  overload: SocketMeister.SocketServer.#ctor*
+  seealso:
+  - linkId: SocketMeister.SocketServer.Start
+    commentId: M:SocketMeister.SocketServer.Start
+  - linkId: SocketMeister.SocketServer.Stop
+    commentId: M:SocketMeister.SocketServer.Stop
+  nameWithType.vb: SocketServer.New(Integer, Boolean)
+  fullName.vb: SocketMeister.SocketServer.New(Integer, Boolean)
+  name.vb: New(Integer, Boolean)
+- uid: SocketMeister.SocketServer.Dispose
+  commentId: M:SocketMeister.SocketServer.Dispose
+  id: Dispose
+  parent: SocketMeister.SocketServer
+  langs:
+  - csharp
+  - vb
+  name: Dispose()
+  nameWithType: SocketServer.Dispose()
+  fullName: SocketMeister.SocketServer.Dispose()
+  type: Method
+  source:
+    remote:
+      path: src/SocketMeisterAPI/SocketServer.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: Dispose
+    path: src/SocketMeisterAPI/SocketServer.cs
+    startLine: 124
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: Disposes of the class.
+  example: []
+  syntax:
+    content: public void Dispose()
+    content.vb: Public Sub Dispose()
+  overload: SocketMeister.SocketServer.Dispose*
+  seealso:
+  - linkId: SocketMeister.SocketServer.Dispose(System.Boolean)
+    commentId: M:SocketMeister.SocketServer.Dispose(System.Boolean)
+  implements:
+  - System.IDisposable.Dispose
+- uid: SocketMeister.SocketServer.Dispose(System.Boolean)
+  commentId: M:SocketMeister.SocketServer.Dispose(System.Boolean)
+  id: Dispose(System.Boolean)
+  parent: SocketMeister.SocketServer
+  langs:
+  - csharp
+  - vb
+  name: Dispose(bool)
+  nameWithType: SocketServer.Dispose(bool)
+  fullName: SocketMeister.SocketServer.Dispose(bool)
+  type: Method
+  source:
+    remote:
+      path: src/SocketMeisterAPI/SocketServer.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: Dispose
+    path: src/SocketMeisterAPI/SocketServer.cs
+    startLine: 134
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: Disposes of the class.
+  example: []
+  syntax:
+    content: protected virtual void Dispose(bool disposing)
+    parameters:
+    - id: disposing
+      type: System.Boolean
+      description: Whether this is called from Dispose (true) or finalizer (false).
+    content.vb: Protected Overridable Sub Dispose(disposing As Boolean)
+  overload: SocketMeister.SocketServer.Dispose*
+  nameWithType.vb: SocketServer.Dispose(Boolean)
+  fullName.vb: SocketMeister.SocketServer.Dispose(Boolean)
+  name.vb: Dispose(Boolean)
+- uid: SocketMeister.SocketServer.Finalize
+  commentId: M:SocketMeister.SocketServer.Finalize
+  id: Finalize
+  parent: SocketMeister.SocketServer
+  langs:
+  - csharp
+  - vb
+  name: ~SocketServer()
+  nameWithType: SocketServer.~SocketServer()
+  fullName: SocketMeister.SocketServer.~SocketServer()
+  type: Method
+  source:
+    remote:
+      path: src/SocketMeisterAPI/SocketServer.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: Finalize
+    path: src/SocketMeisterAPI/SocketServer.cs
+    startLine: 151
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: Disposes of the class.
+  example: []
+  syntax:
+    content: protected ~SocketServer()
+    content.vb: 'Protected '
+  overload: SocketMeister.SocketServer.Finalize*
+  nameWithType.vb: ''
+  fullName.vb: ''
+  name.vb: ''
+- uid: SocketMeister.SocketServer.EndPoint
+  commentId: P:SocketMeister.SocketServer.EndPoint
+  id: EndPoint
+  parent: SocketMeister.SocketServer
+  langs:
+  - csharp
+  - vb
+  name: EndPoint
+  nameWithType: SocketServer.EndPoint
+  fullName: SocketMeister.SocketServer.EndPoint
+  type: Property
+  source:
+    remote:
+      path: src/SocketMeisterAPI/SocketServer.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: EndPoint
+    path: src/SocketMeisterAPI/SocketServer.cs
+    startLine: 161
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: The IP address and port that this socket server is using to communicate (e.g. 10.200.50.25:6000).
+  example: []
+  syntax:
+    content: public string EndPoint { get; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public ReadOnly Property EndPoint As String
+  overload: SocketMeister.SocketServer.EndPoint*
+- uid: SocketMeister.SocketServer.Status
+  commentId: P:SocketMeister.SocketServer.Status
+  id: Status
+  parent: SocketMeister.SocketServer
+  langs:
+  - csharp
+  - vb
+  name: Status
+  nameWithType: SocketServer.Status
+  fullName: SocketMeister.SocketServer.Status
+  type: Property
+  source:
+    remote:
+      path: src/SocketMeisterAPI/SocketServer.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: Status
+    path: src/SocketMeisterAPI/SocketServer.cs
+    startLine: 173
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: Current status of the SocketServer.
+  example: []
+  syntax:
+    content: public SocketServerStatus Status { get; }
+    parameters: []
+    return:
+      type: SocketMeister.SocketServerStatus
+    content.vb: Public Property Status As SocketServerStatus
+  overload: SocketMeister.SocketServer.Status*
+  seealso:
+  - linkId: SocketMeister.SocketServerStatus
+    commentId: T:SocketMeister.SocketServerStatus
+- uid: SocketMeister.SocketServer.TotalBytesReceived
+  commentId: P:SocketMeister.SocketServer.TotalBytesReceived
+  id: TotalBytesReceived
+  parent: SocketMeister.SocketServer
+  langs:
+  - csharp
+  - vb
+  name: TotalBytesReceived
+  nameWithType: SocketServer.TotalBytesReceived
+  fullName: SocketMeister.SocketServer.TotalBytesReceived
+  type: Property
+  source:
+    remote:
+      path: src/SocketMeisterAPI/SocketServer.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: TotalBytesReceived
+    path: src/SocketMeisterAPI/SocketServer.cs
+    startLine: 190
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: The total number of bytes that have been received through the socket server since it started.
+  example: []
+  syntax:
+    content: public long TotalBytesReceived { get; }
+    parameters: []
+    return:
+      type: System.Int64
+    content.vb: Public ReadOnly Property TotalBytesReceived As Long
+  overload: SocketMeister.SocketServer.TotalBytesReceived*
+- uid: SocketMeister.SocketServer.TotalBytesSent
+  commentId: P:SocketMeister.SocketServer.TotalBytesSent
+  id: TotalBytesSent
+  parent: SocketMeister.SocketServer
+  langs:
+  - csharp
+  - vb
+  name: TotalBytesSent
+  nameWithType: SocketServer.TotalBytesSent
+  fullName: SocketMeister.SocketServer.TotalBytesSent
+  type: Property
+  source:
+    remote:
+      path: src/SocketMeisterAPI/SocketServer.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: TotalBytesSent
+    path: src/SocketMeisterAPI/SocketServer.cs
+    startLine: 198
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: The total number of bytes that have been sent through the socket server since it started.
+  example: []
+  syntax:
+    content: public long TotalBytesSent { get; }
+    parameters: []
+    return:
+      type: System.Int64
+    content.vb: Public ReadOnly Property TotalBytesSent As Long
+  overload: SocketMeister.SocketServer.TotalBytesSent*
+- uid: SocketMeister.SocketServer.TotalMessagesSent
+  commentId: P:SocketMeister.SocketServer.TotalMessagesSent
+  id: TotalMessagesSent
+  parent: SocketMeister.SocketServer
+  langs:
+  - csharp
+  - vb
+  name: TotalMessagesSent
+  nameWithType: SocketServer.TotalMessagesSent
+  fullName: SocketMeister.SocketServer.TotalMessagesSent
+  type: Property
+  source:
+    remote:
+      path: src/SocketMeisterAPI/SocketServer.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: TotalMessagesSent
+    path: src/SocketMeisterAPI/SocketServer.cs
+    startLine: 203
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: The total number of messages that have been sent through the socket server since it started.
+  example: []
+  syntax:
+    content: public int TotalMessagesSent { get; }
+    parameters: []
+    return:
+      type: System.Int32
+    content.vb: Public ReadOnly Property TotalMessagesSent As Integer
+  overload: SocketMeister.SocketServer.TotalMessagesSent*
+- uid: SocketMeister.SocketServer.TotalMessagesReceived
+  commentId: P:SocketMeister.SocketServer.TotalMessagesReceived
+  id: TotalMessagesReceived
+  parent: SocketMeister.SocketServer
+  langs:
+  - csharp
+  - vb
+  name: TotalMessagesReceived
+  nameWithType: SocketServer.TotalMessagesReceived
+  fullName: SocketMeister.SocketServer.TotalMessagesReceived
+  type: Property
+  source:
+    remote:
+      path: src/SocketMeisterAPI/SocketServer.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: TotalMessagesReceived
+    path: src/SocketMeisterAPI/SocketServer.cs
+    startLine: 208
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: The total number of messages that have been received through the socket server since it started.
+  example: []
+  syntax:
+    content: public int TotalMessagesReceived { get; }
+    parameters: []
+    return:
+      type: System.Int32
+    content.vb: Public ReadOnly Property TotalMessagesReceived As Integer
+  overload: SocketMeister.SocketServer.TotalMessagesReceived*
+- uid: SocketMeister.SocketServer.Broadcast(System.String,System.Object[])
+  commentId: M:SocketMeister.SocketServer.Broadcast(System.String,System.Object[])
+  id: Broadcast(System.String,System.Object[])
+  parent: SocketMeister.SocketServer
+  langs:
+  - csharp
+  - vb
+  name: Broadcast(string, object[])
+  nameWithType: SocketServer.Broadcast(string, object[])
+  fullName: SocketMeister.SocketServer.Broadcast(string, object[])
+  type: Method
+  source:
+    remote:
+      path: src/SocketMeisterAPI/SocketServer.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: Broadcast
+    path: src/SocketMeisterAPI/SocketServer.cs
+    startLine: 226
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: Sends a message to all connected clients. Exceptions will not halt this process but will generate 'ExceptionRaised' events.
+  example: []
+  syntax:
+    content: public void Broadcast(string Name, object[] Parameters)
+    parameters:
+    - id: Name
+      type: System.String
+      description: Optional name/tag/identifier for the broadcast.
+    - id: Parameters
+      type: System.Object[]
+      description: Parameters to send with the message.
+    content.vb: Public Sub Broadcast(Name As String, Parameters As Object())
+  overload: SocketMeister.SocketServer.Broadcast*
+  seealso:
+  - linkId: SocketMeister.SocketServer.BroadcastToSubscribers(System.String,System.Object[])
+    commentId: M:SocketMeister.SocketServer.BroadcastToSubscribers(System.String,System.Object[])
+  nameWithType.vb: SocketServer.Broadcast(String, Object())
+  fullName.vb: SocketMeister.SocketServer.Broadcast(String, Object())
+  name.vb: Broadcast(String, Object())
+- uid: SocketMeister.SocketServer.BroadcastToSubscribers(System.String,System.Object[])
+  commentId: M:SocketMeister.SocketServer.BroadcastToSubscribers(System.String,System.Object[])
+  id: BroadcastToSubscribers(System.String,System.Object[])
+  parent: SocketMeister.SocketServer
+  langs:
+  - csharp
+  - vb
+  name: BroadcastToSubscribers(string, object[])
+  nameWithType: SocketServer.BroadcastToSubscribers(string, object[])
+  fullName: SocketMeister.SocketServer.BroadcastToSubscribers(string, object[])
+  type: Method
+  source:
+    remote:
+      path: src/SocketMeisterAPI/SocketServer.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: BroadcastToSubscribers
+    path: src/SocketMeisterAPI/SocketServer.cs
+    startLine: 249
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: Sends a message to all clients subscribing to a subscription name. Exceptions will not halt this process but will generate 'ExceptionRaised' events.
+  example: []
+  syntax:
+    content: public void BroadcastToSubscribers(string Name, object[] Parameters)
+    parameters:
+    - id: Name
+      type: System.String
+      description: Optional name/tag/identifier for the broadcast.
+    - id: Parameters
+      type: System.Object[]
+      description: Parameters to send with the message.
+    content.vb: Public Sub BroadcastToSubscribers(Name As String, Parameters As Object())
+  overload: SocketMeister.SocketServer.BroadcastToSubscribers*
+  seealso:
+  - linkId: SocketMeister.SocketServer.Broadcast(System.String,System.Object[])
+    commentId: M:SocketMeister.SocketServer.Broadcast(System.String,System.Object[])
+  nameWithType.vb: SocketServer.BroadcastToSubscribers(String, Object())
+  fullName.vb: SocketMeister.SocketServer.BroadcastToSubscribers(String, Object())
+  name.vb: BroadcastToSubscribers(String, Object())
+- uid: SocketMeister.SocketServer.ClientCount
+  commentId: P:SocketMeister.SocketServer.ClientCount
+  id: ClientCount
+  parent: SocketMeister.SocketServer
+  langs:
+  - csharp
+  - vb
+  name: ClientCount
+  nameWithType: SocketServer.ClientCount
+  fullName: SocketMeister.SocketServer.ClientCount
+  type: Property
+  source:
+    remote:
+      path: src/SocketMeisterAPI/SocketServer.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: ClientCount
+    path: src/SocketMeisterAPI/SocketServer.cs
+    startLine: 273
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: Gets the number of clients connected to the socket server.
+  example: []
+  syntax:
+    content: public int ClientCount { get; }
+    parameters: []
+    return:
+      type: System.Int32
+    content.vb: Public ReadOnly Property ClientCount As Integer
+  overload: SocketMeister.SocketServer.ClientCount*
+  seealso:
+  - linkId: SocketMeister.SocketServer.GetClients
+    commentId: M:SocketMeister.SocketServer.GetClients
+- uid: SocketMeister.SocketServer.DoSubscribersExist(System.String)
+  commentId: M:SocketMeister.SocketServer.DoSubscribersExist(System.String)
+  id: DoSubscribersExist(System.String)
+  parent: SocketMeister.SocketServer
+  langs:
+  - csharp
+  - vb
+  name: DoSubscribersExist(string)
+  nameWithType: SocketServer.DoSubscribersExist(string)
+  fullName: SocketMeister.SocketServer.DoSubscribersExist(string)
+  type: Method
+  source:
+    remote:
+      path: src/SocketMeisterAPI/SocketServer.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: DoSubscribersExist
+    path: src/SocketMeisterAPI/SocketServer.cs
+    startLine: 280
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: Determines whether there are any clients subscribing to a subscription name.
+  example: []
+  syntax:
+    content: public bool DoSubscribersExist(string SubscriptionName)
+    parameters:
+    - id: SubscriptionName
+      type: System.String
+      description: Name of the subscription (case-insensitive).
+    return:
+      type: System.Boolean
+      description: True if at least one client is subscribed to the given name; otherwise, false.
+    content.vb: Public Function DoSubscribersExist(SubscriptionName As String) As Boolean
+  overload: SocketMeister.SocketServer.DoSubscribersExist*
+  nameWithType.vb: SocketServer.DoSubscribersExist(String)
+  fullName.vb: SocketMeister.SocketServer.DoSubscribersExist(String)
+  name.vb: DoSubscribersExist(String)
+- uid: SocketMeister.SocketServer.GetClients
+  commentId: M:SocketMeister.SocketServer.GetClients
+  id: GetClients
+  parent: SocketMeister.SocketServer
+  langs:
+  - csharp
+  - vb
+  name: GetClients()
+  nameWithType: SocketServer.GetClients()
+  fullName: SocketMeister.SocketServer.GetClients()
+  type: Method
+  source:
+    remote:
+      path: src/SocketMeisterAPI/SocketServer.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: GetClients
+    path: src/SocketMeisterAPI/SocketServer.cs
+    startLine: 296
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: Returns a list of clients that are connected to the socket server.
+  example: []
+  syntax:
+    content: public List<SocketServer.Client> GetClients()
+    return:
+      type: System.Collections.Generic.List{SocketMeister.SocketServer.Client}
+      description: List of clients.
+    content.vb: Public Function GetClients() As List(Of SocketServer.Client)
+  overload: SocketMeister.SocketServer.GetClients*
+  seealso:
+  - linkId: SocketMeister.SocketServer.Client
+    commentId: T:SocketMeister.SocketServer.Client
+- uid: SocketMeister.SocketServer.Start
+  commentId: M:SocketMeister.SocketServer.Start
+  id: Start
+  parent: SocketMeister.SocketServer
+  langs:
+  - csharp
+  - vb
+  name: Start()
+  nameWithType: SocketServer.Start()
+  fullName: SocketMeister.SocketServer.Start()
+  type: Method
+  source:
+    remote:
+      path: src/SocketMeisterAPI/SocketServer.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: Start
+    path: src/SocketMeisterAPI/SocketServer.cs
+    startLine: 305
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: Starts the socket server, which begins listening for incoming connections.
+  example: []
+  syntax:
+    content: public void Start()
+    content.vb: Public Sub Start()
+  overload: SocketMeister.SocketServer.Start*
+  seealso:
+  - linkId: SocketMeister.SocketServer.Stop
+    commentId: M:SocketMeister.SocketServer.Stop
+- uid: SocketMeister.SocketServer.Stop
+  commentId: M:SocketMeister.SocketServer.Stop
+  id: Stop
+  parent: SocketMeister.SocketServer
+  langs:
+  - csharp
+  - vb
+  name: Stop()
+  nameWithType: SocketServer.Stop()
+  fullName: SocketMeister.SocketServer.Stop()
+  type: Method
+  source:
+    remote:
+      path: src/SocketMeisterAPI/SocketServer.cs
+      branch: main
+      repo: https://github.com/SeanFellowes/SocketMeister
+    id: Stop
+    path: src/SocketMeisterAPI/SocketServer.cs
+    startLine: 322
+  assemblies:
+  - SocketMeister
+  namespace: SocketMeister
+  summary: Sends a message to all clients to disconnect, waits for in-progress messages to finish, and then stops the socket server.
+  example: []
+  syntax:
+    content: public void Stop()
+    content.vb: Public Sub [Stop]()
+  overload: SocketMeister.SocketServer.Stop*
+  seealso:
+  - linkId: SocketMeister.SocketServer.Start
+    commentId: M:SocketMeister.SocketServer.Start
+references:
+- uid: SocketMeister
+  commentId: N:SocketMeister
+  href: SocketMeister.html
+  name: SocketMeister
+  nameWithType: SocketMeister
+  fullName: SocketMeister
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.IDisposable
+  commentId: T:System.IDisposable
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.idisposable
+  name: IDisposable
+  nameWithType: IDisposable
+  fullName: System.IDisposable
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.MemberwiseClone
+  commentId: M:System.Object.MemberwiseClone
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  name: MemberwiseClone()
+  nameWithType: object.MemberwiseClone()
+  fullName: object.MemberwiseClone()
+  nameWithType.vb: Object.MemberwiseClone()
+  fullName.vb: Object.MemberwiseClone()
+  spec.csharp:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: SocketMeister.SocketServer.ClientEventArgs
+  commentId: T:SocketMeister.SocketServer.ClientEventArgs
+  href: SocketMeister.SocketServer.html
+  name: SocketServer.ClientEventArgs
+  nameWithType: SocketServer.ClientEventArgs
+  fullName: SocketMeister.SocketServer.ClientEventArgs
+  spec.csharp:
+  - uid: SocketMeister.SocketServer
+    name: SocketServer
+    href: SocketMeister.SocketServer.html
+  - name: .
+  - uid: SocketMeister.SocketServer.ClientEventArgs
+    name: ClientEventArgs
+    href: SocketMeister.SocketServer.ClientEventArgs.html
+  spec.vb:
+  - uid: SocketMeister.SocketServer
+    name: SocketServer
+    href: SocketMeister.SocketServer.html
+  - name: .
+  - uid: SocketMeister.SocketServer.ClientEventArgs
+    name: ClientEventArgs
+    href: SocketMeister.SocketServer.ClientEventArgs.html
+- uid: System.EventHandler{SocketMeister.SocketServer.ClientEventArgs}
+  commentId: T:System.EventHandler{SocketMeister.SocketServer.ClientEventArgs}
+  parent: System
+  definition: System.EventHandler`1
+  href: https://learn.microsoft.com/dotnet/api/system.eventhandler-1
+  name: EventHandler<SocketServer.ClientEventArgs>
+  nameWithType: EventHandler<SocketServer.ClientEventArgs>
+  fullName: System.EventHandler<SocketMeister.SocketServer.ClientEventArgs>
+  nameWithType.vb: EventHandler(Of SocketServer.ClientEventArgs)
+  fullName.vb: System.EventHandler(Of SocketMeister.SocketServer.ClientEventArgs)
+  name.vb: EventHandler(Of SocketServer.ClientEventArgs)
+  spec.csharp:
+  - uid: System.EventHandler`1
+    name: EventHandler
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.eventhandler-1
+  - name: <
+  - uid: SocketMeister.SocketServer
+    name: SocketServer
+    href: SocketMeister.SocketServer.html
+  - name: .
+  - uid: SocketMeister.SocketServer.ClientEventArgs
+    name: ClientEventArgs
+    href: SocketMeister.SocketServer.ClientEventArgs.html
+  - name: '>'
+  spec.vb:
+  - uid: System.EventHandler`1
+    name: EventHandler
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.eventhandler-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: SocketMeister.SocketServer
+    name: SocketServer
+    href: SocketMeister.SocketServer.html
+  - name: .
+  - uid: SocketMeister.SocketServer.ClientEventArgs
+    name: ClientEventArgs
+    href: SocketMeister.SocketServer.ClientEventArgs.html
+  - name: )
+- uid: System.EventHandler`1
+  commentId: T:System.EventHandler`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.eventhandler-1
+  name: EventHandler<TEventArgs>
+  nameWithType: EventHandler<TEventArgs>
+  fullName: System.EventHandler<TEventArgs>
+  nameWithType.vb: EventHandler(Of TEventArgs)
+  fullName.vb: System.EventHandler(Of TEventArgs)
+  name.vb: EventHandler(Of TEventArgs)
+  spec.csharp:
+  - uid: System.EventHandler`1
+    name: EventHandler
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.eventhandler-1
+  - name: <
+  - name: TEventArgs
+  - name: '>'
+  spec.vb:
+  - uid: System.EventHandler`1
+    name: EventHandler
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.eventhandler-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: TEventArgs
+  - name: )
+- uid: SocketMeister.LogEventArgs
+  commentId: T:SocketMeister.LogEventArgs
+  href: SocketMeister.LogEventArgs.html
+  name: LogEventArgs
+  nameWithType: LogEventArgs
+  fullName: SocketMeister.LogEventArgs
+- uid: System.EventHandler{SocketMeister.LogEventArgs}
+  commentId: T:System.EventHandler{SocketMeister.LogEventArgs}
+  parent: System
+  definition: System.EventHandler`1
+  href: https://learn.microsoft.com/dotnet/api/system.eventhandler-1
+  name: EventHandler<LogEventArgs>
+  nameWithType: EventHandler<LogEventArgs>
+  fullName: System.EventHandler<SocketMeister.LogEventArgs>
+  nameWithType.vb: EventHandler(Of LogEventArgs)
+  fullName.vb: System.EventHandler(Of SocketMeister.LogEventArgs)
+  name.vb: EventHandler(Of LogEventArgs)
+  spec.csharp:
+  - uid: System.EventHandler`1
+    name: EventHandler
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.eventhandler-1
+  - name: <
+  - uid: SocketMeister.LogEventArgs
+    name: LogEventArgs
+    href: SocketMeister.LogEventArgs.html
+  - name: '>'
+  spec.vb:
+  - uid: System.EventHandler`1
+    name: EventHandler
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.eventhandler-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: SocketMeister.LogEventArgs
+    name: LogEventArgs
+    href: SocketMeister.LogEventArgs.html
+  - name: )
+- uid: SocketMeister.SocketServer.MessageReceivedEventArgs
+  commentId: T:SocketMeister.SocketServer.MessageReceivedEventArgs
+  href: SocketMeister.SocketServer.html
+  name: SocketServer.MessageReceivedEventArgs
+  nameWithType: SocketServer.MessageReceivedEventArgs
+  fullName: SocketMeister.SocketServer.MessageReceivedEventArgs
+  spec.csharp:
+  - uid: SocketMeister.SocketServer
+    name: SocketServer
+    href: SocketMeister.SocketServer.html
+  - name: .
+  - uid: SocketMeister.SocketServer.MessageReceivedEventArgs
+    name: MessageReceivedEventArgs
+    href: SocketMeister.SocketServer.MessageReceivedEventArgs.html
+  spec.vb:
+  - uid: SocketMeister.SocketServer
+    name: SocketServer
+    href: SocketMeister.SocketServer.html
+  - name: .
+  - uid: SocketMeister.SocketServer.MessageReceivedEventArgs
+    name: MessageReceivedEventArgs
+    href: SocketMeister.SocketServer.MessageReceivedEventArgs.html
+- uid: System.EventHandler{SocketMeister.SocketServer.MessageReceivedEventArgs}
+  commentId: T:System.EventHandler{SocketMeister.SocketServer.MessageReceivedEventArgs}
+  parent: System
+  definition: System.EventHandler`1
+  href: https://learn.microsoft.com/dotnet/api/system.eventhandler-1
+  name: EventHandler<SocketServer.MessageReceivedEventArgs>
+  nameWithType: EventHandler<SocketServer.MessageReceivedEventArgs>
+  fullName: System.EventHandler<SocketMeister.SocketServer.MessageReceivedEventArgs>
+  nameWithType.vb: EventHandler(Of SocketServer.MessageReceivedEventArgs)
+  fullName.vb: System.EventHandler(Of SocketMeister.SocketServer.MessageReceivedEventArgs)
+  name.vb: EventHandler(Of SocketServer.MessageReceivedEventArgs)
+  spec.csharp:
+  - uid: System.EventHandler`1
+    name: EventHandler
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.eventhandler-1
+  - name: <
+  - uid: SocketMeister.SocketServer
+    name: SocketServer
+    href: SocketMeister.SocketServer.html
+  - name: .
+  - uid: SocketMeister.SocketServer.MessageReceivedEventArgs
+    name: MessageReceivedEventArgs
+    href: SocketMeister.SocketServer.MessageReceivedEventArgs.html
+  - name: '>'
+  spec.vb:
+  - uid: System.EventHandler`1
+    name: EventHandler
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.eventhandler-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: SocketMeister.SocketServer
+    name: SocketServer
+    href: SocketMeister.SocketServer.html
+  - name: .
+  - uid: SocketMeister.SocketServer.MessageReceivedEventArgs
+    name: MessageReceivedEventArgs
+    href: SocketMeister.SocketServer.MessageReceivedEventArgs.html
+  - name: )
+- uid: System.EventHandler{System.EventArgs}
+  commentId: T:System.EventHandler{System.EventArgs}
+  parent: System
+  definition: System.EventHandler`1
+  href: https://learn.microsoft.com/dotnet/api/system.eventhandler-1
+  name: EventHandler<EventArgs>
+  nameWithType: EventHandler<EventArgs>
+  fullName: System.EventHandler<System.EventArgs>
+  nameWithType.vb: EventHandler(Of EventArgs)
+  fullName.vb: System.EventHandler(Of System.EventArgs)
+  name.vb: EventHandler(Of EventArgs)
+  spec.csharp:
+  - uid: System.EventHandler`1
+    name: EventHandler
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.eventhandler-1
+  - name: <
+  - uid: System.EventArgs
+    name: EventArgs
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.eventargs
+  - name: '>'
+  spec.vb:
+  - uid: System.EventHandler`1
+    name: EventHandler
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.eventhandler-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: System.EventArgs
+    name: EventArgs
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.eventargs
+  - name: )
+- uid: SocketMeister.SocketServer.Start
+  commentId: M:SocketMeister.SocketServer.Start
+  href: SocketMeister.SocketServer.html#SocketMeister_SocketServer_Start
+  name: Start()
+  nameWithType: SocketServer.Start()
+  fullName: SocketMeister.SocketServer.Start()
+  spec.csharp:
+  - uid: SocketMeister.SocketServer.Start
+    name: Start
+    href: SocketMeister.SocketServer.html#SocketMeister_SocketServer_Start
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: SocketMeister.SocketServer.Start
+    name: Start
+    href: SocketMeister.SocketServer.html#SocketMeister_SocketServer_Start
+  - name: (
+  - name: )
+- uid: SocketMeister.SocketServer.Stop
+  commentId: M:SocketMeister.SocketServer.Stop
+  href: SocketMeister.SocketServer.html#SocketMeister_SocketServer_Stop
+  name: Stop()
+  nameWithType: SocketServer.Stop()
+  fullName: SocketMeister.SocketServer.Stop()
+  spec.csharp:
+  - uid: SocketMeister.SocketServer.Stop
+    name: Stop
+    href: SocketMeister.SocketServer.html#SocketMeister_SocketServer_Stop
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: SocketMeister.SocketServer.Stop
+    name: Stop
+    href: SocketMeister.SocketServer.html#SocketMeister_SocketServer_Stop
+  - name: (
+  - name: )
+- uid: SocketMeister.SocketServer.#ctor*
+  commentId: Overload:SocketMeister.SocketServer.#ctor
+  href: SocketMeister.SocketServer.html#SocketMeister_SocketServer__ctor_System_Int32_System_Boolean_
+  name: SocketServer
+  nameWithType: SocketServer.SocketServer
+  fullName: SocketMeister.SocketServer.SocketServer
+  nameWithType.vb: SocketServer.New
+  fullName.vb: SocketMeister.SocketServer.New
+  name.vb: New
+- uid: System.Int32
+  commentId: T:System.Int32
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.int32
+  name: int
+  nameWithType: int
+  fullName: int
+  nameWithType.vb: Integer
+  fullName.vb: Integer
+  name.vb: Integer
+- uid: System.Boolean
+  commentId: T:System.Boolean
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.boolean
+  name: bool
+  nameWithType: bool
+  fullName: bool
+  nameWithType.vb: Boolean
+  fullName.vb: Boolean
+  name.vb: Boolean
+- uid: SocketMeister.SocketServer.Dispose(System.Boolean)
+  commentId: M:SocketMeister.SocketServer.Dispose(System.Boolean)
+  isExternal: true
+  href: SocketMeister.SocketServer.html#SocketMeister_SocketServer_Dispose_System_Boolean_
+  name: Dispose(bool)
+  nameWithType: SocketServer.Dispose(bool)
+  fullName: SocketMeister.SocketServer.Dispose(bool)
+  nameWithType.vb: SocketServer.Dispose(Boolean)
+  fullName.vb: SocketMeister.SocketServer.Dispose(Boolean)
+  name.vb: Dispose(Boolean)
+  spec.csharp:
+  - uid: SocketMeister.SocketServer.Dispose(System.Boolean)
+    name: Dispose
+    href: SocketMeister.SocketServer.html#SocketMeister_SocketServer_Dispose_System_Boolean_
+  - name: (
+  - uid: System.Boolean
+    name: bool
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.boolean
+  - name: )
+  spec.vb:
+  - uid: SocketMeister.SocketServer.Dispose(System.Boolean)
+    name: Dispose
+    href: SocketMeister.SocketServer.html#SocketMeister_SocketServer_Dispose_System_Boolean_
+  - name: (
+  - uid: System.Boolean
+    name: Boolean
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.boolean
+  - name: )
+- uid: SocketMeister.SocketServer.Dispose*
+  commentId: Overload:SocketMeister.SocketServer.Dispose
+  href: SocketMeister.SocketServer.html#SocketMeister_SocketServer_Dispose
+  name: Dispose
+  nameWithType: SocketServer.Dispose
+  fullName: SocketMeister.SocketServer.Dispose
+- uid: System.IDisposable.Dispose
+  commentId: M:System.IDisposable.Dispose
+  parent: System.IDisposable
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.idisposable.dispose
+  name: Dispose()
+  nameWithType: IDisposable.Dispose()
+  fullName: System.IDisposable.Dispose()
+  spec.csharp:
+  - uid: System.IDisposable.Dispose
+    name: Dispose
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.idisposable.dispose
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.IDisposable.Dispose
+    name: Dispose
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.idisposable.dispose
+  - name: (
+  - name: )
+- uid: SocketMeister.SocketServer.Finalize*
+  commentId: Overload:SocketMeister.SocketServer.Finalize
+  href: SocketMeister.SocketServer.html#SocketMeister_SocketServer_Finalize
+  name: ~SocketServer
+  nameWithType: SocketServer.~SocketServer
+  fullName: SocketMeister.SocketServer.~SocketServer
+  spec.csharp:
+  - name: "~"
+  - uid: SocketMeister.SocketServer.Finalize*
+    name: SocketServer
+    href: SocketMeister.SocketServer.html#SocketMeister_SocketServer_Finalize
+- uid: SocketMeister.SocketServer.EndPoint*
+  commentId: Overload:SocketMeister.SocketServer.EndPoint
+  href: SocketMeister.SocketServer.html#SocketMeister_SocketServer_EndPoint
+  name: EndPoint
+  nameWithType: SocketServer.EndPoint
+  fullName: SocketMeister.SocketServer.EndPoint
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.string
+  name: string
+  nameWithType: string
+  fullName: string
+  nameWithType.vb: String
+  fullName.vb: String
+  name.vb: String
+- uid: SocketMeister.SocketServerStatus
+  commentId: T:SocketMeister.SocketServerStatus
+  parent: SocketMeister
+  href: SocketMeister.SocketServerStatus.html
+  name: SocketServerStatus
+  nameWithType: SocketServerStatus
+  fullName: SocketMeister.SocketServerStatus
+- uid: SocketMeister.SocketServer.Status*
+  commentId: Overload:SocketMeister.SocketServer.Status
+  href: SocketMeister.SocketServer.html#SocketMeister_SocketServer_Status
+  name: Status
+  nameWithType: SocketServer.Status
+  fullName: SocketMeister.SocketServer.Status
+- uid: SocketMeister.SocketServer.TotalBytesReceived*
+  commentId: Overload:SocketMeister.SocketServer.TotalBytesReceived
+  href: SocketMeister.SocketServer.html#SocketMeister_SocketServer_TotalBytesReceived
+  name: TotalBytesReceived
+  nameWithType: SocketServer.TotalBytesReceived
+  fullName: SocketMeister.SocketServer.TotalBytesReceived
+- uid: System.Int64
+  commentId: T:System.Int64
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.int64
+  name: long
+  nameWithType: long
+  fullName: long
+  nameWithType.vb: Long
+  fullName.vb: Long
+  name.vb: Long
+- uid: SocketMeister.SocketServer.TotalBytesSent*
+  commentId: Overload:SocketMeister.SocketServer.TotalBytesSent
+  href: SocketMeister.SocketServer.html#SocketMeister_SocketServer_TotalBytesSent
+  name: TotalBytesSent
+  nameWithType: SocketServer.TotalBytesSent
+  fullName: SocketMeister.SocketServer.TotalBytesSent
+- uid: SocketMeister.SocketServer.TotalMessagesSent*
+  commentId: Overload:SocketMeister.SocketServer.TotalMessagesSent
+  href: SocketMeister.SocketServer.html#SocketMeister_SocketServer_TotalMessagesSent
+  name: TotalMessagesSent
+  nameWithType: SocketServer.TotalMessagesSent
+  fullName: SocketMeister.SocketServer.TotalMessagesSent
+- uid: SocketMeister.SocketServer.TotalMessagesReceived*
+  commentId: Overload:SocketMeister.SocketServer.TotalMessagesReceived
+  href: SocketMeister.SocketServer.html#SocketMeister_SocketServer_TotalMessagesReceived
+  name: TotalMessagesReceived
+  nameWithType: SocketServer.TotalMessagesReceived
+  fullName: SocketMeister.SocketServer.TotalMessagesReceived
+- uid: SocketMeister.SocketServer.BroadcastToSubscribers(System.String,System.Object[])
+  commentId: M:SocketMeister.SocketServer.BroadcastToSubscribers(System.String,System.Object[])
+  isExternal: true
+  href: SocketMeister.SocketServer.html#SocketMeister_SocketServer_BroadcastToSubscribers_System_String_System_Object___
+  name: BroadcastToSubscribers(string, object[])
+  nameWithType: SocketServer.BroadcastToSubscribers(string, object[])
+  fullName: SocketMeister.SocketServer.BroadcastToSubscribers(string, object[])
+  nameWithType.vb: SocketServer.BroadcastToSubscribers(String, Object())
+  fullName.vb: SocketMeister.SocketServer.BroadcastToSubscribers(String, Object())
+  name.vb: BroadcastToSubscribers(String, Object())
+  spec.csharp:
+  - uid: SocketMeister.SocketServer.BroadcastToSubscribers(System.String,System.Object[])
+    name: BroadcastToSubscribers
+    href: SocketMeister.SocketServer.html#SocketMeister_SocketServer_BroadcastToSubscribers_System_String_System_Object___
+  - name: (
+  - uid: System.String
+    name: string
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: '['
+  - name: ']'
+  - name: )
+  spec.vb:
+  - uid: SocketMeister.SocketServer.BroadcastToSubscribers(System.String,System.Object[])
+    name: BroadcastToSubscribers
+    href: SocketMeister.SocketServer.html#SocketMeister_SocketServer_BroadcastToSubscribers_System_String_System_Object___
+  - name: (
+  - uid: System.String
+    name: String
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: (
+  - name: )
+  - name: )
+- uid: SocketMeister.SocketServer.Broadcast*
+  commentId: Overload:SocketMeister.SocketServer.Broadcast
+  href: SocketMeister.SocketServer.html#SocketMeister_SocketServer_Broadcast_System_String_System_Object___
+  name: Broadcast
+  nameWithType: SocketServer.Broadcast
+  fullName: SocketMeister.SocketServer.Broadcast
+- uid: System.Object[]
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object[]
+  nameWithType: object[]
+  fullName: object[]
+  nameWithType.vb: Object()
+  fullName.vb: Object()
+  name.vb: Object()
+  spec.csharp:
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: '['
+  - name: ']'
+  spec.vb:
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: (
+  - name: )
+- uid: SocketMeister.SocketServer.Broadcast(System.String,System.Object[])
+  commentId: M:SocketMeister.SocketServer.Broadcast(System.String,System.Object[])
+  isExternal: true
+  href: SocketMeister.SocketServer.html#SocketMeister_SocketServer_Broadcast_System_String_System_Object___
+  name: Broadcast(string, object[])
+  nameWithType: SocketServer.Broadcast(string, object[])
+  fullName: SocketMeister.SocketServer.Broadcast(string, object[])
+  nameWithType.vb: SocketServer.Broadcast(String, Object())
+  fullName.vb: SocketMeister.SocketServer.Broadcast(String, Object())
+  name.vb: Broadcast(String, Object())
+  spec.csharp:
+  - uid: SocketMeister.SocketServer.Broadcast(System.String,System.Object[])
+    name: Broadcast
+    href: SocketMeister.SocketServer.html#SocketMeister_SocketServer_Broadcast_System_String_System_Object___
+  - name: (
+  - uid: System.String
+    name: string
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: '['
+  - name: ']'
+  - name: )
+  spec.vb:
+  - uid: SocketMeister.SocketServer.Broadcast(System.String,System.Object[])
+    name: Broadcast
+    href: SocketMeister.SocketServer.html#SocketMeister_SocketServer_Broadcast_System_String_System_Object___
+  - name: (
+  - uid: System.String
+    name: String
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: (
+  - name: )
+  - name: )
+- uid: SocketMeister.SocketServer.BroadcastToSubscribers*
+  commentId: Overload:SocketMeister.SocketServer.BroadcastToSubscribers
+  href: SocketMeister.SocketServer.html#SocketMeister_SocketServer_BroadcastToSubscribers_System_String_System_Object___
+  name: BroadcastToSubscribers
+  nameWithType: SocketServer.BroadcastToSubscribers
+  fullName: SocketMeister.SocketServer.BroadcastToSubscribers
+- uid: SocketMeister.SocketServer.GetClients
+  commentId: M:SocketMeister.SocketServer.GetClients
+  href: SocketMeister.SocketServer.html#SocketMeister_SocketServer_GetClients
+  name: GetClients()
+  nameWithType: SocketServer.GetClients()
+  fullName: SocketMeister.SocketServer.GetClients()
+  spec.csharp:
+  - uid: SocketMeister.SocketServer.GetClients
+    name: GetClients
+    href: SocketMeister.SocketServer.html#SocketMeister_SocketServer_GetClients
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: SocketMeister.SocketServer.GetClients
+    name: GetClients
+    href: SocketMeister.SocketServer.html#SocketMeister_SocketServer_GetClients
+  - name: (
+  - name: )
+- uid: SocketMeister.SocketServer.ClientCount*
+  commentId: Overload:SocketMeister.SocketServer.ClientCount
+  href: SocketMeister.SocketServer.html#SocketMeister_SocketServer_ClientCount
+  name: ClientCount
+  nameWithType: SocketServer.ClientCount
+  fullName: SocketMeister.SocketServer.ClientCount
+- uid: SocketMeister.SocketServer.DoSubscribersExist*
+  commentId: Overload:SocketMeister.SocketServer.DoSubscribersExist
+  href: SocketMeister.SocketServer.html#SocketMeister_SocketServer_DoSubscribersExist_System_String_
+  name: DoSubscribersExist
+  nameWithType: SocketServer.DoSubscribersExist
+  fullName: SocketMeister.SocketServer.DoSubscribersExist
+- uid: SocketMeister.SocketServer.Client
+  commentId: T:SocketMeister.SocketServer.Client
+  parent: SocketMeister
+  href: SocketMeister.SocketServer.html
+  name: SocketServer.Client
+  nameWithType: SocketServer.Client
+  fullName: SocketMeister.SocketServer.Client
+  spec.csharp:
+  - uid: SocketMeister.SocketServer
+    name: SocketServer
+    href: SocketMeister.SocketServer.html
+  - name: .
+  - uid: SocketMeister.SocketServer.Client
+    name: Client
+    href: SocketMeister.SocketServer.Client.html
+  spec.vb:
+  - uid: SocketMeister.SocketServer
+    name: SocketServer
+    href: SocketMeister.SocketServer.html
+  - name: .
+  - uid: SocketMeister.SocketServer.Client
+    name: Client
+    href: SocketMeister.SocketServer.Client.html
+- uid: SocketMeister.SocketServer.GetClients*
+  commentId: Overload:SocketMeister.SocketServer.GetClients
+  href: SocketMeister.SocketServer.html#SocketMeister_SocketServer_GetClients
+  name: GetClients
+  nameWithType: SocketServer.GetClients
+  fullName: SocketMeister.SocketServer.GetClients
+- uid: System.Collections.Generic.List{SocketMeister.SocketServer.Client}
+  commentId: T:System.Collections.Generic.List{SocketMeister.SocketServer.Client}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.List`1
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  name: List<SocketServer.Client>
+  nameWithType: List<SocketServer.Client>
+  fullName: System.Collections.Generic.List<SocketMeister.SocketServer.Client>
+  nameWithType.vb: List(Of SocketServer.Client)
+  fullName.vb: System.Collections.Generic.List(Of SocketMeister.SocketServer.Client)
+  name.vb: List(Of SocketServer.Client)
+  spec.csharp:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: <
+  - uid: SocketMeister.SocketServer
+    name: SocketServer
+    href: SocketMeister.SocketServer.html
+  - name: .
+  - uid: SocketMeister.SocketServer.Client
+    name: Client
+    href: SocketMeister.SocketServer.Client.html
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: SocketMeister.SocketServer
+    name: SocketServer
+    href: SocketMeister.SocketServer.html
+  - name: .
+  - uid: SocketMeister.SocketServer.Client
+    name: Client
+    href: SocketMeister.SocketServer.Client.html
+  - name: )
+- uid: System.Collections.Generic.List`1
+  commentId: T:System.Collections.Generic.List`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  name: List<T>
+  nameWithType: List<T>
+  fullName: System.Collections.Generic.List<T>
+  nameWithType.vb: List(Of T)
+  fullName.vb: System.Collections.Generic.List(Of T)
+  name.vb: List(Of T)
+  spec.csharp:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+- uid: System.Collections.Generic
+  commentId: N:System.Collections.Generic
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Collections.Generic
+  nameWithType: System.Collections.Generic
+  fullName: System.Collections.Generic
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Collections
+    name: Collections
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections
+  - name: .
+  - uid: System.Collections.Generic
+    name: Generic
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Collections
+    name: Collections
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections
+  - name: .
+  - uid: System.Collections.Generic
+    name: Generic
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic
+- uid: SocketMeister.SocketServer.Start*
+  commentId: Overload:SocketMeister.SocketServer.Start
+  href: SocketMeister.SocketServer.html#SocketMeister_SocketServer_Start
+  name: Start
+  nameWithType: SocketServer.Start
+  fullName: SocketMeister.SocketServer.Start
+- uid: SocketMeister.SocketServer.Stop*
+  commentId: Overload:SocketMeister.SocketServer.Stop
+  href: SocketMeister.SocketServer.html#SocketMeister_SocketServer_Stop
+  name: Stop
+  nameWithType: SocketServer.Stop
+  fullName: SocketMeister.SocketServer.Stop

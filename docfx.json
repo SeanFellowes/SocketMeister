@@ -5,8 +5,7 @@
     {
       "src": [
         {
-          "files": [ "src/SocketMeisterAPI/SocketMeisterAPI.csproj" ],
-          "exclude": [ "**/bin/**", "**/obj/**" ]
+          "files": ["src/SocketMeisterAPI/SocketMeisterAPI.csproj"]
         }
       ],
       "dest": "api"
@@ -15,16 +14,17 @@
 
   "build": {
     "content": [
-      { "src": ".",            "files": [ "README.md" ] },
-      { "src": "docs",         "files": [ "**/*.md", "toc.yml" ],
+      { "src": ".",            "files": [ "README.md", "toc.yml" ] },
+      { "src": "docs",         "files": [ "**/*.md" ],
                                 "exclude": [ "obj/**" ] },
-      { "src": "api",          "files": [ "**/*.yml", "toc.yml" ] }
+      { "src": "api",          "files": [ "**/*.yml", "toc.yml" ],
+      "exclude": [ "toc.yml" ] }
     ],
     "resource": [
       { "src": "docs",         "files": [ "**/images/**" ] }
     ],
     "output": "_site",
-    "template": [ "default", "statictoc" ],
+    "template": [ "default", "modern" ],
     "globalMetadata": {
       "_appName": "SocketMeister",
       "_appTitle": "SocketMeister Documentation",
