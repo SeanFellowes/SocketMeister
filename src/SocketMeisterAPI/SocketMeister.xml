@@ -410,8 +410,12 @@
         </member>
         <member name="T:SocketMeister.ExceptionEventArgs">
             <summary>
-            Provides details about an exception that occurred.
+            <para>Provides details about an exception that occurred.</para>
+            <para><strong>Obsolete:</strong> This class will be removed in a future release.</para>
             </summary>
+            <remarks>
+            Marked obsolete in v10.2.5; scheduled for removal in v11.0.0
+            </remarks>
         </member>
         <member name="M:SocketMeister.ExceptionEventArgs.#ctor(System.Exception,System.Int32)">
             <summary>
@@ -1158,8 +1162,13 @@
         </member>
         <member name="E:SocketMeister.SocketClient.ExceptionRaised">
             <summary>
-            Event raised when an exception occurs.
+            <para>Event raised when an exception occurs.</para>
+            <para><strong>Obsolete:</strong> This class will be removed in a future release.  
+            Use the <see cref="E:SocketMeister.SocketClient.LogRaised"/> event instead.</para>
             </summary>
+            <remarks>
+            Marked obsolete in v10.2.5; scheduled for removal in v11.0.0.
+            </remarks>
         </member>
         <member name="E:SocketMeister.SocketClient.MessageReceived">
             <summary>
@@ -1833,7 +1842,7 @@
         </member>
         <member name="T:SocketMeister.SocketServer.ClientEventArgs">
             <summary>
-            Provides information for client-specific events.
+            Information about a remoate client which connects or disconnects from the SocketServer.
             </summary>
         </member>
         <member name="P:SocketMeister.SocketServer.ClientEventArgs.Client">

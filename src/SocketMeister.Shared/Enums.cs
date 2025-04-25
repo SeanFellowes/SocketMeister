@@ -254,7 +254,7 @@ namespace SocketMeister
 
 
     /// <summary>
-    /// The execution status of a service.
+    /// The execution status of a SocketServer.
     /// </summary>
 #if SMISPUBLIC
     public enum SocketServerStatus

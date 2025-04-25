@@ -12,7 +12,7 @@ namespace SocketMeister
 #endif
     {
         /// <summary>
-        /// Provides information for client-specific events.
+        /// Information about a remoate client which connects or disconnects from the SocketServer.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Will be resolved in a future version")]
         public class ClientEventArgs : EventArgs

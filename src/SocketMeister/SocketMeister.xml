@@ -410,8 +410,12 @@
         </member>
         <member name="T:SocketMeister.ExceptionEventArgs">
             <summary>
-            Provides details about an exception that occurred.
+            <para>Provides details about an exception that occurred.</para>
+            <para><strong>Obsolete:</strong> This class will be removed in a future release.</para>
             </summary>
+            <remarks>
+            Marked obsolete in v10.2.5; scheduled for removal in v11.0.0
+            </remarks>
         </member>
         <member name="M:SocketMeister.ExceptionEventArgs.#ctor(System.Exception,System.Int32)">
             <summary>
@@ -989,20 +993,7 @@
             Message constructor
             </summary>
             <param name="Parameters">Array of parameters to send with the message. There must be at least 1 parameter.</param>
-            <param name="TimeoutMilliseconds">The maximum number of milliseconds to wait for a response before timing out.</param>
-            <param name="IsLongPolling">The maximum number of milliseconds to wait for a response before timing out.</param>
-        </member>
-        <member name="P:SocketMeister.Messages.MessageV1.Parameters">
-            <summary>
-            Parameters provided with this message
-            </summary>
-        </member>
-        <member name="P:SocketMeister.Messages.MessageV1.IsLongPolling">
-            <summary>
-            True is this message is long polling on the server side. Long polling messages will be closed immediately in the event of a close from either the client or server side.
-            </summary>
-        </member>
-        <member name="T:SocketMeister.Messages.PollingRequestV1">
+            <param name="TimeoutMilliseconds">The maximum number of milliseconds to wait for a response before timing out.</par>
             <summary>
             Internal Message: Socket client regulary sends a poll request to the server to check that the server is alive.
             </summary>
@@ -1071,6 +1062,21 @@
             <summary>Int32</summary>
         </member>
         <member name="F:SocketMeister.Serializer.ParameterType.Int64Param">
+            <summary>Int64</summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.UInt16Param">
+            <summary>Unsigned Int16</summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.UInt32Param">
+            <summary>Unsigned Int32</summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.UInt64Param">
+            <summary>Unsigned Int64</summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.StringParam">
+            <summary>String</summary>
+        </member>
+        <member name="F:SocketMeister.Sere="F:SocketMeister.Serializer.ParameterType.Int64Param">
             <summary>Int64</summary>
         </member>
         <member name="F:SocketMeister.Serializer.ParameterType.UInt16Param">
@@ -1158,8 +1164,13 @@
         </member>
         <member name="E:SocketMeister.SocketClient.ExceptionRaised">
             <summary>
-            Event raised when an exception occurs.
+            <para>Event raised when an exception occurs.</para>
+            <para><strong>Obsolete:</strong> This class will be removed in a future release.  
+            Use the <see cref="E:SocketMeister.SocketClient.LogRaised"/> event instead.</para>
             </summary>
+            <remarks>
+            Marked obsolete in v10.2.5; scheduled for removal in v11.0.0.
+            </remarks>
         </member>
         <member name="E:SocketMeister.SocketClient.MessageReceived">
             <summary>
@@ -1833,7 +1844,7 @@
         </member>
         <member name="T:SocketMeister.SocketServer.ClientEventArgs">
             <summary>
-            Provides information for client-specific events.
+            Information about a remoate client which connects or disconnects from the SocketServer.
             </summary>
         </member>
         <member name="P:SocketMeister.SocketServer.ClientEventArgs.Client">

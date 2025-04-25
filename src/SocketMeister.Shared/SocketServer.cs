@@ -251,7 +251,7 @@ namespace SocketMeister
         {
             if (string.IsNullOrEmpty(Name) == true) throw new ArgumentNullException(nameof(Name));
 
-            BroadcastV1 message = null;
+            BroadcastV1 message;
             List<Client> clients = _connectedClients.GetClientsWithSubscriptions(Name);
             foreach (Client client in clients)
             {
