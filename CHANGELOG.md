@@ -2,9 +2,20 @@ Changelog
 
 All notable changes to SocketMeister are documented in this file.The project follows Semantic Versioning and the format is inspired by Keep a Changelog.
 
-[Unreleased]
+[10.2.5]
 
-Nothing yet
+Fixed
+
+Bug in .NET 3.5 where SocketClient would not reconnect ofter more than one failover 
+to another SocketServer.
+
+Changed
+
+Marked obsolete - SocketClient.ExceptionRaised event
+
+Marked obsolete - ExceptionEventArgs, SocketClient.ExceptionRaised event.
+
+Token class now Internal, not Public
 
 [10.2.4] - 2025‑04‑19
 
