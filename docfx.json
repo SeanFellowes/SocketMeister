@@ -13,7 +13,7 @@
         }
       ],
       "dest": "api",
-    "filter": "filter.yml"
+
     }
   ],
 
