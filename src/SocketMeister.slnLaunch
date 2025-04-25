@@ -17,7 +17,7 @@
     "Projects": [
       {
         "Path": "SocketMeister.MiniTestServer\\SocketMeister.MiniTestServer.csproj",
-        "Action": "Start"
+        "Action": "StartWithoutDebugging"
       },
       {
         "Path": "SocketMeister.MiniTestClient (.NET 3.5)\\SocketMeister.MiniTestClient (.NET 3.5).csproj",

@@ -11,7 +11,7 @@
     <Company />
     <Product>SocketMeister</Product>
     <Copyright>Copyright © 2024</Copyright>
-    <Configurations>Debug;Release;DocumentApi</Configurations>
+    <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
 
   <ItemGroup>

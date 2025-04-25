@@ -35,7 +35,7 @@
 
 		<!-- Icon -->
 		<PackageIcon>icon_128.png</PackageIcon>
-		<Configurations>Debug;Release;DocumentApi</Configurations>
+		<Configurations>Debug;Release</Configurations>
 
 		<!-- Self-contained is not needed for libraries -->
 	</PropertyGroup>

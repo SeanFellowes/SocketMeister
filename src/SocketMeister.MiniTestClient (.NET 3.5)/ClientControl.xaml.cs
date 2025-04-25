@@ -208,7 +208,6 @@ namespace SocketMeister.MiniTestClient
             _client = new SocketClient(eps, true, "Client " + ClientId);
             _client.ConnectionStatusChanged += Client_ConnectionStatusChanged;
             _client.CurrentEndPointChanged += Client_CurrentEndPointChanged;
-            _client.LogRaised += Client_LogRaised;
             _client.MessageReceived += Client_MessageReceived;
             _client.ServerStopping += Client_ServerStopping;
             _client.BroadcastReceived += Client_BroadcastReceived;

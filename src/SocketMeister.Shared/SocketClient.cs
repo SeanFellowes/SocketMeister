@@ -636,7 +636,11 @@ namespace SocketMeister
                         Log(innerException);
                     }
                 }
+#else
+                //  .NET 3.5 Only - Workaround after SocketClient fails to another endpoint more than once,
+                if (!StopClientPermanently) CurrentEndPoint.RecreateSocket();
 #endif
+
 
                 //  Deal with unresponded messages
                 if (StopClientPermanently == true)
@@ -941,6 +945,13 @@ namespace SocketMeister
 
                     //  Reset the last poll response time
                     LastPollResponse = DateTime.UtcNow;
+                }
+                else if (e.SocketError == SocketError.IsConnected)
+                {
+                    //  This happens with the .NET 3.5 client after failing over server endpoints.
+                    //  The socket is already connected, so we can just continue.
+                    CurrentEndPoint.SetDisconnected(ClientDisconnectReason.SocketError);
+                    Disconnect(SocketHasErrored: false, ClientDisconnectReason.SocketError, "Socket is already connected");
                 }
                 else if (e.SocketError == SocketError.TimedOut)
                 {
