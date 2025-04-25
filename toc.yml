@@ -1,5 +1,11 @@
 # top-level table of contents
 - name: Docs
   href: docs/toc.yml
+- name: Core API  
+  items:
+    - uid: SocketMeister.SocketServer
+      name: SocketServer
+    - uid: SocketMeister.SocketClient
+      name: SocketClient
 - name: API Reference
   href: api/toc.yml
