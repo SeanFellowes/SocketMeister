@@ -5,14 +5,15 @@
     {
       "src": [
         {
-          "files": ["src/SocketMeisterAPI/SocketMeisterAPI.csproj"],
+          "files": ["src/SocketMeister/SocketMeister.csproj"],
           "properties": [ 
            { "Configuration": "Release" },
-           { "TargetFramework": "net472" }
+           { "TargetFramework": "net8.0" }
          ]
         }
       ],
-      "dest": "api"
+      "dest": "api",
+    "filter": "filter.yml"
     }
   ],
 
