@@ -47,8 +47,6 @@ namespace SocketMeister.MiniTestClient
         /// <summary>
         /// Event raised when an exception occurs
         /// </summary>
-        public event EventHandler<ExceptionEventArgs> ExceptionRaised;
-
         internal event EventHandler<ResponseReceived> ResponseReceived;
 
         public event EventHandler<EventArgs> SendMessageButtonPressed;
@@ -188,7 +186,7 @@ namespace SocketMeister.MiniTestClient
                     {
                         Dispatcher.BeginInvoke((Action)(() =>
                         {
-                            ExceptionRaised?.Invoke(this, new ExceptionEventArgs(ex, 1200));
+                            LogRaised?.Invoke(this, new LogEventArgs(new LogEntry(ex)));
                         }));
                     }
                 }))
@@ -198,7 +196,7 @@ namespace SocketMeister.MiniTestClient
             {
                 Dispatcher.BeginInvoke((Action)(() =>
                 {
-                    ExceptionRaised?.Invoke(this, new ExceptionEventArgs(ex, 1200));
+                    LogRaised?.Invoke(this, new LogEventArgs(new LogEntry(ex)));
                 }));
             }
         }
@@ -210,7 +208,7 @@ namespace SocketMeister.MiniTestClient
             _client = new SocketClient(eps, true, "Client " + ClientId);
             _client.ConnectionStatusChanged += Client_ConnectionStatusChanged;
             _client.CurrentEndPointChanged += Client_CurrentEndPointChanged;
-            _client.ExceptionRaised += Client_ExceptionRaised;
+            _client.LogRaised += Client_LogRaised;
             _client.MessageReceived += Client_MessageReceived;
             _client.ServerStopping += Client_ServerStopping;
             _client.BroadcastReceived += Client_BroadcastReceived;
@@ -249,15 +247,6 @@ namespace SocketMeister.MiniTestClient
             }));
         }
 
-
-
-        private void Client_ExceptionRaised(object sender, ExceptionEventArgs e)
-        {
-            Dispatcher.BeginInvoke((Action)(() =>
-            {
-                ExceptionRaised?.Invoke(this, e);
-            }));
-        }
 
         private void Client_BroadcastReceived(object sender, SocketClient.BroadcastReceivedEventArgs e)
         {

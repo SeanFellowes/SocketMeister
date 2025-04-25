@@ -167,12 +167,6 @@ namespace SocketMeister.MiniTestClient
         }
 
 
-        private void Client_ExceptionRaised(object sender, ExceptionEventArgs e)
-        {
-            ClientControl ct = (ClientControl)sender;
-            Log(new LogEntry("ExceptionRaised event raised: " + e.ToString(), Severity.Debug, LogEventType.UserMessage), "Client " + ct.ClientId);
-        }
-
         private void Client_LogRaised(object sender, LogEventArgs e)
         {
             ClientControl ct = (ClientControl)sender;
@@ -324,7 +318,6 @@ namespace SocketMeister.MiniTestClient
                 for (int x = 0; x < ClientsSlider.Value; x++ )
                 {
                     Client = _clients[x];
-                    Client.ExceptionRaised += Client_ExceptionRaised;
                     Client.MessageReceived += Client_MessageReceived;
                     Client.SendMessageButtonPressed += Client_SendRequestButtonPressed;
                     Client.ServerStopping += Client_ServerStopping;

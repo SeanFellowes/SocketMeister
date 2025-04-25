@@ -269,7 +269,7 @@
         </member>
         <member name="T:SocketMeister.SocketServerStatus">
             <summary>
-            The execution status of a service.
+            The execution status of a SocketServer.
             </summary>
         </member>
         <member name="F:SocketMeister.SocketServerStatus.Stopped">
