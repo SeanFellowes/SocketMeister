@@ -6,11 +6,7 @@ namespace SocketMeister
     /// <summary>
     /// Provides serialization and deserialization routines for SocketMeister.
     /// </summary>
-#if SMISPUBLIC
-    public static class Serializer
-#else
-        internal static class Serializer
-#endif
+    internal static class Serializer
     {
         /// <summary>
         /// Enumerates the data types supported for parameters sent with messages.
