@@ -86,8 +86,18 @@ namespace SocketMeister
         public event EventHandler<EventArgs> CurrentEndPointChanged;
 
         /// <summary>
-        /// Event raised when an exception occurs.
+        /// <para>Event raised when an exception occurs.</para>
+        /// <para><strong>Obsolete:</strong> This class will be removed in a future release.  
+        /// Use the <see cref="LogRaised"/> event instead.</para>
         /// </summary>
+        /// <remarks>
+        /// Marked obsolete in v10.2.5; scheduled for removal in v11.0.0.
+        /// </remarks>
+        [Obsolete(
+            "ExceptionRaised is deprecated and will be removed in a future release. " +
+            "Please use the LogRaised event instead.",
+            false  // false = compiler warning; true = compiler error
+        )]
         public event EventHandler<ExceptionEventArgs> ExceptionRaised;
 
         /// <summary>
