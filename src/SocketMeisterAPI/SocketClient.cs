@@ -25,7 +25,7 @@ namespace SocketMeister
         /// <summary>
         /// Disconnect the client if no poll response is received within this number of seconds.
         /// </summary>
-        private const int DISCONNECT_AFTER_NO_POLL_RESPONSE_SECONDS = 300;
+        private const int DISCONNECT_AFTER_NO_POLL_RESPONSE_SECONDS = 300; 
 
         /// <summary>
         /// Frequency (in seconds) at which the client polls the server to verify the socket is active.
