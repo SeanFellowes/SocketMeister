@@ -25,7 +25,7 @@ namespace SocketMeister
 
         private readonly Clients _connectedClients;
         private readonly bool _compressSentData;
-        private bool _disposed;
+        private bool _disposed; 
         private readonly string _endPoint;
         private readonly Socket _listener = null;
         private SocketServerStatus _status;
