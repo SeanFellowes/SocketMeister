@@ -14,7 +14,7 @@ SocketMeister is a socket library for solutions requiring persistent, fault‑to
 ## Requirements
 
 - **.NET Framework 3.5 to .NET 9** (including .NET Core, .NET 5/6/7)
-- **SocketMeister.Silverlight** for Silverlight 5 (client only, no server support) ([github.com](https://github.com/SeanFellowes/SocketMeister/blob/master/NuGetDocumentation.md))
+([github.com](https://github.com/SeanFellowes/SocketMeister/blob/master/NuGetDocumentation.md))
 
 ## Installation
 
