@@ -7,7 +7,7 @@ Highly integrated logging via a LogRaised event in the SocketClient provides com
 
 ## SocketMeister Overview
 
-Please visit the [SocketMeister project website on GitHub](https://github.com/SeanFellowes/SocketMeister) for detailed documentation and C# examples to get you quickly up an running.
+Please visit the [SocketMeister Website](https://seanfellowes.github.io/SocketMeister/) for detailed documentation and C# examples to get you quickly up an running. [The SocketMeister project website on GitHub](https://github.com/SeanFellowes/SocketMeister) contains source code, and Visual Studio projects with full test harnesses for SocketClient and SocketServer.
 
 SocketMeister is a socket library for solutions requiring persistent, fault tolerant, multiple endpoint TCP/IP connectivity. It is easy to use, high throughput and multithreaded. SocketMeister can scale from a single socket server to a farm of server instances.
 
