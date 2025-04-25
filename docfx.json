@@ -5,7 +5,7 @@
     {
       "src": [
         {
-          "files": ["src/SocketMeister/SocketMeister.csproj"],
+          "files": ["src/SocketMeisterAPI/SocketMeisterAPI.csproj"],
           "properties": [ 
            { "Configuration": "Release" },
            { "TargetFramework": "net472" }

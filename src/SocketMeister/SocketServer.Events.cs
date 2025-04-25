@@ -1,4 +1,4 @@
-﻿#if !SMNOSERVER && !NET35
+﻿#if !SMNOSERVER
 using System;
 using System.Collections.Generic;
 using System.Text;
