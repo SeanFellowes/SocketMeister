@@ -35,6 +35,7 @@
 
 		<!-- Icon -->
 		<PackageIcon>icon_128.png</PackageIcon>
+		<Configurations>Debug;Release;DocumentApi</Configurations>
 
 		<!-- Self-contained is not needed for libraries -->
 	</PropertyGroup>
@@ -46,6 +47,7 @@
 	<PropertyGroup Condition="'$(TargetFramework)'!='net35'">
 		<DefineConstants>SMISPUBLIC</DefineConstants>
 	</PropertyGroup>
+
 
 	<!-- Pack items -->
 	<ItemGroup>

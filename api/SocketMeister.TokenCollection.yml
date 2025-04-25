@@ -23,11 +23,11 @@ items:
   type: Class
   source:
     remote:
-      path: src/SocketMeisterAPI/TokenCollection.cs
+      path: src/SocketMeister/TokenCollection.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: TokenCollection
-    path: src/SocketMeisterAPI/TokenCollection.cs
+    path: src/SocketMeister/TokenCollection.cs
     startLine: 13
   assemblies:
   - SocketMeister
@@ -40,13 +40,13 @@ items:
   inheritance:
   - System.Object
   inheritedMembers:
+  - System.Object.ToString
   - System.Object.Equals(System.Object)
   - System.Object.Equals(System.Object,System.Object)
+  - System.Object.ReferenceEquals(System.Object,System.Object)
   - System.Object.GetHashCode
   - System.Object.GetType
   - System.Object.MemberwiseClone
-  - System.Object.ReferenceEquals(System.Object,System.Object)
-  - System.Object.ToString
 - uid: SocketMeister.TokenCollection.#ctor
   commentId: M:SocketMeister.TokenCollection.#ctor
   id: '#ctor'
@@ -60,11 +60,11 @@ items:
   type: Constructor
   source:
     remote:
-      path: src/SocketMeisterAPI/TokenCollection.cs
+      path: src/SocketMeister/TokenCollection.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: .ctor
-    path: src/SocketMeisterAPI/TokenCollection.cs
+    path: src/SocketMeister/TokenCollection.cs
     startLine: 26
   assemblies:
   - SocketMeister
@@ -91,11 +91,11 @@ items:
   type: Property
   source:
     remote:
-      path: src/SocketMeisterAPI/TokenCollection.cs
+      path: src/SocketMeister/TokenCollection.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: this[]
-    path: src/SocketMeisterAPI/TokenCollection.cs
+    path: src/SocketMeister/TokenCollection.cs
     startLine: 35
   assemblies:
   - SocketMeister
@@ -129,11 +129,11 @@ items:
   type: Property
   source:
     remote:
-      path: src/SocketMeisterAPI/TokenCollection.cs
+      path: src/SocketMeister/TokenCollection.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: Changed
-    path: src/SocketMeisterAPI/TokenCollection.cs
+    path: src/SocketMeister/TokenCollection.cs
     startLine: 53
   assemblies:
   - SocketMeister
@@ -160,11 +160,11 @@ items:
   type: Property
   source:
     remote:
-      path: src/SocketMeisterAPI/TokenCollection.cs
+      path: src/SocketMeister/TokenCollection.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: Count
-    path: src/SocketMeisterAPI/TokenCollection.cs
+    path: src/SocketMeister/TokenCollection.cs
     startLine: 61
   assemblies:
   - SocketMeister
@@ -191,11 +191,11 @@ items:
   type: Method
   source:
     remote:
-      path: src/SocketMeisterAPI/TokenCollection.cs
+      path: src/SocketMeister/TokenCollection.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: SerializeTokenChanges
-    path: src/SocketMeisterAPI/TokenCollection.cs
+    path: src/SocketMeister/TokenCollection.cs
     startLine: 134
   assemblies:
   - SocketMeister
@@ -222,11 +222,11 @@ items:
   type: Method
   source:
     remote:
-      path: src/SocketMeisterAPI/TokenCollection.cs
+      path: src/SocketMeister/TokenCollection.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: Remove
-    path: src/SocketMeisterAPI/TokenCollection.cs
+    path: src/SocketMeister/TokenCollection.cs
     startLine: 170
   assemblies:
   - SocketMeister
@@ -260,11 +260,11 @@ items:
   type: Method
   source:
     remote:
-      path: src/SocketMeisterAPI/TokenCollection.cs
+      path: src/SocketMeister/TokenCollection.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: RemoveChange
-    path: src/SocketMeisterAPI/TokenCollection.cs
+    path: src/SocketMeister/TokenCollection.cs
     startLine: 199
   assemblies:
   - SocketMeister
@@ -301,11 +301,11 @@ items:
   type: Method
   source:
     remote:
-      path: src/SocketMeisterAPI/TokenCollection.cs
+      path: src/SocketMeister/TokenCollection.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: ToList
-    path: src/SocketMeisterAPI/TokenCollection.cs
+    path: src/SocketMeister/TokenCollection.cs
     startLine: 216
   assemblies:
   - SocketMeister
@@ -332,11 +332,11 @@ items:
   type: Method
   source:
     remote:
-      path: src/SocketMeisterAPI/TokenCollection.cs
+      path: src/SocketMeister/TokenCollection.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: GetNames
-    path: src/SocketMeisterAPI/TokenCollection.cs
+    path: src/SocketMeister/TokenCollection.cs
     startLine: 228
   assemblies:
   - SocketMeister
@@ -368,6 +368,30 @@ references:
   nameWithType.vb: Object
   fullName.vb: Object
   name.vb: Object
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
 - uid: System.Object.Equals(System.Object)
   commentId: M:System.Object.Equals(System.Object)
   parent: System.Object
@@ -434,6 +458,51 @@ references:
     name: Equals
     isExternal: true
     href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
   - name: (
   - uid: System.Object
     name: Object
@@ -516,75 +585,6 @@ references:
     name: MemberwiseClone
     isExternal: true
     href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
-  - name: (
-  - name: )
-- uid: System.Object.ReferenceEquals(System.Object,System.Object)
-  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
-  parent: System.Object
-  isExternal: true
-  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
-  name: ReferenceEquals(object, object)
-  nameWithType: object.ReferenceEquals(object, object)
-  fullName: object.ReferenceEquals(object, object)
-  nameWithType.vb: Object.ReferenceEquals(Object, Object)
-  fullName.vb: Object.ReferenceEquals(Object, Object)
-  name.vb: ReferenceEquals(Object, Object)
-  spec.csharp:
-  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
-    name: ReferenceEquals
-    isExternal: true
-    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
-  - name: (
-  - uid: System.Object
-    name: object
-    isExternal: true
-    href: https://learn.microsoft.com/dotnet/api/system.object
-  - name: ','
-  - name: " "
-  - uid: System.Object
-    name: object
-    isExternal: true
-    href: https://learn.microsoft.com/dotnet/api/system.object
-  - name: )
-  spec.vb:
-  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
-    name: ReferenceEquals
-    isExternal: true
-    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
-  - name: (
-  - uid: System.Object
-    name: Object
-    isExternal: true
-    href: https://learn.microsoft.com/dotnet/api/system.object
-  - name: ','
-  - name: " "
-  - uid: System.Object
-    name: Object
-    isExternal: true
-    href: https://learn.microsoft.com/dotnet/api/system.object
-  - name: )
-- uid: System.Object.ToString
-  commentId: M:System.Object.ToString
-  parent: System.Object
-  isExternal: true
-  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
-  name: ToString()
-  nameWithType: object.ToString()
-  fullName: object.ToString()
-  nameWithType.vb: Object.ToString()
-  fullName.vb: Object.ToString()
-  spec.csharp:
-  - uid: System.Object.ToString
-    name: ToString
-    isExternal: true
-    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
-  - name: (
-  - name: )
-  spec.vb:
-  - uid: System.Object.ToString
-    name: ToString
-    isExternal: true
-    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
   - name: (
   - name: )
 - uid: System

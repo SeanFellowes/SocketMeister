@@ -42,11 +42,11 @@ items:
   type: Class
   source:
     remote:
-      path: src/SocketMeisterAPI/SocketClient.Events.cs
+      path: src/SocketMeister/SocketClient.Events.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: SocketClient
-    path: src/SocketMeisterAPI/SocketClient.Events.cs
+    path: src/SocketMeister/SocketClient.Events.cs
     startLine: 9
   assemblies:
   - SocketMeister
@@ -66,13 +66,13 @@ items:
   implements:
   - System.IDisposable
   inheritedMembers:
+  - System.Object.ToString
   - System.Object.Equals(System.Object)
   - System.Object.Equals(System.Object,System.Object)
+  - System.Object.ReferenceEquals(System.Object,System.Object)
   - System.Object.GetHashCode
   - System.Object.GetType
   - System.Object.MemberwiseClone
-  - System.Object.ReferenceEquals(System.Object,System.Object)
-  - System.Object.ToString
 - uid: SocketMeister.SocketClient.ConnectionStatusChanged
   commentId: E:SocketMeister.SocketClient.ConnectionStatusChanged
   id: ConnectionStatusChanged
@@ -86,11 +86,11 @@ items:
   type: Event
   source:
     remote:
-      path: src/SocketMeisterAPI/SocketClient.cs
+      path: src/SocketMeister/SocketClient.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: ConnectionStatusChanged
-    path: src/SocketMeisterAPI/SocketClient.cs
+    path: src/SocketMeister/SocketClient.cs
     startLine: 80
   assemblies:
   - SocketMeister
@@ -115,11 +115,11 @@ items:
   type: Event
   source:
     remote:
-      path: src/SocketMeisterAPI/SocketClient.cs
+      path: src/SocketMeister/SocketClient.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: CurrentEndPointChanged
-    path: src/SocketMeisterAPI/SocketClient.cs
+    path: src/SocketMeister/SocketClient.cs
     startLine: 85
   assemblies:
   - SocketMeister
@@ -144,11 +144,11 @@ items:
   type: Event
   source:
     remote:
-      path: src/SocketMeisterAPI/SocketClient.cs
+      path: src/SocketMeister/SocketClient.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: ExceptionRaised
-    path: src/SocketMeisterAPI/SocketClient.cs
+    path: src/SocketMeister/SocketClient.cs
     startLine: 90
   assemblies:
   - SocketMeister
@@ -173,11 +173,11 @@ items:
   type: Event
   source:
     remote:
-      path: src/SocketMeisterAPI/SocketClient.cs
+      path: src/SocketMeister/SocketClient.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: MessageReceived
-    path: src/SocketMeisterAPI/SocketClient.cs
+    path: src/SocketMeister/SocketClient.cs
     startLine: 95
   assemblies:
   - SocketMeister
@@ -202,11 +202,11 @@ items:
   type: Event
   source:
     remote:
-      path: src/SocketMeisterAPI/SocketClient.cs
+      path: src/SocketMeister/SocketClient.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: ServerStopping
-    path: src/SocketMeisterAPI/SocketClient.cs
+    path: src/SocketMeister/SocketClient.cs
     startLine: 100
   assemblies:
   - SocketMeister
@@ -231,11 +231,11 @@ items:
   type: Event
   source:
     remote:
-      path: src/SocketMeisterAPI/SocketClient.cs
+      path: src/SocketMeister/SocketClient.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: BroadcastReceived
-    path: src/SocketMeisterAPI/SocketClient.cs
+    path: src/SocketMeister/SocketClient.cs
     startLine: 105
   assemblies:
   - SocketMeister
@@ -260,11 +260,11 @@ items:
   type: Event
   source:
     remote:
-      path: src/SocketMeisterAPI/SocketClient.cs
+      path: src/SocketMeister/SocketClient.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: LogRaised
-    path: src/SocketMeisterAPI/SocketClient.cs
+    path: src/SocketMeister/SocketClient.cs
     startLine: 110
   assemblies:
   - SocketMeister
@@ -289,11 +289,11 @@ items:
   type: Constructor
   source:
     remote:
-      path: src/SocketMeisterAPI/SocketClient.cs
+      path: src/SocketMeister/SocketClient.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: .ctor
-    path: src/SocketMeisterAPI/SocketClient.cs
+    path: src/SocketMeister/SocketClient.cs
     startLine: 120
   assemblies:
   - SocketMeister
@@ -330,11 +330,11 @@ items:
   type: Constructor
   source:
     remote:
-      path: src/SocketMeisterAPI/SocketClient.cs
+      path: src/SocketMeister/SocketClient.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: .ctor
-    path: src/SocketMeisterAPI/SocketClient.cs
+    path: src/SocketMeister/SocketClient.cs
     startLine: 170
   assemblies:
   - SocketMeister
@@ -368,11 +368,11 @@ items:
   type: Constructor
   source:
     remote:
-      path: src/SocketMeisterAPI/SocketClient.cs
+      path: src/SocketMeister/SocketClient.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: .ctor
-    path: src/SocketMeisterAPI/SocketClient.cs
+    path: src/SocketMeister/SocketClient.cs
     startLine: 180
   assemblies:
   - SocketMeister
@@ -412,11 +412,11 @@ items:
   type: Constructor
   source:
     remote:
-      path: src/SocketMeisterAPI/SocketClient.cs
+      path: src/SocketMeister/SocketClient.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: .ctor
-    path: src/SocketMeisterAPI/SocketClient.cs
+    path: src/SocketMeister/SocketClient.cs
     startLine: 189
   assemblies:
   - SocketMeister
@@ -453,11 +453,11 @@ items:
   type: Constructor
   source:
     remote:
-      path: src/SocketMeisterAPI/SocketClient.cs
+      path: src/SocketMeister/SocketClient.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: .ctor
-    path: src/SocketMeisterAPI/SocketClient.cs
+    path: src/SocketMeister/SocketClient.cs
     startLine: 203
   assemblies:
   - SocketMeister
@@ -503,11 +503,11 @@ items:
   type: Constructor
   source:
     remote:
-      path: src/SocketMeisterAPI/SocketClient.cs
+      path: src/SocketMeister/SocketClient.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: .ctor
-    path: src/SocketMeisterAPI/SocketClient.cs
+    path: src/SocketMeister/SocketClient.cs
     startLine: 222
   assemblies:
   - SocketMeister
@@ -550,11 +550,11 @@ items:
   type: Method
   source:
     remote:
-      path: src/SocketMeisterAPI/SocketClient.cs
+      path: src/SocketMeister/SocketClient.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: Dispose
-    path: src/SocketMeisterAPI/SocketClient.cs
+    path: src/SocketMeister/SocketClient.cs
     startLine: 241
   assemblies:
   - SocketMeister
@@ -584,11 +584,11 @@ items:
   type: Method
   source:
     remote:
-      path: src/SocketMeisterAPI/SocketClient.cs
+      path: src/SocketMeister/SocketClient.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: Dispose
-    path: src/SocketMeisterAPI/SocketClient.cs
+    path: src/SocketMeister/SocketClient.cs
     startLine: 254
   assemblies:
   - SocketMeister
@@ -620,11 +620,11 @@ items:
   type: Method
   source:
     remote:
-      path: src/SocketMeisterAPI/SocketClient.cs
+      path: src/SocketMeister/SocketClient.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: Finalize
-    path: src/SocketMeisterAPI/SocketClient.cs
+    path: src/SocketMeister/SocketClient.cs
     startLine: 295
   assemblies:
   - SocketMeister
@@ -651,11 +651,11 @@ items:
   type: Method
   source:
     remote:
-      path: src/SocketMeisterAPI/SocketClient.cs
+      path: src/SocketMeister/SocketClient.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: AddSubscription
-    path: src/SocketMeisterAPI/SocketClient.cs
+    path: src/SocketMeister/SocketClient.cs
     startLine: 305
   assemblies:
   - SocketMeister
@@ -686,11 +686,11 @@ items:
   type: Property
   source:
     remote:
-      path: src/SocketMeisterAPI/SocketClient.cs
+      path: src/SocketMeister/SocketClient.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: LastMessageFromServer
-    path: src/SocketMeisterAPI/SocketClient.cs
+    path: src/SocketMeister/SocketClient.cs
     startLine: 314
   assemblies:
   - SocketMeister
@@ -717,11 +717,11 @@ items:
   type: Method
   source:
     remote:
-      path: src/SocketMeisterAPI/SocketClient.cs
+      path: src/SocketMeister/SocketClient.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: RemoveSubscription
-    path: src/SocketMeisterAPI/SocketClient.cs
+    path: src/SocketMeister/SocketClient.cs
     startLine: 325
   assemblies:
   - SocketMeister
@@ -755,11 +755,11 @@ items:
   type: Property
   source:
     remote:
-      path: src/SocketMeisterAPI/SocketClient.cs
+      path: src/SocketMeister/SocketClient.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: ClientId
-    path: src/SocketMeisterAPI/SocketClient.cs
+    path: src/SocketMeister/SocketClient.cs
     startLine: 336
   assemblies:
   - SocketMeister
@@ -786,11 +786,11 @@ items:
   type: Property
   source:
     remote:
-      path: src/SocketMeisterAPI/SocketClient.cs
+      path: src/SocketMeister/SocketClient.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: ConnectionStatus
-    path: src/SocketMeisterAPI/SocketClient.cs
+    path: src/SocketMeister/SocketClient.cs
     startLine: 382
   assemblies:
   - SocketMeister
@@ -817,11 +817,11 @@ items:
   type: Property
   source:
     remote:
-      path: src/SocketMeisterAPI/SocketClient.cs
+      path: src/SocketMeister/SocketClient.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: FriendlyName
-    path: src/SocketMeisterAPI/SocketClient.cs
+    path: src/SocketMeister/SocketClient.cs
     startLine: 400
   assemblies:
   - SocketMeister
@@ -848,11 +848,11 @@ items:
   type: Property
   source:
     remote:
-      path: src/SocketMeisterAPI/SocketClient.cs
+      path: src/SocketMeister/SocketClient.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: CurrentEndPoint
-    path: src/SocketMeisterAPI/SocketClient.cs
+    path: src/SocketMeister/SocketClient.cs
     startLine: 463
   assemblies:
   - SocketMeister
@@ -879,11 +879,11 @@ items:
   type: Property
   source:
     remote:
-      path: src/SocketMeisterAPI/SocketClient.cs
+      path: src/SocketMeister/SocketClient.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: SubscriptionCount
-    path: src/SocketMeisterAPI/SocketClient.cs
+    path: src/SocketMeister/SocketClient.cs
     startLine: 534
   assemblies:
   - SocketMeister
@@ -910,11 +910,11 @@ items:
   type: Method
   source:
     remote:
-      path: src/SocketMeisterAPI/SocketClient.cs
+      path: src/SocketMeister/SocketClient.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: DoesSubscriptionNameExist
-    path: src/SocketMeisterAPI/SocketClient.cs
+    path: src/SocketMeister/SocketClient.cs
     startLine: 550
   assemblies:
   - SocketMeister
@@ -948,11 +948,11 @@ items:
   type: Method
   source:
     remote:
-      path: src/SocketMeisterAPI/SocketClient.cs
+      path: src/SocketMeister/SocketClient.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: GetSubscriptions
-    path: src/SocketMeisterAPI/SocketClient.cs
+    path: src/SocketMeister/SocketClient.cs
     startLine: 561
   assemblies:
   - SocketMeister
@@ -979,11 +979,11 @@ items:
   type: Method
   source:
     remote:
-      path: src/SocketMeisterAPI/SocketClient.cs
+      path: src/SocketMeister/SocketClient.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: Stop
-    path: src/SocketMeisterAPI/SocketClient.cs
+    path: src/SocketMeister/SocketClient.cs
     startLine: 1072
   assemblies:
   - SocketMeister
@@ -1007,11 +1007,11 @@ items:
   type: Method
   source:
     remote:
-      path: src/SocketMeisterAPI/SocketClient.cs
+      path: src/SocketMeister/SocketClient.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: SendMessage
-    path: src/SocketMeisterAPI/SocketClient.cs
+    path: src/SocketMeister/SocketClient.cs
     startLine: 1171
   assemblies:
   - SocketMeister
@@ -1112,6 +1112,30 @@ references:
   nameWithType.vb: Object
   fullName.vb: Object
   name.vb: Object
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
 - uid: System.Object.Equals(System.Object)
   commentId: M:System.Object.Equals(System.Object)
   parent: System.Object
@@ -1178,6 +1202,51 @@ references:
     name: Equals
     isExternal: true
     href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
   - name: (
   - uid: System.Object
     name: Object
@@ -1260,75 +1329,6 @@ references:
     name: MemberwiseClone
     isExternal: true
     href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
-  - name: (
-  - name: )
-- uid: System.Object.ReferenceEquals(System.Object,System.Object)
-  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
-  parent: System.Object
-  isExternal: true
-  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
-  name: ReferenceEquals(object, object)
-  nameWithType: object.ReferenceEquals(object, object)
-  fullName: object.ReferenceEquals(object, object)
-  nameWithType.vb: Object.ReferenceEquals(Object, Object)
-  fullName.vb: Object.ReferenceEquals(Object, Object)
-  name.vb: ReferenceEquals(Object, Object)
-  spec.csharp:
-  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
-    name: ReferenceEquals
-    isExternal: true
-    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
-  - name: (
-  - uid: System.Object
-    name: object
-    isExternal: true
-    href: https://learn.microsoft.com/dotnet/api/system.object
-  - name: ','
-  - name: " "
-  - uid: System.Object
-    name: object
-    isExternal: true
-    href: https://learn.microsoft.com/dotnet/api/system.object
-  - name: )
-  spec.vb:
-  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
-    name: ReferenceEquals
-    isExternal: true
-    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
-  - name: (
-  - uid: System.Object
-    name: Object
-    isExternal: true
-    href: https://learn.microsoft.com/dotnet/api/system.object
-  - name: ','
-  - name: " "
-  - uid: System.Object
-    name: Object
-    isExternal: true
-    href: https://learn.microsoft.com/dotnet/api/system.object
-  - name: )
-- uid: System.Object.ToString
-  commentId: M:System.Object.ToString
-  parent: System.Object
-  isExternal: true
-  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
-  name: ToString()
-  nameWithType: object.ToString()
-  fullName: object.ToString()
-  nameWithType.vb: Object.ToString()
-  fullName.vb: Object.ToString()
-  spec.csharp:
-  - uid: System.Object.ToString
-    name: ToString
-    isExternal: true
-    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
-  - name: (
-  - name: )
-  spec.vb:
-  - uid: System.Object.ToString
-    name: ToString
-    isExternal: true
-    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
   - name: (
   - name: )
 - uid: System

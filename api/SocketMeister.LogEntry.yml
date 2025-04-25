@@ -24,11 +24,11 @@ items:
   type: Class
   source:
     remote:
-      path: src/SocketMeisterAPI/LogEntry.cs
+      path: src/SocketMeister/LogEntry.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: LogEntry
-    path: src/SocketMeisterAPI/LogEntry.cs
+    path: src/SocketMeister/LogEntry.cs
     startLine: 8
   assemblies:
   - SocketMeister
@@ -41,13 +41,13 @@ items:
   inheritance:
   - System.Object
   inheritedMembers:
+  - System.Object.ToString
   - System.Object.Equals(System.Object)
   - System.Object.Equals(System.Object,System.Object)
+  - System.Object.ReferenceEquals(System.Object,System.Object)
   - System.Object.GetHashCode
   - System.Object.GetType
   - System.Object.MemberwiseClone
-  - System.Object.ReferenceEquals(System.Object,System.Object)
-  - System.Object.ToString
 - uid: SocketMeister.LogEntry.#ctor(System.Exception)
   commentId: M:SocketMeister.LogEntry.#ctor(System.Exception)
   id: '#ctor(System.Exception)'
@@ -61,11 +61,11 @@ items:
   type: Constructor
   source:
     remote:
-      path: src/SocketMeisterAPI/LogEntry.cs
+      path: src/SocketMeister/LogEntry.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: .ctor
-    path: src/SocketMeisterAPI/LogEntry.cs
+    path: src/SocketMeister/LogEntry.cs
     startLine: 24
   assemblies:
   - SocketMeister
@@ -96,11 +96,11 @@ items:
   type: Constructor
   source:
     remote:
-      path: src/SocketMeisterAPI/LogEntry.cs
+      path: src/SocketMeister/LogEntry.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: .ctor
-    path: src/SocketMeisterAPI/LogEntry.cs
+    path: src/SocketMeister/LogEntry.cs
     startLine: 32
   assemblies:
   - SocketMeister
@@ -134,11 +134,11 @@ items:
   type: Constructor
   source:
     remote:
-      path: src/SocketMeisterAPI/LogEntry.cs
+      path: src/SocketMeister/LogEntry.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: .ctor
-    path: src/SocketMeisterAPI/LogEntry.cs
+    path: src/SocketMeister/LogEntry.cs
     startLine: 47
   assemblies:
   - SocketMeister
@@ -175,11 +175,11 @@ items:
   type: Constructor
   source:
     remote:
-      path: src/SocketMeisterAPI/LogEntry.cs
+      path: src/SocketMeister/LogEntry.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: .ctor
-    path: src/SocketMeisterAPI/LogEntry.cs
+    path: src/SocketMeister/LogEntry.cs
     startLine: 57
   assemblies:
   - SocketMeister
@@ -219,11 +219,11 @@ items:
   type: Property
   source:
     remote:
-      path: src/SocketMeisterAPI/LogEntry.cs
+      path: src/SocketMeister/LogEntry.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: Exception
-    path: src/SocketMeisterAPI/LogEntry.cs
+    path: src/SocketMeister/LogEntry.cs
     startLine: 68
   assemblies:
   - SocketMeister
@@ -250,11 +250,11 @@ items:
   type: Property
   source:
     remote:
-      path: src/SocketMeisterAPI/LogEntry.cs
+      path: src/SocketMeister/LogEntry.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: Timestamp
-    path: src/SocketMeisterAPI/LogEntry.cs
+    path: src/SocketMeister/LogEntry.cs
     startLine: 73
   assemblies:
   - SocketMeister
@@ -281,11 +281,11 @@ items:
   type: Property
   source:
     remote:
-      path: src/SocketMeisterAPI/LogEntry.cs
+      path: src/SocketMeister/LogEntry.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: Message
-    path: src/SocketMeisterAPI/LogEntry.cs
+    path: src/SocketMeister/LogEntry.cs
     startLine: 78
   assemblies:
   - SocketMeister
@@ -312,11 +312,11 @@ items:
   type: Property
   source:
     remote:
-      path: src/SocketMeisterAPI/LogEntry.cs
+      path: src/SocketMeister/LogEntry.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: Severity
-    path: src/SocketMeisterAPI/LogEntry.cs
+    path: src/SocketMeister/LogEntry.cs
     startLine: 83
   assemblies:
   - SocketMeister
@@ -343,11 +343,11 @@ items:
   type: Property
   source:
     remote:
-      path: src/SocketMeisterAPI/LogEntry.cs
+      path: src/SocketMeister/LogEntry.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: EventType
-    path: src/SocketMeisterAPI/LogEntry.cs
+    path: src/SocketMeister/LogEntry.cs
     startLine: 88
   assemblies:
   - SocketMeister
@@ -374,11 +374,11 @@ items:
   type: Property
   source:
     remote:
-      path: src/SocketMeisterAPI/LogEntry.cs
+      path: src/SocketMeister/LogEntry.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: MessageId
-    path: src/SocketMeisterAPI/LogEntry.cs
+    path: src/SocketMeister/LogEntry.cs
     startLine: 93
   assemblies:
   - SocketMeister
@@ -410,6 +410,30 @@ references:
   nameWithType.vb: Object
   fullName.vb: Object
   name.vb: Object
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
 - uid: System.Object.Equals(System.Object)
   commentId: M:System.Object.Equals(System.Object)
   parent: System.Object
@@ -476,6 +500,51 @@ references:
     name: Equals
     isExternal: true
     href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
   - name: (
   - uid: System.Object
     name: Object
@@ -558,75 +627,6 @@ references:
     name: MemberwiseClone
     isExternal: true
     href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
-  - name: (
-  - name: )
-- uid: System.Object.ReferenceEquals(System.Object,System.Object)
-  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
-  parent: System.Object
-  isExternal: true
-  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
-  name: ReferenceEquals(object, object)
-  nameWithType: object.ReferenceEquals(object, object)
-  fullName: object.ReferenceEquals(object, object)
-  nameWithType.vb: Object.ReferenceEquals(Object, Object)
-  fullName.vb: Object.ReferenceEquals(Object, Object)
-  name.vb: ReferenceEquals(Object, Object)
-  spec.csharp:
-  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
-    name: ReferenceEquals
-    isExternal: true
-    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
-  - name: (
-  - uid: System.Object
-    name: object
-    isExternal: true
-    href: https://learn.microsoft.com/dotnet/api/system.object
-  - name: ','
-  - name: " "
-  - uid: System.Object
-    name: object
-    isExternal: true
-    href: https://learn.microsoft.com/dotnet/api/system.object
-  - name: )
-  spec.vb:
-  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
-    name: ReferenceEquals
-    isExternal: true
-    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
-  - name: (
-  - uid: System.Object
-    name: Object
-    isExternal: true
-    href: https://learn.microsoft.com/dotnet/api/system.object
-  - name: ','
-  - name: " "
-  - uid: System.Object
-    name: Object
-    isExternal: true
-    href: https://learn.microsoft.com/dotnet/api/system.object
-  - name: )
-- uid: System.Object.ToString
-  commentId: M:System.Object.ToString
-  parent: System.Object
-  isExternal: true
-  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
-  name: ToString()
-  nameWithType: object.ToString()
-  fullName: object.ToString()
-  nameWithType.vb: Object.ToString()
-  fullName.vb: Object.ToString()
-  spec.csharp:
-  - uid: System.Object.ToString
-    name: ToString
-    isExternal: true
-    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
-  - name: (
-  - name: )
-  spec.vb:
-  - uid: System.Object.ToString
-    name: ToString
-    isExternal: true
-    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
   - name: (
   - name: )
 - uid: System

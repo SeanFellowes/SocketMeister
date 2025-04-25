@@ -18,11 +18,11 @@ items:
   type: Enum
   source:
     remote:
-      path: src/SocketMeisterAPI/Enums.cs
+      path: src/SocketMeister/Enums.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: SocketServerStatus
-    path: src/SocketMeisterAPI/Enums.cs
+    path: src/SocketMeister/Enums.cs
     startLine: 259
   assemblies:
   - SocketMeister
@@ -45,11 +45,11 @@ items:
   type: Field
   source:
     remote:
-      path: src/SocketMeisterAPI/Enums.cs
+      path: src/SocketMeister/Enums.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: Stopped
-    path: src/SocketMeisterAPI/Enums.cs
+    path: src/SocketMeister/Enums.cs
     startLine: 267
   assemblies:
   - SocketMeister
@@ -73,11 +73,11 @@ items:
   type: Field
   source:
     remote:
-      path: src/SocketMeisterAPI/Enums.cs
+      path: src/SocketMeister/Enums.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: Starting
-    path: src/SocketMeisterAPI/Enums.cs
+    path: src/SocketMeister/Enums.cs
     startLine: 272
   assemblies:
   - SocketMeister
@@ -101,11 +101,11 @@ items:
   type: Field
   source:
     remote:
-      path: src/SocketMeisterAPI/Enums.cs
+      path: src/SocketMeister/Enums.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: Started
-    path: src/SocketMeisterAPI/Enums.cs
+    path: src/SocketMeister/Enums.cs
     startLine: 277
   assemblies:
   - SocketMeister
@@ -129,11 +129,11 @@ items:
   type: Field
   source:
     remote:
-      path: src/SocketMeisterAPI/Enums.cs
+      path: src/SocketMeister/Enums.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: Stopping
-    path: src/SocketMeisterAPI/Enums.cs
+    path: src/SocketMeister/Enums.cs
     startLine: 282
   assemblies:
   - SocketMeister

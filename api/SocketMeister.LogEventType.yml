@@ -19,11 +19,11 @@ items:
   type: Enum
   source:
     remote:
-      path: src/SocketMeisterAPI/Enums.cs
+      path: src/SocketMeister/Enums.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: LogEventType
-    path: src/SocketMeisterAPI/Enums.cs
+    path: src/SocketMeister/Enums.cs
     startLine: 223
   assemblies:
   - SocketMeister
@@ -46,11 +46,11 @@ items:
   type: Field
   source:
     remote:
-      path: src/SocketMeisterAPI/Enums.cs
+      path: src/SocketMeister/Enums.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: ConnectionEvent
-    path: src/SocketMeisterAPI/Enums.cs
+    path: src/SocketMeister/Enums.cs
     startLine: 231
   assemblies:
   - SocketMeister
@@ -74,11 +74,11 @@ items:
   type: Field
   source:
     remote:
-      path: src/SocketMeisterAPI/Enums.cs
+      path: src/SocketMeister/Enums.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: Exception
-    path: src/SocketMeisterAPI/Enums.cs
+    path: src/SocketMeister/Enums.cs
     startLine: 236
   assemblies:
   - SocketMeister
@@ -102,11 +102,11 @@ items:
   type: Field
   source:
     remote:
-      path: src/SocketMeisterAPI/Enums.cs
+      path: src/SocketMeister/Enums.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: UserMessage
-    path: src/SocketMeisterAPI/Enums.cs
+    path: src/SocketMeister/Enums.cs
     startLine: 241
   assemblies:
   - SocketMeister
@@ -130,11 +130,11 @@ items:
   type: Field
   source:
     remote:
-      path: src/SocketMeisterAPI/Enums.cs
+      path: src/SocketMeister/Enums.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: PollingEvent
-    path: src/SocketMeisterAPI/Enums.cs
+    path: src/SocketMeister/Enums.cs
     startLine: 246
   assemblies:
   - SocketMeister
@@ -158,11 +158,11 @@ items:
   type: Field
   source:
     remote:
-      path: src/SocketMeisterAPI/Enums.cs
+      path: src/SocketMeister/Enums.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: SubscriptionSyncEvent
-    path: src/SocketMeisterAPI/Enums.cs
+    path: src/SocketMeister/Enums.cs
     startLine: 251
   assemblies:
   - SocketMeister

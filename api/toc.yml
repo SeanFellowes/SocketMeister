@@ -19,12 +19,6 @@ items:
   - uid: SocketMeister.Logger
     name: Logger
     type: Class
-  - uid: SocketMeister.Serializer
-    name: Serializer
-    type: Class
-  - uid: SocketMeister.Serializer.ParameterType
-    name: Serializer.ParameterType
-    type: Enum
   - uid: SocketMeister.Severity
     name: Severity
     type: Enum
@@ -43,18 +37,6 @@ items:
   - uid: SocketMeister.SocketEndPoint
     name: SocketEndPoint
     type: Class
-  - uid: SocketMeister.SocketServer
-    name: SocketServer
-    type: Class
-  - uid: SocketMeister.SocketServer.Client
-    name: SocketServer.Client
-    type: Class
-  - uid: SocketMeister.SocketServer.ClientEventArgs
-    name: SocketServer.ClientEventArgs
-    type: Class
-  - uid: SocketMeister.SocketServer.MessageReceivedEventArgs
-    name: SocketServer.MessageReceivedEventArgs
-    type: Class
   - uid: SocketMeister.SocketServerStatus
     name: SocketServerStatus
     type: Enum
@@ -63,9 +45,6 @@ items:
     type: Class
   - uid: SocketMeister.TokenCollection
     name: TokenCollection
-    type: Class
-  - uid: SocketMeister.TokenCollectionReadOnly
-    name: TokenCollectionReadOnly
     type: Class
   - uid: SocketMeister.ValueType
     name: ValueType

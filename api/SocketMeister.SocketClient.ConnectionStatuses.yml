@@ -18,11 +18,11 @@ items:
   type: Enum
   source:
     remote:
-      path: src/SocketMeisterAPI/SocketClient.Enums.cs
+      path: src/SocketMeister/SocketClient.Enums.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: ConnectionStatuses
-    path: src/SocketMeisterAPI/SocketClient.Enums.cs
+    path: src/SocketMeister/SocketClient.Enums.cs
     startLine: 16
   assemblies:
   - SocketMeister
@@ -45,11 +45,11 @@ items:
   type: Field
   source:
     remote:
-      path: src/SocketMeisterAPI/SocketClient.Enums.cs
+      path: src/SocketMeister/SocketClient.Enums.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: Disconnected
-    path: src/SocketMeisterAPI/SocketClient.Enums.cs
+    path: src/SocketMeister/SocketClient.Enums.cs
     startLine: 21
   assemblies:
   - SocketMeister
@@ -73,11 +73,11 @@ items:
   type: Field
   source:
     remote:
-      path: src/SocketMeisterAPI/SocketClient.Enums.cs
+      path: src/SocketMeister/SocketClient.Enums.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: Connecting
-    path: src/SocketMeisterAPI/SocketClient.Enums.cs
+    path: src/SocketMeister/SocketClient.Enums.cs
     startLine: 25
   assemblies:
   - SocketMeister
@@ -101,11 +101,11 @@ items:
   type: Field
   source:
     remote:
-      path: src/SocketMeisterAPI/SocketClient.Enums.cs
+      path: src/SocketMeister/SocketClient.Enums.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: Connected
-    path: src/SocketMeisterAPI/SocketClient.Enums.cs
+    path: src/SocketMeister/SocketClient.Enums.cs
     startLine: 29
   assemblies:
   - SocketMeister
@@ -129,11 +129,11 @@ items:
   type: Field
   source:
     remote:
-      path: src/SocketMeisterAPI/SocketClient.Enums.cs
+      path: src/SocketMeister/SocketClient.Enums.cs
       branch: main
       repo: https://github.com/SeanFellowes/SocketMeister
     id: Disconnecting
-    path: src/SocketMeisterAPI/SocketClient.Enums.cs
+    path: src/SocketMeister/SocketClient.Enums.cs
     startLine: 33
   assemblies:
   - SocketMeister
