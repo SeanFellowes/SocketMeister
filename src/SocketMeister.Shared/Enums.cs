@@ -314,11 +314,7 @@ namespace SocketMeister
     /// <summary>
     /// The type of value stored in a token.
     /// </summary>
-#if SMISPUBLIC
-    public enum ValueType
-#else
-        internal enum ValueType
-#endif
+    internal enum ValueType
     {
         /// <summary>
         /// An unknown value type.

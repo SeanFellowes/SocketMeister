@@ -59,5 +59,6 @@
 			<PackagePath>\</PackagePath>
 		</None>
 	</ItemGroup>
+	<Import Project="..\SocketMeister.Shared\SoxcketMeister.Shared.projitems" Label="Shared" />
 
 </Project>

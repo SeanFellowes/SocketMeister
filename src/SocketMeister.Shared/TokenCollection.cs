@@ -10,11 +10,7 @@ namespace SocketMeister
     /// <summary>
     /// A dictionary-based collection of tokens. The data in the collection is updatable.
     /// </summary>
-#if SMISPUBLIC
-    public class TokenCollection
-#else
-        internal class TokenCollection
-#endif
+    internal class TokenCollection
     {
         private bool _changed;
         private readonly Dictionary<string, Token> _dictTokens = new Dictionary<string, Token>(StringComparer.OrdinalIgnoreCase);

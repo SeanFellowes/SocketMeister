@@ -18,6 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocketMeister", "SocketMeis
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocketMeisterAPI", "SocketMeisterAPI\SocketMeisterAPI.csproj", "{84352B8B-3FE2-A3B5-58F2-63EA681C22DF}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SocketMeister.Shared", "SocketMeister.Shared\SocketMeister.Shared.shproj", "{855096F4-8F91-43EA-8EE0-5CA9BFE0432F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -189,5 +191,10 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C4E7889F-22D0-451C-AE7D-287E06E0DDED}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		SocketMeister.Shared\SoxcketMeister.Shared.projitems*{420b608a-3abf-4165-18fe-63ad938b9205}*SharedItemsImports = 5
+		SocketMeister.Shared\SoxcketMeister.Shared.projitems*{84352b8b-3fe2-a3b5-58f2-63ea681c22df}*SharedItemsImports = 5
+		SocketMeister.Shared\SoxcketMeister.Shared.projitems*{855096f4-8f91-43ea-8ee0-5ca9bfe0432f}*SharedItemsImports = 13
 	EndGlobalSection
 EndGlobal

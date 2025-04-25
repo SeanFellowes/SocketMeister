@@ -11,11 +11,7 @@ namespace SocketMeister
     /// <summary>
     /// A dictionary-based collection of tokens. The data in this collection is read-only.
     /// </summary>
-#if SMISPUBLIC
-    public class TokenCollectionReadOnly : IDisposable
-#else
-        internal class TokenCollectionReadOnly : IDisposable
-#endif
+    internal class TokenCollectionReadOnly : IDisposable
     {
         private readonly ConcurrentDictionary<string, Token> _tokenDictionary = new ConcurrentDictionary<string, Token>(StringComparer.OrdinalIgnoreCase);
         private bool _disposed = false;

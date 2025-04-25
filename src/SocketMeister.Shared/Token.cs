@@ -6,11 +6,7 @@ namespace SocketMeister
     /// <summary>
     /// A value that is automatically synchronized between a SocketClient and a SocketServer. Multiple tokens can be used.
     /// </summary>
-#if SMISPUBLIC
-    public class Token
-#else
     internal class Token
-#endif
     {
         private bool _isReadOnly;
         private string _name;
