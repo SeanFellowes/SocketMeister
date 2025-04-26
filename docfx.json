@@ -17,13 +17,10 @@
   ],
 
   "build": {
-    "content": [
-      { "src": ".",            "files": [ "README.md", "toc.yml" ] },
-      { "src": "docs",         "files": [ "**/*.md" ],
-                                "exclude": [ "obj/**" ] },
-      { "src": "api",          "files": [ "**/*.yml", "toc.yml" ],
-      "exclude": [ "toc.yml" ] }
-    ],
+"content": [
+  { "src": "docs", "files": [ "**/*.md" ], "exclude": [ "obj/**" ] },
+  { "src": "api",  "files": [ "**/*.yml" ] }
+],
     "resource": [
       { "src": "docs",         "files": [ "**/images/**" ] }
     ],
