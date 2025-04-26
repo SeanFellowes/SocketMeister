@@ -1,8 +1,0 @@
-apiRules:
-  - exclude:
-      accessibility: internal
-  - exclude:
-      accessibility: private
-
-      
-
