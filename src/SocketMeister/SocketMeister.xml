@@ -993,7 +993,20 @@
             Message constructor
             </summary>
             <param name="Parameters">Array of parameters to send with the message. There must be at least 1 parameter.</param>
-            <param name="TimeoutMilliseconds">The maximum number of milliseconds to wait for a response before timing out.stV1">
+            <param name="TimeoutMilliseconds">The maximum number of milliseconds to wait for a response before timing out.</param>
+            <param name="IsLongPolling">The maximum number of milliseconds to wait for a response before timing out.</param>
+        </member>
+        <member name="P:SocketMeister.Messages.MessageV1.Parameters">
+            <summary>
+            Parameters provided with this message
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.MessageV1.IsLongPolling">
+            <summary>
+            True is this message is long polling on the server side. Long polling messages will be closed immediately in the event of a close from either the client or server side.
+            </summary>
+        </member>
+        <member name="T:SocketMeister.Messages.PollingRequestV1">
             <summary>
             Internal Message: Socket client regulary sends a poll request to the server to check that the server is alive.
             </summary>
@@ -1062,21 +1075,6 @@
             <summary>Int32</summary>
         </member>
         <member name="F:SocketMeister.Serializer.ParameterType.Int64Param">
-            <summary>Int64</summary>
-        </member>
-        <member name="F:SocketMeister.Serializer.ParameterType.UInt16Param">
-            <summary>Unsigned Int16</summary>
-        </member>
-        <member name="F:SocketMeister.Serializer.ParameterType.UInt32Param">
-            <summary>Unsigned Int32</summary>
-        </member>
-        <member name="F:SocketMeister.Serializer.ParameterType.UInt64Param">
-            <summary>Unsigned Int64</summary>
-        </member>
-        <member name="F:SocketMeister.Serializer.ParameterType.StringParam">
-            <summary>String</summary>
-        </member>
-        <member name="F:SocketMeister name="F:SocketMeister.Serializer.ParameterType.Int64Param">
             <summary>Int64</summary>
         </member>
         <member name="F:SocketMeister.Serializer.ParameterType.UInt16Param">
@@ -1198,7 +1196,7 @@
             </summary>
             <param name="EndPoints">List of endpoints available for connection.</param>
             <param name="EnableCompression">Whether to apply compression to data.</param>
-            <param name="friendlyName">Friendly name sent to the server for logging and error reporting purposes.</param>
+            <param name="friendlyName">Friendly name sent to the server for logging and error reporting purposes. If not provided a GUID is used.</param>
         </member>
         <member name="M:SocketMeister.SocketClient.#ctor(System.Collections.Generic.List{SocketMeister.SocketEndPoint},System.Boolean)">
             <summary>
@@ -1214,7 +1212,7 @@
             <param name="IPAddress1">IP Address to of the SocketMeister server to connect to</param>
             <param name="Port1">TCP port the server is listening on</param>
             <param name="EnableCompression">Whether compression will be applied to data.</param>
-            <param name="FriendlyName">Friendly name is sent to the SocketServer to be displayed in errors and logging.</param>
+            <param name="FriendlyName">Friendly name is sent to the SocketServer to be displayed in errors and logging. If not provided a GUID is used.</param>
         </member>
         <member name="M:SocketMeister.SocketClient.#ctor(System.String,System.Int32,System.Boolean)">
             <summary>
@@ -1233,7 +1231,7 @@
             <param name="IPAddress2">IP Address to of the second SocketMeister server to connect to</param>
             <param name="Port2">TCP port the second server is listening on</param>
             <param name="EnableCompression">Whether compression will be applied to data.</param>
-            <param name="FriendlyName">Friendly name is sent to the SocketServer to be displayed in errors and logging.</param>
+            <param name="FriendlyName">Friendly name is sent to the SocketServer to be displayed in errors and logging. If not provided a GUID is used.</param>
         </member>
         <member name="M:SocketMeister.SocketClient.#ctor(System.String,System.Int32,System.String,System.Int32,System.Boolean)">
             <summary>
@@ -1303,7 +1301,7 @@
         </member>
         <member name="P:SocketMeister.SocketClient.FriendlyName">
             <summary>
-            A friendly name for the client which can be. If available, the SocketServer will use this in logging and error handling
+            A friendly name for the client which can be. If available, the SocketServer will use this in logging and error handling, otherwise a GUID is used.
             </summary>
         </member>
         <member name="P:SocketMeister.SocketClient.InternalConnectionStatus">

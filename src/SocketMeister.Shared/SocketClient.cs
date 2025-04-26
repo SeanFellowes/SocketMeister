@@ -127,7 +127,7 @@ namespace SocketMeister
         /// </summary>
         /// <param name="EndPoints">List of endpoints available for connection.</param>
         /// <param name="EnableCompression">Whether to apply compression to data.</param>
-        /// <param name="friendlyName">Friendly name sent to the server for logging and error reporting purposes.</param>
+        /// <param name="friendlyName">Friendly name sent to the server for logging and error reporting purposes. If not provided a GUID is used.</param>
         public SocketClient(List<SocketEndPoint> EndPoints, bool EnableCompression, string friendlyName)
         {
             if (EndPoints == null) throw new ArgumentNullException(nameof(EndPoints));
@@ -187,7 +187,7 @@ namespace SocketMeister
         /// <param name="IPAddress1">IP Address to of the SocketMeister server to connect to</param>
         /// <param name="Port1">TCP port the server is listening on</param>
         /// <param name="EnableCompression">Whether compression will be applied to data.</param>
-        /// <param name="FriendlyName">Friendly name is sent to the SocketServer to be displayed in errors and logging.</param>
+        /// <param name="FriendlyName">Friendly name is sent to the SocketServer to be displayed in errors and logging. If not provided a GUID is used.</param>
         public SocketClient(string IPAddress1, int Port1, bool EnableCompression, string FriendlyName)
             : this(new List<SocketEndPoint> { new SocketEndPoint(IPAddress1, Port1) }, EnableCompression, FriendlyName) { }
 
@@ -210,7 +210,7 @@ namespace SocketMeister
         /// <param name="IPAddress2">IP Address to of the second SocketMeister server to connect to</param>
         /// <param name="Port2">TCP port the second server is listening on</param>
         /// <param name="EnableCompression">Whether compression will be applied to data.</param>
-        /// <param name="FriendlyName">Friendly name is sent to the SocketServer to be displayed in errors and logging.</param>
+        /// <param name="FriendlyName">Friendly name is sent to the SocketServer to be displayed in errors and logging. If not provided a GUID is used.</param>
         public SocketClient(string IPAddress1, int Port1, string IPAddress2, int Port2, bool EnableCompression, string FriendlyName)
             : this(
                 new List<SocketEndPoint>
@@ -406,7 +406,7 @@ namespace SocketMeister
 
 
         /// <summary>
-        /// A friendly name for the client which can be. If available, the SocketServer will use this in logging and error handling
+        /// A friendly name for the client which can be. If available, the SocketServer will use this in logging and error handling, otherwise a GUID is used.
         /// </summary>
         public string FriendlyName
         {
