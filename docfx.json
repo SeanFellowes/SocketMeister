@@ -17,10 +17,12 @@
   ],
 
   "build": {
-"content": [
-  { "src": "docs", "files": [ "**/*.md" ], "exclude": [ "obj/**" ] },
-  { "src": "api",  "files": [ "**/*.yml" ] }
-],
+    "content": [
+      { "src": "docs",         "files": [ "**/*.md" ],
+                                "exclude": [ "obj/**" ] },
+      { "src": "api",          "files": [ "**/*.yml", "toc.yml" ],
+      "exclude": [ "toc.yml" ] }
+    ],
     "resource": [
       { "src": "docs",         "files": [ "**/images/**" ] }
     ],
