@@ -17,7 +17,7 @@ server.MessageReceived += (_, e) => Console.WriteLine($"Got: {e.Message}");
 server.Start();
 ```
 
-⭐ Key features
+## ⭐ Key features
 Auto-reconnect & failover across multiple endpoints
 
 Request/response and publish/subscribe messaging patterns
@@ -26,7 +26,7 @@ Optional compression to save bandwidth
 
 Multithreaded server with thousands of concurrent clients
 
-📖 Learn more
+## 📖 Learn more
 Full docs & tutorials: seanfellowes.github.io/SocketMeister/
 
 API reference: https://seanfellowes.github.io/SocketMeister/api/index.html
