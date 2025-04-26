@@ -16,7 +16,7 @@
 		<PackageTags>tcp;socket;networking;dotnet</PackageTags>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageReleaseNotes>See CHANGELOG.md for details: https://github.com/SeanFellowes/SocketMeister/blob/main/CHANGELOG.md</PackageReleaseNotes>
-		<PackageReadmeFile>NuGetDocumentation.md</PackageReadmeFile>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 
 		<!-- Versioning -->
 		<Version>10.2.4</Version>
@@ -55,9 +55,9 @@
 			<Pack>true</Pack>
 			<PackagePath></PackagePath>
 		</None>
-		<None Include="..\..\NuGetDocumentation.md">
+		<None Include="README.md">
 			<Pack>true</Pack>
-			<PackagePath>\</PackagePath>
+			<PackagePath>\\</PackagePath>
 		</None>
 	</ItemGroup>
 	<Import Project="..\SocketMeister.Shared\SoxcketMeister.Shared.projitems" Label="Shared" />
