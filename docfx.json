@@ -21,7 +21,7 @@
       { "src": ".",            "files": [ "README.md", "toc.yml" ] },
       { "src": "docs",         "files": [ "**/*.md" ],
                                 "exclude": [ "obj/**" ] },
-      { "src": "api",          "files": [ "**/*.yml", "toc.yml" ],
+      { "src": "api",          "files": [ "**/*.yml" ],
       "exclude": [ "toc.yml" ] }
     ],
     "resource": [
