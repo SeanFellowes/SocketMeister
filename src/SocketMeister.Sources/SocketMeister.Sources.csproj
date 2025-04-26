@@ -1,0 +1,48 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+
+		<!-- Package metadata -->
+		<PackageId>SocketMeister.Sources</PackageId>
+		<Version>10.2.5</Version>
+		<Authors>Sean Fellowes</Authors>
+		<Description>SocketMeister source files—include via PackageReference to compile inline.</Description>
+
+		<!-- Include README and icon in the nupkg -->
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageIcon>icon_128.png</PackageIcon>
+
+		<!-- Pack on build -->
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<IncludeSymbols>false</IncludeSymbols>
+		<PackageOutputPath>..\nupkgs</PackageOutputPath>
+		<PackageProjectUrl>https://seanfellowes.github.io/SocketMeister/</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/SeanFellowes/SocketMeister</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageTags>tcp;socket;networking;dotnet</PackageTags>
+		<PackageReleaseNotes>See CHANGELOG.md for details: https://github.com/SeanFellowes/SocketMeister/blob/main/CHANGELOG.md</PackageReleaseNotes>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<!-- Your shared .cs sources -->
+		<None Include="..\SocketMeister.Shared\**\*.cs">
+			<Pack>true</Pack>
+			<PackagePath>contentFiles\cs\any\SocketMeister.Shared\</PackagePath>
+			<BuildAction>Compile</BuildAction>
+		</None>
+
+		<!-- README.md from the repo root -->
+		<None Include="..\..\README.md">
+			<Pack>true</Pack>
+			<!-- places it at package root -->
+			<PackagePath></PackagePath>
+		</None>
+
+		<!-- Icon file -->
+		<None Include="..\..\images\icon_128.png">
+			<Pack>true</Pack>
+			<PackagePath></PackagePath>
+		</None>
+	</ItemGroup>
+</Project>

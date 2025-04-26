@@ -19,9 +19,7 @@
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 
 		<!-- Versioning -->
-		<Version>10.2.4</Version>
-		<AssemblyVersion>10.2.4.0</AssemblyVersion>
-		<FileVersion>10.2.4.0</FileVersion>
+		<Version>10.2.5</Version>
 
 		<!-- Build settings -->
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -36,6 +34,7 @@
 		<!-- Icon -->
 		<PackageIcon>icon_128.png</PackageIcon>
 		<Configurations>Debug;Release</Configurations>
+		<PackageOutputPath>..\nupkgs</PackageOutputPath>
 
 		<!-- Self-contained is not needed for libraries -->
 	</PropertyGroup>
