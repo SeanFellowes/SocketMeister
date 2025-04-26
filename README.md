@@ -21,6 +21,6 @@ Full docs & tutorials: https://seanfellowes.github.io/SocketMeister/
 
 API reference: https://seanfellowes.github.io/SocketMeister/api/index.html
 
-Samples & advanced guides: see the docs/ folder on GitHub
+Samples & advanced guides: https://seanfellowes.github.io/SocketMeister/samples/index.html
 
 Note: If you’re embedding sources directly, grab SocketMeister.Sources from NuGet for easier debugging.
