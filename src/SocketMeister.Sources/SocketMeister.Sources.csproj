@@ -4,7 +4,7 @@
 
 		<!-- Package metadata -->
 		<PackageId>SocketMeister.Sources</PackageId>
-		<Version>10.2.5</Version>
+		<Version>10.2.6</Version>
 		<Authors>Sean Fellowes</Authors>
 		<Description>SocketMeister source files—include via PackageReference to compile inline.</Description>
 
@@ -24,25 +24,30 @@
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 	</PropertyGroup>
 
+	<!-- For SDK-style consumers (PackageReference) -->
 	<ItemGroup>
-		<!-- Your shared .cs sources -->
 		<None Include="..\SocketMeister.Shared\**\*.cs">
 			<Pack>true</Pack>
 			<PackagePath>contentFiles\cs\any\SocketMeister.Shared\</PackagePath>
 			<BuildAction>Compile</BuildAction>
 		</None>
 
-		<!-- README.md from the repo root -->
+		<!-- README & icon metadata (no need to repeat) -->
 		<None Include="..\..\README.md">
 			<Pack>true</Pack>
-			<!-- places it at package root -->
 			<PackagePath></PackagePath>
 		</None>
-
-		<!-- Icon file -->
 		<None Include="..\..\images\icon_128.png">
 			<Pack>true</Pack>
 			<PackagePath></PackagePath>
 		</None>
+	</ItemGroup>
+
+	<!-- For legacy projects (packages.config) -->
+	<ItemGroup>
+		<Content Include="..\SocketMeister.Shared\**\*.cs">
+			<Pack>true</Pack>
+			<PackagePath>content\SocketMeister.Shared\</PackagePath>
+		</Content>
 	</ItemGroup>
 </Project>

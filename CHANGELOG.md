@@ -2,7 +2,15 @@ Changelog
 
 All notable changes to SocketMeister are documented in this file.The project follows Semantic Versioning and the format is inspired by Keep a Changelog.
 
-[10.2.5]
+[10.2.6] - 2025-04-27
+
+Fixed
+
+SocketMeister.Sources folder naming conventions now best practice within Visual Studio.
+
+SocketMeister.Sources now works with both legacy and new .NET
+
+[10.2.5] - 2025-04-26
 
 Fixed
 
