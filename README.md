@@ -23,4 +23,4 @@ API reference: https://seanfellowes.github.io/SocketMeister/api/index.html
 
 Samples & advanced guides: https://seanfellowes.github.io/SocketMeister/samples/index.html
 
-Note: If you’re embedding sources directly, grab SocketMeister.Sources from NuGet for easier debugging.
+Note: If you’re embedding sources directly, grab [SocketMeister.Sources from NuGet](https://www.nuget.org/packages/SocketMeister.Sources/) for easier debugging.
