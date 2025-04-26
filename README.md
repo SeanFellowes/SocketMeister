@@ -5,17 +5,7 @@
 **SocketMeister** is a high-performance, fault-tolerant TCP/IP socket library for .NET clients & servers.
 
 ## 🚀 Quick start
-
-```powershell
-Install-Package SocketMeister
-```
-```csharp
-using SocketMeister;
-
-var server = new SocketServer("0.0.0.0", 5000);
-server.MessageReceived += (_, e) => Console.WriteLine($"Got: {e.Message}");
-server.Start();
-```
+Check out the getting started guide at https://seanfellowes.github.io/SocketMeister/getting-started.html
 
 ## ⭐ Key features
 Auto-reconnect & failover across multiple endpoints
@@ -27,7 +17,7 @@ Optional compression to save bandwidth
 Multithreaded server with thousands of concurrent clients
 
 ## 📖 Learn more
-Full docs & tutorials: seanfellowes.github.io/SocketMeister/
+Full docs & tutorials: https://seanfellowes.github.io/SocketMeister/
 
 API reference: https://seanfellowes.github.io/SocketMeister/api/index.html
 
