@@ -8,13 +8,14 @@
 
 ```powershell
 Install-Package SocketMeister
-
+```
+```csharp
 using SocketMeister;
 
 var server = new SocketServer("0.0.0.0", 5000);
 server.MessageReceived += (_, e) => Console.WriteLine($"Got: {e.Message}");
 server.Start();
-
+```
 
 ⭐ Key features
 Auto-reconnect & failover across multiple endpoints
