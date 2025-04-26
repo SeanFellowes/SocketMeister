@@ -55,9 +55,9 @@
 			<Pack>true</Pack>
 			<PackagePath></PackagePath>
 		</None>
-		<None Include="README.md">
+		<None Include="..\..\README.md">
 			<Pack>true</Pack>
-			<PackagePath>\\</PackagePath>
+			<PackagePath></PackagePath>
 		</None>
 	</ItemGroup>
 	<Import Project="..\SocketMeister.Shared\SoxcketMeister.Shared.projitems" Label="Shared" />
