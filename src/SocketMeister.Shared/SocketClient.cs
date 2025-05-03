@@ -619,9 +619,9 @@ namespace SocketMeister
 
 #if !NET35
                 // Wait for calling program to progress inbound messages, with a timeout
-                CancellationToken.Cancel();  // Signal cancellation
                 try
                 {
+                    CancellationToken?.Cancel();  // Signal cancellation
                     Task allTasks = Task.WhenAll(_backgroundTasks.Keys);
                     if (!allTasks.Wait(TimeSpan.FromSeconds(20)))
                     {
@@ -1100,7 +1100,7 @@ namespace SocketMeister
             Disconnect(SocketHasErrored: false, ClientDisconnectReason.ClientIsStopping, "Client is stopping (Requested by calling program).");
 
 #if !NET35
-            CancellationToken.Dispose();
+            CancellationToken?.Dispose();
 #endif
 
         }

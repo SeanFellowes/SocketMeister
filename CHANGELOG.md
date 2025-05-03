@@ -2,6 +2,12 @@ Changelog
 
 All notable changes to SocketMeister are documented in this file.The project follows Semantic Versioning and the format is inspired by Keep a Changelog.
 
+[10.2.7] - 2025-05-03
+
+Fixed
+
+.NET 3.5 only, Occasional crash during disconnect.
+
 [10.2.6] - 2025-04-27
 
 Fixed
