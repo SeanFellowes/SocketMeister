@@ -16,7 +16,7 @@ namespace SocketMeister.Messages
         private readonly byte[] _subscriptionBytes;
 
 
-        public Handshake2(int clientSocketMeisterVersion, string friendlyName, byte[] subscriptionBytes, bool clientSuportsServerVersion) : base(MessageType.Handshake2, messageId: 0)
+        public Handshake2(int clientSocketMeisterVersion, string friendlyName, byte[] subscriptionBytes, bool clientSuportsServerVersion) : base(MessageType.Handshake2, messageId: 0, nameof(Handshake2))
         {
             _clientSocketMeisterVersion = clientSocketMeisterVersion;
             _friendlyName = friendlyName;
@@ -28,7 +28,7 @@ namespace SocketMeister.Messages
         /// Fastest was to build this is to create it directly from the SocketEnvelope buffer.
         /// </summary>
         /// <param name="Reader">Binary Reader</param>
-        public Handshake2(BinaryReader Reader) : base(MessageType.Handshake2, messageId: 0)
+        public Handshake2(BinaryReader Reader) : base(MessageType.Handshake2, messageId: 0, nameof(Handshake2))
         {
             _clientSupportsServerVersion = Reader.ReadBoolean();
             _clientSocketMeisterVersion = Reader.ReadInt32();

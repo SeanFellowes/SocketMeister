@@ -1205,8 +1205,9 @@ namespace SocketMeister
         /// <param name="Parameters">Array of parameters to send with the message</param>
         /// <param name="TimeoutMilliseconds">Maximum number of milliseconds to wait for a response from the server</param>
         /// <param name="IsLongPolling">If the message is long polling on the server mark this as true and the message will be cancelled instantly when a disconnect occurs</param>
+        /// <param name="FriendlyMessageName">Optional friendly name of the message used in logging</param>
         /// <returns>Nullable array of bytes which was returned from the socket server</returns>
-        public byte[] SendMessage(object[] Parameters, int TimeoutMilliseconds = 60000, bool IsLongPolling = false)
+        public byte[] SendMessage(object[] Parameters, int TimeoutMilliseconds = 60000, bool IsLongPolling = false, string FriendlyMessageName = null)
         {
             string msg;
 
@@ -1247,14 +1248,21 @@ namespace SocketMeister
             int remainingMilliseconds = TimeoutMilliseconds - Convert.ToInt32((DateTime.UtcNow - startTime).TotalMilliseconds);
 
             //  Create Message
-            MessageV1 message = new MessageV1(Parameters, remainingMilliseconds, IsLongPolling);
+            MessageV1 message = new MessageV1(Parameters, remainingMilliseconds, IsLongPolling, FriendlyMessageName);
 
             //  Add the message to the unresponded messages collection
             UnrespondedMessages.Add(message);
 
             // Generate the sendBytes
             byte[] sendBytes = MessageEngine.GenerateSendBytes(message, _enableCompression);
-            Log($"Parent sending {typeof(MessageV1).Name} ({sendBytes.Length} bytes)...", Severity.Information, LogEventType.UserMessage, message.MessageId);
+            if (FriendlyMessageName == null)
+            {
+                Log($"Sending {typeof(MessageV1).Name} ({sendBytes.Length} bytes)...", Severity.Information, LogEventType.UserMessage, message.MessageId);
+            }
+            else
+            {
+                Log($"Sending {FriendlyMessageName} ({sendBytes.Length} bytes)...", Severity.Information, LogEventType.UserMessage, message.MessageId);
+            }
 
             try
             {
@@ -1435,8 +1443,15 @@ namespace SocketMeister
                         {
                             //  Attempt to find the message this response belongs to and attach the response to the message.
                             MessageResponseV1 response = _receiveEngine.GetMessageResponseV1();
-                            Log($"Received {_receiveEngine.MessageType.ToString()} ({e.BytesTransferred} bytes)", Severity.Information, LogEventType.UserMessage, response.MessageId);
-                            UnrespondedMessages.FindMessageAndSetResponse(response); ;
+                            IMessage originalMessage = UnrespondedMessages.FindMessageAndSetResponse(response);
+                            if (originalMessage == null)
+                            {
+                                Log($"Received {_receiveEngine.MessageType.ToString()} ({e.BytesTransferred} bytes)", Severity.Information, LogEventType.UserMessage, response.MessageId);
+                            }
+                            else
+                            {
+                                Log($"Received {originalMessage.FriendlyMessageName} response ({e.BytesTransferred} bytes)", Severity.Information, LogEventType.UserMessage, response.MessageId);
+                            }
                         }
 
                         else if (_receiveEngine.MessageType == MessageType.MessageV1)
@@ -1673,7 +1688,7 @@ namespace SocketMeister
 #endif
         }
 
-        private void Log(string message, Severity severity, LogEventType eventType, long messageId = 0)
+        private void Log(string message, Severity severity, LogEventType eventType, long messageId = 0, string friendlyMessageName = null)
         {
             LogEntry log = new LogEntry(message, severity, eventType, messageId);
             _logger.Log(log);

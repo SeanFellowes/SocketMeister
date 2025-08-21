@@ -174,7 +174,7 @@ namespace SocketMeister.MiniTestClient
                         object[] p = new object[2];
                         p[0] = _clientId;
                         p[1] = toSend;
-                        byte[] result = _client.SendMessage(p, TimeoutMs);
+                        byte[] result = _client.SendMessage(p, TimeoutMs, false, "Client Test Message");
 
                         string msg = "Response Received (" + (int)(DateTime.Now - start).TotalMilliseconds + " ms))";
 

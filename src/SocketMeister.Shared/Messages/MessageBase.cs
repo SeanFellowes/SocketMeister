@@ -17,6 +17,7 @@ namespace SocketMeister.Messages
         private static readonly object _lockMaxMessageId = new object();
 
         private Exception _error;
+        private string _friendlyMessageName = string.Empty;
         private bool _isAborted;
         private readonly object _lock = new object();
         private readonly long _messageId;
@@ -35,9 +36,10 @@ namespace SocketMeister.Messages
         public event EventHandler<EventArgs> SendReceiveStatusChanged;
 
 
-        internal MessageBase(MessageType MessageType, long messageId)
+        internal MessageBase(MessageType MessageType, long messageId, string friendlyMessageName)
         {
             _messageType = MessageType;
+            _friendlyMessageName = friendlyMessageName;
             CreatedDateTime = DateTime.UtcNow;
             _timeoutDateTime = DateTime.UtcNow.AddMilliseconds(_timeoutMilliseconds);
             if (messageId == 0)
@@ -89,6 +91,14 @@ namespace SocketMeister.Messages
         public Exception Error
         {
             get { lock (_lock) { return _error; } }
+        }
+
+        /// <summary>
+        /// Optional friendly name for the message, used for logging and debugging purposes.
+        /// </summary>
+        public string FriendlyMessageName
+        {
+            get { lock (_lock) { return _friendlyMessageName; } }
         }
 
         public long MessageId

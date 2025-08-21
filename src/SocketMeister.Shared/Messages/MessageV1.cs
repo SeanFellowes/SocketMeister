@@ -35,7 +35,8 @@ namespace SocketMeister.Messages
         /// <param name="Parameters">Array of parameters to send with the message. There must be at least 1 parameter.</param>
         /// <param name="TimeoutMilliseconds">The maximum number of milliseconds to wait for a response before timing out.</param>
         /// <param name="IsLongPolling">The maximum number of milliseconds to wait for a response before timing out.</param>
-        public MessageV1(object[] Parameters, int TimeoutMilliseconds, bool IsLongPolling = false) : base(MessageType.MessageV1, 0)
+        /// <param name="FriendlyMessageName">Optional friendly name for the message, used in logging.</param>
+        public MessageV1(object[] Parameters, int TimeoutMilliseconds, bool IsLongPolling = false, string FriendlyMessageName = null) : base(MessageType.MessageV1, 0, FriendlyMessageName)
         {
             base.TimeoutMilliseconds = TimeoutMilliseconds;
             _parameters = Parameters;
@@ -57,7 +58,7 @@ namespace SocketMeister.Messages
         }
 
         internal MessageV1(BinaryReader bR)
-            : base(MessageType.MessageV1, bR.ReadInt64()) 
+            : base(MessageType.MessageV1, bR.ReadInt64(), nameof(MessageV1)) 
         {
             base.TimeoutMilliseconds = bR.ReadInt32();
             _isLongPolling = bR.ReadBoolean();

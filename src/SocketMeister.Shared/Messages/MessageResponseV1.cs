@@ -27,18 +27,18 @@ namespace SocketMeister.Messages
         private readonly MessageEngineDeliveryResult _processingResult;
         private readonly byte[] _responseData = null;
 
-        public MessageResponseV1(long MessageId, byte[] ResponseData) : base(MessageType.MessageResponseV1, MessageId)
+        public MessageResponseV1(long MessageId, byte[] ResponseData) : base(MessageType.MessageResponseV1, MessageId, nameof(MessageResponseV1))
         {
             _responseData = ResponseData;
             _processingResult = MessageEngineDeliveryResult.Success;
         }
 
-        public MessageResponseV1(long MessageId, MessageEngineDeliveryResult ProcessingResult) : base(MessageType.MessageResponseV1, MessageId)
+        public MessageResponseV1(long MessageId, MessageEngineDeliveryResult ProcessingResult) : base(MessageType.MessageResponseV1, MessageId, nameof(MessageResponseV1))
         {
             _processingResult = ProcessingResult;
         }
 
-        public MessageResponseV1(long MessageId, Exception Exception) : base(MessageType.MessageResponseV1, MessageId)
+        public MessageResponseV1(long MessageId, Exception Exception) : base(MessageType.MessageResponseV1, MessageId, nameof(MessageResponseV1))
         {
             _processingResult = MessageEngineDeliveryResult.Exception;
         }
@@ -47,7 +47,7 @@ namespace SocketMeister.Messages
         /// Fastest was to build this is to create it directly from the SocketEnvelope buffer.
         /// </summary>
         /// <param name="Reader">Binary Reader</param>
-        public MessageResponseV1(BinaryReader Reader) : base(MessageType.MessageResponseV1, Reader.ReadInt64())
+        public MessageResponseV1(BinaryReader Reader) : base(MessageType.MessageResponseV1, Reader.ReadInt64(), nameof(MessageResponseV1))
         {
             if (Reader.ReadBoolean() == true) _responseData = Reader.ReadBytes(Reader.ReadInt32());
             if (Reader.ReadBoolean() == true)

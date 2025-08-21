@@ -12,7 +12,7 @@ namespace SocketMeister.Messages
         private readonly int _serverSocketMeisterVersion;
         private readonly string _clientId;
 
-        public Handshake1(int serverSocketMeisterVersion, string clientId) : base(MessageType.Handshake1, messageId: 0)
+        public Handshake1(int serverSocketMeisterVersion, string clientId) : base(MessageType.Handshake1, messageId: 0, nameof(Handshake1))
         {
             _serverSocketMeisterVersion = serverSocketMeisterVersion;
             _clientId = clientId;
@@ -22,7 +22,7 @@ namespace SocketMeister.Messages
         /// Fastest was to build this is to create it directly from the SocketEnvelope buffer.
         /// </summary>
         /// <param name="Reader">Binary Reader</param>
-        public Handshake1(BinaryReader Reader) : base(MessageType.Handshake1, messageId: 0)
+        public Handshake1(BinaryReader Reader) : base(MessageType.Handshake1, messageId: 0, nameof(Handshake1))
         {
             _serverSocketMeisterVersion = Reader.ReadInt32();
             _clientId = Reader.ReadString();

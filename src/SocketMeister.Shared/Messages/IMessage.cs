@@ -14,6 +14,11 @@ namespace SocketMeister.Messages
         DateTime CreatedDateTime { get; }
 
         /// <summary>
+        /// Optional friendly name for the message, used for logging and debugging purposes.
+        /// </summary>
+        string FriendlyMessageName { get; }
+
+        /// <summary>
         /// Unique identifier for the message
         /// </summary>
         long MessageId { get; }

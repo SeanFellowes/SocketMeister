@@ -9,7 +9,7 @@ namespace SocketMeister.Messages
     {
         private readonly byte[] _changeBytes;
 
-        public TokenChangesRequestV1(byte[] ChangeBytes) : base(MessageType.TokenChangesRequestV1, messageId: 0)
+        public TokenChangesRequestV1(byte[] ChangeBytes) : base(MessageType.TokenChangesRequestV1, messageId: 0, nameof(TokenChangesRequestV1))
         {
             _changeBytes = ChangeBytes;
         }
@@ -18,7 +18,7 @@ namespace SocketMeister.Messages
         /// Fastest was to build this is to create it directly from the SocketEnvelope buffer.
         /// </summary>
         /// <param name="Reader">Binary Reader</param>
-        public TokenChangesRequestV1(BinaryReader Reader) : base(MessageType.TokenChangesRequestV1, messageId: 0)
+        public TokenChangesRequestV1(BinaryReader Reader) : base(MessageType.TokenChangesRequestV1, messageId: 0, nameof(TokenChangesRequestV1))
         {
             _changeBytes = Reader.ReadBytes(Reader.ReadInt32());
         }

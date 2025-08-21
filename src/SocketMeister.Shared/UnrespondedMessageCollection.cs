@@ -91,8 +91,8 @@ namespace SocketMeister
         /// If found, sets the response message on the original message.
         /// </summary>
         /// <param name="ResponseMessage">The response message to associate with the original message.</param>
-        /// <returns>True if the original message was found and updated; otherwise, false.</returns>
-        internal bool FindMessageAndSetResponse(MessageResponseV1 ResponseMessage)
+        /// <returns>The message which the response relates to from the unresponded messages list.</returns>
+        internal IMessage FindMessageAndSetResponse(MessageResponseV1 ResponseMessage)
         {
             _lock.EnterReadLock();
             IMessage message;
@@ -109,12 +109,8 @@ namespace SocketMeister
             if (message != null)
             {
                 message.SetStatusCompleted(ResponseMessage);
-                return true;
             }
-            else
-            {
-                return false;
-            }
+            return message;
         }
     }
 }

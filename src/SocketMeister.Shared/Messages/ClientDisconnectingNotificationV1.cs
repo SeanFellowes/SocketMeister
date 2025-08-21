@@ -10,7 +10,7 @@ namespace SocketMeister.Messages
         private string _clientMessage;
         private ClientDisconnectReason _disconnectReason;
 
-        public ClientDisconnectingNotificationV1(ClientDisconnectReason disconnectReason, string clientMessage) : base(MessageType.ClientDisconnectingNotificationV1, messageId: 0)
+        public ClientDisconnectingNotificationV1(ClientDisconnectReason disconnectReason, string clientMessage) : base(MessageType.ClientDisconnectingNotificationV1, messageId: 0, nameof(ClientDisconnectingNotificationV1))
         {
             _disconnectReason = disconnectReason;
             _clientMessage = clientMessage;
@@ -20,7 +20,7 @@ namespace SocketMeister.Messages
         /// Fastest was to build this is to create it directly from the SocketEnvelope buffer.
         /// </summary>
         /// <param name="Reader">Binary Reader</param>
-        public ClientDisconnectingNotificationV1(BinaryReader Reader) : base(MessageType.ClientDisconnectingNotificationV1, messageId: 0)
+        public ClientDisconnectingNotificationV1(BinaryReader Reader) : base(MessageType.ClientDisconnectingNotificationV1, messageId: 0, nameof(ClientDisconnectingNotificationV1))
         {
             _disconnectReason = (ClientDisconnectReason)Reader.ReadInt16();
             if (Reader.ReadBoolean())

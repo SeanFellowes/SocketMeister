@@ -869,6 +869,11 @@
             UTC datetime the message was created.
             </summary>
         </member>
+        <member name="P:SocketMeister.Messages.IMessage.FriendlyMessageName">
+            <summary>
+            Optional friendly name for the message, used for logging and debugging purposes.
+            </summary>
+        </member>
         <member name="P:SocketMeister.Messages.IMessage.MessageId">
             <summary>
             Unique identifier for the message
@@ -929,6 +934,11 @@
         <member name="P:SocketMeister.Messages.MessageBase.Error">
             <summary>
             Error which occured when the message failed
+            </summary>
+        </member>
+        <member name="P:SocketMeister.Messages.MessageBase.FriendlyMessageName">
+            <summary>
+            Optional friendly name for the message, used for logging and debugging purposes.
             </summary>
         </member>
         <member name="P:SocketMeister.Messages.MessageBase.TimeoutMilliseconds">
@@ -993,13 +1003,14 @@
             The remote client which sent this Message (value null on SocketClient)
             </summary>
         </member>
-        <member name="M:SocketMeister.Messages.MessageV1.#ctor(System.Object[],System.Int32,System.Boolean)">
+        <member name="M:SocketMeister.Messages.MessageV1.#ctor(System.Object[],System.Int32,System.Boolean,System.String)">
             <summary>
             Message constructor
             </summary>
             <param name="Parameters">Array of parameters to send with the message. There must be at least 1 parameter.</param>
             <param name="TimeoutMilliseconds">The maximum number of milliseconds to wait for a response before timing out.</param>
             <param name="IsLongPolling">The maximum number of milliseconds to wait for a response before timing out.</param>
+            <param name="FriendlyMessageName">Optional friendly name for the message, used in logging.</param>
         </member>
         <member name="P:SocketMeister.Messages.MessageV1.Parameters">
             <summary>
@@ -1386,13 +1397,14 @@
             </summary>
             <param name="Message">Message to be sent</param>
         </member>
-        <member name="M:SocketMeister.SocketClient.SendMessage(System.Object[],System.Int32,System.Boolean)">
+        <member name="M:SocketMeister.SocketClient.SendMessage(System.Object[],System.Int32,System.Boolean,System.String)">
             <summary>
             Send a message to the server and wait for a response. 
             </summary>
             <param name="Parameters">Array of parameters to send with the message</param>
             <param name="TimeoutMilliseconds">Maximum number of milliseconds to wait for a response from the server</param>
             <param name="IsLongPolling">If the message is long polling on the server mark this as true and the message will be cancelled instantly when a disconnect occurs</param>
+            <param name="FriendlyMessageName">Optional friendly name of the message used in logging</param>
             <returns>Nullable array of bytes which was returned from the socket server</returns>
         </member>
         <member name="M:SocketMeister.SocketClient.ProcessReceive(System.Object,System.Net.Sockets.SocketAsyncEventArgs)">
@@ -2117,7 +2129,7 @@
             If found, sets the response message on the original message.
             </summary>
             <param name="ResponseMessage">The response message to associate with the original message.</param>
-            <returns>True if the original message was found and updated; otherwise, false.</returns>
+            <returns>The message which the response relates to from the unresponded messages list.</returns>
         </member>
         <member name="T:SocketAsyncEventArgsPool">
             <summary>

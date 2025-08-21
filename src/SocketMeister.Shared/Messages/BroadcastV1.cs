@@ -18,7 +18,7 @@ namespace SocketMeister.Messages
         /// </summary>
         /// <param name="Name">Optional Name/Tag/Identifier for the broadcast.</param>
         /// <param name="Parameters">Array of parameters to send with the broadcast. There must be at least 1 parameter.</param>
-        public BroadcastV1(string Name, object[] Parameters) : base(MessageType.BroadcastV1, messageId: 0)
+        public BroadcastV1(string Name, object[] Parameters) : base(MessageType.BroadcastV1, messageId: 0, nameof(BroadcastV1))
         {
             _parameters = Parameters;
             _name = Name;
@@ -45,7 +45,7 @@ namespace SocketMeister.Messages
         }
 
 
-        internal BroadcastV1(BinaryReader bR) : base(MessageType.BroadcastV1, messageId: 0)
+        internal BroadcastV1(BinaryReader bR) : base(MessageType.BroadcastV1, messageId: 0, nameof(BroadcastV1))
         {
             if (bR.ReadBoolean() == true) _name = bR.ReadString();
             else _name = null;
