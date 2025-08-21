@@ -394,7 +394,7 @@ namespace SocketMeister
         {
             get
             {
-                //  If the socket is connected but we haven't completed polling, then we are still connecting.
+                //  If the socket is connected but we haven't completed the handshake, then we are still connecting.
                 ConnectionStatuses conStatus = InternalConnectionStatus;
                 if (conStatus == ConnectionStatuses.Connected && HandshakeCompleted == false)
                 {
@@ -447,6 +447,7 @@ namespace SocketMeister
             set
             {
                 bool lockAcquired = false;
+                ConnectionStatuses foundConnectionStatus = InternalConnectionStatus;
                 try
                 {
                     //  IF THE VALUE IS THE SAME, DON'T RAISE THE EVENT
@@ -462,6 +463,10 @@ namespace SocketMeister
                         _connectionStatusLock.ExitWriteLock();
                     }
                 }
+
+                //  If the connection status is "Connected" but the handshake has not completed, do not raise the event
+                //if (value == ConnectionStatuses.Connected && HandshakeCompleted == false) return;
+
                 RaiseConnectionStatusChanged();
             }
         }
@@ -1058,7 +1063,7 @@ namespace SocketMeister
                 Log(new Exception("Connection reset before handshake completed."));
                 Disconnect(SocketHasErrored: false, ClientDisconnectReason.ConnectionReset, traceMsg);
             }
-            else if (!HandshakeCompleted)
+            else if (!Handshake2AckReceived)
             {
                 traceMsg = $"Handshake could not be completed within {timeoutSeconds} seconds. Disconnecting.";
                 Log(new Exception(traceMsg));
@@ -1082,8 +1087,9 @@ namespace SocketMeister
                 //  Success. Connection is fully established.
                 //  No need to change InternalConnectionStatus = Connected but me MUST raise an event so the calling
                 //  software knows the connection is fully established via the ConnectionStatus property.
-                RaiseConnectionStatusChanged();
                 Log("Handshake completed. Connection is fully established.", Severity.Information, LogEventType.ConnectionEvent);
+                HandshakeCompleted = true;   // Sets all handshake flags to true
+                RaiseConnectionStatusChanged();
             }
         }
 
@@ -1456,7 +1462,7 @@ namespace SocketMeister
                             // Note: Logging and validation is performed in BgCompleteHandshake()
                             Handshake2Ack hs1 = _receiveEngine.GetHandshake2Ack();
                             ServerSupportsThisClientVersion = hs1.ServerSupportsClientVersion;
-                            HandshakeCompleted = true;   // Sets all handshake flags to true
+                            Handshake2AckReceived = true;
                         }
 
                         else if (_receiveEngine.MessageType == MessageType.TokenChangesResponseV1)

@@ -173,6 +173,9 @@ namespace SocketMeister.MiniTestClient
             Log(e.LogEntry, ct.Name);
         }
 
+ 
+
+
 
         private void Client_MessageReceived(object sender, SocketClient.MessageReceivedEventArgs e)
         {
@@ -233,6 +236,13 @@ namespace SocketMeister.MiniTestClient
             ClientControl ct = (ClientControl)sender;
             Log(new LogEntry($"ResponseReceived event raised.", Severity.Debug, LogEventType.UserMessage), "Client " + ct.ClientId);
         }
+
+        private void Client_StatusChanged(object sender, EventArgs e)
+        {
+            ClientControl ct = (ClientControl)sender;
+            Log(new LogEntry($"StatusChanged event raised: " + ct.Status, Severity.Debug, LogEventType.ConnectionEvent), "Client " + ct.ClientId);
+        }
+
 
 
 #if !NET35
@@ -324,6 +334,7 @@ namespace SocketMeister.MiniTestClient
                     Client.BroadcastReceived += Client_BroadcastReceived;
                     Client.ResponseReceived += Client_ResponseReceived;
                     Client.LogRaised += Client_LogRaised;
+                    Client.StatusChanged += Client_StatusChanged; 
 
                     List<SocketEndPoint> eps = new List<SocketEndPoint>();
                     if (EndpointRB2.IsChecked == false)
