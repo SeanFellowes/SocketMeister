@@ -19,7 +19,7 @@
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 
 		<!-- Versioning -->
-		<Version>10.2.8</Version>
+		<Version>10.3.0</Version>
 
 		<!-- Build settings -->
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
