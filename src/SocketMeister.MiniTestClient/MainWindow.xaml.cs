@@ -50,7 +50,8 @@ namespace SocketMeister.MiniTestClient
             {
                 get
                 {
-                    if (Severity == Severity.Debug) return new SolidColorBrush(Color.FromArgb(255, 180, 180, 250));
+                    if (EventType == LogEventType.Internal) return new SolidColorBrush(Color.FromArgb(255, 200, 200, 200));
+                    else if (Severity == Severity.Debug) return new SolidColorBrush(Color.FromArgb(255, 180, 180, 250));
                     else if (Severity == Severity.Error) return new SolidColorBrush(Color.FromArgb(255, 255, 204, 204));
                     else if (Severity == Severity.Warning) return new SolidColorBrush(Color.FromArgb(255, 253, 210, 159));
                     else return new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
@@ -239,8 +240,8 @@ namespace SocketMeister.MiniTestClient
 
         private void Client_StatusChanged(object sender, EventArgs e)
         {
-            ClientControl ct = (ClientControl)sender;
-            Log(new LogEntry($"StatusChanged event raised: " + ct.Status, Severity.Debug, LogEventType.ConnectionEvent), "Client " + ct.ClientId);
+            //ClientControl ct = (ClientControl)sender;
+            //Log(new LogEntry("ConnectionStatusChanged event raised: " + ct.Status, Severity.Debug, LogEventType.ConnectionEvent), "Client " + ct.ClientId);
         }
 
 

@@ -267,6 +267,11 @@
             Subscription synchronization events.
             </summary>
         </member>
+        <member name="F:SocketMeister.LogEventType.Internal">
+            <summary>
+            Internal debugging.
+            </summary>
+        </member>
         <member name="T:SocketMeister.SocketServerStatus">
             <summary>
             The execution status of a SocketServer.

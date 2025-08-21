@@ -464,10 +464,17 @@ namespace SocketMeister
                     }
                 }
 
-                //  If the connection status is "Connected" but the handshake has not completed, do not raise the event
-                //if (value == ConnectionStatuses.Connected && HandshakeCompleted == false) return;
+                //  Raise the event if the connection status is not Connected. The connected
+                //  status is raised when the handshake is completed.
+                if (value != ConnectionStatuses.Connected)
+                {
+                    RaiseConnectionStatusChanged();
+                }
 
-                RaiseConnectionStatusChanged();
+#if DEBUG
+                // Log the property change
+                Log("Property " + nameof(InternalConnectionStatus) + " set: " + value.ToString(), Severity.Debug, LogEventType.Internal);
+#endif
             }
         }
 
@@ -1089,6 +1096,9 @@ namespace SocketMeister
                 //  software knows the connection is fully established via the ConnectionStatus property.
                 Log("Handshake completed. Connection is fully established.", Severity.Information, LogEventType.ConnectionEvent);
                 HandshakeCompleted = true;   // Sets all handshake flags to true
+                //  Note: Log events are delayed. The client will receive the ConnectionStatusChanged
+                //  before the log events are processed. This may be confusing if the calling
+                //  program is adding addition logging to capture ConnectionStatusChanged events.
                 RaiseConnectionStatusChanged();
             }
         }

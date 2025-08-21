@@ -249,7 +249,12 @@ namespace SocketMeister
         /// <summary>
         /// Subscription synchronization events.
         /// </summary>
-        SubscriptionSyncEvent = 4
+        SubscriptionSyncEvent = 4,
+
+        /// <summary>
+        /// Internal debugging.
+        /// </summary>
+        Internal = 5
     }
 
 

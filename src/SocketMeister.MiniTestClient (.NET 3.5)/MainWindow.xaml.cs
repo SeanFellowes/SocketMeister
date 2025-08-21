@@ -50,7 +50,8 @@ namespace SocketMeister.MiniTestClient
             {
                 get
                 {
-                    if (Severity == Severity.Debug) return new SolidColorBrush(Color.FromArgb(255, 180, 180, 250));
+                    if (EventType == LogEventType.Internal) return new SolidColorBrush(Color.FromArgb(255, 200, 200, 200));
+                    else if (Severity == Severity.Debug) return new SolidColorBrush(Color.FromArgb(255, 180, 180, 250));
                     else if (Severity == Severity.Error) return new SolidColorBrush(Color.FromArgb(255, 255, 204, 204));
                     else if (Severity == Severity.Warning) return new SolidColorBrush(Color.FromArgb(255, 253, 210, 159));
                     else return new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
@@ -62,6 +63,7 @@ namespace SocketMeister.MiniTestClient
                 {
                     if (EventType == LogEventType.Exception) return new SolidColorBrush(Color.FromArgb(255, 220, 0, 0));
                     else if (EventType == LogEventType.ConnectionEvent) return new SolidColorBrush(Color.FromArgb(255, 20, 20, 200));
+                    else if (EventType == LogEventType.Internal) return new SolidColorBrush(Color.FromArgb(255, 70, 70, 200));
                     else if (EventType == LogEventType.PollingEvent) return new SolidColorBrush(Color.FromArgb(255, 140, 140, 140));
                     else if (EventType == LogEventType.SubscriptionSyncEvent) return new SolidColorBrush(Color.FromArgb(255, 140, 140, 140));
                     else return new SolidColorBrush(Color.FromArgb(255, 0, 0, 0));
