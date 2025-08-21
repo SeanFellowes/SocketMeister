@@ -2,6 +2,12 @@ Changelog
 
 All notable changes to SocketMeister are documented in this file.The project follows Semantic Versioning and the format is inspired by Keep a Changelog.
 
+[10.2.8] - 2025-08-21
+
+Fixed
+
+SocketClient raises the connected event after the handshake is complete, rather than before.
+
 [10.2.7] - 2025-05-03
 
 Fixed
