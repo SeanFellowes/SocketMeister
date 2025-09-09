@@ -102,6 +102,7 @@ namespace SocketMeister
         /// <param name="logEntry">The log entry to add.</param>
         public void Log(LogEntry logEntry)
         {
+            if (logEntry == null) return; // Prevent nulls from being enqueued
             _logQueue.Enqueue(logEntry);
         }
 

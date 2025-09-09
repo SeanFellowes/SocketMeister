@@ -2,6 +2,12 @@ Changelog
 
 All notable changes to SocketMeister are documented in this file.The project follows Semantic Versioning and the format is inspired by Keep a Changelog.
 
+[10.3.1] - 2025-09-10
+
+Fixed
+
+Logger crashes due to null log entry being added. Null log entries now ignored during adding.
+
 [10.3.0] - 2025-08-22
 
 Added
