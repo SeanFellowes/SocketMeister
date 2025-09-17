@@ -41,7 +41,7 @@
 
 	<!-- Conditional constants per framework -->
 	<PropertyGroup Condition="'$(TargetFramework)'=='net35'">
-		<DefineConstants>SMNOSERVER;SMISPUBLIC</DefineConstants>
+		<DefineConstants>SMISPUBLIC</DefineConstants>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(TargetFramework)'!='net35'">
 		<DefineConstants>SMISPUBLIC</DefineConstants>

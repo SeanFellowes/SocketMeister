@@ -3,7 +3,7 @@ using System.IO;
 
 namespace SocketMeister.Messages
 {
-#if !SMNOSERVER && !NET35
+#if !NET35
     internal partial class MessageV1 : MessageBase
     {
         private SocketServer.Client _remoteClient = null;

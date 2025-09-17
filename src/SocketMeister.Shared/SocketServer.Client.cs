@@ -1,4 +1,4 @@
-﻿#if !SMNOSERVER && !NET35
+﻿#if !NET35
 using SocketMeister.Messages;
 using System;
 using System.Collections.Generic;
