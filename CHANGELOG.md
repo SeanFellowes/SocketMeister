@@ -1,202 +1,190 @@
-Changelog
+# Changelog
 
-All notable changes to SocketMeister are documented in this file.The project follows Semantic Versioning and the format is inspired by Keep a Changelog.
+All notable changes to this project will be documented in this file.
+The format is based on Keep a Changelog and this project adheres to Semantic Versioning.
 
-[10.3.1] - 2025-09-10
+## [11.0.0] - 2025-09-19
 
-Fixed
+### Breaking
+- SocketClient no longer auto-starts on construction. After creating an instance and attaching event handlers, call `Start()` to begin connecting.
+- `ConnectionStatusChanged` and `CurrentEndPointChanged` now use typed event args: `ConnectionStatusChangedEventArgs` and `CurrentEndPointChangedEventArgs`.
+- `ClientDisconnectReason` is now a public enum (was internal) when `SMISPUBLIC` is defined.
 
-Logger crashes due to null log entry being added. Null log entries now ignored during adding.
+### Added
+- `SocketClient.Start()` to explicitly start the background worker and connection logic (idempotent; throws if the client has been stopped).
+- `SocketClient.IsRunning` to indicate if the background worker is running.
+- `SocketClient.ServerVersion` to expose the server’s SocketMeister version once known.
 
-[10.3.0] - 2025-08-22
+### Changed
+- `SocketClient.ExceptionRaised` is no longer marked obsolete. Use it for an error-only channel; use `LogRaised` for full telemetry.
+- XML documentation on all `SocketClient` constructors now notes the requirement to call `Start()` in v11.
 
-Added
+### Migration
+1. Replace auto-start assumptions with an explicit `client.Start()` after subscribing to events.
+2. Update handlers for:
+   - `ConnectionStatusChanged(object sender, ConnectionStatusChangedEventArgs e)`
+   - `CurrentEndPointChanged(object sender, CurrentEndPointChangedEventArgs e)`
+3. If you previously filtered `LogRaised` for only errors, consider subscribing to `ExceptionRaised` instead.
 
-Optional friendly message names in logging on SocketClient, by providing a name during message sending to server.
+Notes:
+- .NET 3.5 remains supported. `Start()` uses the existing background thread model on .NET 3.5.
+- Event ordering remains as before: the final Connected status is raised after the handshake completes.
 
-[10.2.8] - 2025-08-21
+## [10.3.1] - 2025-09-10
 
-Fixed
+### Fixed
+- Logger could crash due to null log entry being added. Null log entries are now ignored.
 
-SocketClient raises the connected event after the handshake is complete, rather than before.
+## [10.3.0] - 2025-08-22
 
-[10.2.7] - 2025-05-03
+### Added
+- Optional friendly message names in SocketClient logging when sending messages.
 
-Fixed
+## [10.2.8] - 2025-08-21
 
-.NET 3.5 only, Occasional crash during disconnect.
+### Fixed
+- SocketClient now raises the Connected status after the handshake completes, rather than before.
 
-[10.2.6] - 2025-04-27
+## [10.2.7] - 2025-05-03
 
-Fixed
+### Fixed
+- (.NET 3.5 only) Occasional crash during disconnect.
 
-SocketMeister.Sources folder naming conventions now best practice within Visual Studio.
+## [10.2.6] - 2025-04-27
 
-SocketMeister.Sources now works with both legacy and new .NET
+### Fixed
+- SocketMeister.Sources folder layout and naming for Visual Studio.
+- SocketMeister.Sources now works with both legacy and modern .NET projects.
 
-[10.2.5] - 2025-04-26
+## [10.2.5] - 2025-04-26
 
-Fixed
+### Fixed
+- (.NET 3.5) Reconnect after multiple failovers to another SocketServer.
 
-Bug in .NET 3.5 where SocketClient would not reconnect ofter more than one failover 
-to another SocketServer.
+### Changed
+- Marked obsolete (later reversed in 11.0.0): `SocketClient.ExceptionRaised` and `ExceptionEventArgs`.
+- `Token` class visibility changed to internal.
 
-Changed
+## [10.2.4] - 2025-04-19
 
-Marked obsolete - SocketClient.ExceptionRaised event
+### Fixed
+- NuGet Sources package layout so .cs files appear correctly in SDK-style projects.
 
-Marked obsolete - ExceptionEventArgs, SocketClient.ExceptionRaised event.
+## [10.2.3] - 2025-04-14
 
-Token class now Internal, not Public
+### Fixed
+- Race where a very fast client closed immediately after connect, causing an unexpected disconnect.
 
-[10.2.4] - 2025‑04‑19
+## [10.2.2] - 2025-04-02
 
-Fixed
+### Fixed
+- Access modifiers of logging helpers wrapped with SMISPUBLIC to avoid duplicate types when embedding Sources in multiple assemblies.
 
-NuGet Sources package layout/power‑shell target so .cs files appear correctly in SDK‑style projects.
+## [10.2.0] - 2025-03-31
 
-[10.2.3] - 2025‑04‑14
+### Changed
+- SocketServer: replaced `TraceEventRaised` with `LogRaised` to align with SocketClient (introduced in 10.1.0).
+- Removed several unused test projects.
 
-Fixed
+## [10.1.0] - 2025-03-31
 
-Race condition where a very fast client closed the connection immediately after Connect, causing an unexpected disconnect.
+### Added
+- Single-threaded logging pipeline and `LogRaised` event on SocketClient.
 
-[10.2.2] - 2025‑04‑02
+### Changed
+- Internal refactor to centralize token handling.
 
-Fixed
+## [10.0.3] - 2025-03-27
 
-Access modifiers of logging helpers wrapped in SMISPUBLIC to stop duplicate‑type warnings when the Sources package is embedded in multiple assemblies.
+### Added
+- Extra log events for `TraceEventRaised`.
 
-[10.2.0] - 2025‑03‑31
+### Fixed
+- Robust socket recreation when `ObjectDisposedException` occurs.
 
-Changed
+## [10.0.2] - 2025-03-27
 
-SocketServer: replaced TraceEventRaised with LogRaised to align with SocketClient (introduced in 10.1.0).
+### Fixed
+- Client could stop reconnecting if the socket was reset before the handshake completed.
 
-Removed several unused test projects from the repository.
+## [10.0.1] - 2025-03-26
 
-[10.1.0] - 2025‑03‑31
+### Fixed
+- Minor bugs discovered during rollout of 10.0.0.
 
-Added
+## [10.0.0] - 2025-03-26
 
-Single‑threaded logging pipeline and LogRaised event on SocketClient.
+### Breaking
+- Major internal rewrite. Message framing, handshake sequence and many private members overhauled for throughput and resilience.
+- Older clients (≤ 4.x) will not connect to a 10.x server.
 
-Changed
+## [4.1.5] - 2025-03-11
 
-Internal refactor to centralise token handling.
+### Fixed
+- Client now waits until server receive buffer is allocated before reporting Connected.
 
-[10.0.3] - 2025‑03‑27
+## [4.1.2] - 2024-12-30
 
-Added
+### Fixed
+- Null payloads are now accepted by SocketClient.
+- Corrected message-timeout handling on both client and server.
 
-Extra log events for TraceEventRaised.
+## [4.1.1] - 2024-12-28
 
-Fixed
+### Added
+- Response logging in server test harness.
 
-Robust socket recreation when ObjectDisposedException occurs.
+## [4.1.0] - 2024-12-26
 
-[10.0.2] - 2025‑03‑27
+### Added
+- Target framework monikers updated to include .NET 9.
 
-Fixed
+## [4.0.6] - 2023-12-31
 
-Client could stop attempting to reconnect if the socket was reset before the handshake completed.
+### Removed
+- Legacy FxCop analyzer; added TFM support up to .NET 8.
 
-[10.0.1] - 2025‑03‑26
+## [4.0.1] - 2021-03-26
 
-Fixed
+### Fixed / Changed
+- First maintenance release on v4 line – general cleanup and compiler-warning passes.
 
-Minor bugs discovered during rollout of 10.0.0.
+## [4.0.0] - 2021-03-15
 
-[10.0.0] - 2025‑03‑26
+### Breaking
+- First major API tidying since inception: renamed many types/members for clarity, dropped obsolete properties/events, unified exception model.
 
-Breaking
+## [2.2.1] - 2021-02-24
 
-Major internal rewrite. Message framing, handshake sequence and many private members were overhauled for throughput and resilience.
+### Fixed
+- .NET Core 3.1 assemblies could not see SocketServer/SocketClient due to incorrect visibility.
 
-Older clients (≤4.x) will not connect to a 10.x server.
+## [2.2.0] - 2021-02-23
 
-[4.1.5] - 2025‑03‑11
+### Fixed
+- Large-payload transfer timeout; improved reconnection latency when server restarts.
 
-Fixed
+## [2.1.2] - 2021-02-17
 
-Client now waits until server receive buffer is allocated before reporting Connected.
+### Fixed
+- Infinite-loop edge case during disconnect.
 
-[4.1.2] - 2024‑12‑30
+## [2.0.7] - 2021-01-20
 
-Fixed
+### Added / Changed
+- Mini test server/client utilities; incremental server robustness tweaks.
 
-Null payloads are now accepted by SocketClient.
+## [2.0.6] - 2021-01-15
 
-Corrected message‑timeout handling on both client and server.
+### Fixed
+- Thread-pool exhaustion under very high load by introducing dedicated worker threads.
 
-[4.1.1] - 2024‑12‑28
+## [2.0.5] - 2020-10-07
 
-Added
+### Fixed
+- Handshake reliability and compiler warnings for Silverlight builds.
 
-Response logging in server test harness.
-
-[4.1.0] - 2024‑12‑26
-
-Added
-
-Target‑framework monikers updated to include .NET 9.
-
-[4.0.6] - 2023‑12‑31
-
-Removed
-
-Legacy FxCop analyser; added TFM support up to .NET 8.
-
-[4.0.1] - 2021‑03‑26
-
-Fixed / Changed
-
-First maintenance release on v4 line – general cleanup and compiler‑warning passes.
-
-[4.0.0] - 2021‑03‑15
-
-Breaking
-
-First big API tidy‑up since inception: renamed many types/members for clarity, dropped obsolete properties/events, unified exception model.
-
-[2.2.1] - 2021‑02‑24
-
-Fixed
-
-.NET Core 3.1 assemblies could not see SocketServer/SocketClient due to incorrect visibility.
-
-[2.2.0] - 2021‑02‑23
-
-Fixed
-
-Large‑payload transfer timeout; improved reconnection latency when server restarts.
-
-[2.1.2] - 2021‑02‑17
-
-Fixed
-
-Infinite‑loop edge case during disconnect.
-
-[2.0.7] - 2021‑01‑20
-
-Added / Changed
-
-Mini test server/client utilities; incremental server robustness tweaks.
-
-[2.0.6] - 2021‑01‑15
-
-Fixed
-
-Thread‑pool exhaustion under very high load by introducing dedicated worker threads.
-
-[2.0.5] - 2020‑10‑07
-
-Fixed
-
-Handshake reliability and compiler warnings for Silverlight builds.
-
-Earlier 1.x releases (2015‑2020)
+## Earlier 1.x releases (2015–2020)
 
 The 1.x line predates public NuGet distribution and consisted mainly of exploratory internal releases. They are no longer supported.
 
-Generated automatically from commit history & NuGet metadata on 2025‑04‑21.

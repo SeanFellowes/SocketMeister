@@ -78,26 +78,17 @@ namespace SocketMeister
         /// <summary>
         /// Event raised when the status of a socket connection changes.
         /// </summary>
-        public event EventHandler<EventArgs> ConnectionStatusChanged;
+        public event EventHandler<ConnectionStatusChangedEventArgs> ConnectionStatusChanged;
 
         /// <summary>
         /// Event raised when the current endpoint changes.
         /// </summary>
-        public event EventHandler<EventArgs> CurrentEndPointChanged;
+        public event EventHandler<CurrentEndPointChangedEventArgs> CurrentEndPointChanged;
 
         /// <summary>
         /// <para>Event raised when an exception occurs.</para>
-        /// <para><strong>Obsolete:</strong> This class will be removed in a future release.  
-        /// Use the <see cref="LogRaised"/> event instead.</para>
+        /// <para>For full telemetry including non-error events, also subscribe to <see cref="LogRaised"/>.</para>
         /// </summary>
-        /// <remarks>
-        /// Marked obsolete in v10.2.5; scheduled for removal in v11.0.0.
-        /// </remarks>
-        [Obsolete(
-            "ExceptionRaised is deprecated and will be removed in a future release. " +
-            "Please use the LogRaised event instead.",
-            false  // false = compiler warning; true = compiler error
-        )]
         public event EventHandler<ExceptionEventArgs> ExceptionRaised;
 
         /// <summary>
@@ -124,6 +115,8 @@ namespace SocketMeister
 
         /// <summary>
         /// Initializes a new instance of the SocketClient class.
+        /// Note: Starting from v11.0.0 the client no longer auto-starts.
+        /// After constructing and attaching event handlers, call <see cref="Start()"/> to begin connecting.
         /// </summary>
         /// <param name="EndPoints">List of endpoints available for connection.</param>
         /// <param name="EnableCompression">Whether to apply compression to data.</param>
@@ -161,8 +154,6 @@ namespace SocketMeister
             _asyncEventArgsSendSubscriptionChanges = new SocketAsyncEventArgs();
             _asyncEventArgsSendSubscriptionChanges.SetBuffer(new byte[Constants.SEND_RECEIVE_BUFFER_SIZE], 0, Constants.SEND_RECEIVE_BUFFER_SIZE);
             _asyncEventArgsSendSubscriptionChanges.Completed += ProcessSendSubscriptionChanges;
-
-            StartBackgroundWorker();
         }
 
         private void Logger_LogRaised(object sender, LogEventArgs e)
@@ -413,6 +404,11 @@ namespace SocketMeister
             get { return _friendlyName; }
         }
 
+        /// <summary>
+        /// Indicates whether the client's background worker is running.
+        /// </summary>
+        public bool IsRunning => IsBackgroundWorkerRunning;
+
 
 
         /// <summary>
@@ -447,7 +443,7 @@ namespace SocketMeister
             set
             {
                 bool lockAcquired = false;
-                ConnectionStatuses foundConnectionStatus = InternalConnectionStatus;
+                ConnectionStatuses oldPublicStatus = ConnectionStatus;
                 try
                 {
                     //  IF THE VALUE IS THE SAME, DON'T RAISE THE EVENT
@@ -468,7 +464,11 @@ namespace SocketMeister
                 //  status is raised when the handshake is completed.
                 if (value != ConnectionStatuses.Connected)
                 {
-                    RaiseConnectionStatusChanged();
+                    var newPublicStatus = (value == ConnectionStatuses.Connected && HandshakeCompleted == false)
+                        ? ConnectionStatuses.Connecting
+                        : value;
+                    var reason = (newPublicStatus == ConnectionStatuses.Disconnected) ? LastDisconnectReason : ClientDisconnectReason.Unknown;
+                    RaiseConnectionStatusChanged(oldPublicStatus, newPublicStatus, reason);
                 }
 
 #if DEBUG
@@ -539,6 +539,8 @@ namespace SocketMeister
 
         private bool IsBackgroundWorkerRunning { get { lock (_lock) { return _isBackgroundWorkerRunning; } } set { lock (_lock) { _isBackgroundWorkerRunning = value; } } }
 
+        private bool _hasStarted = false; // ensures Start() is idempotent
+
         /// <summary>
         /// The last time a polling response was received from the socket server.
         /// </summary>
@@ -546,10 +548,18 @@ namespace SocketMeister
 
         private int ServerSocketMeisterVersion { get { lock (_handshakeLock) { return _serverSocketMeisterVersion; } } set { lock (_handshakeLock) { _serverSocketMeisterVersion = value; } } }
 
+        /// <summary>
+        /// The server's SocketMeister version as reported during handshake. Returns 0 until known.
+        /// </summary>
+        public int ServerVersion { get { lock (_handshakeLock) { return _serverSocketMeisterVersion; } } }
+
         private bool ServerSupportsThisClientVersion { get { lock (_handshakeLock) { return _serverSupportsThisClientVersion; } } set { lock (_handshakeLock) { _serverSupportsThisClientVersion = value; } } }
 
 
         private bool StopClientPermanently { get { lock (_stopClientPermanentlyLock) { return _stopClientPermanently; } } set { lock (_stopClientPermanentlyLock) { _stopClientPermanently = value; } } }
+
+        private ClientDisconnectReason _lastDisconnectReason = ClientDisconnectReason.Unknown;
+        private ClientDisconnectReason LastDisconnectReason { get { lock (_stopClientPermanentlyLock) { return _lastDisconnectReason; } } set { lock (_stopClientPermanentlyLock) { _lastDisconnectReason = value; } } }
 
         /// <summary>
         /// The number of subscriptions for this client
@@ -592,6 +602,7 @@ namespace SocketMeister
             try
             {
                 if (InternalConnectionStatus == ConnectionStatuses.Disconnecting || InternalConnectionStatus == ConnectionStatuses.Disconnected) return;
+                LastDisconnectReason = Reason;
                 CurrentEndPoint.SetDisconnected(Reason);
 
                 HandshakeCompleted = false;  // sets all handshake flags to false
@@ -762,6 +773,20 @@ namespace SocketMeister
             bgWorker.Start();
         }
 
+        /// <summary>
+        /// Starts the client background worker and connection logic. Idempotent; throws if the client has been stopped.
+        /// </summary>
+        public void Start()
+        {
+            if (StopClientPermanently) throw new InvalidOperationException("Cannot start a client that has been stopped.");
+            lock (_lock)
+            {
+                if (_hasStarted) return;
+                _hasStarted = true;
+            }
+            StartBackgroundWorker();
+        }
+
 
 
         /// <summary>
@@ -800,8 +825,9 @@ namespace SocketMeister
                 //  Set the current endpoint to the best endpoint
                 if (CurrentEndPoint != bestEndPoint)
                 {
+                    var oldEp = CurrentEndPoint;
                     CurrentEndPoint = bestEndPoint;
-                    CurrentEndPointChanged?.Invoke(this, new EventArgs());
+                    CurrentEndPointChanged?.Invoke(this, new CurrentEndPointChangedEventArgs(oldEp, bestEndPoint));
                 }
 
                 //  Try to connect
@@ -893,11 +919,11 @@ namespace SocketMeister
         }
 
 
-        private void RaiseConnectionStatusChanged()
+        private void RaiseConnectionStatusChanged(ConnectionStatuses oldStatus, ConnectionStatuses newStatus, ClientDisconnectReason reason)
         {
             try
             {
-                ConnectionStatusChanged?.Invoke(this, EventArgs.Empty);
+                ConnectionStatusChanged?.Invoke(this, new ConnectionStatusChangedEventArgs(oldStatus, newStatus, CurrentEndPoint, reason));
             }
             catch (Exception ex)
             {
@@ -1092,14 +1118,14 @@ namespace SocketMeister
             else
             {
                 //  Success. Connection is fully established.
-                //  No need to change InternalConnectionStatus = Connected but me MUST raise an event so the calling
+                //  No need to change InternalConnectionStatus = Connected but we MUST raise an event so the calling
                 //  software knows the connection is fully established via the ConnectionStatus property.
                 Log("Handshake completed. Connection is fully established.", Severity.Information, LogEventType.ConnectionEvent);
                 HandshakeCompleted = true;   // Sets all handshake flags to true
                 //  Note: Log events are delayed. The client will receive the ConnectionStatusChanged
                 //  before the log events are processed. This may be confusing if the calling
                 //  program is adding addition logging to capture ConnectionStatusChanged events.
-                RaiseConnectionStatusChanged();
+                RaiseConnectionStatusChanged(ConnectionStatuses.Connecting, ConnectionStatuses.Connected, ClientDisconnectReason.Unknown);
             }
         }
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SocketMeister;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
@@ -7,7 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interop;
 using System.Windows.Media;
-using SocketMeister;
+using static SocketMeister.SocketClient;
 
 namespace SocketMeister.MiniTestClient
 {
@@ -219,6 +220,7 @@ namespace SocketMeister.MiniTestClient
 #endif
 
             tbPort.Text = _client.CurrentEndPoint.Port.ToString();
+            _client.Start();
         }
 
         public void Stop()
@@ -229,22 +231,22 @@ namespace SocketMeister.MiniTestClient
             _client.Dispose();
         }
 
-        private void Client_ConnectionStatusChanged(object sender, EventArgs e)
+        private void Client_ConnectionStatusChanged(object sender, ConnectionStatusChangedEventArgs e)
         {
             Dispatcher.BeginInvoke((Action)(() =>
             {
-                if (_client.ConnectionStatus == SocketClient.ConnectionStatuses.Connected) bdStatus.Background = new SolidColorBrush(Colors.Green);
-                else if (_client.ConnectionStatus == SocketClient.ConnectionStatuses.Disconnected) bdStatus.Background = new SolidColorBrush(Colors.Red);
+                if (e.NewStatus == SocketClient.ConnectionStatuses.Connected) bdStatus.Background = new SolidColorBrush(Colors.Green);
+                else if (e.NewStatus == SocketClient.ConnectionStatuses.Disconnected) bdStatus.Background = new SolidColorBrush(Colors.Red);
                 else bdStatus.Background = new SolidColorBrush(Colors.Orange);
                 StatusChanged?.Invoke(this, new EventArgs());
             }));
         }
 
-        private void Client_CurrentEndPointChanged(object sender, EventArgs e)
+        private void Client_CurrentEndPointChanged(object sender, CurrentEndPointChangedEventArgs e)
         {
             Dispatcher.BeginInvoke((Action)(() =>
             {
-                tbPort.Text = _client.CurrentEndPoint.Port.ToString();
+                tbPort.Text = e.NewEndPoint.Port.ToString();
             }));
         }
 

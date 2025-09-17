@@ -7,7 +7,11 @@ using System.Text;
 
 namespace SocketMeister
 {
+#if SMISPUBLIC
+    public enum ClientDisconnectReason
+#else
     internal enum ClientDisconnectReason
+#endif
     {
         /// <summary>
         /// The reason for the client disconnect is unknown.

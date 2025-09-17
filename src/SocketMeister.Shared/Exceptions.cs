@@ -7,16 +7,8 @@ using System.Text;
 namespace SocketMeister
 {
     /// <summary>
-    /// <para>Provides details about an exception that occurred.</para>
-    /// <para><strong>Obsolete:</strong> This class will be removed in a future release.</para>
+    /// Provides details about an exception that occurred.
     /// </summary>
-    /// <remarks>
-    /// Marked obsolete in v10.2.5; scheduled for removal in v11.0.0
-    /// </remarks>
-    [Obsolete(
-        "ExceptionEventArgs is deprecated and will be removed in a future release.",
-        false  // false = compiler warning; true = compiler error
-    )]
 #if SMISPUBLIC
     public class ExceptionEventArgs : EventArgs
 #else

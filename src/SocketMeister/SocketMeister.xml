@@ -415,12 +415,8 @@
         </member>
         <member name="T:SocketMeister.ExceptionEventArgs">
             <summary>
-            <para>Provides details about an exception that occurred.</para>
-            <para><strong>Obsolete:</strong> This class will be removed in a future release.</para>
+            Provides details about an exception that occurred.
             </summary>
-            <remarks>
-            Marked obsolete in v10.2.5; scheduled for removal in v11.0.0
-            </remarks>
         </member>
         <member name="M:SocketMeister.ExceptionEventArgs.#ctor(System.Exception,System.Int32)">
             <summary>
@@ -1179,12 +1175,8 @@
         <member name="E:SocketMeister.SocketClient.ExceptionRaised">
             <summary>
             <para>Event raised when an exception occurs.</para>
-            <para><strong>Obsolete:</strong> This class will be removed in a future release.  
-            Use the <see cref="E:SocketMeister.SocketClient.LogRaised"/> event instead.</para>
+            <para>For full telemetry including non-error events, also subscribe to <see cref="E:SocketMeister.SocketClient.LogRaised"/>.</para>
             </summary>
-            <remarks>
-            Marked obsolete in v10.2.5; scheduled for removal in v11.0.0.
-            </remarks>
         </member>
         <member name="E:SocketMeister.SocketClient.MessageReceived">
             <summary>
@@ -1209,6 +1201,8 @@
         <member name="M:SocketMeister.SocketClient.#ctor(System.Collections.Generic.List{SocketMeister.SocketEndPoint},System.Boolean,System.String)">
             <summary>
             Initializes a new instance of the SocketClient class.
+            Note: Starting from v11.0.0 the client no longer auto-starts.
+            After constructing and attaching event handlers, call <see cref="M:SocketMeister.SocketClient.Start"/> to begin connecting.
             </summary>
             <param name="EndPoints">List of endpoints available for connection.</param>
             <param name="EnableCompression">Whether to apply compression to data.</param>
@@ -1320,6 +1314,11 @@
             A friendly name for the client which can be. If available, the SocketServer will use this in logging and error handling, otherwise a GUID is used.
             </summary>
         </member>
+        <member name="P:SocketMeister.SocketClient.IsRunning">
+            <summary>
+            Indicates whether the client's background worker is running.
+            </summary>
+        </member>
         <member name="P:SocketMeister.SocketClient.InternalConnectionStatus">
             <summary>
             Used internally. Returns the real connection status.
@@ -1333,6 +1332,11 @@
         <member name="P:SocketMeister.SocketClient.LastPollResponse">
             <summary>
             The last time a polling response was received from the socket server.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketClient.ServerVersion">
+            <summary>
+            The server's SocketMeister version as reported during handshake. Returns 0 until known.
             </summary>
         </member>
         <member name="P:SocketMeister.SocketClient.SubscriptionCount">
@@ -1361,6 +1365,11 @@
         <member name="M:SocketMeister.SocketClient.StartBackgroundWorker">
             <summary>
             This background thread runs until the SocketClient is stopped
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketClient.Start">
+            <summary>
+            Starts the client background worker and connection logic. Idempotent; throws if the client has been stopped.
             </summary>
         </member>
         <member name="M:SocketMeister.SocketClient.BgPerformAttemptConnect">
@@ -1437,6 +1446,46 @@
         <member name="F:SocketMeister.SocketClient.ConnectionStatuses.Disconnecting">
             <summary>
             The socket is disconnecting.
+            </summary>
+        </member>
+        <member name="T:SocketMeister.SocketClient.ConnectionStatusChangedEventArgs">
+            <summary>
+            Values provided when the connection status changes.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketClient.ConnectionStatusChangedEventArgs.OldStatus">
+            <summary>
+            The previous connection status as seen by callers.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketClient.ConnectionStatusChangedEventArgs.NewStatus">
+            <summary>
+            The new connection status as seen by callers.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketClient.ConnectionStatusChangedEventArgs.EndPoint">
+            <summary>
+            The endpoint associated with the connection state.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketClient.ConnectionStatusChangedEventArgs.Reason">
+            <summary>
+            The disconnect reason when transitioning to Disconnected; Unknown otherwise.
+            </summary>
+        </member>
+        <member name="T:SocketMeister.SocketClient.CurrentEndPointChangedEventArgs">
+            <summary>
+            Values provided when the current endpoint changes.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketClient.CurrentEndPointChangedEventArgs.OldEndPoint">
+            <summary>
+            The previous endpoint.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketClient.CurrentEndPointChangedEventArgs.NewEndPoint">
+            <summary>
+            The new current endpoint.
             </summary>
         </member>
         <member name="T:SocketMeister.SocketClient.MessageReceivedEventArgs">

@@ -13,6 +13,77 @@ namespace SocketMeister
 #endif
     {
         /// <summary>
+        /// Values provided when the connection status changes.
+        /// </summary>
+#if SMISPUBLIC
+        public class ConnectionStatusChangedEventArgs : EventArgs
+#else
+        internal class ConnectionStatusChangedEventArgs : EventArgs
+#endif
+        {
+            private readonly SocketClient.ConnectionStatuses _oldStatus;
+            private readonly SocketClient.ConnectionStatuses _newStatus;
+            private readonly SocketEndPoint _endPoint;
+            private readonly ClientDisconnectReason _reason;
+
+            internal ConnectionStatusChangedEventArgs(SocketClient.ConnectionStatuses oldStatus, SocketClient.ConnectionStatuses newStatus, SocketEndPoint endPoint, ClientDisconnectReason reason)
+            {
+                _oldStatus = oldStatus;
+                _newStatus = newStatus;
+                _endPoint = endPoint;
+                _reason = reason;
+            }
+
+            /// <summary>
+            /// The previous connection status as seen by callers.
+            /// </summary>
+            public SocketClient.ConnectionStatuses OldStatus => _oldStatus;
+
+            /// <summary>
+            /// The new connection status as seen by callers.
+            /// </summary>
+            public SocketClient.ConnectionStatuses NewStatus => _newStatus;
+
+            /// <summary>
+            /// The endpoint associated with the connection state.
+            /// </summary>
+            public SocketEndPoint EndPoint => _endPoint;
+
+            /// <summary>
+            /// The disconnect reason when transitioning to Disconnected; Unknown otherwise.
+            /// </summary>
+            public ClientDisconnectReason Reason => _reason;
+        }
+
+        /// <summary>
+        /// Values provided when the current endpoint changes.
+        /// </summary>
+#if SMISPUBLIC
+        public class CurrentEndPointChangedEventArgs : EventArgs
+#else
+        internal class CurrentEndPointChangedEventArgs : EventArgs
+#endif
+        {
+            private readonly SocketEndPoint _oldEndPoint;
+            private readonly SocketEndPoint _newEndPoint;
+
+            internal CurrentEndPointChangedEventArgs(SocketEndPoint oldEndPoint, SocketEndPoint newEndPoint)
+            {
+                _oldEndPoint = oldEndPoint;
+                _newEndPoint = newEndPoint;
+            }
+
+            /// <summary>
+            /// The previous endpoint.
+            /// </summary>
+            public SocketEndPoint OldEndPoint => _oldEndPoint;
+
+            /// <summary>
+            /// The new current endpoint.
+            /// </summary>
+            public SocketEndPoint NewEndPoint => _newEndPoint;
+        }
+        /// <summary>
         /// Values provided when a message is received from a server. 
         /// </summary>
         public class MessageReceivedEventArgs : EventArgs
