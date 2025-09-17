@@ -1,29 +1,47 @@
-# Multi‑Endpoint Failover
+# Multi-Endpoint Failover
 
-Demonstrates how to configure a client with multiple server endpoints for automatic load‑balancing and failover.
+Configure a client with multiple server endpoints for automatic failover (and quick switch-over) if one goes down.
 
 ## Scenario
-You have two server instances and want your client to round‑robin between them, automatically failing over if one goes down.
+You have two server instances; the client maintains a single active connection and will fail over when needed.
 
 ## Code Example
 ```csharp
+using System;
+using System.Collections.Generic;
 using SocketMeister;
 
-// Define two endpoints
-var endpoints = new[]
+// Define endpoints
+var endpoints = new List<SocketEndPoint>
 {
-    new HostPort("server1.example.com", 5000),
-    new HostPort("server2.example.com", 5000)
+    new SocketEndPoint("server1.example.com", 5000),
+    new SocketEndPoint("server2.example.com", 5000)
 };
 
-var client = new SocketClient(endpoints);
-client.Connect();
+var client = new SocketClient(endpoints, EnableCompression: false, friendlyName: "MultiEPClient");
 
-// Send 100 messages, cycling through endpoints
-for (int i = 0; i < 100; i++)
+client.ConnectionStatusChanged += (s, e) =>
 {
-    client.Send($"Message {i}");
-    Console.WriteLine($"Sent Message {i}");
+    Console.WriteLine($"Status: {e.OldStatus} -> {e.NewStatus} (Reason: {e.Reason})");
+};
+
+client.CurrentEndPointChanged += (s, e) =>
+{
+    Console.WriteLine($"Endpoint changed: {e.OldEndPoint?.Description} -> {e.NewEndPoint.Description}");
+};
+
+client.Start();
+
+// Send messages as usual (to the current active endpoint)
+for (int i = 0; i < 10; i++)
+{
+    var response = client.SendMessage(new object[] { $"Message {i}" }, TimeoutMilliseconds: 5000);
+    Console.WriteLine($"Reply length: {response?.Length ?? 0}");
 }
 
-client.Disconnect();
+client.Stop();
+```
+
+Notes:
+- SocketClient uses the best available endpoint as `CurrentEndPoint` and automatically reconnects/fails over when needed.
+- Messages are sent over the currently connected endpoint (no per-message round-robin).

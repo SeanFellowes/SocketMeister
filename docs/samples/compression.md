@@ -1,33 +1,35 @@
-# Built‑in Compression
+# Built-in Compression
 
-Shows how to enable GZip compression for bandwidth‑heavy payloads.
+Enable compression on both client and server for bandwidth-heavy payloads.
 
 ## Scenario
-You’re sending large text or binary data and want to reduce network usage.
+You're sending large text or binary data and want to reduce network usage.
 
 ## Code Example
 ```csharp
-using SocketMeister;
+using System;
+using System.Collections.Generic;
 using System.Text;
+using SocketMeister;
 
-// Enable compression on both client and server
-var server = new SocketServer("0.0.0.0", 5001, enableCompression: true);
-var client = new SocketClient("localhost", 5001, enableCompression: true);
-
+// Enable compression on both sides
+var server = new SocketServer(port: 5001, CompressSentData: true);
 server.MessageReceived += (s, e) =>
 {
-    Console.WriteLine($"Server got: {e.Message}");
-    e.Response = e.Message; // echo
+    // Echo back the first string parameter
+    string msg = (string)e.Parameters[0];
+    e.Response = Encoding.UTF8.GetBytes(msg);
 };
-
 server.Start();
-client.Connect();
+
+var endpoints = new List<SocketEndPoint> { new SocketEndPoint("localhost", 5001) };
+var client = new SocketClient(endpoints, EnableCompression: true, friendlyName: "CompressionClient");
+client.Start();
 
 string payload = new string('X', 100_000);
-client.Send(payload);
-Console.WriteLine("Client sent compressed payload.");
+byte[] reply = client.SendMessage(new object[] { payload }, TimeoutMilliseconds: 10000);
+Console.WriteLine("Client sent compressed payload and received " + reply.Length + " bytes.");
 
-var reply = client.Receive();
-Console.WriteLine("Client got response of length " + reply.Length);
-
-client.Disconnect();
+client.Stop();
+server.Stop();
+```

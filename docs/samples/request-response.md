@@ -1,29 +1,38 @@
 # Request/Response Pattern
 
-Illustrates synchronous request/reply messaging with timeouts.
+Illustrates synchronous request/reply messaging with timeouts using the v11 API.
 
 ## Scenario
-Your client must send a query and wait for a server’s computed response.
+Your client sends parameters to the server and waits for a byte[] response.
 
 ## Code Example
 ```csharp
+using System;
+using System.Collections.Generic;
+using System.Text;
 using SocketMeister;
 
-var server = new SocketServer("0.0.0.0", 5002);
-server.RequestReceived += (s, e) =>
+// Server
+var server = new SocketServer(port: 5002, CompressSentData: false);
+server.MessageReceived += (s, e) =>
 {
-    // Simulate work
-    int result = int.Parse(e.Message) * 2;
-    e.Response = result.ToString();
+    // Parameters are strongly typed; expect a single string
+    string input = (string)e.Parameters[0];
+    int result = int.Parse(input) * 2;
+    e.Response = Encoding.UTF8.GetBytes(result.ToString());
 };
 server.Start();
 
-var client = new SocketClient("localhost", 5002);
-client.Connect();
+// Client
+var endpoints = new List<SocketEndPoint> { new SocketEndPoint("localhost", 5002) };
+var client = new SocketClient(endpoints, EnableCompression: false, friendlyName: "ReqRespClient");
+client.Start();
 
 string request = "21";
-string reply = client.SendRequest(request, timeout: TimeSpan.FromSeconds(5));
+byte[] bytes = client.SendMessage(new object[] { request }, TimeoutMilliseconds: 5000);
+string reply = Encoding.UTF8.GetString(bytes);
 Console.WriteLine($"Request {request}, got reply {reply}");
 
-client.Disconnect();
+client.Stop();
 server.Stop();
+```

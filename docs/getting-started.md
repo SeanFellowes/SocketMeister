@@ -1,100 +1,110 @@
-﻿# Getting Started with SocketMeister
+# Getting Started with SocketMeister
 
-This guide walks you through the essential steps to install, configure, and run your first SocketMeister client and server applications.
+This guide shows how to install the package and build a minimal server and client using the v11 API.
 
 ## Prerequisites
 
-- **.NET SDK**: .NET Framework 3.5 or higher, .NET Core 3.1, .NET 5/6/7/8
-- **IDE or Editor**: Visual Studio 2019+, Visual Studio Code, JetBrains Rider, or equivalent
-- **NuGet**: Integrated in your IDE or via `dotnet` CLI
+- .NET Framework 3.5+ or modern .NET (Core/5+/6+/7+/8+)
+- Visual Studio, VS Code, Rider, or equivalent
+- NuGet (via IDE or `dotnet` CLI)
 
-## 1. Install the Package
+## 1) Install the package
 
-Add SocketMeister to your project via NuGet:
+PowerShell:
 
 ```powershell
-Install-Package SocketMeister -Version 10.2.4
+Install-Package SocketMeister -Version 11.0.0
 ```
 
 Or using the .NET CLI:
 
 ```bash
-dotnet add package SocketMeister --version 10.2.4
+dotnet add package SocketMeister --version 11.0.0
 ```
 
-## 2. Create the Server
-
-1. In Visual Studio (or your preferred IDE), create a new Console Application project.
-2. Add `using SocketMeister;` at the top of `Program.cs`.
-3. Replace the `Main` method with:
+## 2) Minimal server
 
 ```csharp
-static void Main(string[] args)
-{
-    // Listen on port 5000 for any IPv4 address
-    var server = new SocketServer("0.0.0.0", 5000);
+using System;
+using System.Text;
+using SocketMeister;
 
-    server.MessageReceived += (sender, e) =>
+class Program
+{
+    static void Main()
     {
-        Console.WriteLine($"Received from {e.RemoteEndPoint}: {e.Message}");
-        if (e.IsRequest)
-        {
-            // Automatically respond to request messages
-            e.Response = $"Echo: {e.Message}";
-        }
-    };
+        // Listen on port 5000, compression disabled
+        var server = new SocketServer(port: 5000, CompressSentData: false);
 
-    server.Start();
-    Console.WriteLine("SocketMeister server running on port 5000. Press Enter to exit.");
-    Console.ReadLine();
-    server.Stop();
+        server.MessageReceived += (s, e) =>
+        {
+            // Parameters are strongly-typed objects (int, string, byte[], etc.)
+            Console.WriteLine($"Server received {e.Parameters.Length} parameter(s).");
+
+            // Optional response: send bytes back to the client
+            var payload = Encoding.UTF8.GetBytes("Hello from server!");
+            e.Response = payload;
+        };
+
+        server.Start();
+        Console.WriteLine("Server running on port 5000. Press Enter to exit.");
+        Console.ReadLine();
+        server.Stop();
+    }
 }
 ```
 
-4. **Build and run** the project. You should see the “SocketMeister server running…” message.
-
-
-## 3. Create the Client
-
-1. In a separate solution or project folder, create another Console Application.
-2. Add the same NuGet package and `using SocketMeister;`.
-3. Replace the `Main` method with:
+## 3) Minimal client
 
 ```csharp
-static void Main(string[] args)
+using System;
+using System.Collections.Generic;
+using System.Text;
+using SocketMeister;
+
+class Program
 {
-    // Connect to localhost on port 5000
-    var client = new SocketClient("127.0.0.1", 5000);
-    client.Connect();
+    static void Main()
+    {
+        // Prepare endpoints (supports automatic failover)
+        var endpoints = new List<SocketEndPoint>
+        {
+            new SocketEndPoint("127.0.0.1", 5000)
+        };
 
-    Console.WriteLine("Connected to server.");
-    var message = "Hello, SocketMeister!";
-    client.Send(message);
-    Console.WriteLine($"Sent: {message}");
+        var client = new SocketClient(endpoints, EnableCompression: false, friendlyName: "SampleClient");
 
-    // Receive and display the response
-    var response = client.Receive();
-    Console.WriteLine($"Received: {response}");
+        // Subscribe before starting to avoid missing early events
+        client.ConnectionStatusChanged += (s, e) =>
+        {
+            Console.WriteLine($"Status: {e.OldStatus} -> {e.NewStatus} (Reason: {e.Reason})");
+        };
 
-    client.Disconnect();
+        client.CurrentEndPointChanged += (s, e) =>
+        {
+            Console.WriteLine($"Endpoint changed: {e.OldEndPoint?.Description} -> {e.NewEndPoint.Description}");
+        };
+
+        client.Start();
+
+        // Send a request and wait for a response (bytes)
+        byte[] response = client.SendMessage(new object[] { "Hello from client" }, TimeoutMilliseconds: 5000);
+        Console.WriteLine("Client received: " + Encoding.UTF8.GetString(response));
+
+        client.Stop();
+    }
 }
 ```
 
-4. **Build and run** the client. Watch the server console echo your message back.
+Notes:
+- v11 requires calling `Start()` explicitly after constructing and subscribing to events.
+- `ExceptionRaised` provides an error-only channel. For full telemetry, subscribe to `LogRaised`.
+- `client.ServerVersion` is populated after handshake completes.
 
+## 4) Explore further
 
-## 4. Explore and Experiment
+- Multiple endpoints and failover: see the sample in `docs/samples/multi-endpoint.md`.
+- Compression: enable on both sides for large payloads; see `docs/samples/compression.md`.
+- Request/response: see `docs/samples/request-response.md`.
 
-- **Multiple Endpoints**: Pass multiple host/port pairs to `SocketClient` for round‑robin or failover.
-- **Compression**: Enable built‑in compression via `new SocketClient(hosts, port, enableCompression: true)`.
-- **Events & Requests**: Use `RequestReceived` and `ResponseReceived` events for richer protocols.
-
-
-## Next Steps
-
-- Visit the [API reference](/api/index.html) to explore all classes and methods.
-- Check out the [architecture overview](architecture.md) for insights into threading, scalability, and fault tolerance.
-- Dive into advanced samples under `docs/samples/` to see real‑world scenarios.
-
-Happy coding with SocketMeister!
-
+For design details, review the [architecture overview](architecture.md).
