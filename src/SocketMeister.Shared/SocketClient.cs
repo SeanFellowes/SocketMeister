@@ -122,15 +122,15 @@ namespace SocketMeister
         /// </summary>
         /// <param name="EndPoints">List of endpoints available for connection.</param>
         /// <param name="EnableCompression">Whether to apply compression to data.</param>
-        /// <param name="friendlyName">Friendly name sent to the server for logging and error reporting purposes. If not provided a GUID is used.</param>
-        public SocketClient(List<SocketEndPoint> EndPoints, bool EnableCompression, string friendlyName)
+        /// <param name="FriendlyName">Friendly name sent to the server for logging and error reporting purposes. If not provided a GUID is used.</param>
+        public SocketClient(List<SocketEndPoint> EndPoints, bool EnableCompression, string FriendlyName)
         {
             if (EndPoints == null) throw new ArgumentNullException(nameof(EndPoints));
             else if (EndPoints.Count == 0) throw new ArgumentException("EndPoints must contain at least 1 value", nameof(EndPoints));
             _endPoints = EndPoints;
 
             _enableCompression = EnableCompression;
-            if (!string.IsNullOrEmpty(friendlyName)) _friendlyName = friendlyName;
+            if (!string.IsNullOrEmpty(FriendlyName)) _friendlyName = FriendlyName;
             _receiveEngine = new MessageEngine();
 
             //  Logger

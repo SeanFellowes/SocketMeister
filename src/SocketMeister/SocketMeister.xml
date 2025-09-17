@@ -1164,12 +1164,14 @@
         </member>
         <member name="E:SocketMeister.SocketClient.ConnectionStatusChanged">
             <summary>
-            Event raised when the status of a socket connection changes.
+            Event raised when the client connection status changes.
+            See <see cref="T:SocketMeister.SocketClient.ConnectionStatusChangedEventArgs"/> for details.
             </summary>
         </member>
         <member name="E:SocketMeister.SocketClient.CurrentEndPointChanged">
             <summary>
             Event raised when the current endpoint changes.
+            See <see cref="T:SocketMeister.SocketClient.CurrentEndPointChangedEventArgs"/> for details.
             </summary>
         </member>
         <member name="E:SocketMeister.SocketClient.ExceptionRaised">
@@ -1206,18 +1208,20 @@
             </summary>
             <param name="EndPoints">List of endpoints available for connection.</param>
             <param name="EnableCompression">Whether to apply compression to data.</param>
-            <param name="friendlyName">Friendly name sent to the server for logging and error reporting purposes. If not provided a GUID is used.</param>
+            <param name="FriendlyName">Friendly name sent to the server for logging and error reporting purposes. If not provided a GUID is used.</param>
         </member>
         <member name="M:SocketMeister.SocketClient.#ctor(System.Collections.Generic.List{SocketMeister.SocketEndPoint},System.Boolean)">
             <summary>
-            Constructor
+            Constructor.
+            Note: From v11.0.0 the client no longer auto-starts. After constructing and attaching event handlers, call <see cref="M:SocketMeister.SocketClient.Start"/>.
             </summary>
             <param name="EndPoints">Collection of endpoints that are available to connect to</param>
             <param name="EnableCompression">Whether compression will be applied to data.</param>
         </member>
         <member name="M:SocketMeister.SocketClient.#ctor(System.String,System.Int32,System.Boolean,System.String)">
             <summary>
-            Constructor
+            Constructor.
+            Note: From v11.0.0 the client no longer auto-starts. After constructing and attaching event handlers, call <see cref="M:SocketMeister.SocketClient.Start"/>.
             </summary>
             <param name="IPAddress1">IP Address to of the SocketMeister server to connect to</param>
             <param name="Port1">TCP port the server is listening on</param>
@@ -1226,7 +1230,8 @@
         </member>
         <member name="M:SocketMeister.SocketClient.#ctor(System.String,System.Int32,System.Boolean)">
             <summary>
-            Constructor
+            Constructor.
+            Note: From v11.0.0 the client no longer auto-starts. After constructing and attaching event handlers, call <see cref="M:SocketMeister.SocketClient.Start"/>.
             </summary>
             <param name="IPAddress1">IP Address to of the SocketMeister server to connect to</param>
             <param name="Port1">TCP port the server is listening on</param>
@@ -1234,7 +1239,8 @@
         </member>
         <member name="M:SocketMeister.SocketClient.#ctor(System.String,System.Int32,System.String,System.Int32,System.Boolean,System.String)">
             <summary>
-            Constructor
+            Constructor.
+            Note: From v11.0.0 the client no longer auto-starts. After constructing and attaching event handlers, call <see cref="M:SocketMeister.SocketClient.Start"/>.
             </summary>
             <param name="IPAddress1">IP Address to of the first SocketMeister server to connect to</param>
             <param name="Port1">TCP port the first server is listening on</param>
@@ -1306,8 +1312,12 @@
         </member>
         <member name="P:SocketMeister.SocketClient.ConnectionStatus">
             <summary>
-            The connection status of the socket client
+            The connection status of the client.
             </summary>
+            <remarks>
+            Returns <see cref="F:SocketMeister.SocketClient.ConnectionStatuses.Connecting"/> until the handshake completes, even if the TCP socket is open.
+            The final transition to <see cref="F:SocketMeister.SocketClient.ConnectionStatuses.Connected"/> occurs after handshake, and raises <see cref="E:SocketMeister.SocketClient.ConnectionStatusChanged"/>.
+            </remarks>
         </member>
         <member name="P:SocketMeister.SocketClient.FriendlyName">
             <summary>
@@ -1408,13 +1418,16 @@
         </member>
         <member name="M:SocketMeister.SocketClient.SendMessage(System.Object[],System.Int32,System.Boolean,System.String)">
             <summary>
-            Send a message to the server and wait for a response. 
+            Sends a message to the server and waits for a response.
             </summary>
-            <param name="Parameters">Array of parameters to send with the message</param>
-            <param name="TimeoutMilliseconds">Maximum number of milliseconds to wait for a response from the server</param>
-            <param name="IsLongPolling">If the message is long polling on the server mark this as true and the message will be cancelled instantly when a disconnect occurs</param>
-            <param name="FriendlyMessageName">Optional friendly name of the message used in logging</param>
-            <returns>Nullable array of bytes which was returned from the socket server</returns>
+            <param name="Parameters">Array of parameters to send with the message. At least one parameter is required.</param>
+            <param name="TimeoutMilliseconds">Maximum number of milliseconds to wait for a response from the server.</param>
+            <param name="IsLongPolling">If the message is long polling on the server, set to true so the message will be cancelled immediately when a disconnect occurs.</param>
+            <param name="FriendlyMessageName">Optional friendly name of the message used in logging.</param>
+            <returns>Byte array returned from the server.</returns>
+            <exception cref="T:System.ArgumentException">Thrown when <paramref name="Parameters"/> is null or empty.</exception>
+            <exception cref="T:System.TimeoutException">Thrown if no response is received within <paramref name="TimeoutMilliseconds"/>.</exception>
+            <exception cref="T:System.Exception">Thrown when the client is stopping or the server returns an error.</exception>
         </member>
         <member name="M:SocketMeister.SocketClient.ProcessReceive(System.Object,System.Net.Sockets.SocketAsyncEventArgs)">
             <summary>
