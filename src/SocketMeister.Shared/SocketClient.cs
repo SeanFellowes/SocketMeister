@@ -76,12 +76,14 @@ namespace SocketMeister
         private readonly UnrespondedMessageCollection _unrespondedMessages = new UnrespondedMessageCollection();
 
         /// <summary>
-        /// Event raised when the status of a socket connection changes.
+        /// Event raised when the client connection status changes.
+        /// See <see cref="ConnectionStatusChangedEventArgs"/> for details.
         /// </summary>
         public event EventHandler<ConnectionStatusChangedEventArgs> ConnectionStatusChanged;
 
         /// <summary>
         /// Event raised when the current endpoint changes.
+        /// See <see cref="CurrentEndPointChangedEventArgs"/> for details.
         /// </summary>
         public event EventHandler<CurrentEndPointChangedEventArgs> CurrentEndPointChanged;
 
@@ -165,7 +167,8 @@ namespace SocketMeister
 
 
         /// <summary>
-        /// Constructor
+        /// Constructor.
+        /// Note: From v11.0.0 the client no longer auto-starts. After constructing and attaching event handlers, call <see cref="Start()"/>.
         /// </summary>
         /// <param name="EndPoints">Collection of endpoints that are available to connect to</param>
         /// <param name="EnableCompression">Whether compression will be applied to data.</param>
@@ -173,7 +176,8 @@ namespace SocketMeister
             : this(EndPoints, EnableCompression, null) { }
 
         /// <summary>
-        /// Constructor
+        /// Constructor.
+        /// Note: From v11.0.0 the client no longer auto-starts. After constructing and attaching event handlers, call <see cref="Start()"/>.
         /// </summary>
         /// <param name="IPAddress1">IP Address to of the SocketMeister server to connect to</param>
         /// <param name="Port1">TCP port the server is listening on</param>
@@ -183,7 +187,8 @@ namespace SocketMeister
             : this(new List<SocketEndPoint> { new SocketEndPoint(IPAddress1, Port1) }, EnableCompression, FriendlyName) { }
 
         /// <summary>
-        /// Constructor
+        /// Constructor.
+        /// Note: From v11.0.0 the client no longer auto-starts. After constructing and attaching event handlers, call <see cref="Start()"/>.
         /// </summary>
         /// <param name="IPAddress1">IP Address to of the SocketMeister server to connect to</param>
         /// <param name="Port1">TCP port the server is listening on</param>
@@ -194,7 +199,8 @@ namespace SocketMeister
 
 
         /// <summary>
-        /// Constructor
+        /// Constructor.
+        /// Note: From v11.0.0 the client no longer auto-starts. After constructing and attaching event handlers, call <see cref="Start()"/>.
         /// </summary>
         /// <param name="IPAddress1">IP Address to of the first SocketMeister server to connect to</param>
         /// <param name="Port1">TCP port the first server is listening on</param>
@@ -379,8 +385,12 @@ namespace SocketMeister
 
 
         /// <summary>
-        /// The connection status of the socket client
+        /// The connection status of the client.
         /// </summary>
+        /// <remarks>
+        /// Returns <see cref="ConnectionStatuses.Connecting"/> until the handshake completes, even if the TCP socket is open.
+        /// The final transition to <see cref="ConnectionStatuses.Connected"/> occurs after handshake, and raises <see cref="ConnectionStatusChanged"/>.
+        /// </remarks>
         public ConnectionStatuses ConnectionStatus
         {
             get
@@ -1226,13 +1236,16 @@ namespace SocketMeister
 
 
         /// <summary>
-        /// Send a message to the server and wait for a response. 
+        /// Sends a message to the server and waits for a response.
         /// </summary>
-        /// <param name="Parameters">Array of parameters to send with the message</param>
-        /// <param name="TimeoutMilliseconds">Maximum number of milliseconds to wait for a response from the server</param>
-        /// <param name="IsLongPolling">If the message is long polling on the server mark this as true and the message will be cancelled instantly when a disconnect occurs</param>
-        /// <param name="FriendlyMessageName">Optional friendly name of the message used in logging</param>
-        /// <returns>Nullable array of bytes which was returned from the socket server</returns>
+        /// <param name="Parameters">Array of parameters to send with the message. At least one parameter is required.</param>
+        /// <param name="TimeoutMilliseconds">Maximum number of milliseconds to wait for a response from the server.</param>
+        /// <param name="IsLongPolling">If the message is long polling on the server, set to true so the message will be cancelled immediately when a disconnect occurs.</param>
+        /// <param name="FriendlyMessageName">Optional friendly name of the message used in logging.</param>
+        /// <returns>Byte array returned from the server.</returns>
+        /// <exception cref="ArgumentException">Thrown when <paramref name="Parameters"/> is null or empty.</exception>
+        /// <exception cref="TimeoutException">Thrown if no response is received within <paramref name="TimeoutMilliseconds"/>.</exception>
+        /// <exception cref="Exception">Thrown when the client is stopping or the server returns an error.</exception>
         public byte[] SendMessage(object[] Parameters, int TimeoutMilliseconds = 60000, bool IsLongPolling = false, string FriendlyMessageName = null)
         {
             string msg;

@@ -1,83 +1,75 @@
-﻿# Architecture Overview
+# Architecture Overview
 
-This document delves into the internal design of SocketMeister, outlining how it achieves high throughput, resilience, and flexibility.
+This document describes the core design of SocketMeister and how it achieves throughput, resilience, and a simple developer experience.
 
 ## 1. Core Components
 
-- **SocketClient**  
-  - Manages outbound TCP connections to one or more endpoints.  
-  - Implements automatic reconnection with exponential backoff.  
-  - Supports round‑robin and failover across multiple servers.
+- **SocketClient**
+  - Maintains a single active TCP connection to a selected endpoint.
+  - Performs a handshake before reporting `Connected`.
+  - Automatic reconnection and failover across multiple endpoints when errors occur.
+  - Emits typed events: `ConnectionStatusChangedEventArgs`, `CurrentEndPointChangedEventArgs`.
 
-- **SocketServer**  
-  - Listens on a specified IP and port (IPv4/IPv6).  
-  - Accepts concurrent client connections using a thread‑safe queue.  
-  - Raises `MessageReceived` and `RequestReceived` events for application logic.
-
-- **SocketSession** (internal)  
-  - Encapsulates a single TCP socket and associated state.  
-  - Handles send/receive loops on dedicated threads.
-
+- **SocketServer**
+  - Listens on a specified port and accepts concurrent client connections.
+  - Raises `MessageReceived` for application logic; the handler can optionally set `e.Response` (byte[]), enabling request/response.
 
 ## 2. Threading & Concurrency
 
-- **Dedicated I/O Threads**  
-  - Each active session runs its own send/receive loops to avoid blocking.  
-  - Background worker threads manage connection monitoring and reconnection.
+- **Client background worker**
+  - A background thread drives connection attempts, polling, subscription sync, and receive processing.
+  - On .NET 4.0+ additional background tasks are used to process inbound messages and support graceful shutdown.
 
-- **Synchronization**  
-  - Internal queues and event dispatch use thread‑safe collections (\`ConcurrentQueue<T>\`).  
-  - Minimal locking ensures high concurrency with low contention.
+- **Server listener and workers**
+  - A dedicated listener thread accepts connections and per-connection receive loops process messages.
 
+- **Synchronization**
+  - Client uses `ReaderWriterLockSlim` and `lock` for key state; server uses thread-safe patterns around connection lists and message dispatch.
 
 ## 3. Connection Management
 
-- **Automatic Reconnection**  
-  - On disconnect, the client enters a retry loop with configurable backoff intervals.  
-  - Callbacks allow applications to monitor connection state.
+- **Explicit start**
+  - In v11 the client does not auto-start. Construct → subscribe to events → call `Start()`.
 
-- **Load Balancing & Failover**  
-  - When multiple endpoints are provided, each send selects the next active session.  
-  - If a session fails, traffic shifts seamlessly to remaining endpoints.
+- **Status transitions**
+  - `ConnectionStatus` reflects `Connecting` until the handshake completes, even if the socket is open.
+  - `ConnectionStatusChanged` is raised with `OldStatus`, `NewStatus`, `EndPoint`, and a `ClientDisconnectReason` when applicable.
 
+- **Failover and backoff**
+  - When multiple endpoints are configured, the client selects the endpoint with the earliest reconnect eligibility.
+  - Backoff durations depend on the disconnect reason (e.g., timeouts vs. incompatibilities).
 
 ## 4. Message Framing & Protocol
 
-- **Length-Prefixed Frames**  
-  - Messages are sent with a 4‑byte length header, ensuring correct reassembly.  
-  - Supports streaming of large payloads without partial message delivery.
+- **Header + body**
+  - Each message has an 11-byte header: message type (Int16), compression flag (bool), compressed length (Int32), uncompressed length (Int32).
+  - After the header, the body contains serialized parameters or response content.
 
-- **Request/Response Pattern**  
-  - `SendRequest` and `SendResponse` methods handle synchronous round‑trip calls.  
-  - Timeouts and cancellation tokens ensure callers aren’t blocked indefinitely.
+- **Compression**
+  - Large payloads may be compressed based on size; bodies are decompressed transparently on receipt.
 
+- **Request/Response**
+  - Client sends via `SendMessage(object[] parameters, int timeoutMs, bool isLongPolling=false, string friendlyName=null)` and blocks until a response or timeout.
+  - Server handles `MessageReceived` and (optionally) sets `e.Response`.
 
-## 5. Optional Compression
+## 5. Subscriptions & Broadcasts
 
-- **Built-in GZip Compression**  
-  - Toggleable per session or per message.  
-  - Ideal for text-heavy or large binary payloads to reduce bandwidth.
+- Clients can add/remove named subscriptions. The server can send broadcasts, and the client raises `BroadcastReceived`.
 
+## 6. Logging & Diagnostics
 
-## 6. Extensibility & Customization
+- **Events**
+  - `LogRaised` surfaces structured log entries with severity and event type.
+  - `ExceptionRaised` is an error-only channel for consumers who want only failures.
 
-- **Custom Serializers**  
-  - Pass your own encoder/decoder delegates for JSON, Protobuf, or proprietary formats.  
+- **Observability**
+  - `ServerVersion` is set after handshake and indicates the remote server’s SocketMeister version.
 
-- **Pluggable Logging**  
-  - Expose events for raw byte sends/receives to integrate with your logging infrastructure.
+## 7. Performance Considerations
 
+- Buffer reuse via pooled `SocketAsyncEventArgs` objects.
+- Message framing and serialization reduce allocations and support large payloads.
 
-## 7. Performance & Scaling
-
-- **Benchmarks**  
-  - Achieves thousands of messages per second with minimal GC pressure.  
-  - Pooling of buffer arrays reduces memory churn.
-
-- **Deployment Scenarios**  
-  - Single instance apps to scaled-out microservices farms behind load balancers.  
-  
 ---
 
-For detailed APIs and configuration options, see the [API reference](/api/index.html). For code examples, check out the [Getting Started guide](getting-started.md) and our [samples folder](/docs/samples).
-
+For code examples, see the [Getting Started](getting-started.md) and [Samples](samples/index.md). For API details, refer to the [reference](/api/index.html).

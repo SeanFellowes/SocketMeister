@@ -1,20 +1,18 @@
-﻿# SocketMeister
+# SocketMeister
 
-SocketMeister is a high-performance, fault-tolerant, multithreaded TCP/IP socket library for .NET. It provides both client and server implementations with built-in features for automatic reconnection, round‑robin endpoint load balancing, seamless compression, and flexible messaging patterns.
+SocketMeister is a high-performance, fault-tolerant TCP/IP socket library for .NET with a client and server implementation. It provides automatic reconnection and failover, optional compression, and a simple request/response model.
 
 ## Key Features
 
-- **Automatic reconnection & failover**: `SocketClient` transparently reconnects on network errors and cycles through multiple endpoints to find a live server.
-- **Event‑driven messaging**: Support for one-way messages and request/response patterns via `MessageReceived` and `RequestReceived` events.
-- **Broadcast & Publish/Subscribe**: `SocketServer` can broadcast to all clients or to named subscriber groups; clients manage subscriptions by name.
-- **High‑performance compression**: Optional payload compression/decompression for reduced bandwidth usage.
-- **Scalable, multithreaded server**: `SocketServer` handles thousands of concurrent connections with thread‑safe event dispatch.
-- **Flexible data types**: Exchange strings, byte arrays, numeric primitives, and custom serializable objects out of the box.
+- Automatic reconnection and failover: `SocketClient` maintains a single active connection and automatically fails over across multiple endpoints.
+- Event-driven messaging: Server raises `MessageReceived`, and the handler can set `e.Response` (byte[]) for request/response semantics.
+- Built-in compression: Optional payload compression/decompression for reduced bandwidth usage.
+- Scalable server: `SocketServer` handles many concurrent clients with thread-safe event dispatch.
+- Flexible data types: Exchange strings, byte arrays, and numeric primitives. For complex objects, serialize to string or byte[] (e.g., JSON).
 
 ## Requirements
 
-- **.NET support**: .NET Framework 3.5 through .NET 9 (incl. .NET Core 3.1, .NET 5/6/7/8).
-- **Server compatibility**: `SocketServer` requires .NET 4.5 or later.
+- .NET Framework 3.5+ and modern .NET (Core/5+/6+/7+/8+).
 
 ## Installation
 
@@ -33,24 +31,18 @@ Install-Package SocketMeister.Sources -Version <latest>
 ### Server Example
 
 ```csharp
+using System;
+using System.Text;
 using SocketMeister;
 
-var server = new SocketServer(port: 5000, enableCompression: true);
+var server = new SocketServer(port: 5000, CompressSentData: true);
 
-// Handle incoming one-way messages
-event EventHandler<SocketServer.MessageReceivedEventArgs> msgHandler = (s, e) =>
+server.MessageReceived += (s, e) =>
 {
-    Console.WriteLine($"Received from {e.ClientId}: {e.Parameters[0]}");
+    Console.WriteLine($"Received {e.Parameters.Length} parameter(s)");
+    var payload = Encoding.UTF8.GetBytes("ACK");
+    e.Response = payload; // optional
 };
-server.MessageReceived += msgHandler;
-
-// Handle request/response
-event EventHandler<SocketServer.RequestReceivedEventArgs> reqHandler = (s, e) =>
-{
-    var cmd = e.Parameters[0] as string;
-    e.Response = System.Text.Encoding.UTF8.GetBytes($"ACK: {cmd}");
-};
-server.RequestReceived += reqHandler;
 
 server.Start();
 Console.WriteLine("Server listening on port 5000.");
@@ -59,32 +51,31 @@ Console.WriteLine("Server listening on port 5000.");
 ### Client Example
 
 ```csharp
+using System;
+using System.Collections.Generic;
+using System.Text;
 using SocketMeister;
 
-// Connect to multiple endpoints with compression enabled
-var client = new SocketClient(
-    endpoints: new[] { ("127.0.0.1", 5000), ("server2", 5000) },
-    enableCompression: true
-);
+// Configure endpoints; client uses the best available endpoint and fails over automatically
+var endpoints = new List<SocketEndPoint> { new SocketEndPoint("127.0.0.1", 5000) };
+var client = new SocketClient(endpoints, EnableCompression: true, friendlyName: "QuickStartClient");
 
-client.ConnectionStatusChanged += (s, a) =>
-    Console.WriteLine($"Client status: {client.ConnectionStatus}");
+client.ConnectionStatusChanged += (s, e) =>
+    Console.WriteLine($"Status: {e.OldStatus} -> {e.NewStatus} (Reason: {e.Reason})");
 
-client.Connect();
-
-// Send a one-way message
-client.Send(new object[] { "Hello, Server!" });
+client.Start();
 
 // Send a request and wait for reply
-var reply = client.SendRequest(new object[] { "Ping" });
-Console.WriteLine($"Server replied: {System.Text.Encoding.UTF8.GetString(reply)}");
+byte[] reply = client.SendMessage(new object[] { "Ping" }, TimeoutMilliseconds: 5000);
+Console.WriteLine($"Server replied: {Encoding.UTF8.GetString(reply)}");
+
+client.Stop();
 ```
 
 ## Next Steps
 
-- Browse the [Full API Reference](/api/index.html) for all classes, methods, and events.
-- Follow the [Getting Started Guide](getting-started.md) for tutorials and deeper examples.
-- Explore advanced scenarios: [Pub/Sub Messaging](tutorials/pubsub.md), [Custom Serializers](tutorials/custom-serialization.md).
+- Browse the [API reference](/api/index.html) for classes, methods, and events.
+- Follow the [Getting Started guide](getting-started.md) for a step-by-step introduction.
+- Explore the [samples](samples/index.md) for multi-endpoint, compression, and request/response patterns.
 
-Happy coding! Feel free to open issues or drop us a ⭐ on GitHub if SocketMeister helps power your project.
-
+Happy coding!
