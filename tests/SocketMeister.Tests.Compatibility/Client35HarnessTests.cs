@@ -23,12 +23,11 @@ public class Client35HarnessTests : IClassFixture<ServerFixture>
     }
 
     [Trait("Category","Compatibility")]
-    [Fact]
+    [SkippableFact]
     public async Task Driver_Version_Prints()
     {
         var exe = FindDriverExe();
-        if (exe == null)
-            Assert.True(false, "Client35 driver not built. Build tests/SocketMeister.Tests.Client35.Driver first.");
+        Skip.If(exe == null, "Client35 driver not built. Build tests/SocketMeister.Tests.Client35.Driver first.");
 
         var (code, stdout, stderr) = await DriverProcess.RunAsync(exe, "version", TimeSpan.FromSeconds(10));
         Assert.Equal(0, code);
@@ -37,12 +36,11 @@ public class Client35HarnessTests : IClassFixture<ServerFixture>
     }
 
     [Trait("Category","Compatibility")]
-    [Fact]
+    [SkippableFact]
     public async Task Driver_ConnectEcho_Works()
     {
         var exe = FindDriverExe();
-        if (exe == null)
-            Assert.True(false, "Client35 driver not built. Build tests/SocketMeister.Tests.Client35.Driver first.");
+        Skip.If(exe == null, "Client35 driver not built. Build tests/SocketMeister.Tests.Client35.Driver first.");
 
         var msg = "HarnessPing";
         var args = $"connect-echo 127.0.0.1 {_fixture.Port} {msg}";

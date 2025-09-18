@@ -22,3 +22,6 @@ How To Run
 Environment
 - Tests bind to `127.0.0.1` using ephemeral ports by default.
 
+Notes
+- Integration tests are non-parallelized to avoid port and timing contention.
+- The .NET 3.5 Compatibility tests are skippable: if the driver exe is not built, they are skipped (no failure).
