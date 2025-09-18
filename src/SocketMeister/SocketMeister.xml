@@ -1236,6 +1236,12 @@
             Raised when a log event has been raised.
             </summary>
         </member>
+        <member name="E:SocketMeister.SocketClient.ConnectionAttemptFailed">
+            <summary>
+            Event raised when a connection attempt fails before the client becomes fully connected.
+            The client remains in the Connecting state and will retry according to its backoff policy.
+            </summary>
+        </member>
         <member name="M:SocketMeister.SocketClient.#ctor(System.Collections.Generic.List{SocketMeister.SocketEndPoint},System.Boolean,System.String)">
             <summary>
             Initializes a new instance of the SocketClient class.
@@ -1507,6 +1513,27 @@
         <member name="F:SocketMeister.SocketClient.ConnectionStatuses.Disconnecting">
             <summary>
             The socket is disconnecting.
+            </summary>
+        </member>
+        <member name="T:SocketMeister.SocketClient.ConnectionAttemptFailedEventArgs">
+            <summary>
+            Provides values when a connection attempt to an endpoint fails before the client is fully connected (handshake complete).
+            Useful for observing transient failures such as connection refused or timeouts while the client remains in the Connecting state.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketClient.ConnectionAttemptFailedEventArgs.EndPoint">
+            <summary>
+            The endpoint for which the connection attempt failed.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketClient.ConnectionAttemptFailedEventArgs.Reason">
+            <summary>
+            The reason associated with the failed attempt.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketClient.ConnectionAttemptFailedEventArgs.Message">
+            <summary>
+            Optional descriptive message providing context about the failure.
             </summary>
         </member>
         <member name="T:SocketMeister.SocketClient.ConnectionStatusChangedEventArgs">

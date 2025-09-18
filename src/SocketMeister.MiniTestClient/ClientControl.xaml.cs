@@ -12,18 +12,11 @@ using static SocketMeister.SocketClient;
 
 namespace SocketMeister.MiniTestClient
 {
-    internal class ResponseReceived : EventArgs
+    internal class ResponseReceived(Severity severity, int MessageId, string displayText) : EventArgs
     {
-        private readonly int _messageId;
-        private readonly string _displayText;
-        private readonly Severity severity;
-
-        public ResponseReceived(Severity severity, int MessageId, string displayText)
-        {
-            this.severity = severity;
-            _displayText = displayText;
-            _messageId = MessageId;
-        }
+        private readonly int _messageId = MessageId;
+        private readonly string _displayText = displayText;
+        private readonly Severity severity = severity;
 
         public int MessageId => _messageId;
         public string DisplayText => _displayText;
@@ -39,11 +32,11 @@ namespace SocketMeister.MiniTestClient
         private int _clientId = 1;
         private int _messagesReceived = 0;
         private int _messagesSent = 0;
-        private readonly Random _rnd = new Random();
+        private readonly Random _rnd = new();
         private int _broadcastsReceived = 0;
         private bool _isRunning;
         private SocketClient _client;
-        private readonly object _lock = new object();
+        private readonly Lock _lock = new();
 
         /// <summary>
         /// Event raised when an exception occurs
@@ -161,7 +154,7 @@ namespace SocketMeister.MiniTestClient
             DateTime start = DateTime.Now;
             try
             {
-                if (string.IsNullOrEmpty(Message)) throw new ArgumentNullException("Message cannot be null or empty");
+                if (string.IsNullOrEmpty(Message)) throw new ArgumentNullException(nameof(Message), "Message cannot be null or empty");
                 if (_client == null) throw new Exception("Client is null");
 
                 new Thread(new ThreadStart(delegate
@@ -170,9 +163,7 @@ namespace SocketMeister.MiniTestClient
                     {
                         byte[] toSend = new byte[Message.Length];
                         Buffer.BlockCopy(Encoding.UTF8.GetBytes(Message), 0, toSend, 0, toSend.Length);
-                        object[] p = new object[2];
-                        p[0] = _clientId;
-                        p[1] = toSend;
+                        object[] p = [_clientId, toSend];
                         byte[] result = _client.SendMessage(p, TimeoutMs, "Client Test Message");
 
                         string msg = "Response Received (" + (int)(DateTime.Now - start).TotalMilliseconds + " ms))";
@@ -214,7 +205,7 @@ namespace SocketMeister.MiniTestClient
             _client.ServerStopping += Client_ServerStopping;
             _client.BroadcastReceived += Client_BroadcastReceived;
 #if !VERSION4
-            _client.LogRaised += _client_LogRaised;
+            _client.LogRaised += Client_LogRaised;
 #endif
 
             tbPort.Text = _client.CurrentEndPoint.Port.ToString();
@@ -279,7 +270,7 @@ namespace SocketMeister.MiniTestClient
             }));
         }
 
-        private void _client_LogRaised(object sender, LogEventArgs e)
+        private void Client_LogRaised(object sender, LogEventArgs e)
         {
             Dispatcher.BeginInvoke((Action)(() =>
             {

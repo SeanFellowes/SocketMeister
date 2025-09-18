@@ -113,6 +113,18 @@ namespace SocketMeister
         /// </summary>
         public event EventHandler<LogEventArgs> LogRaised;
 
+        /// <summary>
+        /// Event raised when a connection attempt fails before the client becomes fully connected.
+        /// The client remains in the Connecting state and will retry according to its backoff policy.
+        /// </summary>
+        public event EventHandler<ConnectionAttemptFailedEventArgs> ConnectionAttemptFailed;
+
+        private void RaiseConnectionAttemptFailed(SocketEndPoint ep, ClientDisconnectReason reason, string message)
+        {
+            try { ConnectionAttemptFailed?.Invoke(this, new ConnectionAttemptFailedEventArgs(ep, reason, message)); }
+            catch { }
+        }
+
 
 
         /// <summary>
@@ -1006,27 +1018,32 @@ namespace SocketMeister
                     //  NOTE: WHEN FAILING OVER UNDER HIGH LOAD, SocketError.TimedOut OCCURS FOR UP TO 120 SECONDS (WORSE CASE)
                     //  BEFORE CONNECTION SUCCESSFULLY COMPLETES. IT'S A BIT ANNOYING BUT I HAVE FOUND NO WORK AROUND.
                     CurrentEndPoint.SetDisconnected(ClientDisconnectReason.SocketConnectionTimeout);
+                    RaiseConnectionAttemptFailed(CurrentEndPoint, ClientDisconnectReason.SocketConnectionTimeout, "Connection timed out.");
                     Log($"Connection failed: Socket timeout {CurrentEndPoint.Description}", Severity.Warning, LogEventType.ConnectionEvent);
                 }
                 else if (e.SocketError == SocketError.AddressAlreadyInUse)
                 {
                     CurrentEndPoint.SetDisconnected(ClientDisconnectReason.SocketError);
+                    RaiseConnectionAttemptFailed(CurrentEndPoint, ClientDisconnectReason.SocketError, "Socket address already in use.");
                     Log(new Exception("Connection failed: Socket address already in use"));
                 }
                 else if (e.SocketError == SocketError.ConnectionRefused)
                 {
                     CurrentEndPoint.SetDisconnected(ClientDisconnectReason.SocketConnectionRefused);
+                    RaiseConnectionAttemptFailed(CurrentEndPoint, ClientDisconnectReason.SocketConnectionRefused, "Connection refused by server.");
                     Log($"Connection failed: Connection refused by server {CurrentEndPoint.Description}", Severity.Warning, LogEventType.ConnectionEvent);
                 }
                 else
                 {
                     CurrentEndPoint.SetDisconnected(ClientDisconnectReason.SocketError);
+                    RaiseConnectionAttemptFailed(CurrentEndPoint, ClientDisconnectReason.SocketError, "Undefined socket error.");
                     Log(new Exception("Connection failed: Undefined Socket Error: " + e.SocketError.ToString()));
                 }
             }
             catch (Exception ex)
             {
                 CurrentEndPoint.SetDisconnected(ClientDisconnectReason.Unknown);
+                RaiseConnectionAttemptFailed(CurrentEndPoint, ClientDisconnectReason.Unknown, ex.Message);
                 Log(ex);
             }
             finally

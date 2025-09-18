@@ -13,6 +13,42 @@ namespace SocketMeister
 #endif
     {
         /// <summary>
+        /// Provides values when a connection attempt to an endpoint fails before the client is fully connected (handshake complete).
+        /// Useful for observing transient failures such as connection refused or timeouts while the client remains in the Connecting state.
+        /// </summary>
+#if SMISPUBLIC
+        public class ConnectionAttemptFailedEventArgs : EventArgs
+#else
+        internal class ConnectionAttemptFailedEventArgs : EventArgs
+#endif
+        {
+            private readonly SocketEndPoint _endPoint;
+            private readonly ClientDisconnectReason _reason;
+            private readonly string _message;
+
+            internal ConnectionAttemptFailedEventArgs(SocketEndPoint endPoint, ClientDisconnectReason reason, string message)
+            {
+                _endPoint = endPoint;
+                _reason = reason;
+                _message = message;
+            }
+
+            /// <summary>
+            /// The endpoint for which the connection attempt failed.
+            /// </summary>
+            public SocketEndPoint EndPoint => _endPoint;
+
+            /// <summary>
+            /// The reason associated with the failed attempt.
+            /// </summary>
+            public ClientDisconnectReason Reason => _reason;
+
+            /// <summary>
+            /// Optional descriptive message providing context about the failure.
+            /// </summary>
+            public string Message => _message;
+        }
+        /// <summary>
         /// Values provided when the connection status changes.
         /// </summary>
 #if SMISPUBLIC

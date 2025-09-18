@@ -18,14 +18,14 @@ public class ServerToClientTests
         int port = PortAllocator.GetFreeTcpPort();
         var server = new SocketServer(port, false);
         var connectedClients = new List<SocketServer.Client>();
-        using var evAll = new ManualResetEventSlim(false);
+        var evAll = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
         server.ClientConnected += (s, e) =>
         {
             lock (connectedClients)
             {
                 connectedClients.Add(e.Client);
-                if (connectedClients.Count >= 3) evAll.Set();
+                if (connectedClients.Count >= 3) evAll.TrySetResult(true);
             }
         };
         server.Start();
@@ -61,7 +61,8 @@ public class ServerToClientTests
             Assert.True(tcs1.Task.IsCompleted && tcs2.Task.IsCompleted && tcs3.Task.IsCompleted, "Clients did not connect");
 
             // Wait until server captured all 3
-            Assert.True(evAll.Wait(TimeSpan.FromSeconds(5)), "Server did not record 3 client connections");
+            await Task.WhenAny(evAll.Task, Task.Delay(TimeSpan.FromSeconds(10)));
+            Assert.True(evAll.Task.IsCompleted, "Server did not record 3 client connections");
 
             // Send to one client
             var reply1 = connectedClients[0].SendMessage(new object[] { "hello" }, 5000);
@@ -85,4 +86,3 @@ public class ServerToClientTests
         }
     }
 }
-

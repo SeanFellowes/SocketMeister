@@ -10,22 +10,22 @@ namespace SocketMeister.Tests.Integration;
 public class ConnectionReasonTests
 {
     [Trait("Category","Reasons")]
-    [Fact(Skip = "Initial connection failures may not raise Disconnected events with reasons; library remains in Connecting. Keeping as a placeholder.")]
+    [Fact]
     public async Task ConnectionRefused_On_Closed_Port()
     {
         int closedPort = PortAllocator.GetFreeTcpPort(); // no server will bind
         var client = new SocketClient(new List<SocketEndPoint> { new SocketEndPoint("127.0.0.1", closedPort) }, false, "RefusedClient");
 
         var reasonTcs = new TaskCompletionSource<ClientDisconnectReason>(TaskCreationOptions.RunContinuationsAsynchronously);
-        client.ConnectionStatusChanged += (s, e) =>
+        client.ConnectionAttemptFailed += (s, e) =>
         {
-            if (e.NewStatus == SocketClient.ConnectionStatuses.Disconnected && e.Reason != ClientDisconnectReason.Unknown)
+            if (e.Reason == ClientDisconnectReason.SocketConnectionRefused)
                 reasonTcs.TrySetResult(e.Reason);
         };
         client.Start();
 
         await Task.WhenAny(reasonTcs.Task, Task.Delay(20000));
-        Assert.True(reasonTcs.Task.IsCompleted, "Did not get a disconnected reason in time");
+        Assert.True(reasonTcs.Task.IsCompleted, "Did not receive ConnectionAttemptFailed with ConnectionRefused");
         Assert.Equal(ClientDisconnectReason.SocketConnectionRefused, reasonTcs.Task.Result);
         client.Stop();
     }

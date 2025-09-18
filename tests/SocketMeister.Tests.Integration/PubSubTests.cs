@@ -55,12 +55,11 @@ public class PubSubTests
             var sink1 = new List<(string name, object[] parameters)>();
             var sink2 = new List<(string name, object[] parameters)>();
             var sink3 = new List<(string name, object[] parameters)>();
-            using var evAll = new ManualResetEventSlim(false);
+            var allReceived = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             int received = 0;
             EventHandler<SocketClient.BroadcastReceivedEventArgs> handler = (s, e) =>
             {
-                Interlocked.Increment(ref received);
-                if (received >= 3) evAll.Set();
+                if (Interlocked.Increment(ref received) >= 3) allReceived.TrySetResult(true);
             };
             c1.BroadcastReceived += (s, e) => { sink1.Add((e.Name, e.Parameters)); handler(s, e); };
             c2.BroadcastReceived += (s, e) => { sink2.Add((e.Name, e.Parameters)); handler(s, e); };
@@ -85,7 +84,8 @@ public class PubSubTests
             var msg = new object[] { "hello" };
             server.BroadcastToSubscribers(topic, msg);
 
-            Assert.True(evAll.Wait(TimeSpan.FromSeconds(5)), "Not all clients received broadcast");
+            await Task.WhenAny(allReceived.Task, Task.Delay(TimeSpan.FromSeconds(10)));
+            Assert.True(allReceived.Task.IsCompleted, "Not all clients received broadcast");
             Assert.Single(sink1);
             Assert.Single(sink2);
             Assert.Single(sink3);

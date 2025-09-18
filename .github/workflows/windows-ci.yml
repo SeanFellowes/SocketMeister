@@ -1,0 +1,29 @@
+name: Tests (Windows)
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET 8 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Restore
+        run: |
+          dotnet restore src/SocketMeister.sln
+      - name: Build Integration + Compatibility + Driver
+        run: |
+          dotnet build tests/SocketMeister.Tests.Integration -c Debug
+          dotnet build tests/SocketMeister.Tests.Compatibility -c Debug
+          dotnet build tests/SocketMeister.Tests.Client35.Driver -c Debug
+      - name: Test Integration (net8.0)
+        run: dotnet test tests/SocketMeister.Tests.Integration -f net8.0 -c Debug --no-build
+      - name: Test Integration (net472)
+        run: dotnet test tests/SocketMeister.Tests.Integration -f net472 -c Debug --no-build
+      - name: Test Compatibility
+        run: dotnet test tests/SocketMeister.Tests.Compatibility -f net8.0 -c Debug --no-build
