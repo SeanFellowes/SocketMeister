@@ -15,7 +15,7 @@ namespace SocketMeister
         {
             /// <summary>Boolean</summary>
             BoolParam = 0,
-            /// <summary>DateTime</summary>
+            /// <summary>DateTime (serialized via ToBinary)</summary>
             DateTimeParam = 1,
             /// <summary>Double</summary>
             DoubleParam = 2,
@@ -37,6 +37,20 @@ namespace SocketMeister
             ByteParam = 10,
             /// <summary>Byte array</summary>
             ByteArrayParam = 11,
+            /// <summary>Single (float)</summary>
+            SingleParam = 12,
+            /// <summary>Decimal</summary>
+            DecimalParam = 13,
+            /// <summary>Guid (16 bytes)</summary>
+            GuidParam = 14,
+            /// <summary>TimeSpan (ticks)</summary>
+            TimeSpanParam = 15,
+            /// <summary>SByte</summary>
+            SByteParam = 16,
+            /// <summary>Char (UTF-16 code unit stored as UInt16)</summary>
+            CharParam = 17,
+            /// <summary>DateTimeOffset (UTC ticks + offset minutes)</summary>
+            DateTimeOffsetParam = 18,
             /// <summary>Null</summary>
             Null = 99
         }
@@ -104,7 +118,7 @@ namespace SocketMeister
                         parameters[ptr] = Reader.ReadString();
                         break;
                     case ParameterType.DateTimeParam:
-                        parameters[ptr] = new DateTime(Reader.ReadInt64());
+                        parameters[ptr] = DateTime.FromBinary(Reader.ReadInt64());
                         break;
                     case ParameterType.DoubleParam:
                         parameters[ptr] = Reader.ReadDouble();
@@ -113,6 +127,7 @@ namespace SocketMeister
                         parameters[ptr] = Reader.ReadByte();
                         break;
                     case ParameterType.ByteArrayParam:
+                    {
                         int length = Reader.ReadInt32();
                         long remainingBytes = Reader.BaseStream.Length - Reader.BaseStream.Position;
 
@@ -121,6 +136,41 @@ namespace SocketMeister
 
                         parameters[ptr] = Reader.ReadBytes(length);
                         break;
+                    }
+                    case ParameterType.SingleParam:
+                        parameters[ptr] = Reader.ReadSingle();
+                        break;
+                    case ParameterType.DecimalParam:
+                        parameters[ptr] = Reader.ReadDecimal();
+                        break;
+                    case ParameterType.GuidParam:
+                    {
+                        long remainingBytes = Reader.BaseStream.Length - Reader.BaseStream.Position;
+                        if (remainingBytes < 16)
+                            throw new InvalidDataException($"Invalid Guid payload. Remaining bytes: {remainingBytes}.");
+                        byte[] guidBytes = Reader.ReadBytes(16);
+                        if (guidBytes.Length != 16)
+                            throw new EndOfStreamException("Unexpected end of stream while reading Guid.");
+                        parameters[ptr] = new Guid(guidBytes);
+                        break;
+                    }
+                    case ParameterType.TimeSpanParam:
+                        parameters[ptr] = TimeSpan.FromTicks(Reader.ReadInt64());
+                        break;
+                    case ParameterType.SByteParam:
+                        parameters[ptr] = Reader.ReadSByte();
+                        break;
+                    case ParameterType.CharParam:
+                        parameters[ptr] = (char)Reader.ReadUInt16();
+                        break;
+                    case ParameterType.DateTimeOffsetParam:
+                    {
+                        long utcTicks = Reader.ReadInt64();
+                        short offsetMinutes = Reader.ReadInt16();
+                        DateTime utc = new DateTime(utcTicks, DateTimeKind.Utc);
+                        parameters[ptr] = new DateTimeOffset(utc).ToOffset(TimeSpan.FromMinutes(offsetMinutes));
+                        break;
+                    }
                     default:
                         throw new NotSupportedException($"Cannot deserialize parameter[{ptr}] of type {ParamType}.");
                 }
@@ -176,7 +226,7 @@ namespace SocketMeister
                 else if (ParamType == typeof(DateTime))
                 {
                     Writer.Write((short)ParameterType.DateTimeParam);
-                    Writer.Write(((DateTime)Parameters[ptr]).Ticks);
+                    Writer.Write(((DateTime)Parameters[ptr]).ToBinary());
                 }
                 else if (ParamType == typeof(double))
                 {
@@ -230,6 +280,46 @@ namespace SocketMeister
                     byte[] ToWrite = (byte[])Parameters[ptr];
                     Writer.Write(ToWrite.Length);
                     Writer.Write(ToWrite);
+                }
+                else if (ParamType == typeof(float))
+                {
+                    Writer.Write((short)ParameterType.SingleParam);
+                    Writer.Write((float)Parameters[ptr]);
+                }
+                else if (ParamType == typeof(decimal))
+                {
+                    Writer.Write((short)ParameterType.DecimalParam);
+                    Writer.Write((decimal)Parameters[ptr]);
+                }
+                else if (ParamType == typeof(Guid))
+                {
+                    Writer.Write((short)ParameterType.GuidParam);
+                    byte[] guidBytes = ((Guid)Parameters[ptr]).ToByteArray();
+                    Writer.Write(guidBytes);
+                }
+                else if (ParamType == typeof(TimeSpan))
+                {
+                    Writer.Write((short)ParameterType.TimeSpanParam);
+                    Writer.Write(((TimeSpan)Parameters[ptr]).Ticks);
+                }
+                else if (ParamType == typeof(sbyte))
+                {
+                    Writer.Write((short)ParameterType.SByteParam);
+                    Writer.Write((sbyte)Parameters[ptr]);
+                }
+                else if (ParamType == typeof(char))
+                {
+                    Writer.Write((short)ParameterType.CharParam);
+                    // Write as UInt16 to avoid encoding-dependent char serialization.
+                    Writer.Write((ushort)(char)Parameters[ptr]);
+                }
+                else if (ParamType == typeof(DateTimeOffset))
+                {
+                    Writer.Write((short)ParameterType.DateTimeOffsetParam);
+                    DateTimeOffset dto = (DateTimeOffset)Parameters[ptr];
+                    // Store as UTC ticks + offset in minutes to reconstruct exactly.
+                    Writer.Write(dto.UtcDateTime.Ticks);
+                    Writer.Write((short)dto.Offset.TotalMinutes);
                 }
                 else
                 {

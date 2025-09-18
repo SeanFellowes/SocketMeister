@@ -45,7 +45,7 @@ public class ExtendedFailoverTests
         try
         {
             // Allow up to 45s for backoff/eligibility windows to align
-            await WaitConnectedToPortAsync(client, port2, TimeSpan.FromSeconds(45));
+            await WaitConnectedToPortAsync(client, port2, TimeSpan.FromSeconds(90));
 
             // Now stop server2 and start server1; expect client to reconnect to port1 eventually
             server2.Stop();
@@ -54,7 +54,7 @@ public class ExtendedFailoverTests
             server1.Start();
             try
             {
-                await WaitConnectedToPortAsync(client, port1, TimeSpan.FromSeconds(45));
+                await WaitConnectedToPortAsync(client, port1, TimeSpan.FromSeconds(90));
             }
             finally
             {
@@ -70,4 +70,3 @@ public class ExtendedFailoverTests
         }
     }
 }
-

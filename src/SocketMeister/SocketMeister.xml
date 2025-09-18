@@ -1081,7 +1081,7 @@
             <summary>Boolean</summary>
         </member>
         <member name="F:SocketMeister.Serializer.ParameterType.DateTimeParam">
-            <summary>DateTime</summary>
+            <summary>DateTime (serialized via ToBinary)</summary>
         </member>
         <member name="F:SocketMeister.Serializer.ParameterType.DoubleParam">
             <summary>Double</summary>
@@ -1112,6 +1112,27 @@
         </member>
         <member name="F:SocketMeister.Serializer.ParameterType.ByteArrayParam">
             <summary>Byte array</summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.SingleParam">
+            <summary>Single (float)</summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.DecimalParam">
+            <summary>Decimal</summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.GuidParam">
+            <summary>Guid (16 bytes)</summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.TimeSpanParam">
+            <summary>TimeSpan (ticks)</summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.SByteParam">
+            <summary>SByte</summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.CharParam">
+            <summary>Char (UTF-16 code unit stored as UInt16)</summary>
+        </member>
+        <member name="F:SocketMeister.Serializer.ParameterType.DateTimeOffsetParam">
+            <summary>DateTimeOffset (UTC ticks + offset minutes)</summary>
         </member>
         <member name="F:SocketMeister.Serializer.ParameterType.Null">
             <summary>Null</summary>
