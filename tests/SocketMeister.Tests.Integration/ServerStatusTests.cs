@@ -12,7 +12,7 @@ public class ServerStatusTests
 {
     [Trait("Category","ServerStatus")]
     [Fact]
-    public void StatusChanged_Fired_On_Start_Stop()
+    public async Task StatusChanged_Fired_On_Start_Stop()
     {
         int port = PortAllocator.GetFreeTcpPort();
         var server = new SocketServer(port, false);
@@ -21,7 +21,7 @@ public class ServerStatusTests
 
         server.Start();
         // Allow listener thread to set Started
-        Task.Delay(300).Wait();
+        await Task.Delay(300);
         server.Stop();
 
         Assert.Contains(SocketServerStatus.Starting, seq);
@@ -38,4 +38,3 @@ public class ServerStatusTests
         Assert.Throws<ArgumentException>(() => new SocketServer(new SocketServerOptions { Port = 70000 }));
     }
 }
-

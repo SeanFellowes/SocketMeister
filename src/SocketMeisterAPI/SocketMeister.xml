@@ -42,6 +42,12 @@
             The value should be between 2 and 20.
             </summary>
         </member>
+        <member name="T:SocketMeister.ClientDisconnectReason">
+            <summary>
+            Enumerates the reasons a <see cref="T:SocketMeister.SocketClient"/> transitioned to a disconnected state.
+            Values are surfaced via <see cref="P:SocketMeister.SocketClient.ConnectionStatusChangedEventArgs.Reason"/> when applicable.
+            </summary>
+        </member>
         <member name="F:SocketMeister.ClientDisconnectReason.Unknown">
             <summary>
             The reason for the client disconnect is unknown.

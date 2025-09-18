@@ -46,6 +46,54 @@ public class CompressionTests
 
     [Trait("Category","Compression")]
     [Fact]
+    public async Task Echo_With_Compression_Server_Only()
+    {
+        int port = PortAllocator.GetFreeTcpPort();
+        var server = new SocketServer(port, CompressSentData: true);
+        server.MessageReceived += (s, e) => { e.Response = Encoding.UTF8.GetBytes((string)e.Parameters[0]); };
+        server.Start();
+        try
+        {
+            // client compression disabled
+            var client = await CreateAndConnectAsync(port, false, "CompServerOnly");
+            var text = "ServerOnly";
+            var reply = client.SendMessage(new object[] { text }, 5000);
+            Assert.Equal(text, Encoding.UTF8.GetString(reply));
+            client.Stop();
+        }
+        finally
+        {
+            try { server.Stop(); } catch { }
+            (server as IDisposable)?.Dispose();
+        }
+    }
+
+    [Trait("Category","Compression")]
+    [Fact]
+    public async Task Echo_With_Compression_Client_Only()
+    {
+        int port = PortAllocator.GetFreeTcpPort();
+        var server = new SocketServer(port, CompressSentData: false);
+        server.MessageReceived += (s, e) => { e.Response = Encoding.UTF8.GetBytes((string)e.Parameters[0]); };
+        server.Start();
+        try
+        {
+            // client compression enabled
+            var client = await CreateAndConnectAsync(port, true, "CompClientOnly");
+            var text = "ClientOnly";
+            var reply = client.SendMessage(new object[] { text }, 5000);
+            Assert.Equal(text, Encoding.UTF8.GetString(reply));
+            client.Stop();
+        }
+        finally
+        {
+            try { server.Stop(); } catch { }
+            (server as IDisposable)?.Dispose();
+        }
+    }
+
+    [Trait("Category","Compression")]
+    [Fact]
     public async Task Large_Payload_Roundtrip_With_Compression()
     {
         int port = PortAllocator.GetFreeTcpPort();
@@ -68,4 +116,3 @@ public class CompressionTests
         }
     }
 }
-

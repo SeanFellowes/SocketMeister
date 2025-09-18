@@ -14,8 +14,4 @@
   href: samples/index.md
 
 - name: Testing
-  items:
-    - name: Overview
-      href: tests/overview.md
-    - name: Test Cases
-      href: tests/cases.md
+  href: samples/index.md

@@ -80,7 +80,9 @@ public class FailoverTests
             }
 
             Assert.Equal(SocketClient.ConnectionStatuses.Connected, client.ConnectionStatus);
-            Assert.Equal(port2, client.CurrentEndPoint.Port);
+            var ep2 = client.CurrentEndPoint;
+            Assert.NotNull(ep2);
+            Assert.Equal(port2, ep2!.Port);
             Assert.Contains(port2, epChanges);
 
             // Now stop server2 and start server1 again; expect reconnection back to port1
@@ -97,7 +99,9 @@ public class FailoverTests
             }
 
             Assert.Equal(SocketClient.ConnectionStatuses.Connected, client.ConnectionStatus);
-            Assert.Equal(port1, client.CurrentEndPoint.Port);
+            var ep1 = client.CurrentEndPoint;
+            Assert.NotNull(ep1);
+            Assert.Equal(port1, ep1!.Port);
             Assert.Contains(port1, epChanges);
 
             client.Stop();
@@ -111,4 +115,3 @@ public class FailoverTests
         }
     }
 }
-

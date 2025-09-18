@@ -7,6 +7,10 @@ using System.Text;
 
 namespace SocketMeister
 {
+    /// <summary>
+    /// Enumerates the reasons a <see cref="SocketClient"/> transitioned to a disconnected state.
+    /// Values are surfaced via <see cref="SocketClient.ConnectionStatusChangedEventArgs.Reason"/> when applicable.
+    /// </summary>
 #if SMISPUBLIC
     public enum ClientDisconnectReason
 #else

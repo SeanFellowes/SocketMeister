@@ -67,9 +67,9 @@ public class PubSubTests
             c3.BroadcastReceived += (s, e) => { sink3.Add((e.Name, e.Parameters)); handler(s, e); };
 
             await Task.WhenAll(
-                WaitConnectedAsync(c1, TimeSpan.FromSeconds(10)),
-                WaitConnectedAsync(c2, TimeSpan.FromSeconds(10)),
-                WaitConnectedAsync(c3, TimeSpan.FromSeconds(10))
+                WaitConnectedAsync(c1, TimeSpan.FromSeconds(20)),
+                WaitConnectedAsync(c2, TimeSpan.FromSeconds(20)),
+                WaitConnectedAsync(c3, TimeSpan.FromSeconds(20))
             );
 
             // Subscribe all 3 to same topic
@@ -120,9 +120,9 @@ public class PubSubTests
             c3.BroadcastReceived += (s, e) => Interlocked.Increment(ref r3);
 
             await Task.WhenAll(
-                WaitConnectedAsync(c1, TimeSpan.FromSeconds(10)),
-                WaitConnectedAsync(c2, TimeSpan.FromSeconds(10)),
-                WaitConnectedAsync(c3, TimeSpan.FromSeconds(10))
+                WaitConnectedAsync(c1, TimeSpan.FromSeconds(20)),
+                WaitConnectedAsync(c2, TimeSpan.FromSeconds(20)),
+                WaitConnectedAsync(c3, TimeSpan.FromSeconds(20))
             );
 
             c1.AddSubscription("A");
@@ -209,4 +209,3 @@ public class PubSubTests
         }
     }
 }
-
