@@ -16,6 +16,6 @@
 - name: Testing
   items:
     - name: Overview
-      href: testing/overview.md
+      href: tests/overview.md
     - name: Test Cases
-      href: testing/cases.md
+      href: tests/cases.md

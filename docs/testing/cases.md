@@ -17,4 +17,18 @@ Legend
 - I-06 Server Logging: server raises LogRaised when handler throws; verify event observed — Server — net8.0, net472
 - I-07 Server→Client: server sends messages to one and many clients via Client.SendMessage and receives replies — Both — net8.0, net472
 
+# Client Validation
+- C-01 SendMessage null/empty parameters throw — Client — net8.0, net472
+- C-02 AddSubscription duplicate throws; RemoveSubscription missing returns false — Client — net8.0, net472
+- C-03 Start/Stop toggles IsRunning; ServerVersion available post-handshake — Client — net8.0, net472
+
+# Compression
+- X-01 Echo with compression on both sides — Both — net8.0, net472
+- X-02 Large payload roundtrip with compression — Both — net8.0, net472
+
+# Disconnect & Status
+- D-01 Client raises ServerStopping when server stops — Both — net8.0, net472
+- S-01 StatusChanged sequence on Start/Stop includes Starting/Started/Stopping/Stopped — Server — net8.0, net472
+- S-02 Invalid port throws (options.Port out of range) — Server — net8.0, net472
+
 Performance scenarios (throughput/latency, compression effects) will be added separately as opt-in benchmarks.
