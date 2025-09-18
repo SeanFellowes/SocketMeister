@@ -44,9 +44,10 @@ public class HandshakeTimeoutTests
             client.Start();
 
             // Handshake timeout is ~30s; allow a bit more leeway
-            await Task.WhenAny(disconnected.Task, Task.Delay(TimeSpan.FromSeconds(45)));
-            Assert.True(disconnected.Task.IsCompleted, "Handshake did not time out in expected window");
-            Assert.Equal(ClientDisconnectReason.HandshakeTimeout, disconnected.Task.Result);
+            var done = await Task.WhenAny(disconnected.Task, Task.Delay(TimeSpan.FromSeconds(45)));
+            Assert.Same(disconnected.Task, done);
+            var reason = await disconnected.Task;
+            Assert.Equal(ClientDisconnectReason.HandshakeTimeout, reason);
 
             client.Stop();
         }

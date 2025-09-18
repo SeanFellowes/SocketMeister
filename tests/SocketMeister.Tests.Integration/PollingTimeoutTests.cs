@@ -46,8 +46,9 @@ public class PollingTimeoutTests
         Assert.NotNull(m);
         m!.Invoke(client, new object[] { sw });
 
-        await Task.WhenAny(disconnected.Task, Task.Delay(TimeSpan.FromSeconds(5)));
-        Assert.True(disconnected.Task.IsCompleted, "Polling timeout did not cause disconnect promptly");
-        Assert.Equal(ClientDisconnectReason.PollingTimeout, disconnected.Task.Result);
+        var done = await Task.WhenAny(disconnected.Task, Task.Delay(TimeSpan.FromSeconds(5)));
+        Assert.Same(disconnected.Task, done);
+        var reason = await disconnected.Task;
+        Assert.Equal(ClientDisconnectReason.PollingTimeout, reason);
     }
 }

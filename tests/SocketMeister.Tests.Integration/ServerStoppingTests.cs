@@ -34,13 +34,14 @@ public class ServerStoppingTests
             Assert.True(connected.Task.IsCompleted, "Client did not connect");
 
             server.Stop();
-            await Task.WhenAny(serverStopping.Task, Task.Delay(5000));
-            Assert.True(serverStopping.Task.IsCompleted, "Client did not raise ServerStopping event");
+            var ssDone = await Task.WhenAny(serverStopping.Task, Task.Delay(5000));
+            Assert.Same(serverStopping.Task, ssDone);
 
             // Disconnect reason should be ServerIsStopping
-            await Task.WhenAny(disconnectedWithReason.Task, Task.Delay(5000));
-            Assert.True(disconnectedWithReason.Task.IsCompleted);
-            Assert.Equal(ClientDisconnectReason.ServerIsStopping, disconnectedWithReason.Task.Result.Reason);
+            var discDone = await Task.WhenAny(disconnectedWithReason.Task, Task.Delay(5000));
+            Assert.Same(disconnectedWithReason.Task, discDone);
+            var args = await disconnectedWithReason.Task;
+            Assert.Equal(ClientDisconnectReason.ServerIsStopping, args.Reason);
         }
         finally
         {

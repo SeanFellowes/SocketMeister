@@ -24,9 +24,10 @@ public class ConnectionReasonTests
         };
         client.Start();
 
-        await Task.WhenAny(reasonTcs.Task, Task.Delay(20000));
-        Assert.True(reasonTcs.Task.IsCompleted, "Did not receive ConnectionAttemptFailed with ConnectionRefused");
-        Assert.Equal(ClientDisconnectReason.SocketConnectionRefused, reasonTcs.Task.Result);
+        var completed = await Task.WhenAny(reasonTcs.Task, Task.Delay(20000));
+        Assert.Same(reasonTcs.Task, completed);
+        var reason = await reasonTcs.Task;
+        Assert.Equal(ClientDisconnectReason.SocketConnectionRefused, reason);
         client.Stop();
     }
 
@@ -52,9 +53,10 @@ public class ConnectionReasonTests
             Assert.True(connected.Task.IsCompleted, "Client did not connect");
 
             client.Stop();
-            await Task.WhenAny(stopped.Task, Task.Delay(10000));
-            Assert.True(stopped.Task.IsCompleted, "Did not observe disconnected after Stop()");
-            Assert.Equal(ClientDisconnectReason.ClientIsStopping, stopped.Task.Result);
+            var done = await Task.WhenAny(stopped.Task, Task.Delay(10000));
+            Assert.Same(stopped.Task, done);
+            var stoppedReason = await stopped.Task;
+            Assert.Equal(ClientDisconnectReason.ClientIsStopping, stoppedReason);
         }
         finally
         {
