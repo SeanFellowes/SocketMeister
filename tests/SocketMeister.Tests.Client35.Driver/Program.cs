@@ -38,7 +38,7 @@ namespace SocketMeister.Tests.Client35.Driver
                     {
                         client.Start();
 
-                        var reply = client.SendMessage(new object[] { message }, 5000, false, null);
+                        var reply = client.SendMessage(new object[] { message }, 5000, null);
                         var text = reply != null ? Encoding.UTF8.GetString(reply) : null;
                         var ok = text == message;
                         Console.WriteLine("{\"ok\":" + (ok ? "true" : "false") + ",\"cmd\":\"connect-echo\",\"reply\":\"" + (text ?? "") + "\"}");

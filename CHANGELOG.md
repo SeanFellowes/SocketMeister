@@ -3,6 +3,11 @@
 All notable changes to this project will be documented in this file.
 The format is based on Keep a Changelog and this project adheres to Semantic Versioning.
 
+## [11.0.1] - 2025-09-20
+
+### Deprecated
+- Long polling is deprecated. The `IsLongPolling` parameter had no internal effect and existing constructors that include it are now obsolete. Use the new constructors without `IsLongPolling`.
+
 ## [11.0.0] - 2025-09-19
 
 ### Breaking

@@ -64,7 +64,7 @@ public class ServerToClientTests
             Assert.True(evAll.Wait(TimeSpan.FromSeconds(5)), "Server did not record 3 client connections");
 
             // Send to one client
-            var reply1 = connectedClients[0].SendMessage(new object[] { "hello" }, 5000, false);
+            var reply1 = connectedClients[0].SendMessage(new object[] { "hello" }, 5000);
             Assert.NotNull(reply1);
             var text1 = Encoding.UTF8.GetString(reply1);
             Assert.StartsWith("C", text1); // "C1:hello" etc
@@ -72,7 +72,7 @@ public class ServerToClientTests
             // Send to many clients
             foreach (var rc in connectedClients)
             {
-                var r = rc.SendMessage(new object[] { "ping" }, 5000, false);
+                var r = rc.SendMessage(new object[] { "ping" }, 5000);
                 Assert.NotNull(r);
             }
 

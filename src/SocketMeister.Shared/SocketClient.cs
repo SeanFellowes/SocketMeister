@@ -1234,19 +1234,17 @@ namespace SocketMeister
 
 
 
-
         /// <summary>
         /// Sends a message to the server and waits for a response.
         /// </summary>
         /// <param name="Parameters">Array of parameters to send with the message. At least one parameter is required.</param>
         /// <param name="TimeoutMilliseconds">Maximum number of milliseconds to wait for a response from the server.</param>
-        /// <param name="IsLongPolling">If the message is long polling on the server, set to true so the message will be cancelled immediately when a disconnect occurs.</param>
         /// <param name="FriendlyMessageName">Optional friendly name of the message used in logging.</param>
         /// <returns>Byte array returned from the server.</returns>
         /// <exception cref="ArgumentException">Thrown when <paramref name="Parameters"/> is null or empty.</exception>
         /// <exception cref="TimeoutException">Thrown if no response is received within <paramref name="TimeoutMilliseconds"/>.</exception>
         /// <exception cref="Exception">Thrown when the client is stopping or the server returns an error.</exception>
-        public byte[] SendMessage(object[] Parameters, int TimeoutMilliseconds = 60000, bool IsLongPolling = false, string FriendlyMessageName = null)
+        public byte[] SendMessage(object[] Parameters, int TimeoutMilliseconds = 60000, string FriendlyMessageName = null)
         {
             string msg;
 
@@ -1287,7 +1285,7 @@ namespace SocketMeister
             int remainingMilliseconds = TimeoutMilliseconds - Convert.ToInt32((DateTime.UtcNow - startTime).TotalMilliseconds);
 
             //  Create Message
-            MessageV1 message = new MessageV1(Parameters, remainingMilliseconds, IsLongPolling, FriendlyMessageName);
+            MessageV1 message = new MessageV1(Parameters, remainingMilliseconds, FriendlyMessageName);
 
             //  Add the message to the unresponded messages collection
             UnrespondedMessages.Add(message);
@@ -1352,7 +1350,7 @@ namespace SocketMeister
             }
             catch (Exception ex)
             {
-                msg = $"{nameof(SendMessage)}() failed: {ex.ToString()}";
+                msg = $"{nameof(SendMessage)}() failed: {ex}";
                 Exception ex3 = new Exception(msg);
                 Log(ex3);
                 throw ex3;
@@ -1367,7 +1365,7 @@ namespace SocketMeister
             {
                 if (message.Response.Error != null)
                 {
-                    msg = $"{nameof(SendMessage)}() failed: {message.Response.Error.ToString()}";
+                    msg = $"{nameof(SendMessage)}() failed: {message.Response.Error}";
                     Exception ex2 = new Exception(msg);
                     Log(ex2);
                     throw ex2;
@@ -1379,7 +1377,7 @@ namespace SocketMeister
 
             if (message.Error != null)
             {
-                msg = $"{nameof(SendMessage)}() failed: {message.Error.ToString()}";
+                msg = $"{nameof(SendMessage)}() failed: {message.Error}";
                 Exception ex1 = new Exception(msg);
                 Log(ex1);
                 throw ex1;
@@ -1392,7 +1390,22 @@ namespace SocketMeister
         }
 
 
-
+        /// <summary>
+        /// Sends a message to the server and waits for a response.
+        /// </summary>
+        /// <param name="Parameters">Array of parameters to send with the message. At least one parameter is required.</param>
+        /// <param name="TimeoutMilliseconds">Maximum number of milliseconds to wait for a response from the server.</param>
+        /// <param name="IsLongPolling">If the message is long polling on the server, set to true so the message will be cancelled immediately when a disconnect occurs.</param>
+        /// <param name="FriendlyMessageName">Optional friendly name of the message used in logging.</param>
+        /// <returns>Byte array returned from the server.</returns>
+        /// <exception cref="ArgumentException">Thrown when <paramref name="Parameters"/> is null or empty.</exception>
+        /// <exception cref="TimeoutException">Thrown if no response is received within <paramref name="TimeoutMilliseconds"/>.</exception>
+        /// <exception cref="Exception">Thrown when the client is stopping or the server returns an error.</exception>
+        [Obsolete("Use SendMessage(object[] Parameters, int TimeoutMilliseconds = 60000, string FriendlyMessageName = null) instead. The IsLongPolling parameter is deprecated.")]
+        public byte[] SendMessage(object[] Parameters, int TimeoutMilliseconds, bool IsLongPolling, string FriendlyMessageName = null)
+        {
+            return SendMessage(Parameters, TimeoutMilliseconds, FriendlyMessageName);
+        }
 
         private void ProcessSendPollRequest(object sender, SocketAsyncEventArgs e)
         {
@@ -1485,7 +1498,7 @@ namespace SocketMeister
                             IMessage originalMessage = UnrespondedMessages.FindMessageAndSetResponse(response);
                             if (originalMessage == null)
                             {
-                                Log($"Received {_receiveEngine.MessageType.ToString()} ({e.BytesTransferred} bytes)", Severity.Information, LogEventType.UserMessage, response.MessageId);
+                                Log($"Received {_receiveEngine.MessageType} ({e.BytesTransferred} bytes)", Severity.Information, LogEventType.UserMessage, response.MessageId);
                             }
                             else
                             {

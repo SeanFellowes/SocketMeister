@@ -53,7 +53,7 @@ This document describes the core design of SocketMeister and how it achieves thr
   - Large payloads may be compressed based on size; bodies are decompressed transparently on receipt.
 
 - **Request/Response**
-  - Client sends via `SendMessage(object[] parameters, int timeoutMs, bool isLongPolling=false, string friendlyName=null)` and blocks until a response or timeout.
+  - Client sends via `SendMessage(object[] parameters, int timeoutMs, string friendlyName=null)` and blocks until a response or timeout.
   - Server handles `MessageReceived` and (optionally) sets `e.Response`.
   - ClientConnected is raised on the server only after the handshake completes to reflect a “ready” state.
 

@@ -43,7 +43,7 @@ namespace SocketMeister.MiniTestClient
         private int _broadcastsReceived = 0;
         private bool _isRunning;
         private SocketClient _client;
-        private object _lock = new object();
+        private readonly object _lock = new object();
 
         /// <summary>
         /// Event raised when an exception occurs
@@ -161,9 +161,7 @@ namespace SocketMeister.MiniTestClient
             DateTime start = DateTime.Now;
             try
             {
-#pragma warning disable CA2208 // Instantiate argument exceptions correctly
                 if (string.IsNullOrEmpty(Message)) throw new ArgumentNullException("Message cannot be null or empty");
-#pragma warning restore CA2208 // Instantiate argument exceptions correctly
                 if (_client == null) throw new Exception("Client is null");
 
                 new Thread(new ThreadStart(delegate
@@ -175,7 +173,7 @@ namespace SocketMeister.MiniTestClient
                         object[] p = new object[2];
                         p[0] = _clientId;
                         p[1] = toSend;
-                        byte[] result = _client.SendMessage(p, TimeoutMs, false, "Client Test Message");
+                        byte[] result = _client.SendMessage(p, TimeoutMs, "Client Test Message");
 
                         string msg = "Response Received (" + (int)(DateTime.Now - start).TotalMilliseconds + " ms))";
 

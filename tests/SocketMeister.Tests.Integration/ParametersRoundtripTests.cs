@@ -118,7 +118,7 @@ public class ParametersRoundtripTests
             Assert.NotNull(remote);
 
             var arr = BuildAllTypes();
-            var resp = remote!.SendMessage(arr, 10000, false);
+            var resp = remote!.SendMessage(arr, 10000);
             Assert.NotNull(resp);
             var str = Encoding.UTF8.GetString(resp);
             Assert.Equal(Canonical(arr), str);

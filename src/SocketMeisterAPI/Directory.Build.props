@@ -1,0 +1,19 @@
+<Project>
+  <!--
+    The following warning and message suppressions are required for backward compatibility with .NET 3.5.
+    Modern C# constructs (such as object initializers, using declarations, and target-typed new expressions)
+    are not supported in .NET 3.5. Updating the code to use these features would break compatibility.
+    These warnings are suppressed to prevent the Error List from being flooded, as the code cannot be changed
+    without dropping support for legacy frameworks.
+    Suppressed codes: IDE0017, IDE0028, IDE0063, IDE0090, IDE0330, CA1510, CA2263
+  -->
+  <PropertyGroup>
+    <NoWarn>$(NoWarn);IDE0017</NoWarn>
+    <NoWarn>$(NoWarn);IDE0028</NoWarn>
+    <NoWarn>$(NoWarn);IDE0063</NoWarn>
+    <NoWarn>$(NoWarn);IDE0090</NoWarn>
+    <NoWarn>$(NoWarn);IDE0330</NoWarn>
+    <NoWarn>$(NoWarn);CA1510</NoWarn>
+    <NoWarn>$(NoWarn);CA2263</NoWarn>
+  </PropertyGroup>
+</Project>

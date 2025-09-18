@@ -24,7 +24,7 @@ namespace SocketMeister
         private ManualResetEventSlim ServerStarted { get; set; } = new ManualResetEventSlim(false);
 
         private readonly Clients _connectedClients;
-        private bool _compressSentData;
+        private readonly bool _compressSentData;
         private bool _disposed; 
         private string _endPoint;
         private Socket _listener = null;
@@ -596,7 +596,7 @@ namespace SocketMeister
                             }
 
                             // Unknown message received. The client may be a newer version of SocketMeister. Raise a log message and ignore.
-                            string logMsg = $"ReadCallback() encountered an unknown message type ({receiveEnvelope.MessageType.ToString()}). The server may be running a newer version of SocketMeister.";
+                            string logMsg = $"ReadCallback() encountered an unknown message type ({receiveEnvelope.MessageType}). The server may be running a newer version of SocketMeister.";
                             Logger.Log(new LogEntry(logMsg, Severity.Warning, LogEventType.Exception));
                         }
                     }

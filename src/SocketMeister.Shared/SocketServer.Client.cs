@@ -238,7 +238,19 @@ namespace SocketMeister
             /// <param name="timeoutMilliseconds">The maximum number of milliseconds to wait for a response from the server.</param>
             /// <param name="isLongPolling">Indicates whether the message is long-polling on the server. If true, the message will be canceled instantly when a disconnect occurs.</param>
             /// <returns>A nullable array of bytes returned from the socket server.</returns>
+            [Obsolete("Use SendMessage(object[] parameters, int timeoutMilliseconds = 60000) instead. The isLongPolling parameter is deprecated.")]
             public byte[] SendMessage(object[] parameters, int timeoutMilliseconds = 60000, bool isLongPolling = false)
+            {
+                return SendMessage(parameters, timeoutMilliseconds);
+            }
+
+            /// <summary>
+            /// Sends a message to the client and waits for a response.
+            /// </summary>
+            /// <param name="parameters">An array of parameters to send with the message.</param>
+            /// <param name="timeoutMilliseconds">The maximum number of milliseconds to wait for a response from the server.</param>
+            /// <returns>A nullable array of bytes returned from the socket server.</returns>
+            public byte[] SendMessage(object[] parameters, int timeoutMilliseconds = 60000)
             {
                 if (parameters == null || parameters.Length == 0)
                     throw new ArgumentException("Message parameters cannot be null or empty.", nameof(parameters));
@@ -258,7 +270,7 @@ namespace SocketMeister
                     throw new InvalidOperationException("The socket server is not in the 'Started' state.");
 
                 // Create and initialize the message
-                var message = new MessageV1(parameters, timeoutMilliseconds, isLongPolling);
+                var message = new MessageV1(parameters, timeoutMilliseconds);
 
                 try
                 {
