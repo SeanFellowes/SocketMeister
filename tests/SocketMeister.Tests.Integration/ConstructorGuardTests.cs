@@ -11,7 +11,7 @@ public class ConstructorGuardTests
     [Fact]
     public void SocketClient_List_Null_Throws()
     {
-        Assert.Throws<ArgumentNullException>(() => new SocketClient((List<SocketEndPoint>)null, false, "x"));
+        Assert.Throws<ArgumentNullException>(() => new SocketClient((List<SocketEndPoint>)null!, false, "x"));
     }
 
     [Trait("Category","CtorGuards")]
@@ -46,4 +46,3 @@ public class ConstructorGuardTests
         Assert.Throws<ArgumentNullException>(() => new SocketServer((SocketServerOptions)null));
     }
 }
-

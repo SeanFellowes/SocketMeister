@@ -46,6 +46,8 @@ public class ParametersRoundtripTests
 
     private static object[] BuildAllTypes()
     {
+        // Null element is intentional for serializer coverage; suppress warning in test input creation
+#pragma warning disable CS8625
         return new object[]
         {
             true, false, (short)-123, (int)123456, (long)-9999999999L,
@@ -59,6 +61,7 @@ public class ParametersRoundtripTests
             Guid.NewGuid(),
             null
         };
+#pragma warning restore CS8625
     }
 
     [Trait("Category","Parameters")]
@@ -99,7 +102,7 @@ public class ParametersRoundtripTests
         int port = PortAllocator.GetFreeTcpPort();
         var server = new SocketServer(port, false);
 
-        SocketServer.Client remote = null;
+        SocketServer.Client? remote = null;
         var connected = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         server.ClientConnected += (s, e) => { remote = e.Client; connected.TrySetResult(true); };
         server.Start();
@@ -120,7 +123,7 @@ public class ParametersRoundtripTests
             var arr = BuildAllTypes();
             var resp = remote!.SendMessage(arr, 10000);
             Assert.NotNull(resp);
-            var str = Encoding.UTF8.GetString(resp);
+            var str = Encoding.UTF8.GetString(resp!);
             Assert.Equal(Canonical(arr), str);
 
             client.Stop();

@@ -1,6 +1,8 @@
 # SocketMeister
 
 [![NuGet version](https://img.shields.io/nuget/v/SocketMeister.svg)](https://www.nuget.org/packages/SocketMeister)
+[![Docs](https://github.com/SeanFellowes/SocketMeister/actions/workflows/docs.yml/badge.svg?branch=main)](https://github.com/SeanFellowes/SocketMeister/actions/workflows/docs.yml)
+[![Tests (Windows)](https://github.com/SeanFellowes/SocketMeister/actions/workflows/windows-ci.yml/badge.svg?branch=main)](https://github.com/SeanFellowes/SocketMeister/actions/workflows/windows-ci.yml)
 
 **SocketMeister** is a high-performance, fault-tolerant TCP/IP socket library for .NET clients & servers.
 
@@ -27,3 +29,22 @@ Upgrading to v11? See the guide: https://seanfellowes.github.io/SocketMeister/up
 
 
 Note: If you’re embedding sources directly, grab [SocketMeister.Sources from NuGet](https://www.nuget.org/packages/SocketMeister.Sources/) for easier debugging.
+
+## 🧪 Continuous Integration
+
+- Platform: GitHub Actions on `windows-latest` runners.
+- Workflows: `windows-ci.yml` (badge above) runs on every push and pull request.
+- Docs: `docs.yml` (badge above) builds DocFX and deploys to GitHub Pages on changes to docs and source.
+- Matrix:
+  - Integration tests for `net8.0` and `net472`.
+  - Compatibility tests driven by a .NET 3.5 console client (orchestrated from `net8.0`).
+- How to inspect results:
+  - Open the repository’s Actions tab → “Tests (Windows)”.
+  - Each job step shows restore, build, and test phases with logs and annotations.
+  - Click into a step to see full test output and any warnings.
+  - For docs: open Actions → “Build & Deploy Docs”. The “deploy” job publishes to GitHub Pages.
+
+Notes:
+- Some scenarios (e.g., handshake timeout) are intentionally thorough and can take ~30–45s each.
+- Tests use ephemeral ports and localhost; no external resources are required.
+ - Docs site is published at: https://seanfellowes.github.io/SocketMeister/

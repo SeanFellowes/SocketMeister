@@ -38,7 +38,7 @@ public class RestartServerReconnectionTests
 
             // Wait for client to reconnect and send again
             var deadline = DateTime.UtcNow.AddSeconds(45);
-            byte[] r2 = null;
+            byte[]? r2 = null;
             while (DateTime.UtcNow < deadline)
             {
                 if (client.ConnectionStatus == SocketClient.ConnectionStatuses.Connected)
@@ -49,7 +49,7 @@ public class RestartServerReconnectionTests
                 await Task.Delay(500);
             }
             Assert.NotNull(r2);
-            Assert.Equal("ACK", Encoding.UTF8.GetString(r2));
+            Assert.Equal("ACK", Encoding.UTF8.GetString(r2!));
 
             client.Stop();
         }
@@ -60,4 +60,3 @@ public class RestartServerReconnectionTests
         }
     }
 }
-
