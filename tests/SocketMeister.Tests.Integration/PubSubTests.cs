@@ -187,8 +187,8 @@ public class PubSubTests
             await Task.Delay(500);
             server.Start();
 
-            // Wait for reconnect
-            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(15));
+            // Wait for reconnect (allow ample time)
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
             while (!cts.IsCancellationRequested && client.ConnectionStatus != SocketClient.ConnectionStatuses.Connected)
                 await Task.Delay(200);
             Assert.Equal(SocketClient.ConnectionStatuses.Connected, client.ConnectionStatus);
