@@ -42,12 +42,14 @@ namespace SocketMeister
 
         /// <summary>
         /// Event raised when a client connects to the socket server. Raised on a separate thread.
+        /// In v11 this is raised only after the client handshake completes (client is fully ready).
         /// </summary>
         /// <seealso cref="ClientEventArgs"/>
         public event EventHandler<ClientEventArgs> ClientConnected;
 
         /// <summary>
         /// Event raised when a client disconnects from the socket server. Raised on a separate thread.
+        /// This corresponds to clients that had completed handshake (i.e., were connected).
         /// </summary>
         /// <seealso cref="ClientEventArgs"/>
         public event EventHandler<ClientEventArgs> ClientDisconnected;
@@ -65,12 +67,14 @@ namespace SocketMeister
         public event EventHandler<MessageReceivedEventArgs> MessageReceived;
 
         /// <summary>
-        /// Event raised when the status of the socket listener changes. Raised on a separate thread.
+        /// Event raised when the status of the socket server changes. Raised on a separate thread.
+        /// See <see cref="ServerStatusChangedEventArgs"/> for old/new status and endpoint details.
         /// </summary>
         public event EventHandler<ServerStatusChangedEventArgs> StatusChanged;
 
         /// <summary>
         /// Constructor.
+        /// Defers resource allocation; call <see cref="Start()"/> to bind and listen.
         /// </summary>
         /// <param name="Port">Port that this socket server will listen on.</param>
         /// <param name="CompressSentData">Enable compression on message data.</param>
@@ -300,7 +304,8 @@ namespace SocketMeister
         }
 
         /// <summary>
-        /// Starts the socket server, which begins listening for incoming connections.
+        /// Starts the socket server and begins listening for incoming connections.
+        /// Creates the listening socket and background listener thread. Throws if already starting or started.
         /// </summary>
         /// <seealso cref="Stop"/>
         public void Start()
@@ -342,7 +347,8 @@ namespace SocketMeister
         }
 
         /// <summary>
-        /// Sends a message to all clients to disconnect, waits for in-progress messages to finish, and then stops the socket server.
+        /// Stops the socket server. Sends a server-stopping notification, waits for in-progress messages to finish, and closes sockets.
+        /// Idempotent: returns immediately if not currently started.
         /// </summary>
         /// <seealso cref="Start"/>
         public void Stop()
