@@ -12,3 +12,10 @@
 
 - name: Samples
   href: samples/index.md
+
+- name: Testing
+  items:
+    - name: Overview
+      href: testing/overview.md
+    - name: Test Cases
+      href: testing/cases.md
