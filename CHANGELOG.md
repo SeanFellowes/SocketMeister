@@ -9,15 +9,21 @@ The format is based on Keep a Changelog and this project adheres to Semantic Ver
 - SocketClient no longer auto-starts on construction. After creating an instance and attaching event handlers, call `Start()` to begin connecting.
 - `ConnectionStatusChanged` and `CurrentEndPointChanged` now use typed event args: `ConnectionStatusChangedEventArgs` and `CurrentEndPointChangedEventArgs`.
 - `ClientDisconnectReason` is now a public enum (was internal) when `SMISPUBLIC` is defined.
+- SocketServer constructor no longer binds/listens; call `Start()` explicitly. `StatusChanged` now uses typed `ServerStatusChangedEventArgs`.
+- SocketServer raises `ClientConnected` only after handshake completes (post-Handshake2/Handshake2Ack), ensuring accurate connection semantics.
 
 ### Added
 - `SocketClient.Start()` to explicitly start the background worker and connection logic (idempotent; throws if the client has been stopped).
 - `SocketClient.IsRunning` to indicate if the background worker is running.
 - `SocketClient.ServerVersion` to expose the server’s SocketMeister version once known.
+- `SocketServerOptions` with `BindAddress`, `Port`, `Backlog`, and `CompressSentData`.
+- `SocketServer.IsRunning` convenience property.
 
 ### Changed
 - `SocketClient.ExceptionRaised` is no longer marked obsolete. Use it for an error-only channel; use `LogRaised` for full telemetry.
 - XML documentation on all `SocketClient` constructors now notes the requirement to call `Start()` in v11.
+- SocketServer supports restart (call `Stop()` then `Start()` on the same instance). Listener socket and thread are created in `Start()` and disposed in `Stop()`.
+- Handshake performance: removed fixed delay before sending Handshake1; the server now retries Handshake1 a few times until Handshake2 is received.
 
 ### Migration
 1. Replace auto-start assumptions with an explicit `client.Start()` after subscribing to events.
@@ -25,6 +31,10 @@ The format is based on Keep a Changelog and this project adheres to Semantic Ver
    - `ConnectionStatusChanged(object sender, ConnectionStatusChangedEventArgs e)`
    - `CurrentEndPointChanged(object sender, CurrentEndPointChangedEventArgs e)`
 3. If you previously filtered `LogRaised` for only errors, consider subscribing to `ExceptionRaised` instead.
+4. For SocketServer:
+   - Call `server.Start()` explicitly after constructing and subscribing to events.
+   - Update `StatusChanged` handlers to `(object sender, ServerStatusChangedEventArgs e)` and use `e.OldStatus`, `e.NewStatus`, `e.EndPoint`.
+   - If you relied on `ClientConnected` during accept, note it is now raised only after the handshake completes.
 
 Notes:
 - .NET 3.5 remains supported. `Start()` uses the existing background thread model on .NET 3.5.
@@ -187,4 +197,3 @@ Notes:
 ## Earlier 1.x releases (2015–2020)
 
 The 1.x line predates public NuGet distribution and consisted mainly of exploratory internal releases. They are no longer supported.
-

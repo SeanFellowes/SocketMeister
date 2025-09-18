@@ -30,6 +30,11 @@ server.LogRaised += (s, e) =>
 {
     Console.WriteLine($"[Server {e.LogEntry.Severity}] {e.LogEntry.Message}");
 };
+
+server.StatusChanged += (s, e) =>
+{
+    Console.WriteLine($"Server status: {e.OldStatus} -> {e.NewStatus} @ {e.EndPoint}");
+};
 ```
 
 ## Connection telemetry

@@ -13,6 +13,7 @@ This document describes the core design of SocketMeister and how it achieves thr
 - **SocketServer**
   - Listens on a specified port and accepts concurrent client connections.
   - Raises `MessageReceived` for application logic; the handler can optionally set `e.Response` (byte[]), enabling request/response.
+  - Explicit `Start()`/`Stop()` lifecycle; emits typed `StatusChanged(ServerStatusChangedEventArgs)` and supports restart on the same instance.
 
 ## 2. Threading & Concurrency
 
@@ -28,16 +29,19 @@ This document describes the core design of SocketMeister and how it achieves thr
 
 ## 3. Connection Management
 
-- **Explicit start**
+- **Explicit start (client and server)**
   - In v11 the client does not auto-start. Construct → subscribe to events → call `Start()`.
+  - The server constructor no longer binds/listens; call `Start()` explicitly to begin listening. `StatusChanged` is typed and raised with old/new.
 
 - **Status transitions**
   - `ConnectionStatus` reflects `Connecting` until the handshake completes, even if the socket is open.
   - `ConnectionStatusChanged` is raised with `OldStatus`, `NewStatus`, `EndPoint`, and a `ClientDisconnectReason` when applicable.
+  - On the server, `StatusChanged` provides `OldStatus`, `NewStatus`, and `EndPoint`.
 
 - **Failover and backoff**
   - When multiple endpoints are configured, the client selects the endpoint with the earliest reconnect eligibility.
   - Backoff durations depend on the disconnect reason (e.g., timeouts vs. incompatibilities).
+  - The server supports clean restart (Stop then Start) within the same process; clients reconnect based on their retry logic.
 
 ## 4. Message Framing & Protocol
 
@@ -51,6 +55,7 @@ This document describes the core design of SocketMeister and how it achieves thr
 - **Request/Response**
   - Client sends via `SendMessage(object[] parameters, int timeoutMs, bool isLongPolling=false, string friendlyName=null)` and blocks until a response or timeout.
   - Server handles `MessageReceived` and (optionally) sets `e.Response`.
+  - ClientConnected is raised on the server only after the handshake completes to reflect a “ready” state.
 
 ## 5. Subscriptions & Broadcasts
 

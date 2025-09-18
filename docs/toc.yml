@@ -4,6 +4,9 @@
 - name: Getting Started
   href: getting-started.md
 
+- name: Upgrading to Version 11
+  href: upgrading-to-version11.md
+
 - name: Architecture
   href: architecture.md
 

@@ -31,6 +31,8 @@ namespace SocketMeister
             private readonly SocketServer _socketServer;
             private readonly TokenCollectionReadOnly _subscriptions = new TokenCollectionReadOnly();
             private readonly UnrespondedMessageCollection _unrespondedMessages = new UnrespondedMessageCollection();
+            private volatile bool _handshake2Received;
+            private volatile bool _isAddedToServerList;
 
             internal Client(SocketServer server, Socket clientSocket, bool compressSentData)
             {
@@ -126,6 +128,18 @@ namespace SocketMeister
             /// Gets the collection of messages sent to the client that have not yet received a response.
             /// </summary>
             internal UnrespondedMessageCollection UnrespondedMessages => _unrespondedMessages;
+
+            internal bool Handshake2Received
+            {
+                get => _handshake2Received;
+                set => _handshake2Received = value;
+            }
+
+            internal bool IsAddedToServerList
+            {
+                get => _isAddedToServerList;
+                set => _isAddedToServerList = value;
+            }
 
             /// <summary>
             /// Checks whether a subscription exists.

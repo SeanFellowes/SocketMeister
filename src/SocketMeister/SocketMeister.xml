@@ -1812,6 +1812,11 @@
             <seealso cref="M:SocketMeister.SocketServer.Start"/>
             <seealso cref="M:SocketMeister.SocketServer.Stop"/>
         </member>
+        <member name="M:SocketMeister.SocketServer.#ctor(SocketMeister.SocketServerOptions)">
+            <summary>
+            Constructor using options.
+            </summary>
+        </member>
         <member name="M:SocketMeister.SocketServer.Dispose">
             <summary>
             Disposes of the class.
@@ -1866,6 +1871,11 @@
             The total number of messages that have been received through the socket server since it started.
             </summary>
         </member>
+        <member name="P:SocketMeister.SocketServer.IsRunning">
+            <summary>
+            Indicates whether the socket server is running (listening and accepting connections).
+            </summary>
+        </member>
         <member name="P:SocketMeister.SocketServer.StopSocketServer">
             <summary>
             Indicates whether the socket service is in the process of stopping.
@@ -1918,6 +1928,26 @@
             Sends a message to all clients to disconnect, waits for in-progress messages to finish, and then stops the socket server.
             </summary>
             <seealso cref="M:SocketMeister.SocketServer.Start"/>
+        </member>
+        <member name="T:SocketMeister.SocketServer.ServerStatusChangedEventArgs">
+            <summary>
+            Provides old/new status details when the server status changes.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketServer.ServerStatusChangedEventArgs.OldStatus">
+            <summary>
+            Previous server status.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketServer.ServerStatusChangedEventArgs.NewStatus">
+            <summary>
+            New server status.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketServer.ServerStatusChangedEventArgs.EndPoint">
+            <summary>
+            Endpoint string (IP:Port) if available.
+            </summary>
         </member>
         <member name="T:SocketMeister.SocketServer.ClientEventArgs">
             <summary>

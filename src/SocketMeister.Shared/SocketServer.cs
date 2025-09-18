@@ -24,16 +24,17 @@ namespace SocketMeister
         private ManualResetEventSlim ServerStarted { get; set; } = new ManualResetEventSlim(false);
 
         private readonly Clients _connectedClients;
-        private readonly bool _compressSentData;
+        private bool _compressSentData;
         private bool _disposed; 
-        private readonly string _endPoint;
-        private readonly Socket _listener = null;
+        private string _endPoint;
+        private Socket _listener = null;
         private SocketServerStatus _status;
-        private readonly IPEndPoint _localEndPoint = null;
+        private IPEndPoint _localEndPoint = null;
         private readonly object _lock = new object();
         private readonly object _lockTotals = new object();
+        private readonly SocketServerOptions _options;
         private bool _stopSocketServer;
-        private readonly Thread _threadListener = null;
+        private Thread _threadListener = null;
         private long _totalBytesReceived;
         private long _totalBytesSent;
         private int _totalMessagesSent;
@@ -66,7 +67,7 @@ namespace SocketMeister
         /// <summary>
         /// Event raised when the status of the socket listener changes. Raised on a separate thread.
         /// </summary>
-        public event EventHandler<EventArgs> StatusChanged;
+        public event EventHandler<ServerStatusChangedEventArgs> StatusChanged;
 
         /// <summary>
         /// Constructor.
@@ -77,45 +78,37 @@ namespace SocketMeister
         /// <seealso cref="Stop"/>
         public SocketServer(int Port, bool CompressSentData)
         {
+            _options = new SocketServerOptions { Port = Port, CompressSentData = CompressSentData };
             _compressSentData = CompressSentData;
-            _status = SocketServerStatus.Starting;
+            _status = SocketServerStatus.Stopped;
             _connectedClients = new Clients(Logger);
 
             // Logger
             Logger.LogRaised += Logger_LogRaised;
 
-            try
-            {
-                // Connect to all interfaces (IP 0.0.0.0 means all interfaces).
-                IPAddress ipAddress = IPAddress.Parse("0.0.0.0");
-                _localEndPoint = new IPEndPoint(ipAddress, Port);
+            // Register for client collection events
+            _connectedClients.ClientDisconnected += ConnectedClients_ClientDisconnected;
+            _connectedClients.ClientConnected += ConnectedClients_ClientConnected;
+        }
 
-                // Local IP address and port (used for diagnostic messages).
-                _endPoint = GetLocalIPAddress().ToString() + ":" + Port.ToString(CultureInfo.InvariantCulture);
+        /// <summary>
+        /// Constructor using options.
+        /// </summary>
+        public SocketServer(SocketServerOptions options)
+        {
+            if (options == null) throw new ArgumentNullException(nameof(options));
+            if (options.Port <= 0 || options.Port > ushort.MaxValue) throw new ArgumentException("Invalid port.", nameof(options));
+            _options = options;
+            _compressSentData = options.CompressSentData;
+            _status = SocketServerStatus.Stopped;
+            _connectedClients = new Clients(Logger);
 
-                // Create a TCP/IP socket.
-                _listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                _listener.Bind(_localEndPoint);
+            // Logger
+            Logger.LogRaised += Logger_LogRaised;
 
-                // WARNING – DO NOT USE SocketOptionName.ReceiveTimeout OR SocketOptionName.SendTimeout. TRIED THIS AND IT COMPLETELY BROKE BIG DATA TRANSFERS.
-                _listener.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
-                _listener.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, 0);
-
-                // Register for events.
-                _connectedClients.ClientDisconnected += ConnectedClients_ClientDisconnected;
-                _connectedClients.ClientConnected += ConnectedClients_ClientConnected;
-
-                // Setup background process for listening.
-                _threadListener = new Thread(new ThreadStart(BgListen))
-                {
-                    IsBackground = true
-                };
-            }
-            catch
-            {
-                _status = SocketServerStatus.Stopped;
-                throw;
-            }
+            // Register for client collection events
+            _connectedClients.ClientDisconnected += ConnectedClients_ClientDisconnected;
+            _connectedClients.ClientConnected += ConnectedClients_ClientConnected;
         }
 
         /// <summary>
@@ -176,12 +169,14 @@ namespace SocketMeister
             get { lock (_lock) { return _status; } }
             private set
             {
+                SocketServerStatus oldStatus;
                 lock (_lock)
                 {
                     if (_status == value) return;
+                    oldStatus = _status;
                     _status = value;
                 }
-                StatusChanged?.Invoke(null, new EventArgs());
+                try { StatusChanged?.Invoke(this, new ServerStatusChangedEventArgs(oldStatus, value, _endPoint)); } catch { }
             }
         }
 
@@ -210,6 +205,11 @@ namespace SocketMeister
         {
             get { lock (_lockTotals) { return _totalMessagesReceived; } }
         }
+
+        /// <summary>
+        /// Indicates whether the socket server is running (listening and accepting connections).
+        /// </summary>
+        public bool IsRunning => Status == SocketServerStatus.Started;
 
         /// <summary>
         /// Indicates whether the socket service is in the process of stopping.
@@ -305,6 +305,9 @@ namespace SocketMeister
         /// <seealso cref="Stop"/>
         public void Start()
         {
+            if (Status == SocketServerStatus.Started || Status == SocketServerStatus.Starting)
+                throw new InvalidOperationException("Socket server is already starting or started.");
+
             StopSocketServer = false;
             lock (_lockTotals)
             {
@@ -313,7 +316,29 @@ namespace SocketMeister
                 _totalMessagesSent = 0;
                 _totalMessagesReceived = 0;
             }
-            _threadListener.Start();
+            try
+            {
+                var ip = _options?.BindAddress ?? IPAddress.Parse("0.0.0.0");
+                _localEndPoint = new IPEndPoint(ip, _options.Port);
+                _endPoint = (ip.Equals(IPAddress.Any) ? GetLocalIPAddress().ToString() : ip.ToString()) + ":" + _options.Port.ToString(CultureInfo.InvariantCulture);
+
+                _listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                _listener.Bind(_localEndPoint);
+                _listener.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
+                _listener.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, 0);
+
+                Status = SocketServerStatus.Starting;
+
+                _threadListener = new Thread(new ThreadStart(BgListen)) { IsBackground = true };
+                _threadListener.Start();
+            }
+            catch
+            {
+                Status = SocketServerStatus.Stopped;
+                try { _listener?.Close(); } catch { }
+                _listener = null;
+                throw;
+            }
         }
 
         /// <summary>
@@ -325,7 +350,9 @@ namespace SocketMeister
             try
             {
                 if (Status != SocketServerStatus.Started)
-                    throw new InvalidOperationException("Socket server is not currently running.");
+                {
+                    return;
+                }
 
                 Status = SocketServerStatus.Stopping;
                 AllDone.Set();
@@ -364,7 +391,9 @@ namespace SocketMeister
                 Status = SocketServerStatus.Stopped;
                 StopSocketServer = true;
                 Logger.Stop();
-                _threadListener.Join(1000); // Wait for the listener thread to finish.
+                try { _threadListener?.Join(1000); } catch { }
+                _threadListener = null;
+                _listener = null;
             }
         }
 
@@ -411,29 +440,31 @@ namespace SocketMeister
 
                     // Create the state object.
                     Client remoteClient = new Client(this, handler, _compressSentData);
-                    _connectedClients.Add(remoteClient);
                     handler.BeginReceive(remoteClient.ReceiveBuffer, 0, Constants.SEND_RECEIVE_BUFFER_SIZE, 0, new AsyncCallback(ReadCallback), remoteClient);
 
-                    // Send SocketServerHandshake1 to the client to indicate that the server is ready to receive data.
-                    try
+                    // Send Handshake 1 with retries until Handshake2 received or stopping
+                    Task.Run(() =>
                     {
-                        // Pause so the client can establish its receive buffer and so the server can complete setting up the buffer.
-                        // *** Look for a better solution, e.g. retry on Handshake1 (will require a Handshake1Ack) ***
-                        Thread.Sleep(1000);
-
-                        // Send Handshake 1.
-                        byte[] sendBytes = MessageEngine.GenerateSendBytes(new Handshake1(Constants.SOCKET_MEISTER_VERSION, remoteClient.ClientId.ToString()), _compressSentData);
-                        remoteClient.ClientSocket.Send(sendBytes, sendBytes.Length, SocketFlags.None);
-                    }
-                    catch (ObjectDisposedException)
-                    {
-                        _connectedClients.Disconnect(remoteClient);
-                        return;
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Log(new LogEntry(ex));
-                    }
+                        int attempts = 0;
+                        while (!remoteClient.Handshake2Received && Status == SocketServerStatus.Started && handler.Connected && attempts < 3)
+                        {
+                            try
+                            {
+                                byte[] sendBytes = MessageEngine.GenerateSendBytes(new Handshake1(Constants.SOCKET_MEISTER_VERSION, remoteClient.ClientId.ToString()), _compressSentData);
+                                remoteClient.ClientSocket.Send(sendBytes, sendBytes.Length, SocketFlags.None);
+                            }
+                            catch (ObjectDisposedException)
+                            {
+                                return;
+                            }
+                            catch (Exception ex)
+                            {
+                                Logger.Log(new LogEntry(ex));
+                            }
+                            attempts++;
+                            Thread.Sleep(700);
+                        }
+                    });
                 });
             }
         }
@@ -461,7 +492,10 @@ namespace SocketMeister
                     // 2. On the server, EndReceive returns 0 bytes read (the client signals there is no more data).
                     // 3. The server sends its last data, calls Shutdown(SocketShutdown.Send), and then calls Close on the socket (optionally with a timeout to allow the data to be read).
                     // 4. The client reads the remaining data, then receives 0 bytes (the server signals there is no more data) and calls Close on the socket.
-                    _connectedClients.Remove(remoteClient);
+                    if (remoteClient.IsAddedToServerList)
+                    {
+                        _connectedClients.Remove(remoteClient);
+                    }
                     remoteClient.ClientSocket.Shutdown(SocketShutdown.Send);
                     remoteClient.ClientSocket.Close(15);
                     return;
@@ -587,7 +621,8 @@ namespace SocketMeister
             // Bind the socket to the local endpoint and listen for incoming connections.
             try
             {
-                _listener.Listen(500);
+                int backlog = (_options != null && _options.Backlog > 0) ? _options.Backlog : 500;
+                _listener.Listen(backlog);
                 Status = SocketServerStatus.Started;
 
                 // Signal that the socket server is ready for incoming connections.
@@ -640,6 +675,14 @@ namespace SocketMeister
                 }
                 // Send Handshake 2 ACK.
                 remoteClient.SendIMessage(new Handshake2Ack(serverSupportsClientVersion), serverSupportsClientVersion);
+
+                // Mark handshake complete and raise ClientConnected now (post-handshake)
+                remoteClient.Handshake2Received = true;
+                if (!remoteClient.IsAddedToServerList)
+                {
+                    _connectedClients.Add(remoteClient);
+                    remoteClient.IsAddedToServerList = true;
+                }
             }
             catch (Exception ex)
             {

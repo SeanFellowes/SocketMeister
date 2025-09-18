@@ -59,7 +59,7 @@ namespace SocketMeister
                 if (client == null) return;
 
                 // Abort any outbound messages where a response has not been received
-                _ = _clientDictionary.TryRemove(client.ClientId, out Client deletedClient);
+                bool removed = _clientDictionary.TryRemove(client.ClientId, out Client deletedClient);
 
                 try { client.ClientSocket.Shutdown(SocketShutdown.Both); }
                 catch (Exception ex) { _logger.Log(new LogEntry(ex)); }
@@ -67,7 +67,7 @@ namespace SocketMeister
                 try { client.ClientSocket.Close(); }
                 catch (Exception ex) { _logger.Log(new LogEntry(ex)); }
 
-                NotifyClientDisconnected(client);
+                if (removed) NotifyClientDisconnected(client);
             }
 
             /// <summary>
@@ -77,8 +77,8 @@ namespace SocketMeister
             public void Remove(Client client)
             {
                 if (client == null) return;
-                _clientDictionary.TryRemove(client.ClientId, out Client deletedClient);
-                NotifyClientDisconnected(client);
+                bool removed = _clientDictionary.TryRemove(client.ClientId, out Client deletedClient);
+                if (removed) NotifyClientDisconnected(client);
             }
 
             /// <summary>

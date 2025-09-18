@@ -12,6 +12,33 @@ namespace SocketMeister
 #endif
     {
         /// <summary>
+        /// Provides old/new status details when the server status changes.
+        /// </summary>
+        public sealed class ServerStatusChangedEventArgs : EventArgs
+        {
+            internal ServerStatusChangedEventArgs(SocketServerStatus oldStatus, SocketServerStatus newStatus, string endPoint)
+            {
+                OldStatus = oldStatus;
+                NewStatus = newStatus;
+                EndPoint = endPoint;
+            }
+
+            /// <summary>
+            /// Previous server status.
+            /// </summary>
+            public SocketServerStatus OldStatus { get; }
+
+            /// <summary>
+            /// New server status.
+            /// </summary>
+            public SocketServerStatus NewStatus { get; }
+
+            /// <summary>
+            /// Endpoint string (IP:Port) if available.
+            /// </summary>
+            public string EndPoint { get; }
+        }
+        /// <summary>
         /// Information about a remoate client which connects or disconnects from the SocketServer.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Will be resolved in a future version")]
