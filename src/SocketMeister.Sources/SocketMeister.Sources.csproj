@@ -4,7 +4,7 @@
 
 		<!-- Package metadata -->
 		<PackageId>SocketMeister.Sources</PackageId>
-		<Version>10.3.1</Version>
+		<Version>11.0.0</Version>
 		<Authors>Sean Fellowes</Authors>
 		<Description>SocketMeister source files—include via PackageReference to compile inline.</Description>
 

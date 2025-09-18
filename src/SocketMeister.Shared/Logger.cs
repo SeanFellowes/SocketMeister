@@ -17,7 +17,22 @@ namespace SocketMeister
     {
         private bool _disposed = false;
         private readonly object _lock = new object();
-        private readonly Queue<LogEntry> _logQueue = new Queue<LogEntry>();
+
+        // Use a sequenced queue to guarantee stable ordering even for identical timestamps
+        private sealed class SequencedLogEntry
+        {
+            public readonly long Sequence;
+            public readonly LogEntry Entry;
+            public SequencedLogEntry(long sequence, LogEntry entry)
+            {
+                Sequence = sequence;
+                Entry = entry;
+            }
+        }
+
+        private readonly Queue<SequencedLogEntry> _logQueue = new Queue<SequencedLogEntry>();
+        private long _nextSequence = 0;
+
         private bool _stopPermanently;
         private readonly object _stopPermanentlyLock = new object();
 
@@ -103,7 +118,13 @@ namespace SocketMeister
         public void Log(LogEntry logEntry)
         {
             if (logEntry == null) return; // Prevent nulls from being enqueued
-            _logQueue.Enqueue(logEntry);
+
+            // Ensure thread-safe enqueue and assign a monotonic sequence number
+            lock (_lock)
+            {
+                long seq = ++_nextSequence;
+                _logQueue.Enqueue(new SequencedLogEntry(seq, logEntry));
+            }
         }
 
         /// <summary>
@@ -111,7 +132,7 @@ namespace SocketMeister
         /// </summary>
         private void ProcessBatch()
         {
-            var batch = new List<LogEntry>();
+            var batch = new List<SequencedLogEntry>();
 
             lock (_lock)
             {
@@ -123,15 +144,20 @@ namespace SocketMeister
 
             if (LogRaised != null && batch.Count > 0)
             {
-                // Sort log entries by timestamp to ensure chronological order.
-                batch.Sort((a, b) => a.Timestamp.CompareTo(b.Timestamp));
+                // Sort by timestamp to keep chronological order, then by sequence to break ties deterministically
+                batch.Sort((a, b) =>
+                {
+                    int cmp = a.Entry.Timestamp.CompareTo(b.Entry.Timestamp);
+                    if (cmp != 0) return cmp;
+                    return a.Sequence.CompareTo(b.Sequence);
+                });
 
                 // Emit the log entries.
-                foreach (var entry in batch)
+                foreach (var item in batch)
                 {
                     try
                     {
-                        LogRaised(this, new LogEventArgs(entry));
+                        LogRaised(this, new LogEventArgs(item.Entry));
                     }
                     catch
                     {
