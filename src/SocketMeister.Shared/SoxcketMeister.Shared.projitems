@@ -47,5 +47,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)TokenCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TokenCollectionReadOnly.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UnrespondedMessageCollection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SocketTelemetry.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SocketTelemetrySnapshot.cs" />
   </ItemGroup>
 </Project>
