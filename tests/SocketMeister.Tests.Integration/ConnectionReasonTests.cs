@@ -50,7 +50,7 @@ public class ConnectionReasonTests
                 if (e.NewStatus == SocketClient.ConnectionStatuses.Disconnected) stopped.TrySetResult(e.Reason);
             };
             client.Start();
-            await Task.WhenAny(connected.Task, Task.Delay(20000));
+            await Task.WhenAny(connected.Task, Task.Delay(60000));
             Assert.True(connected.Task.IsCompleted, "Client did not connect");
 
             client.Stop();

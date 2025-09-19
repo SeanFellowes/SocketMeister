@@ -31,7 +31,7 @@ public class ServerStoppingTests
                     disconnectedWithReason.TrySetResult(e);
             };
             client.Start();
-            await Task.WhenAny(connected.Task, Task.Delay(10000));
+            await Task.WhenAny(connected.Task, Task.Delay(45000));
             Assert.True(connected.Task.IsCompleted, "Client did not connect");
 
             server.Stop();

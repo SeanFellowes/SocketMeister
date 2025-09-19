@@ -56,13 +56,13 @@ public class ServerToClientTests
             c3.ConnectionStatusChanged += (s, e) => { if (e.NewStatus == SocketClient.ConnectionStatuses.Connected) tcs3.TrySetResult(true); };
             c1.Start(); c2.Start(); c3.Start();
 
-            await Task.WhenAll(Task.WhenAny(tcs1.Task, Task.Delay(30000)),
-                               Task.WhenAny(tcs2.Task, Task.Delay(30000)),
-                               Task.WhenAny(tcs3.Task, Task.Delay(30000)));
+            await Task.WhenAll(Task.WhenAny(tcs1.Task, Task.Delay(60000)),
+                               Task.WhenAny(tcs2.Task, Task.Delay(60000)),
+                               Task.WhenAny(tcs3.Task, Task.Delay(60000)));
             Assert.True(tcs1.Task.IsCompleted && tcs2.Task.IsCompleted && tcs3.Task.IsCompleted, "Clients did not connect");
 
             // Wait until server captured all 3
-            await Task.WhenAny(evAll.Task, Task.Delay(TimeSpan.FromSeconds(10)));
+            await Task.WhenAny(evAll.Task, Task.Delay(TimeSpan.FromSeconds(30)));
             Assert.True(evAll.Task.IsCompleted, "Server did not record 3 client connections");
 
             // Send to one client

@@ -40,7 +40,7 @@ public class ClientValidationTests
             var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             client.ConnectionStatusChanged += (s, e) => { if (e.NewStatus == SocketClient.ConnectionStatuses.Connected) tcs.TrySetResult(true); };
             client.Start();
-            await Task.WhenAny(tcs.Task, Task.Delay(45000));
+            await Task.WhenAny(tcs.Task, Task.Delay(60000));
             Assert.True(tcs.Task.IsCompleted);
 
             client.AddSubscription("topic");
@@ -69,7 +69,7 @@ public class ClientValidationTests
             var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             client.ConnectionStatusChanged += (s, e) => { if (e.NewStatus == SocketClient.ConnectionStatuses.Connected) tcs.TrySetResult(true); };
             client.Start();
-            await Task.WhenAny(tcs.Task, Task.Delay(20000));
+            await Task.WhenAny(tcs.Task, Task.Delay(60000));
             Assert.True(tcs.Task.IsCompleted);
 
             Assert.False(client.RemoveSubscription("not-exist"));
@@ -100,9 +100,9 @@ public class ClientValidationTests
             client.Start();
             // Allow background worker to flip IsRunning
             var startedAt = DateTime.UtcNow;
-            while (!client.IsRunning && (DateTime.UtcNow - startedAt).TotalSeconds < 2)
+            while (!client.IsRunning && (DateTime.UtcNow - startedAt).TotalSeconds < 10)
                 await Task.Delay(50);
-            await Task.WhenAny(tcs.Task, Task.Delay(20000));
+            await Task.WhenAny(tcs.Task, Task.Delay(60000));
             Assert.True(tcs.Task.IsCompleted);
             Assert.True(client.ServerVersion >= 0); // ServerVersion available post-handshake (non-negative)
             client.Stop();

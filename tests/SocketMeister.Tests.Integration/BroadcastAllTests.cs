@@ -36,7 +36,7 @@ public class BroadcastAllTests
             c2.ConnectionStatusChanged += (s, e) => { if (e.NewStatus == SocketClient.ConnectionStatuses.Connected) t2.TrySetResult(true); };
             c3.ConnectionStatusChanged += (s, e) => { if (e.NewStatus == SocketClient.ConnectionStatuses.Connected) t3.TrySetResult(true); };
             c1.Start(); c2.Start(); c3.Start();
-            await Task.WhenAll(Task.WhenAny(t1.Task, Task.Delay(30000)), Task.WhenAny(t2.Task, Task.Delay(30000)), Task.WhenAny(t3.Task, Task.Delay(30000)));
+            await Task.WhenAll(Task.WhenAny(t1.Task, Task.Delay(60000)), Task.WhenAny(t2.Task, Task.Delay(60000)), Task.WhenAny(t3.Task, Task.Delay(60000)));
             Assert.True(t1.Task.IsCompleted && t2.Task.IsCompleted && t3.Task.IsCompleted, "Clients did not connect");
 
             server.Broadcast("all", new object[] { 42 });

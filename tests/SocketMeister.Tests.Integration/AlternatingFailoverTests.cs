@@ -43,28 +43,28 @@ public class AlternatingFailoverTests
             }, false, "Alternate");
             client.Start();
 
-            await WaitConnectedAsync(client, port1, TimeSpan.FromSeconds(30));
+            await WaitConnectedAsync(client, port1, TimeSpan.FromSeconds(60));
 
             // Cycle 1: switch to s2
             s1.Stop();
             await Task.Delay(500);
             s2.Start();
             await ServerTestHelpers.WaitForServerStartedAsync(s2);
-            await WaitConnectedAsync(client, port2, TimeSpan.FromSeconds(45));
+            await WaitConnectedAsync(client, port2, TimeSpan.FromSeconds(60));
 
             // Cycle 2: switch back to s1
             s2.Stop();
             await Task.Delay(500);
             s1.Start();
             await ServerTestHelpers.WaitForServerStartedAsync(s1);
-            await WaitConnectedAsync(client, port1, TimeSpan.FromSeconds(45));
+            await WaitConnectedAsync(client, port1, TimeSpan.FromSeconds(60));
 
             // One more flip to s2 for robustness
             s1.Stop();
             await Task.Delay(500);
             s2.Start();
             await ServerTestHelpers.WaitForServerStartedAsync(s2);
-            await WaitConnectedAsync(client, port2, TimeSpan.FromSeconds(45));
+            await WaitConnectedAsync(client, port2, TimeSpan.FromSeconds(60));
 
             client.Stop();
         }

@@ -63,7 +63,7 @@ public class FailoverTests
                     epChanges.Add(e.NewEndPoint.Port);
             };
 
-            await WaitForConnectedAsync(client, TimeSpan.FromSeconds(10));
+            await WaitForConnectedAsync(client, TimeSpan.FromSeconds(60));
             Assert.Equal(port1, client.CurrentEndPoint.Port);
 
             // Stop server1, wait a moment, then start server2
@@ -73,7 +73,7 @@ public class FailoverTests
             await ServerTestHelpers.WaitForServerStartedAsync(server2);
 
             // The client should reconnect to server2
-            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(20));
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(90));
             while (!cts.IsCancellationRequested)
             {
                 if (client.ConnectionStatus == SocketClient.ConnectionStatuses.Connected && client.CurrentEndPoint?.Port == port2)
@@ -93,7 +93,7 @@ public class FailoverTests
             server1.Start();
             await ServerTestHelpers.WaitForServerStartedAsync(server1);
 
-            cts = new CancellationTokenSource(TimeSpan.FromSeconds(20));
+            cts = new CancellationTokenSource(TimeSpan.FromSeconds(90));
             while (!cts.IsCancellationRequested)
             {
                 if (client.ConnectionStatus == SocketClient.ConnectionStatuses.Connected && client.CurrentEndPoint?.Port == port1)

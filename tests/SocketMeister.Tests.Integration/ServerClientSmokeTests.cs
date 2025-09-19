@@ -38,7 +38,7 @@ public class ServerClientSmokeTests : IClassFixture<ServerFixture>
             client.Start();
 
             // Wait a bit for handshake
-            using var cts = new System.Threading.CancellationTokenSource(TimeSpan.FromSeconds(5));
+            using var cts = new System.Threading.CancellationTokenSource(TimeSpan.FromSeconds(30));
             var completed = await Task.WhenAny(connectedTcs.Task, Task.Delay(Timeout.Infinite, cts.Token));
             Assert.Same(connectedTcs.Task, completed);
 

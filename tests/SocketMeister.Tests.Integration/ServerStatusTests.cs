@@ -20,8 +20,8 @@ public class ServerStatusTests
         server.StatusChanged += (s, e) => seq.Add(e.NewStatus);
 
         server.Start();
-        // Allow listener thread to set Started
-        await Task.Delay(300);
+        await ServerTestHelpers.WaitForServerStartedAsync(server);
+        await Task.Delay(100);
         server.Stop();
 
         Assert.Contains(SocketServerStatus.Starting, seq);

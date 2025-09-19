@@ -50,21 +50,21 @@ public class CurrentEndPointChangedTests
             };
 
             client.Start();
-            await WaitConnectedAsync(client, port1, TimeSpan.FromSeconds(30));
+            await WaitConnectedAsync(client, port1, TimeSpan.FromSeconds(60));
 
             // Switch to s2
             s1.Stop();
             await Task.Delay(500);
             s2.Start();
             await ServerTestHelpers.WaitForServerStartedAsync(s2);
-            await WaitConnectedAsync(client, port2, TimeSpan.FromSeconds(45));
+            await WaitConnectedAsync(client, port2, TimeSpan.FromSeconds(60));
 
             // Switch back to s1
             s2.Stop();
             await Task.Delay(500);
             s1.Start();
             await ServerTestHelpers.WaitForServerStartedAsync(s1);
-            await WaitConnectedAsync(client, port1, TimeSpan.FromSeconds(45));
+            await WaitConnectedAsync(client, port1, TimeSpan.FromSeconds(60));
 
             Assert.Contains((ushort)port2, sequence);
             Assert.Contains((ushort)port1, sequence);

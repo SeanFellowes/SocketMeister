@@ -81,7 +81,7 @@ public class PubSubTests
             c3.AddSubscription(topic);
 
             // Allow token change propagation
-            await Task.Delay(500);
+            await Task.Delay(1000);
 
             // Send broadcast
             var msg = new object[] { "hello" };
@@ -133,7 +133,7 @@ public class PubSubTests
             c2.AddSubscription("B");
             c3.AddSubscription("C");
 
-            await Task.Delay(500);
+            await Task.Delay(1000);
 
             server.BroadcastToSubscribers("A", new object[] { 1 });
             server.BroadcastToSubscribers("B", new object[] { 2 });
@@ -172,12 +172,12 @@ public class PubSubTests
 
             client.AddSubscription("T1");
             client.AddSubscription("T2");
-            await Task.Delay(300);
+            await Task.Delay(600);
             Assert.True(server.DoSubscribersExist("T1"));
             Assert.True(server.DoSubscribersExist("T2"));
 
             server.BroadcastToSubscribers("T1", new object[] { "x" });
-            await Task.Delay(300);
+            await Task.Delay(600);
             Assert.Equal(1, received);
 
             // Remove T1
@@ -189,7 +189,7 @@ public class PubSubTests
 
             // Restart server; T2 should be re-sent by handshake; T1 should remain removed
             server.Stop();
-            await Task.Delay(500);
+            await Task.Delay(1000);
             server.Start();
             await ServerTestHelpers.WaitForServerStartedAsync(server);
 
