@@ -12,6 +12,9 @@
 
 - name: Guides
   href: guides/index.md
+  items:
+  - name: Telemetry
+    href: guides/telemetry.md
 
 - name: Samples
   href: samples/index.md

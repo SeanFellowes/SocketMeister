@@ -40,6 +40,13 @@ namespace SocketMeister
         private int _totalMessagesSent;
         private int _totalMessagesReceived;
 
+#if SOCKETMEISTER_TELEMETRY
+        // Runtime telemetry (internal wiring; public exposure added in Commit 4)
+        private readonly SocketTelemetry _telemetry = new SocketTelemetry();
+        private bool _telemetryEnabled = true;
+        private int _telemetryUpdateIntervalSeconds = 5;
+#endif
+
         /// <summary>
         /// Event raised when a client connects to the socket server. Raised on a separate thread.
         /// In v11 this is raised only after the client handshake completes (client is fully ready).
@@ -71,6 +78,39 @@ namespace SocketMeister
         /// See <see cref="ServerStatusChangedEventArgs"/> for old/new status and endpoint details.
         /// </summary>
         public event EventHandler<ServerStatusChangedEventArgs> StatusChanged;
+
+#if SOCKETMEISTER_TELEMETRY
+        /// <summary>
+        /// Runtime telemetry for this server instance. Lightweight, lock-free counters with periodic aggregation.
+        /// Read-only live view; for consistent reads across fields, use <see cref="GetSnapshot()"/>.
+        /// </summary>
+        public SocketTelemetry Telemetry => _telemetry;
+
+        /// <summary>
+        /// Creates an immutable snapshot of current telemetry values for this server instance.
+        /// Prefer <see cref="Telemetry"/> for quick reads; use this for logging/export consistency.
+        /// </summary>
+        public SocketTelemetrySnapshot GetSnapshot() => _telemetry.GetSnapshot();
+
+        /// <summary>
+        /// Enables or disables telemetry collection for this server at runtime. Default: true.
+        /// Disabling stops the background timer and makes updates no-ops.
+        /// </summary>
+        public bool TelemetryEnabled
+        {
+            get { return _telemetryEnabled; }
+            set { _telemetryEnabled = value; try { _telemetry.SetEnabled(value); } catch { } }
+        }
+
+        /// <summary>
+        /// Telemetry aggregation update interval in seconds (1..10). Default: 5.
+        /// </summary>
+        public int TelemetryUpdateIntervalSeconds
+        {
+            get { return _telemetryUpdateIntervalSeconds; }
+            set { _telemetryUpdateIntervalSeconds = value; try { _telemetry.SetUpdateIntervalSeconds(value); } catch { } }
+        }
+#endif
 
         /// <summary>
         /// Constructor.
@@ -140,6 +180,9 @@ namespace SocketMeister
                 _listener?.Dispose(); // Clean up socket.
                 AllDone?.Dispose();
                 ServerStarted?.Dispose();
+#if SOCKETMEISTER_TELEMETRY
+                try { _telemetry.Dispose(); } catch { }
+#endif
             }
         }
 
@@ -321,6 +364,9 @@ namespace SocketMeister
                 _totalMessagesSent = 0;
                 _totalMessagesReceived = 0;
             }
+#if SOCKETMEISTER_TELEMETRY
+            try { _telemetry.Reset(); _telemetry.MarkProcessStartNow(); _telemetry.MarkSessionStartNow(); } catch { }
+#endif
             try
             {
                 var ip = _options?.BindAddress ?? IPAddress.Parse("0.0.0.0");
@@ -457,6 +503,15 @@ namespace SocketMeister
                             try
                             {
                                 byte[] sendBytes = MessageEngine.GenerateSendBytes(new Handshake1(Constants.SOCKET_MEISTER_VERSION, remoteClient.ClientId.ToString()), _compressSentData);
+#if SOCKETMEISTER_TELEMETRY
+                                try
+                                {
+                                    int compressedLen = BitConverter.ToInt32(sendBytes, 3);
+                                    int uncompressedLen = BitConverter.ToInt32(sendBytes, 7);
+                                    _telemetry.AddSendSuccess(compressedLen, uncompressedLen);
+                                }
+                                catch { }
+#endif
                                 remoteClient.ClientSocket.Send(sendBytes, sendBytes.Length, SocketFlags.None);
                             }
                             catch (ObjectDisposedException)
@@ -466,6 +521,9 @@ namespace SocketMeister
                             catch (Exception ex)
                             {
                                 Logger.Log(new LogEntry(ex));
+#if SOCKETMEISTER_TELEMETRY
+                                try { _telemetry.AddSendFailure(); } catch { }
+#endif
                             }
                             attempts++;
                             Thread.Sleep(700);
@@ -511,6 +569,9 @@ namespace SocketMeister
                 {
                     if (receiveEnvelope.AddBytesFromSocketReceiveBuffer(receivedBytesCount, remoteClient.ReceiveBuffer, ref receiveBufferPtr) == true)
                     {
+#if SOCKETMEISTER_TELEMETRY
+                        try { _telemetry.AddReceiveSuccess(receiveEnvelope.MessageLength, receiveEnvelope.MessageLengthUncompressed); } catch { }
+#endif
                         lock (_lockTotals)
                         {
                             if (_totalBytesReceived > (long.MaxValue * 0.9)) _totalBytesReceived = 0;
@@ -759,11 +820,23 @@ namespace SocketMeister
                 if (RemoteClient.ClientSocket == null || RemoteClient.ClientSocket.Connected == false)
                     return;
                 byte[] sendBytes = MessageEngine.GenerateSendBytes(new ServerStoppingNotificationV1(Constants.MAX_WAIT_FOR_CLIENT_DISCONNECT_WHEN_STOPPING), _compressSentData);
+#if SOCKETMEISTER_TELEMETRY
+                try
+                {
+                    int compressedLen = BitConverter.ToInt32(sendBytes, 3);
+                    int uncompressedLen = BitConverter.ToInt32(sendBytes, 7);
+                    _telemetry.AddSendSuccess(compressedLen, uncompressedLen);
+                }
+                catch { }
+#endif
                 RemoteClient.ClientSocket.Send(sendBytes, sendBytes.Length, SocketFlags.None);
             }
             catch (Exception ex)
             {
                 Logger.Log(new LogEntry(ex));
+#if SOCKETMEISTER_TELEMETRY
+                try { _telemetry.AddSendFailure(); } catch { }
+#endif
             }
         }
 
@@ -780,6 +853,9 @@ namespace SocketMeister
             {
                 try
                 {
+#if SOCKETMEISTER_TELEMETRY
+                    try { _telemetry.IncrementCurrentConnections(); _telemetry.AddReconnect(); } catch { }
+#endif
                     ClientConnected?.Invoke(this, e);
                 }
                 catch
@@ -796,6 +872,9 @@ namespace SocketMeister
             {
                 try
                 {
+#if SOCKETMEISTER_TELEMETRY
+                    try { _telemetry.DecrementCurrentConnections(); } catch { }
+#endif
                     ClientDisconnected?.Invoke(this, e);
                 }
                 catch

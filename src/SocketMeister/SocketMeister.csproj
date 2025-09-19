@@ -19,7 +19,7 @@
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 
 		<!-- Versioning -->
-		<Version>11.0.0</Version>
+		<Version>11.1.0</Version>
 
 		<!-- Build settings -->
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -41,10 +41,10 @@
 
 	<!-- Conditional constants per framework -->
 	<PropertyGroup Condition="'$(TargetFramework)'=='net35'">
-		<DefineConstants>SMISPUBLIC</DefineConstants>
+		<DefineConstants>SMISPUBLIC;SOCKETMEISTER_TELEMETRY</DefineConstants>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(TargetFramework)'!='net35'">
-		<DefineConstants>SMISPUBLIC</DefineConstants>
+		<DefineConstants>SMISPUBLIC;SOCKETMEISTER_TELEMETRY</DefineConstants>
 	</PropertyGroup>
 
 
