@@ -43,6 +43,6 @@ public class ConstructorGuardTests
     [Fact]
     public void SocketServer_Null_Options_Throws()
     {
-        Assert.Throws<ArgumentNullException>(() => new SocketServer((SocketServerOptions)null));
+        Assert.Throws<ArgumentNullException>(() => new SocketServer((SocketServerOptions)null!));
     }
 }
