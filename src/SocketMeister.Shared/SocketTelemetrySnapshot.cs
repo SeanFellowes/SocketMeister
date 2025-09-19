@@ -50,6 +50,23 @@ namespace SocketMeister
         /// <summary>Number of protocol/framing errors observed in receive processing since session start.</summary>
         public long ProtocolErrors { get; private set; }
 
+        /// <summary>
+        /// Constructs an immutable snapshot with explicit values.
+        /// </summary>
+        /// <param name="currentConnections">Number of active connections at snapshot time.</param>
+        /// <param name="maxConnections">Peak observed concurrent connections since uptime origin.</param>
+        /// <param name="processUptimeSeconds">Seconds since process-level start.</param>
+        /// <param name="sessionUptimeSeconds">Seconds since session-level start.</param>
+        /// <param name="totalMessages">Total messages (sent + received) since session start.</param>
+        /// <param name="totalFailures">Total failed send attempts since session start.</param>
+        /// <param name="avgMessageThroughput">Rolling average messages per second.</param>
+        /// <param name="avgBitrateBitsPerSecond">Rolling average bitrate in bits per second.</param>
+        /// <param name="totalCompressedBodyBytes">Total compressed body bytes observed since session start.</param>
+        /// <param name="totalUncompressedBodyBytes">Total uncompressed body bytes observed since session start.</param>
+        /// <param name="compressionSavingsBytes">Total bytes saved by compression.</param>
+        /// <param name="compressionRatio">Observed compression ratio.</param>
+        /// <param name="reconnects">Successful reconnects (client) or accepted handshakes (server).</param>
+        /// <param name="protocolErrors">Protocol/framing errors observed.</param>
         internal SocketTelemetrySnapshot(
             long currentConnections,
             long maxConnections,
@@ -92,4 +109,3 @@ namespace SocketMeister
     }
 }
 #endif
-

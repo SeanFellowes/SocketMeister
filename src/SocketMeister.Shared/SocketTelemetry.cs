@@ -50,6 +50,10 @@ namespace SocketMeister
         private int _ewmaWindowSeconds = DefaultEwmaWindowSeconds;
 
         // --- Construction ---
+        /// <summary>
+        /// Initializes a new telemetry instance with default update interval and EWMA window.
+        /// Starts a low-frequency, non-reentrant timer to periodically sample counters and update rolling averages.
+        /// </summary>
         public SocketTelemetry()
         {
             _stopwatch = Stopwatch.StartNew();
@@ -121,6 +125,10 @@ namespace SocketMeister
         /// <summary>
         /// Produces an immutable snapshot representing a consistent point-in-time view of telemetry values.
         /// </summary>
+        /// <summary>
+        /// Builds an immutable snapshot by atomically reading all counters and computed values.
+        /// Use this when you need a consistent point-in-time view across multiple fields.
+        /// </summary>
         public SocketTelemetrySnapshot GetSnapshot()
         {
             long currConn = Interlocked.Read(ref _currentConnections);
@@ -185,6 +193,10 @@ namespace SocketMeister
         }
 
         // --- IDisposable ---
+        /// <summary>
+        /// Disposes the telemetry instance, stopping and releasing the background timer.
+        /// Safe to call multiple times.
+        /// </summary>
         public void Dispose()
         {
             if (_disposed) return;
@@ -200,16 +212,27 @@ namespace SocketMeister
         }
 
         // --- Internal update API (wired in Commit 3) ---
+        /// <summary>
+        /// Sets the process-level uptime origin to now (UTC).
+        /// Used by the server on Start() and by the client on the first-ever successful connection.
+        /// </summary>
         internal void MarkProcessStartNow()
         {
             Interlocked.Exchange(ref _processStartUtcTicks, DateTime.UtcNow.Ticks);
         }
 
+        /// <summary>
+        /// Sets the session-level uptime origin to now (UTC).
+        /// Client reconnects reset session uptime; server restarts reset session uptime.
+        /// </summary>
         internal void MarkSessionStartNow()
         {
             Interlocked.Exchange(ref _sessionStartUtcTicks, DateTime.UtcNow.Ticks);
         }
 
+        /// <summary>
+        /// Increments the current connection count and updates the observed max connection peak.
+        /// </summary>
         internal void IncrementCurrentConnections()
         {
             if (!_enabled) return;
@@ -217,12 +240,20 @@ namespace SocketMeister
             UpdateMax(ref _maxConnections, newVal);
         }
 
+        /// <summary>
+        /// Decrements the current connection count.
+        /// </summary>
         internal void DecrementCurrentConnections()
         {
             if (!_enabled) return;
             Interlocked.Decrement(ref _currentConnections);
         }
 
+        /// <summary>
+        /// Records a successful send, adding compressed/uncompressed byte totals and compression savings.
+        /// </summary>
+        /// <param name="compressedBytes">Compressed message body length in bytes.</param>
+        /// <param name="uncompressedBytes">Uncompressed message body length in bytes.</param>
         internal void AddSendSuccess(long compressedBytes, long uncompressedBytes)
         {
             if (!_enabled) return;
@@ -233,6 +264,11 @@ namespace SocketMeister
             if (deltaSave > 0) InterlockedAdd(ref _compressionSavingsBytes, deltaSave);
         }
 
+        /// <summary>
+        /// Records a successful receive, adding compressed/uncompressed byte totals and compression savings.
+        /// </summary>
+        /// <param name="compressedBytes">Compressed message body length in bytes.</param>
+        /// <param name="uncompressedBytes">Uncompressed message body length in bytes.</param>
         internal void AddReceiveSuccess(long compressedBytes, long uncompressedBytes)
         {
             if (!_enabled) return;
@@ -243,24 +279,37 @@ namespace SocketMeister
             if (deltaSave > 0) InterlockedAdd(ref _compressionSavingsBytes, deltaSave);
         }
 
+        /// <summary>
+        /// Records a failed send attempt.
+        /// </summary>
         internal void AddSendFailure()
         {
             if (!_enabled) return;
             Interlocked.Increment(ref _totalFailures);
         }
 
+        /// <summary>
+        /// Records a protocol/framing error observed in receive processing.
+        /// </summary>
         internal void AddProtocolError()
         {
             if (!_enabled) return;
             Interlocked.Increment(ref _protocolErrors);
         }
 
+        /// <summary>
+        /// Records a successful reconnect (client) or an accepted handshake (server) depending on the caller context.
+        /// </summary>
         internal void AddReconnect()
         {
             if (!_enabled) return;
             Interlocked.Increment(ref _reconnects);
         }
 
+        /// <summary>
+        /// Sets the aggregation update interval in seconds (clamped to 1..10) and restarts the timer cadence.
+        /// </summary>
+        /// <param name="seconds">Desired update interval (1..10 seconds).</param>
         internal void SetUpdateIntervalSeconds(int seconds)
         {
             if (seconds < 1) seconds = 1;
@@ -273,6 +322,10 @@ namespace SocketMeister
             }
         }
 
+        /// <summary>
+        /// Enables or disables telemetry updates. Disabling stops and disposes the internal timer; updates become no-ops.
+        /// </summary>
+        /// <param name="enabled">True to enable telemetry; false to disable.</param>
         internal void SetEnabled(bool enabled)
         {
             _enabled = enabled;
@@ -297,6 +350,11 @@ namespace SocketMeister
         }
 
         // --- Timer callback ---
+        /// <summary>
+        /// Timer callback that samples counters and updates EWMA-based rolling averages.
+        /// Non-reentrant via an interlocked gate.
+        /// </summary>
+        /// <param name="state">Unused.</param>
         private void TimerCallback(object state)
         {
             if (_disposed) return;
@@ -312,6 +370,9 @@ namespace SocketMeister
             }
         }
 
+        /// <summary>
+        /// Samples totals using a monotonic clock to compute instantaneous rates and updates the EWMA.
+        /// </summary>
         private void SampleNow()
         {
             long nowTicks = _stopwatch.ElapsedTicks;
@@ -351,23 +412,35 @@ namespace SocketMeister
         }
 
         // --- Helpers ---
+        /// <summary>
+        /// Converts .NET ticks to seconds, clamping non-positive values to zero.
+        /// </summary>
         private static long TicksToSeconds(long ticks)
         {
             if (ticks <= 0) return 0;
             return ticks / TimeSpan.TicksPerSecond;
         }
 
+        /// <summary>
+        /// Atomically reads a double value using CompareExchange.
+        /// </summary>
         private static double AtomicReadDouble(ref double location)
         {
             // Non-mutating atomic read using CompareExchange
             return Interlocked.CompareExchange(ref location, 0d, 0d);
         }
 
+        /// <summary>
+        /// Atomically writes a double value using Exchange.
+        /// </summary>
         private static void AtomicWriteDouble(ref double location, double value)
         {
             Interlocked.Exchange(ref location, value);
         }
 
+        /// <summary>
+        /// Updates a maximum value with an interlocked compare/exchange loop.
+        /// </summary>
         private static void UpdateMax(ref long target, long candidate)
         {
             long current = Interlocked.Read(ref target);
@@ -379,6 +452,9 @@ namespace SocketMeister
             }
         }
 
+        /// <summary>
+        /// Adds a value to a 64-bit integer using a portable CAS loop (for .NET 3.5 compatibility).
+        /// </summary>
         private static long InterlockedAdd(ref long location, long value)
         {
             // Portable add for .NET 3.5: CAS loop
