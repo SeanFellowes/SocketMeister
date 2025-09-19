@@ -21,6 +21,24 @@ public class CompressionTests
         return client;
     }
 
+    private static async Task WaitForServerStartedAsync(SocketServer server, int timeoutMs = 5000)
+    {
+        if (server.IsRunning) return;
+        var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        EventHandler<SocketServer.ServerStatusChangedEventArgs> handler = null!;
+        handler = (s, e) => { if (e.NewStatus == SocketServerStatus.Started) tcs.TrySetResult(true); };
+        server.StatusChanged += handler;
+        try
+        {
+            await Task.WhenAny(tcs.Task, Task.Delay(timeoutMs));
+        }
+        finally
+        {
+            server.StatusChanged -= handler;
+        }
+        Assert.True(server.IsRunning, "Server did not reach Started state");
+    }
+
     [Trait("Category","Compression")]
     [Fact]
     public async Task Echo_With_Compression_On_Both_Sides()
@@ -29,6 +47,7 @@ public class CompressionTests
         var server = new SocketServer(port, CompressSentData: true);
         server.MessageReceived += (s, e) => { e.Response = Encoding.UTF8.GetBytes((string)e.Parameters[0]); };
         server.Start();
+        await WaitForServerStartedAsync(server);
         try
         {
             var client = await CreateAndConnectAsync(port, true, "CompEcho");
@@ -52,6 +71,7 @@ public class CompressionTests
         var server = new SocketServer(port, CompressSentData: true);
         server.MessageReceived += (s, e) => { e.Response = Encoding.UTF8.GetBytes((string)e.Parameters[0]); };
         server.Start();
+        await WaitForServerStartedAsync(server);
         try
         {
             // client compression disabled
@@ -76,6 +96,7 @@ public class CompressionTests
         var server = new SocketServer(port, CompressSentData: false);
         server.MessageReceived += (s, e) => { e.Response = Encoding.UTF8.GetBytes((string)e.Parameters[0]); };
         server.Start();
+        await WaitForServerStartedAsync(server);
         try
         {
             // client compression enabled
@@ -100,6 +121,7 @@ public class CompressionTests
         var server = new SocketServer(port, CompressSentData: true);
         server.MessageReceived += (s, e) => { e.Response = Encoding.UTF8.GetBytes((string)e.Parameters[0]); };
         server.Start();
+        await WaitForServerStartedAsync(server);
         try
         {
             var client = await CreateAndConnectAsync(port, true, "CompLarge");
