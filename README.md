@@ -2,7 +2,7 @@
 
 [![NuGet version](https://img.shields.io/nuget/v/SocketMeister.svg)](https://www.nuget.org/packages/SocketMeister)
 [![Docs](https://github.com/SeanFellowes/SocketMeister/actions/workflows/docs.yml/badge.svg?branch=main)](https://github.com/SeanFellowes/SocketMeister/actions/workflows/docs.yml)
-[![Build & Deploy Docs](https://github.com/SeanFellowes/SocketMeister/actions/workflows/docs.yml/badge.svg)](https://github.com/SeanFellowes/SocketMeister/actions/workflows/docs.yml)
+[![Automated Testing](https://github.com/SeanFellowes/SocketMeister/actions/workflows/docs.yml/badge.svg)](https://github.com/SeanFellowes/SocketMeister/actions/workflows/docs.yml)
 
 **SocketMeister** is a high-performance, fault-tolerant TCP/IP socket library for .NET clients & servers.
 
