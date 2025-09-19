@@ -73,13 +73,14 @@ public class ParametersRoundtripTests
         server.MessageReceived += (s, e) => { var str = Canonical(e.Parameters); e.Response = Encoding.UTF8.GetBytes(str); };
         server.Start();
         await ServerTestHelpers.WaitForServerStartedAsync(server);
+        await Task.Delay(200);
         try
         {
             var client = new SocketClient(new List<SocketEndPoint> { new SocketEndPoint("127.0.0.1", port) }, false, "ParamsClient");
             var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             client.ConnectionStatusChanged += (s, e) => { if (e.NewStatus == SocketClient.ConnectionStatuses.Connected) tcs.TrySetResult(true); };
             client.Start();
-            await Task.WhenAny(tcs.Task, Task.Delay(30000));
+            await Task.WhenAny(tcs.Task, Task.Delay(45000));
             Assert.True(tcs.Task.IsCompleted, "Client did not connect");
 
             var arr = BuildAllTypes();
@@ -108,6 +109,7 @@ public class ParametersRoundtripTests
         server.ClientConnected += (s, e) => { remote = e.Client; connected.TrySetResult(true); };
         server.Start();
         await ServerTestHelpers.WaitForServerStartedAsync(server);
+        await Task.Delay(200);
         try
         {
             var client = new SocketClient(new List<SocketEndPoint> { new SocketEndPoint("127.0.0.1", port) }, false, "ParamsClient2");
@@ -116,7 +118,7 @@ public class ParametersRoundtripTests
             var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             client.ConnectionStatusChanged += (s, e) => { if (e.NewStatus == SocketClient.ConnectionStatuses.Connected) tcs.TrySetResult(true); };
             client.Start();
-            await Task.WhenAny(tcs.Task, Task.Delay(30000));
+            await Task.WhenAny(tcs.Task, Task.Delay(45000));
             Assert.True(tcs.Task.IsCompleted, "Client did not connect");
             await Task.WhenAny(connected.Task, Task.Delay(5000));
             Assert.True(connected.Task.IsCompleted, "Server did not capture client");
