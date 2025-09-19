@@ -10,6 +10,9 @@
 - name: Architecture
   href: architecture.md
 
+- name: Guides
+  href: guides/index.md
+
 - name: Samples
   href: samples/index.md
 
