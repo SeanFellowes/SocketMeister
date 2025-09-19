@@ -119,6 +119,20 @@ namespace SocketMeister
         /// </summary>
         public event EventHandler<LogEventArgs> LogRaised;
 
+#if SOCKETMEISTER_TELEMETRY
+        /// <summary>
+        /// Runtime telemetry for this client instance. Lightweight, lock-free counters with periodic aggregation.
+        /// Read-only live view; for consistent reads across fields, use <see cref="GetSnapshot()"/>.
+        /// </summary>
+        public SocketTelemetry Telemetry => _telemetry;
+
+        /// <summary>
+        /// Creates an immutable snapshot of current telemetry values for this client instance.
+        /// Prefer <see cref="Telemetry"/> for quick reads; use this for logging/export consistency.
+        /// </summary>
+        public SocketTelemetrySnapshot GetSnapshot() => _telemetry.GetSnapshot();
+#endif
+
         /// <summary>
         /// Event raised when a connection attempt fails before the client becomes fully connected.
         /// The client remains in the Connecting state and will retry according to its backoff policy.

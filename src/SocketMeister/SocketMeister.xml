@@ -1236,6 +1236,18 @@
             Raised when a log event has been raised.
             </summary>
         </member>
+        <member name="P:SocketMeister.SocketClient.Telemetry">
+            <summary>
+            Runtime telemetry for this client instance. Lightweight, lock-free counters with periodic aggregation.
+            Read-only live view; for consistent reads across fields, use <see cref="M:SocketMeister.SocketClient.GetSnapshot"/>.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketClient.GetSnapshot">
+            <summary>
+            Creates an immutable snapshot of current telemetry values for this client instance.
+            Prefer <see cref="P:SocketMeister.SocketClient.Telemetry"/> for quick reads; use this for logging/export consistency.
+            </summary>
+        </member>
         <member name="E:SocketMeister.SocketClient.ConnectionAttemptFailed">
             <summary>
             Event raised when a connection attempt fails before the client becomes fully connected.
@@ -1887,6 +1899,18 @@
             <summary>
             Event raised when the status of the socket server changes. Raised on a separate thread.
             See <see cref="T:SocketMeister.SocketServer.ServerStatusChangedEventArgs"/> for old/new status and endpoint details.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketServer.Telemetry">
+            <summary>
+            Runtime telemetry for this server instance. Lightweight, lock-free counters with periodic aggregation.
+            Read-only live view; for consistent reads across fields, use <see cref="M:SocketMeister.SocketServer.GetSnapshot"/>.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketServer.GetSnapshot">
+            <summary>
+            Creates an immutable snapshot of current telemetry values for this server instance.
+            Prefer <see cref="P:SocketMeister.SocketServer.Telemetry"/> for quick reads; use this for logging/export consistency.
             </summary>
         </member>
         <member name="M:SocketMeister.SocketServer.#ctor(System.Int32,System.Boolean)">

@@ -77,6 +77,20 @@ namespace SocketMeister
         /// </summary>
         public event EventHandler<ServerStatusChangedEventArgs> StatusChanged;
 
+#if SOCKETMEISTER_TELEMETRY
+        /// <summary>
+        /// Runtime telemetry for this server instance. Lightweight, lock-free counters with periodic aggregation.
+        /// Read-only live view; for consistent reads across fields, use <see cref="GetSnapshot()"/>.
+        /// </summary>
+        public SocketTelemetry Telemetry => _telemetry;
+
+        /// <summary>
+        /// Creates an immutable snapshot of current telemetry values for this server instance.
+        /// Prefer <see cref="Telemetry"/> for quick reads; use this for logging/export consistency.
+        /// </summary>
+        public SocketTelemetrySnapshot GetSnapshot() => _telemetry.GetSnapshot();
+#endif
+
         /// <summary>
         /// Constructor.
         /// Defers resource allocation; call <see cref="Start()"/> to bind and listen.
