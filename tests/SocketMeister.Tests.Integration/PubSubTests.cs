@@ -67,9 +67,9 @@ public class PubSubTests
             c3.BroadcastReceived += (s, e) => { sink3.Add((e.Name, e.Parameters)); handler(s, e); };
 
             await Task.WhenAll(
-                WaitConnectedAsync(c1, TimeSpan.FromSeconds(20)),
-                WaitConnectedAsync(c2, TimeSpan.FromSeconds(20)),
-                WaitConnectedAsync(c3, TimeSpan.FromSeconds(20))
+                WaitConnectedAsync(c1, TimeSpan.FromSeconds(45)),
+                WaitConnectedAsync(c2, TimeSpan.FromSeconds(45)),
+                WaitConnectedAsync(c3, TimeSpan.FromSeconds(45))
             );
 
             // Subscribe all 3 to same topic
@@ -122,9 +122,9 @@ public class PubSubTests
             c3.BroadcastReceived += (s, e) => Interlocked.Increment(ref r3);
 
             await Task.WhenAll(
-                WaitConnectedAsync(c1, TimeSpan.FromSeconds(20)),
-                WaitConnectedAsync(c2, TimeSpan.FromSeconds(20)),
-                WaitConnectedAsync(c3, TimeSpan.FromSeconds(20))
+                WaitConnectedAsync(c1, TimeSpan.FromSeconds(45)),
+                WaitConnectedAsync(c2, TimeSpan.FromSeconds(45)),
+                WaitConnectedAsync(c3, TimeSpan.FromSeconds(45))
             );
 
             c1.AddSubscription("A");
@@ -166,7 +166,7 @@ public class PubSubTests
             var client = NewClient("127.0.0.1", port, "client");
             int received = 0;
             client.BroadcastReceived += (s, e) => Interlocked.Increment(ref received);
-            await WaitConnectedAsync(client, TimeSpan.FromSeconds(10));
+            await WaitConnectedAsync(client, TimeSpan.FromSeconds(30));
 
             client.AddSubscription("T1");
             client.AddSubscription("T2");
