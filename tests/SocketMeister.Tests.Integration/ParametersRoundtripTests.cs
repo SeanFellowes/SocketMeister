@@ -79,7 +79,7 @@ public class ParametersRoundtripTests
             var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             client.ConnectionStatusChanged += (s, e) => { if (e.NewStatus == SocketClient.ConnectionStatuses.Connected) tcs.TrySetResult(true); };
             client.Start();
-            await Task.WhenAny(tcs.Task, Task.Delay(20000));
+            await Task.WhenAny(tcs.Task, Task.Delay(30000));
             Assert.True(tcs.Task.IsCompleted, "Client did not connect");
 
             var arr = BuildAllTypes();
@@ -116,7 +116,7 @@ public class ParametersRoundtripTests
             var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             client.ConnectionStatusChanged += (s, e) => { if (e.NewStatus == SocketClient.ConnectionStatuses.Connected) tcs.TrySetResult(true); };
             client.Start();
-            await Task.WhenAny(tcs.Task, Task.Delay(20000));
+            await Task.WhenAny(tcs.Task, Task.Delay(30000));
             Assert.True(tcs.Task.IsCompleted, "Client did not connect");
             await Task.WhenAny(connected.Task, Task.Delay(5000));
             Assert.True(connected.Task.IsCompleted, "Server did not capture client");

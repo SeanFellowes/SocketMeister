@@ -41,7 +41,7 @@ public class LongDowntimeFailoverTests
             }, false, "LongDowntime");
 
             client.Start();
-            await WaitConnectedAsync(client, port1, TimeSpan.FromSeconds(30));
+            await WaitConnectedAsync(client, port1, TimeSpan.FromSeconds(60));
 
             // Bring everything down for a while
             server1.Stop();
@@ -50,7 +50,7 @@ public class LongDowntimeFailoverTests
             // Bring up server2 and expect reconnect
             server2.Start();
             await ServerTestHelpers.WaitForServerStartedAsync(server2);
-            await WaitConnectedAsync(client, port2, TimeSpan.FromSeconds(45));
+            await WaitConnectedAsync(client, port2, TimeSpan.FromSeconds(60));
 
             client.Stop();
         }

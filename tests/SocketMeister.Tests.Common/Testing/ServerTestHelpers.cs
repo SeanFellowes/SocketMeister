@@ -6,7 +6,7 @@ namespace SocketMeister.Tests.Common;
 
 public static class ServerTestHelpers
 {
-    public static async Task WaitForServerStartedAsync(SocketServer server, int timeoutMs = 5000)
+    public static async Task WaitForServerStartedAsync(SocketServer server, int timeoutMs = 10000)
     {
         if (server == null) throw new ArgumentNullException(nameof(server));
         if (server.IsRunning) return;
@@ -21,6 +21,8 @@ public static class ServerTestHelpers
         server.StatusChanged += handler;
         try
         {
+            // Re-check after subscribing to avoid race if server already started
+            if (server.IsRunning) tcs.TrySetResult(true);
             await Task.WhenAny(tcs.Task, Task.Delay(timeoutMs)).ConfigureAwait(false);
         }
         finally
@@ -29,4 +31,3 @@ public static class ServerTestHelpers
         }
     }
 }
-

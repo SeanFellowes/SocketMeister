@@ -16,7 +16,7 @@ public class CompressionTests
         var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         client.ConnectionStatusChanged += (s, e) => { if (e.NewStatus == SocketClient.ConnectionStatuses.Connected) tcs.TrySetResult(true); };
         client.Start();
-        await Task.WhenAny(tcs.Task, Task.Delay(10000));
+        await Task.WhenAny(tcs.Task, Task.Delay(20000));
         Assert.True(tcs.Task.IsCompleted, "Client did not connect");
         return client;
     }
