@@ -43,6 +43,8 @@ namespace SocketMeister
 #if SOCKETMEISTER_TELEMETRY
         // Runtime telemetry (internal wiring; public exposure added in Commit 4)
         private readonly SocketTelemetry _telemetry = new SocketTelemetry();
+        private bool _telemetryEnabled = true;
+        private int _telemetryUpdateIntervalSeconds = 5;
 #endif
 
         /// <summary>
@@ -89,6 +91,25 @@ namespace SocketMeister
         /// Prefer <see cref="Telemetry"/> for quick reads; use this for logging/export consistency.
         /// </summary>
         public SocketTelemetrySnapshot GetSnapshot() => _telemetry.GetSnapshot();
+
+        /// <summary>
+        /// Enables or disables telemetry collection for this server at runtime. Default: true.
+        /// Disabling stops the background timer and makes updates no-ops.
+        /// </summary>
+        public bool TelemetryEnabled
+        {
+            get { return _telemetryEnabled; }
+            set { _telemetryEnabled = value; try { _telemetry.SetEnabled(value); } catch { } }
+        }
+
+        /// <summary>
+        /// Telemetry aggregation update interval in seconds (1..10). Default: 5.
+        /// </summary>
+        public int TelemetryUpdateIntervalSeconds
+        {
+            get { return _telemetryUpdateIntervalSeconds; }
+            set { _telemetryUpdateIntervalSeconds = value; try { _telemetry.SetUpdateIntervalSeconds(value); } catch { } }
+        }
 #endif
 
         /// <summary>

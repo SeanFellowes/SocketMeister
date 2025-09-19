@@ -19,6 +19,7 @@ namespace SocketMeister
         private volatile bool _disposed;
         private Timer _timer; // System.Threading.Timer
         private int _timerGate; // 0 = idle, 1 = ticking (non-reentrant guard)
+        private volatile bool _enabled = true; // runtime switch
 
         // --- Monotonic clock for cadence ---
         private readonly Stopwatch _stopwatch;
@@ -211,17 +212,20 @@ namespace SocketMeister
 
         internal void IncrementCurrentConnections()
         {
+            if (!_enabled) return;
             long newVal = Interlocked.Increment(ref _currentConnections);
             UpdateMax(ref _maxConnections, newVal);
         }
 
         internal void DecrementCurrentConnections()
         {
+            if (!_enabled) return;
             Interlocked.Decrement(ref _currentConnections);
         }
 
         internal void AddSendSuccess(long compressedBytes, long uncompressedBytes)
         {
+            if (!_enabled) return;
             Interlocked.Increment(ref _totalMessages);
             InterlockedAdd(ref _totalCompressedBodyBytes, compressedBytes);
             InterlockedAdd(ref _totalUncompressedBodyBytes, uncompressedBytes);
@@ -231,6 +235,7 @@ namespace SocketMeister
 
         internal void AddReceiveSuccess(long compressedBytes, long uncompressedBytes)
         {
+            if (!_enabled) return;
             Interlocked.Increment(ref _totalMessages);
             InterlockedAdd(ref _totalCompressedBodyBytes, compressedBytes);
             InterlockedAdd(ref _totalUncompressedBodyBytes, uncompressedBytes);
@@ -240,16 +245,19 @@ namespace SocketMeister
 
         internal void AddSendFailure()
         {
+            if (!_enabled) return;
             Interlocked.Increment(ref _totalFailures);
         }
 
         internal void AddProtocolError()
         {
+            if (!_enabled) return;
             Interlocked.Increment(ref _protocolErrors);
         }
 
         internal void AddReconnect()
         {
+            if (!_enabled) return;
             Interlocked.Increment(ref _reconnects);
         }
 
@@ -265,10 +273,34 @@ namespace SocketMeister
             }
         }
 
+        internal void SetEnabled(bool enabled)
+        {
+            _enabled = enabled;
+            var t = _timer;
+            if (!enabled)
+            {
+                if (t != null)
+                {
+                    try { t.Change(Timeout.Infinite, Timeout.Infinite); } catch { }
+                    try { t.Dispose(); } catch { }
+                }
+                _timer = null;
+            }
+            else
+            {
+                if (t == null)
+                {
+                    _lastSampleTicks = 0; // restart sampling
+                    _timer = new Timer(TimerCallback, null, _updateIntervalSeconds * 1000, _updateIntervalSeconds * 1000);
+                }
+            }
+        }
+
         // --- Timer callback ---
         private void TimerCallback(object state)
         {
             if (_disposed) return;
+            if (!_enabled) return;
             if (Interlocked.Exchange(ref _timerGate, 1) == 1) return; // non-reentrant
             try
             {

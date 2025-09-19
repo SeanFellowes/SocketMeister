@@ -28,6 +28,14 @@ Samples & advanced guides: https://seanfellowes.github.io/SocketMeister/samples/
 Upgrading to v11? See the guide: https://seanfellowes.github.io/SocketMeister/upgrading-to-version11.html
 
 
+## 📊 Telemetry (new in 11.1.0)
+- SocketMeister now exposes lightweight runtime telemetry on both the client and server.
+- Access via `SocketClient.Telemetry` and `SocketServer.Telemetry` for a live view, or call `GetSnapshot()` for a point‑in‑time immutable snapshot.
+- Metrics include: current/peak connections, process/session uptime, total messages/failures, rolling messages/sec, rolling bitrate (bits/sec), compression ratio and savings, reconnects, and protocol errors.
+- Designed for high throughput: atomic counters, periodic aggregation every few seconds (default 5s), zero allocations per message.
+- Configuration: enable/disable per instance via `TelemetryEnabled`, adjust cadence via `TelemetryUpdateIntervalSeconds` (1–10s). Telemetry is enabled by default.
+
+
 Note: If you’re embedding sources directly, grab [SocketMeister.Sources from NuGet](https://www.nuget.org/packages/SocketMeister.Sources/) for easier debugging.
 
 ## 🧪 Continuous Integration

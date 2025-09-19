@@ -1248,6 +1248,17 @@
             Prefer <see cref="P:SocketMeister.SocketClient.Telemetry"/> for quick reads; use this for logging/export consistency.
             </summary>
         </member>
+        <member name="P:SocketMeister.SocketClient.TelemetryEnabled">
+            <summary>
+            Enables or disables telemetry collection for this client at runtime. Default: true.
+            Disabling stops the background timer and makes updates no-ops.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketClient.TelemetryUpdateIntervalSeconds">
+            <summary>
+            Telemetry aggregation update interval in seconds (1..10). Default: 5.
+            </summary>
+        </member>
         <member name="E:SocketMeister.SocketClient.ConnectionAttemptFailed">
             <summary>
             Event raised when a connection attempt fails before the client becomes fully connected.
@@ -1911,6 +1922,17 @@
             <summary>
             Creates an immutable snapshot of current telemetry values for this server instance.
             Prefer <see cref="P:SocketMeister.SocketServer.Telemetry"/> for quick reads; use this for logging/export consistency.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketServer.TelemetryEnabled">
+            <summary>
+            Enables or disables telemetry collection for this server at runtime. Default: true.
+            Disabling stops the background timer and makes updates no-ops.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketServer.TelemetryUpdateIntervalSeconds">
+            <summary>
+            Telemetry aggregation update interval in seconds (1..10). Default: 5.
             </summary>
         </member>
         <member name="M:SocketMeister.SocketServer.#ctor(System.Int32,System.Boolean)">

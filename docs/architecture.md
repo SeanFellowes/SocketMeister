@@ -78,3 +78,12 @@ This document describes the core design of SocketMeister and how it achieves thr
 ---
 
 For code examples, see the [Getting Started](getting-started.md) and [Samples](samples/index.md). For API details, refer to the [reference](/api/index.html).
+
+## Telemetry Architecture (11.1.0)
+
+- Goals: Diagnose bottlenecks, support capacity planning, stay fast under load.
+- Model: Atomic counters on send/receive/connection events; a low-frequency `System.Threading.Timer` computes rolling rates every few seconds (default 5s). No locks or per-message allocations.
+- Averages: Deltas sampled at each tick feed an EWMA (~15s window) for messages/sec and bitrate (bits/sec).
+- Compression: Efficiency observed by comparing compressed vs. uncompressed body lengths at points where both are naturally available (no extra passes).
+- Uptime: Both ProcessUptime (server start / first-ever client connection) and SessionUptime (current active session). Client reconnects reset SessionUptime but not ProcessUptime.
+- Overhead budget: <1% CPU, zero allocations on hot paths. Telemetry can be disabled per instance and cadence adjusted (1–10s).

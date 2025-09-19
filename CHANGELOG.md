@@ -202,3 +202,13 @@ Notes:
 ## Earlier 1.x releases (2015–2020)
 
 The 1.x line predates public NuGet distribution and consisted mainly of exploratory internal releases. They are no longer supported.
+## 11.1.0
+Added
+- Runtime telemetry for client and server: lock-free counters + periodic aggregation.
+- Metrics: CurrentConnections, MaxConnections, ProcessUptimeSeconds, SessionUptimeSeconds, TotalMessages, TotalFailures, AvgMessageThroughput (msg/s), AvgBitrate (bit/s), CompressionRatio, CompressionSavingsBytes, Reconnects, ProtocolErrors.
+- Configuration: `TelemetryEnabled` and `TelemetryUpdateIntervalSeconds` (default 5s, range 1–10s).
+
+Notes
+- Non-breaking, no wire/protocol changes, no new dependencies.
+- Minimal overhead (<1% CPU target), zero allocations per message.
+- Compatible with .NET 3.5 and .NET 4.7.2.
