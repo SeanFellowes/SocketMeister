@@ -1236,6 +1236,29 @@
             Raised when a log event has been raised.
             </summary>
         </member>
+        <member name="P:SocketMeister.SocketClient.Telemetry">
+            <summary>
+            Runtime telemetry for this client instance. Lightweight, lock-free counters with periodic aggregation.
+            Read-only live view; for consistent reads across fields, use <see cref="M:SocketMeister.SocketClient.GetSnapshot"/>.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketClient.GetSnapshot">
+            <summary>
+            Creates an immutable snapshot of current telemetry values for this client instance.
+            Prefer <see cref="P:SocketMeister.SocketClient.Telemetry"/> for quick reads; use this for logging/export consistency.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketClient.TelemetryEnabled">
+            <summary>
+            Enables or disables telemetry collection for this client at runtime. Default: true.
+            Disabling stops the background timer and makes updates no-ops.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketClient.TelemetryUpdateIntervalSeconds">
+            <summary>
+            Telemetry aggregation update interval in seconds (1..10). Default: 5.
+            </summary>
+        </member>
         <member name="E:SocketMeister.SocketClient.ConnectionAttemptFailed">
             <summary>
             Event raised when a connection attempt fails before the client becomes fully connected.
@@ -1889,6 +1912,29 @@
             See <see cref="T:SocketMeister.SocketServer.ServerStatusChangedEventArgs"/> for old/new status and endpoint details.
             </summary>
         </member>
+        <member name="P:SocketMeister.SocketServer.Telemetry">
+            <summary>
+            Runtime telemetry for this server instance. Lightweight, lock-free counters with periodic aggregation.
+            Read-only live view; for consistent reads across fields, use <see cref="M:SocketMeister.SocketServer.GetSnapshot"/>.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketServer.GetSnapshot">
+            <summary>
+            Creates an immutable snapshot of current telemetry values for this server instance.
+            Prefer <see cref="P:SocketMeister.SocketServer.Telemetry"/> for quick reads; use this for logging/export consistency.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketServer.TelemetryEnabled">
+            <summary>
+            Enables or disables telemetry collection for this server at runtime. Default: true.
+            Disabling stops the background timer and makes updates no-ops.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketServer.TelemetryUpdateIntervalSeconds">
+            <summary>
+            Telemetry aggregation update interval in seconds (1..10). Default: 5.
+            </summary>
+        </member>
         <member name="M:SocketMeister.SocketServer.#ctor(System.Int32,System.Boolean)">
             <summary>
             Constructor.
@@ -2336,6 +2382,244 @@
             </summary>
             <param name="ResponseMessage">The response message to associate with the original message.</param>
             <returns>The message which the response relates to from the unresponded messages list.</returns>
+        </member>
+        <member name="T:SocketMeister.SocketTelemetry">
+            <summary>
+            Lightweight, thread-safe runtime telemetry view for SocketMeister. Provides a live read-only view and
+            the ability to produce immutable snapshots for consistent multi-field reads.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketTelemetry.#ctor">
+            <summary>
+            Initializes a new telemetry instance with default update interval and EWMA window.
+            Starts a low-frequency, non-reentrant timer to periodically sample counters and update rolling averages.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketTelemetry.CurrentConnections">
+            <summary>Number of active connections. Client: 0/1. Server: 0..N.</summary>
+        </member>
+        <member name="P:SocketMeister.SocketTelemetry.MaxConnections">
+            <summary>Peak observed concurrent connections since uptime origin.</summary>
+        </member>
+        <member name="P:SocketMeister.SocketTelemetry.ProcessUptimeSeconds">
+            <summary>Seconds since process-level start (server start; client first-ever successful connection).</summary>
+        </member>
+        <member name="P:SocketMeister.SocketTelemetry.SessionUptimeSeconds">
+            <summary>Seconds since current active session began (client reconnect resets; server restart resets).</summary>
+        </member>
+        <member name="P:SocketMeister.SocketTelemetry.TotalMessages">
+            <summary>Total successful messages (send + receive) since session start.</summary>
+        </member>
+        <member name="P:SocketMeister.SocketTelemetry.TotalFailures">
+            <summary>Total failed send attempts since session start.</summary>
+        </member>
+        <member name="P:SocketMeister.SocketTelemetry.AvgMessageThroughput">
+            <summary>Rolling average messages per second.</summary>
+        </member>
+        <member name="P:SocketMeister.SocketTelemetry.AvgBitrateBitsPerSecond">
+            <summary>Rolling average bitrate in bits per second (decimal units when displayed).</summary>
+        </member>
+        <member name="P:SocketMeister.SocketTelemetry.CompressionRatio">
+            <summary>Observed compression ratio derived from total compressed/uncompressed body bytes.</summary>
+        </member>
+        <member name="P:SocketMeister.SocketTelemetry.TotalCompressedBodyBytes">
+            <summary>Total compressed body bytes observed (send + receive) since session start.</summary>
+        </member>
+        <member name="P:SocketMeister.SocketTelemetry.TotalUncompressedBodyBytes">
+            <summary>Total uncompressed body bytes observed (send + receive) since session start.</summary>
+        </member>
+        <member name="P:SocketMeister.SocketTelemetry.CompressionSavingsBytes">
+            <summary>Total bytes saved by compression: sum of (uncompressed - compressed) across send/receive.</summary>
+        </member>
+        <member name="P:SocketMeister.SocketTelemetry.Reconnects">
+            <summary>Number of successful reconnects (client) or accepted handshakes (server) since session start.</summary>
+        </member>
+        <member name="P:SocketMeister.SocketTelemetry.ProtocolErrors">
+            <summary>Number of protocol/framing errors observed in receive processing since session start.</summary>
+        </member>
+        <member name="M:SocketMeister.SocketTelemetry.SetEnabled(System.Boolean)">
+            <summary>
+            Enables or disables telemetry collection for this instance at runtime. Default: true.
+            Disabling stops the background timer and makes updates no-ops.
+            </summary>
+            <param name="enabled">True to enable background sampling; false to stop and dispose the timer.</param>
+        </member>
+        <member name="M:SocketMeister.SocketTelemetry.SetUpdateIntervalSeconds(System.Int32)">
+            <summary>Sets the telemetry aggregation update interval in seconds.</summary>
+            <param name="seconds">Desired interval in seconds. Clamped to the range [1, 10].</param>
+        </member>
+        <member name="M:SocketMeister.SocketTelemetry.MarkProcessStartNow">
+            <summary>Sets the process-level uptime origin to now (UTC).</summary>
+        </member>
+        <member name="M:SocketMeister.SocketTelemetry.MarkSessionStartNow">
+            <summary>Sets the session-level uptime origin to now (UTC).</summary>
+        </member>
+        <member name="M:SocketMeister.SocketTelemetry.IncrementCurrentConnections">
+            <summary>
+            Increments the number of current connections by one and updates the observed maximum if applicable.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketTelemetry.DecrementCurrentConnections">
+            <summary>Decrements the number of current connections by one.</summary>
+        </member>
+        <member name="M:SocketMeister.SocketTelemetry.AddSendSuccess(System.Int32,System.Int32)">
+            <summary>
+            Records a successful send operation.
+            </summary>
+            <param name="compressedBytes">Size of the compressed payload in bytes.</param>
+            <param name="uncompressedBytes">Original uncompressed payload size in bytes.</param>
+        </member>
+        <member name="M:SocketMeister.SocketTelemetry.AddSendFailure">
+            <summary>Records a failed send attempt.</summary>
+        </member>
+        <member name="M:SocketMeister.SocketTelemetry.AddReceiveSuccess(System.Int32,System.Int32)">
+            <summary>
+            Records a successful receive operation.
+            </summary>
+            <param name="compressedBytes">Size of the compressed payload in bytes.</param>
+            <param name="uncompressedBytes">Original uncompressed payload size in bytes.</param>
+        </member>
+        <member name="M:SocketMeister.SocketTelemetry.AddReconnect">
+            <summary>Increments the reconnect counter.</summary>
+        </member>
+        <member name="M:SocketMeister.SocketTelemetry.AddProtocolError">
+            <summary>Increments the protocol error counter.</summary>
+        </member>
+        <member name="M:SocketMeister.SocketTelemetry.GetSnapshot">
+            <summary>
+            Creates an immutable snapshot of current telemetry values for this instance.
+            Prefer live reads for low-overhead sampling; use a snapshot for multi-field consistency.
+            </summary>
+            <returns>A snapshot of counters, aggregations, and uptimes at the moment of invocation.</returns>
+        </member>
+        <member name="M:SocketMeister.SocketTelemetry.Reset">
+            <summary>
+            Resets all counters and uptime origins. Intended for internal/testing scenarios; discouraged for production consumers.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketTelemetry.Dispose">
+            <summary>
+            Disposes the telemetry instance, stopping and releasing the background timer.
+            Safe to call multiple times.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketTelemetry.MarkProcessStart">
+            <summary>
+            Sets the process-level uptime origin to now (UTC).
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketTelemetry.MarkSessionStart">
+            <summary>
+            Sets the session-level uptime origin to now (UTC).
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketTelemetry.TimerCallback(System.Object)">
+            <summary>
+            Timer callback that samples counters and updates EWMA-based rolling averages.
+            Non-reentrant via an interlocked gate.
+            </summary>
+            <param name="state">Unused.</param>
+        </member>
+        <member name="M:SocketMeister.SocketTelemetry.SampleNow">
+            <summary>
+            Samples totals using a monotonic clock to compute instantaneous rates and updates the EWMA.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketTelemetry.TicksToSeconds(System.Int64)">
+            <summary>
+            Converts .NET ticks to seconds, clamping non-positive values to zero.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketTelemetry.AtomicReadDouble(System.Double@)">
+            <summary>
+            Atomically reads a double value using CompareExchange.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketTelemetry.AtomicWriteDouble(System.Double@,System.Double)">
+            <summary>
+            Atomically writes a double value using Exchange.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketTelemetry.UpdateMax(System.Int64@,System.Int64)">
+            <summary>
+            Updates a maximum value with an interlocked compare/exchange loop.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketTelemetry.InterlockedAdd(System.Int64@,System.Int64)">
+            <summary>
+            Adds a value to a 64-bit integer using a portable CAS loop (for .NET 3.5 compatibility).
+            </summary>
+        </member>
+        <member name="T:SocketMeister.SocketTelemetrySnapshot">
+            <summary>
+            Immutable snapshot of runtime telemetry values captured at a point in time.
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketTelemetrySnapshot.CurrentConnections">
+            <summary>Number of active connections at snapshot time. Client: 0/1. Server: 0..N.</summary>
+        </member>
+        <member name="P:SocketMeister.SocketTelemetrySnapshot.MaxConnections">
+            <summary>Peak observed concurrent connections since process/session start (see uptime semantics).</summary>
+        </member>
+        <member name="P:SocketMeister.SocketTelemetrySnapshot.ProcessUptimeSeconds">
+            <summary>Seconds since process-level start (server start; client first-ever successful connection).</summary>
+        </member>
+        <member name="P:SocketMeister.SocketTelemetrySnapshot.SessionUptimeSeconds">
+            <summary>Seconds since current active session began (client reconnects reset this; server restart resets).</summary>
+        </member>
+        <member name="P:SocketMeister.SocketTelemetrySnapshot.TotalMessages">
+            <summary>Total messages successfully sent or received since session start.</summary>
+        </member>
+        <member name="P:SocketMeister.SocketTelemetrySnapshot.TotalFailures">
+            <summary>Total failed send attempts since session start.</summary>
+        </member>
+        <member name="P:SocketMeister.SocketTelemetrySnapshot.AvgMessageThroughput">
+            <summary>Rolling average messages per second.</summary>
+        </member>
+        <member name="P:SocketMeister.SocketTelemetrySnapshot.AvgBitrateBitsPerSecond">
+            <summary>Rolling average bitrate in bits per second (decimal units when displayed).</summary>
+        </member>
+        <member name="P:SocketMeister.SocketTelemetrySnapshot.CompressionRatio">
+            <summary>Observed compression ratio computed from total compressed and uncompressed body bytes.</summary>
+        </member>
+        <member name="P:SocketMeister.SocketTelemetrySnapshot.CompressionSavingsBytes">
+            <summary>Total bytes saved by compression: sum of (uncompressed - compressed) across send/receive.</summary>
+        </member>
+        <member name="P:SocketMeister.SocketTelemetrySnapshot.TotalCompressedBodyBytes">
+            <summary>Total compressed body bytes observed (send + receive) since session start.</summary>
+        </member>
+        <member name="P:SocketMeister.SocketTelemetrySnapshot.TotalUncompressedBodyBytes">
+            <summary>Total uncompressed body bytes observed (send + receive) since session start.</summary>
+        </member>
+        <member name="P:SocketMeister.SocketTelemetrySnapshot.Reconnects">
+            <summary>Number of successful reconnects (client) or accepted handshakes (server) since session start.</summary>
+        </member>
+        <member name="P:SocketMeister.SocketTelemetrySnapshot.ProtocolErrors">
+            <summary>Number of protocol/framing errors observed in receive processing since session start.</summary>
+        </member>
+        <member name="M:SocketMeister.SocketTelemetrySnapshot.#ctor(System.Int64,System.Int64,System.Int64,System.Int64,System.Int64,System.Int64,System.Double,System.Double,System.Int64,System.Int64,System.Int64,System.Double,System.Int64,System.Int64)">
+            <summary>
+            Constructs an immutable snapshot with explicit values.
+            </summary>
+            <param name="currentConnections">Number of active connections at snapshot time.</param>
+            <param name="maxConnections">Peak observed concurrent connections since uptime origin.</param>
+            <param name="processUptimeSeconds">Seconds since process-level start.</param>
+            <param name="sessionUptimeSeconds">Seconds since session-level start.</param>
+            <param name="totalMessages">Total messages (sent + received) since session start.</param>
+            <param name="totalFailures">Total failed send attempts since session start.</param>
+            <param name="avgMessageThroughput">Rolling average messages per second.</param>
+            <param name="avgBitrateBitsPerSecond">Rolling average bitrate in bits per second.</param>
+            <param name="totalCompressedBodyBytes">Total compressed body bytes observed since session start.</param>
+            <param name="totalUncompressedBodyBytes">Total uncompressed body bytes observed since session start.</param>
+            <param name="compressionSavingsBytes">Total bytes saved by compression.</param>
+            <param name="compressionRatio">Observed compression ratio.</param>
+            <param name="reconnects">Successful reconnects (client) or accepted handshakes (server).</param>
+            <param name="protocolErrors">Protocol/framing errors observed.</param>
+        </member>
+        <member name="M:SocketMeister.SocketTelemetrySnapshot.Empty">
+            <summary>
+            Creates an empty snapshot with all values set to zero. Intended for default initialization.
+            </summary>
         </member>
         <member name="T:SocketAsyncEventArgsPool">
             <summary>

@@ -1,4 +1,3 @@
-﻿#if SOCKETMEISTER_TELEMETRY
 using System;
 using System.Diagnostics;
 using System.Threading;
@@ -9,7 +8,11 @@ namespace SocketMeister
     /// Lightweight, thread-safe runtime telemetry view for SocketMeister. Provides a live read-only view and
     /// the ability to produce immutable snapshots for consistent multi-field reads.
     /// </summary>
+#if SMISPUBLIC
     public sealed class SocketTelemetry : IDisposable
+#else
+    internal sealed class SocketTelemetry : IDisposable
+#endif
     {
         // --- Configuration (defaults; tunable internally in later commits) ---
         private const int DefaultUpdateIntervalSeconds = 5;   // cadence target: < 10s
@@ -49,7 +52,6 @@ namespace SocketMeister
         private int _updateIntervalSeconds = DefaultUpdateIntervalSeconds;
         private int _ewmaWindowSeconds = DefaultEwmaWindowSeconds;
 
-        // --- Construction ---
         /// <summary>
         /// Initializes a new telemetry instance with default update interval and EWMA window.
         /// Starts a low-frequency, non-reentrant timer to periodically sample counters and update rolling averages.
@@ -70,7 +72,6 @@ namespace SocketMeister
             _timer = new Timer(TimerCallback, null, _updateIntervalSeconds * 1000, _updateIntervalSeconds * 1000);
         }
 
-        // --- Public read-only properties ---
         /// <summary>Number of active connections. Client: 0/1. Server: 0..N.</summary>
         public long CurrentConnections { get { return Interlocked.Read(ref _currentConnections); } }
 
@@ -107,28 +108,135 @@ namespace SocketMeister
             }
         }
 
-        /// <summary>Total bytes saved by compression since session start.</summary>
-        public long CompressionSavingsBytes { get { return Interlocked.Read(ref _compressionSavingsBytes); } }
-
         /// <summary>Total compressed body bytes observed (send + receive) since session start.</summary>
         public long TotalCompressedBodyBytes { get { return Interlocked.Read(ref _totalCompressedBodyBytes); } }
 
         /// <summary>Total uncompressed body bytes observed (send + receive) since session start.</summary>
         public long TotalUncompressedBodyBytes { get { return Interlocked.Read(ref _totalUncompressedBodyBytes); } }
 
+        /// <summary>Total bytes saved by compression: sum of (uncompressed - compressed) across send/receive.</summary>
+        public long CompressionSavingsBytes { get { return Interlocked.Read(ref _compressionSavingsBytes); } }
+
         /// <summary>Number of successful reconnects (client) or accepted handshakes (server) since session start.</summary>
         public long Reconnects { get { return Interlocked.Read(ref _reconnects); } }
 
-        /// <summary>Number of protocol/framing errors observed since session start.</summary>
+        /// <summary>Number of protocol/framing errors observed in receive processing since session start.</summary>
         public long ProtocolErrors { get { return Interlocked.Read(ref _protocolErrors); } }
 
         /// <summary>
-        /// Produces an immutable snapshot representing a consistent point-in-time view of telemetry values.
+        /// Enables or disables telemetry collection for this instance at runtime. Default: true.
+        /// Disabling stops the background timer and makes updates no-ops.
         /// </summary>
+        /// <param name="enabled">True to enable background sampling; false to stop and dispose the timer.</param>
+        public void SetEnabled(bool enabled)
+        {
+            _enabled = enabled;
+            var t = _timer;
+            if (!enabled)
+            {
+                if (t != null)
+                {
+                    try { t.Change(Timeout.Infinite, Timeout.Infinite); } catch { }
+                    try { t.Dispose(); } catch { }
+                }
+                _timer = null;
+            }
+            else
+            {
+                if (t == null)
+                {
+                    _lastSampleTicks = 0; // restart sampling
+                    _timer = new Timer(TimerCallback, null, _updateIntervalSeconds * 1000, _updateIntervalSeconds * 1000);
+                }
+            }
+        }
+
+        /// <summary>Sets the telemetry aggregation update interval in seconds.</summary>
+        /// <param name="seconds">Desired interval in seconds. Clamped to the range [1, 10].</param>
+        public void SetUpdateIntervalSeconds(int seconds)
+        {
+            if (seconds < 1) seconds = 1;
+            if (seconds > 10) seconds = 10;
+            _updateIntervalSeconds = seconds;
+            var t = _timer;
+            if (t != null)
+            {
+                try { t.Change(seconds * 1000, seconds * 1000); } catch { }
+            }
+        }
+
+        /// <summary>Sets the process-level uptime origin to now (UTC).</summary>
+        public void MarkProcessStartNow() => Interlocked.Exchange(ref _processStartUtcTicks, DateTime.UtcNow.Ticks);
+
+        /// <summary>Sets the session-level uptime origin to now (UTC).</summary>
+        public void MarkSessionStartNow() => Interlocked.Exchange(ref _sessionStartUtcTicks, DateTime.UtcNow.Ticks);
+
         /// <summary>
-        /// Builds an immutable snapshot by atomically reading all counters and computed values.
-        /// Use this when you need a consistent point-in-time view across multiple fields.
+        /// Increments the number of current connections by one and updates the observed maximum if applicable.
         /// </summary>
+        public void IncrementCurrentConnections()
+        {
+            long newVal = InterlockedAdd(ref _currentConnections, 1);
+            UpdateMax(ref _maxConnections, newVal);
+        }
+
+        /// <summary>Decrements the number of current connections by one.</summary>
+        public void DecrementCurrentConnections()
+        {
+            InterlockedAdd(ref _currentConnections, -1);
+        }
+
+        /// <summary>
+        /// Records a successful send operation.
+        /// </summary>
+        /// <param name="compressedBytes">Size of the compressed payload in bytes.</param>
+        /// <param name="uncompressedBytes">Original uncompressed payload size in bytes.</param>
+        public void AddSendSuccess(int compressedBytes, int uncompressedBytes)
+        {
+            Interlocked.Increment(ref _totalMessages);
+            InterlockedAdd(ref _totalCompressedBodyBytes, compressedBytes);
+            InterlockedAdd(ref _totalUncompressedBodyBytes, uncompressedBytes);
+            long saved = (long)uncompressedBytes - (long)compressedBytes; if (saved < 0) saved = 0;
+            InterlockedAdd(ref _compressionSavingsBytes, saved);
+        }
+
+        /// <summary>Records a failed send attempt.</summary>
+        public void AddSendFailure()
+        {
+            Interlocked.Increment(ref _totalFailures);
+        }
+
+        /// <summary>
+        /// Records a successful receive operation.
+        /// </summary>
+        /// <param name="compressedBytes">Size of the compressed payload in bytes.</param>
+        /// <param name="uncompressedBytes">Original uncompressed payload size in bytes.</param>
+        public void AddReceiveSuccess(int compressedBytes, int uncompressedBytes)
+        {
+            Interlocked.Increment(ref _totalMessages);
+            InterlockedAdd(ref _totalCompressedBodyBytes, compressedBytes);
+            InterlockedAdd(ref _totalUncompressedBodyBytes, uncompressedBytes);
+            long saved = (long)uncompressedBytes - (long)compressedBytes; if (saved < 0) saved = 0;
+            InterlockedAdd(ref _compressionSavingsBytes, saved);
+        }
+
+        /// <summary>Increments the reconnect counter.</summary>
+        public void AddReconnect()
+        {
+            Interlocked.Increment(ref _reconnects);
+        }
+
+        /// <summary>Increments the protocol error counter.</summary>
+        public void AddProtocolError()
+        {
+            Interlocked.Increment(ref _protocolErrors);
+        }
+
+        /// <summary>
+        /// Creates an immutable snapshot of current telemetry values for this instance.
+        /// Prefer live reads for low-overhead sampling; use a snapshot for multi-field consistency.
+        /// </summary>
+        /// <returns>A snapshot of counters, aggregations, and uptimes at the moment of invocation.</returns>
         public SocketTelemetrySnapshot GetSnapshot()
         {
             long currConn = Interlocked.Read(ref _currentConnections);
@@ -192,7 +300,6 @@ namespace SocketMeister
             AtomicWriteDouble(ref _avgBitrateBitsPerSecond, 0d);
         }
 
-        // --- IDisposable ---
         /// <summary>
         /// Disposes the telemetry instance, stopping and releasing the background timer.
         /// Safe to call multiple times.
@@ -211,145 +318,22 @@ namespace SocketMeister
             _timer = null;
         }
 
-        // --- Internal update API (wired in Commit 3) ---
         /// <summary>
         /// Sets the process-level uptime origin to now (UTC).
-        /// Used by the server on Start() and by the client on the first-ever successful connection.
         /// </summary>
-        internal void MarkProcessStartNow()
+        public void MarkProcessStart()
         {
             Interlocked.Exchange(ref _processStartUtcTicks, DateTime.UtcNow.Ticks);
         }
 
         /// <summary>
         /// Sets the session-level uptime origin to now (UTC).
-        /// Client reconnects reset session uptime; server restarts reset session uptime.
         /// </summary>
-        internal void MarkSessionStartNow()
+        public void MarkSessionStart()
         {
             Interlocked.Exchange(ref _sessionStartUtcTicks, DateTime.UtcNow.Ticks);
         }
 
-        /// <summary>
-        /// Increments the current connection count and updates the observed max connection peak.
-        /// </summary>
-        internal void IncrementCurrentConnections()
-        {
-            if (!_enabled) return;
-            long newVal = Interlocked.Increment(ref _currentConnections);
-            UpdateMax(ref _maxConnections, newVal);
-        }
-
-        /// <summary>
-        /// Decrements the current connection count.
-        /// </summary>
-        internal void DecrementCurrentConnections()
-        {
-            if (!_enabled) return;
-            Interlocked.Decrement(ref _currentConnections);
-        }
-
-        /// <summary>
-        /// Records a successful send, adding compressed/uncompressed byte totals and compression savings.
-        /// </summary>
-        /// <param name="compressedBytes">Compressed message body length in bytes.</param>
-        /// <param name="uncompressedBytes">Uncompressed message body length in bytes.</param>
-        internal void AddSendSuccess(long compressedBytes, long uncompressedBytes)
-        {
-            if (!_enabled) return;
-            Interlocked.Increment(ref _totalMessages);
-            InterlockedAdd(ref _totalCompressedBodyBytes, compressedBytes);
-            InterlockedAdd(ref _totalUncompressedBodyBytes, uncompressedBytes);
-            long deltaSave = uncompressedBytes - compressedBytes;
-            if (deltaSave > 0) InterlockedAdd(ref _compressionSavingsBytes, deltaSave);
-        }
-
-        /// <summary>
-        /// Records a successful receive, adding compressed/uncompressed byte totals and compression savings.
-        /// </summary>
-        /// <param name="compressedBytes">Compressed message body length in bytes.</param>
-        /// <param name="uncompressedBytes">Uncompressed message body length in bytes.</param>
-        internal void AddReceiveSuccess(long compressedBytes, long uncompressedBytes)
-        {
-            if (!_enabled) return;
-            Interlocked.Increment(ref _totalMessages);
-            InterlockedAdd(ref _totalCompressedBodyBytes, compressedBytes);
-            InterlockedAdd(ref _totalUncompressedBodyBytes, uncompressedBytes);
-            long deltaSave = uncompressedBytes - compressedBytes;
-            if (deltaSave > 0) InterlockedAdd(ref _compressionSavingsBytes, deltaSave);
-        }
-
-        /// <summary>
-        /// Records a failed send attempt.
-        /// </summary>
-        internal void AddSendFailure()
-        {
-            if (!_enabled) return;
-            Interlocked.Increment(ref _totalFailures);
-        }
-
-        /// <summary>
-        /// Records a protocol/framing error observed in receive processing.
-        /// </summary>
-        internal void AddProtocolError()
-        {
-            if (!_enabled) return;
-            Interlocked.Increment(ref _protocolErrors);
-        }
-
-        /// <summary>
-        /// Records a successful reconnect (client) or an accepted handshake (server) depending on the caller context.
-        /// </summary>
-        internal void AddReconnect()
-        {
-            if (!_enabled) return;
-            Interlocked.Increment(ref _reconnects);
-        }
-
-        /// <summary>
-        /// Sets the aggregation update interval in seconds (clamped to 1..10) and restarts the timer cadence.
-        /// </summary>
-        /// <param name="seconds">Desired update interval (1..10 seconds).</param>
-        internal void SetUpdateIntervalSeconds(int seconds)
-        {
-            if (seconds < 1) seconds = 1;
-            if (seconds > 10) seconds = 10;
-            _updateIntervalSeconds = seconds;
-            var t = _timer;
-            if (t != null)
-            {
-                try { t.Change(_updateIntervalSeconds * 1000, _updateIntervalSeconds * 1000); } catch { }
-            }
-        }
-
-        /// <summary>
-        /// Enables or disables telemetry updates. Disabling stops and disposes the internal timer; updates become no-ops.
-        /// </summary>
-        /// <param name="enabled">True to enable telemetry; false to disable.</param>
-        internal void SetEnabled(bool enabled)
-        {
-            _enabled = enabled;
-            var t = _timer;
-            if (!enabled)
-            {
-                if (t != null)
-                {
-                    try { t.Change(Timeout.Infinite, Timeout.Infinite); } catch { }
-                    try { t.Dispose(); } catch { }
-                }
-                _timer = null;
-            }
-            else
-            {
-                if (t == null)
-                {
-                    _lastSampleTicks = 0; // restart sampling
-                    _timer = new Timer(TimerCallback, null, _updateIntervalSeconds * 1000, _updateIntervalSeconds * 1000);
-                }
-            }
-        }
-
-        // --- Timer callback ---
         /// <summary>
         /// Timer callback that samples counters and updates EWMA-based rolling averages.
         /// Non-reentrant via an interlocked gate.
@@ -411,7 +395,6 @@ namespace SocketMeister
             _lastTotalCompressedBytes = totalBytes;
         }
 
-        // --- Helpers ---
         /// <summary>
         /// Converts .NET ticks to seconds, clamping non-positive values to zero.
         /// </summary>
@@ -468,4 +451,4 @@ namespace SocketMeister
         }
     }
 }
-#endif
+

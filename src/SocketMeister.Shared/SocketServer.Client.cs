@@ -193,7 +193,6 @@ namespace SocketMeister
                     byte[] sendBytes = MessageEngine.GenerateSendBytes(message, _compressSentData);
                     _socketServer.IncrementSentTotals(sendBytes.Length);
 
-#if SOCKETMEISTER_TELEMETRY
                     try
                     {
                         int compressedLen = BitConverter.ToInt32(sendBytes, 3);
@@ -201,7 +200,6 @@ namespace SocketMeister
                         _socketServer._telemetry.AddSendSuccess(compressedLen, uncompressedLen);
                     }
                     catch { }
-#endif
 
                     if (async)
                     {
@@ -216,17 +214,13 @@ namespace SocketMeister
                 {
                     _socketServer.ConnectedClients.Disconnect(this);
                     _socketServer.Logger.Log(new LogEntry(ex));
-#if SOCKETMEISTER_TELEMETRY
                     try { _socketServer._telemetry.AddSendFailure(); } catch { }
-#endif
                 }
                 catch (Exception ex)
                 {
                     _socketServer.ConnectedClients.Disconnect(this);
                     _socketServer.Logger.Log(new LogEntry(ex));
-#if SOCKETMEISTER_TELEMETRY
                     try { _socketServer._telemetry.AddSendFailure(); } catch { }
-#endif
                 }
             }
 

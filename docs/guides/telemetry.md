@@ -32,6 +32,6 @@ Access patterns:
 FAQ:
 - Does telemetry change the wire protocol? No.
 - What’s the overhead? Typically well under 1% CPU with zero per-message allocations.
-- Can I disable telemetry? Yes, per instance, or compile-time via the `SOCKETMEISTER_TELEMETRY` symbol.
+- Can I disable telemetry? Yes, per instance via `TelemetryEnabled`.
 - Are latency percentiles available? Not in 11.1.0; intentionally omitted to keep overhead minimal.
 

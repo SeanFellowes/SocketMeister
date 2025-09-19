@@ -1,4 +1,3 @@
-﻿#if SOCKETMEISTER_TELEMETRY
 using System;
 
 namespace SocketMeister
@@ -6,7 +5,11 @@ namespace SocketMeister
     /// <summary>
     /// Immutable snapshot of runtime telemetry values captured at a point in time.
     /// </summary>
-    public sealed class SocketTelemetrySnapshot
+ #if SMISPUBLIC
+        public sealed class SocketTelemetrySnapshot
+#else
+        internal sealed class SocketTelemetrySnapshot
+#endif
     {
         /// <summary>Number of active connections at snapshot time. Client: 0/1. Server: 0..N.</summary>
         public long CurrentConnections { get; private set; }
@@ -108,4 +111,4 @@ namespace SocketMeister
         }
     }
 }
-#endif
+

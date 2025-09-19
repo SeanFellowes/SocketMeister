@@ -41,10 +41,10 @@
 
 	<!-- Conditional constants per framework -->
 	<PropertyGroup Condition="'$(TargetFramework)'=='net35'">
-		<DefineConstants>SMISPUBLIC;SOCKETMEISTER_TELEMETRY</DefineConstants>
+		<DefineConstants>SMISPUBLIC</DefineConstants>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(TargetFramework)'!='net35'">
-		<DefineConstants>SMISPUBLIC;SOCKETMEISTER_TELEMETRY</DefineConstants>
+		<DefineConstants>SMISPUBLIC</DefineConstants>
 	</PropertyGroup>
 
 
