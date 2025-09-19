@@ -75,6 +75,12 @@ namespace SocketMeister
         private readonly TokenCollection _subscriptions = new TokenCollection();
         private readonly UnrespondedMessageCollection _unrespondedMessages = new UnrespondedMessageCollection();
 
+#if SOCKETMEISTER_TELEMETRY
+        // Runtime telemetry (internal wiring; public exposure added in Commit 4)
+        private readonly SocketTelemetry _telemetry = new SocketTelemetry();
+        private bool _hasEverConnected = false;
+#endif
+
         /// <summary>
         /// Event raised when the client connection status changes.
         /// See <see cref="ConnectionStatusChangedEventArgs"/> for details.
@@ -297,6 +303,10 @@ namespace SocketMeister
                     _asyncEventArgsSendSubscriptionChanges = null;
 
                     _unrespondedMessages.Clear(); // Explicitly clear any remaining references
+
+#if SOCKETMEISTER_TELEMETRY
+                    try { _telemetry.Dispose(); } catch { }
+#endif
 
                     foreach (SocketEndPoint ep in _endPoints)
                     {
@@ -729,6 +739,10 @@ namespace SocketMeister
 
                 InternalConnectionStatus = ConnectionStatuses.Disconnected;
 
+#if SOCKETMEISTER_TELEMETRY
+                try { _telemetry.DecrementCurrentConnections(); } catch { }
+#endif
+
                 //  Prepare new socket and start reconnect process
                 if (StopClientPermanently == false)
                 {
@@ -1149,6 +1163,25 @@ namespace SocketMeister
                 //  software knows the connection is fully established via the ConnectionStatus property.
                 Log("Handshake completed. Connection is fully established.", Severity.Information, LogEventType.ConnectionEvent);
                 HandshakeCompleted = true;   // Sets all handshake flags to true
+#if SOCKETMEISTER_TELEMETRY
+                // Telemetry: mark session start and connection counts
+                try
+                {
+                    bool wasEverConnected = _hasEverConnected;
+                    if (!wasEverConnected)
+                    {
+                        _telemetry.MarkProcessStartNow();
+                        _hasEverConnected = true;
+                    }
+                    else
+                    {
+                        _telemetry.AddReconnect();
+                    }
+                    _telemetry.MarkSessionStartNow();
+                    _telemetry.IncrementCurrentConnections();
+                }
+                catch { }
+#endif
                 //  Note: Log events are delayed. The client will receive the ConnectionStatusChanged
                 //  before the log events are processed. This may be confusing if the calling
                 //  program is adding addition logging to capture ConnectionStatusChanged events.
@@ -1438,6 +1471,21 @@ namespace SocketMeister
         {
             IMessage message = (IMessage)e.UserToken;
             SocketError result = e.SocketError;
+            
+            // Capture header lengths for successful sends before recycling the buffer
+#if SOCKETMEISTER_TELEMETRY
+            if (result == SocketError.Success && e.Buffer != null && e.Count >= SocketMeister.Messages.MessageEngine.HEADERLENGTH)
+            {
+                try
+                {
+                    int compressedLen = BitConverter.ToInt32(e.Buffer, 3);
+                    int uncompressedLen = BitConverter.ToInt32(e.Buffer, 7);
+                    _telemetry.AddSendSuccess(compressedLen, uncompressedLen);
+                }
+                catch { }
+            }
+#endif
+
             RecycleSocketAsyncEventArgs(e);
 
             try
@@ -1446,12 +1494,18 @@ namespace SocketMeister
                 {
                     message.SetStatusUnsent();
                     Log(new Exception("Disconnecting: Connection was reset."));
+#if SOCKETMEISTER_TELEMETRY
+                    try { _telemetry.AddSendFailure(); } catch { }
+#endif
                     Disconnect(SocketHasErrored: true, ClientDisconnectReason.SocketError, "");
                 }
                 else if (result != SocketError.Success)
                 {
                     message.SetStatusUnsent();
                     Log(new Exception("Disconnecting: Send did not generate a success. Socket operation returned error code " + (int)e.SocketError));
+#if SOCKETMEISTER_TELEMETRY
+                    try { _telemetry.AddSendFailure(); } catch { }
+#endif
                     Disconnect(SocketHasErrored: true, ClientDisconnectReason.SocketError, "");
                 }
             }
@@ -1459,6 +1513,9 @@ namespace SocketMeister
             {
                 message.SetStatusUnsent();
                 Log(ex);
+#if SOCKETMEISTER_TELEMETRY
+                try { _telemetry.AddSendFailure(); } catch { }
+#endif
             }
         }
 
@@ -1506,6 +1563,9 @@ namespace SocketMeister
                     bool haveEntireMessage = _receiveEngine.AddBytesFromSocketReceiveBuffer(e.BytesTransferred, e.Buffer, ref socketReceiveBufferPtr);
                     if (haveEntireMessage == true)
                     {
+                        #if SOCKETMEISTER_TELEMETRY
+                        try { _telemetry.AddReceiveSuccess(_receiveEngine.MessageLength, _receiveEngine.MessageLengthUncompressed); } catch { }
+                        #endif
                         LastMessageFromServer = DateTime.UtcNow;
 
                         if (_receiveEngine.MessageType == MessageType.MessageResponseV1)
@@ -1595,12 +1655,18 @@ namespace SocketMeister
                 //  MAY ALREADY HAVE BEEN RUN (WHICH DISPOSES OBJECTS). IF THIS IS THE CASE, SIMPLY EXIT
                 string em1 = "Disconnecting: ObjectDisposedException running ProcessReceive: " + ee.ToString();
                 Log(new Exception(em1));
+                #if SOCKETMEISTER_TELEMETRY
+                try { _telemetry.AddProtocolError(); } catch { }
+                #endif
                 Disconnect(SocketHasErrored: true, ClientDisconnectReason.SocketError, em1);
             }
             catch (Exception ex)
             {
                 string em2 = "Disconnecting: Exception running ProcessReceive: " + ex.ToString();
                 Log(new Exception(em2));
+                #if SOCKETMEISTER_TELEMETRY
+                try { _telemetry.AddProtocolError(); } catch { }
+                #endif
                 Disconnect(SocketHasErrored: true, ClientDisconnectReason.SocketError, em2);
             }
         }
