@@ -17,6 +17,7 @@ public class BroadcastAllTests
         int port = PortAllocator.GetFreeTcpPort();
         var server = new SocketServer(port, false);
         server.Start();
+        await ServerTestHelpers.WaitForServerStartedAsync(server);
         try
         {
             var c1 = new SocketClient(new List<SocketEndPoint> { new SocketEndPoint("127.0.0.1", port) }, false, "BA1");

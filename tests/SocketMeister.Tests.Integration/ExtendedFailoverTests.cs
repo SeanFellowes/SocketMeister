@@ -42,6 +42,7 @@ public class ExtendedFailoverTests
         await Task.Delay(3000);
         var server2 = new SocketServer(port2, false);
         server2.Start();
+        await ServerTestHelpers.WaitForServerStartedAsync(server2);
         try
         {
             // Allow up to 45s for backoff/eligibility windows to align
@@ -52,6 +53,7 @@ public class ExtendedFailoverTests
             await Task.Delay(1000);
             var server1 = new SocketServer(port1, false);
             server1.Start();
+            await ServerTestHelpers.WaitForServerStartedAsync(server1);
             try
             {
                 await WaitConnectedToPortAsync(client, port1, TimeSpan.FromSeconds(90));

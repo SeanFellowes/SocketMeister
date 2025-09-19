@@ -18,6 +18,7 @@ public class RestartServerReconnectionTests
         var server = new SocketServer(port, false);
         server.MessageReceived += (s, e) => { e.Response = Encoding.UTF8.GetBytes("ACK"); };
         server.Start();
+        await ServerTestHelpers.WaitForServerStartedAsync(server);
         try
         {
             var client = new SocketClient(new List<SocketEndPoint> { new SocketEndPoint("127.0.0.1", port) }, false, "RestartClient");
@@ -35,6 +36,7 @@ public class RestartServerReconnectionTests
             server.Stop();
             await Task.Delay(1000);
             server.Start();
+            await ServerTestHelpers.WaitForServerStartedAsync(server);
 
             // Wait for client to reconnect and send again
             var deadline = DateTime.UtcNow.AddSeconds(45);

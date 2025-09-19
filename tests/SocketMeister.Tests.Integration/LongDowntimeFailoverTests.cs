@@ -30,6 +30,7 @@ public class LongDowntimeFailoverTests
 
         var server1 = new SocketServer(port1, false);
         server1.Start();
+        await ServerTestHelpers.WaitForServerStartedAsync(server1);
         var server2 = new SocketServer(port2, false);
         try
         {
@@ -48,6 +49,7 @@ public class LongDowntimeFailoverTests
 
             // Bring up server2 and expect reconnect
             server2.Start();
+            await ServerTestHelpers.WaitForServerStartedAsync(server2);
             await WaitConnectedAsync(client, port2, TimeSpan.FromSeconds(45));
 
             client.Stop();
@@ -61,4 +63,3 @@ public class LongDowntimeFailoverTests
         }
     }
 }
-

@@ -24,6 +24,7 @@ public class TimeoutTests
             e.Response = Encoding.UTF8.GetBytes("late");
         };
         server.Start();
+        await ServerTestHelpers.WaitForServerStartedAsync(server);
         try
         {
             var client = new SocketClient(new List<SocketEndPoint> { new SocketEndPoint("127.0.0.1", port) }, false, "TimeoutClient");

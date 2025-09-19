@@ -33,6 +33,7 @@ public class AlternatingFailoverTests
 
         // Start s1 only
         s1.Start();
+        await ServerTestHelpers.WaitForServerStartedAsync(s1);
         try
         {
             var client = new SocketClient(new List<SocketEndPoint>
@@ -48,18 +49,21 @@ public class AlternatingFailoverTests
             s1.Stop();
             await Task.Delay(500);
             s2.Start();
+            await ServerTestHelpers.WaitForServerStartedAsync(s2);
             await WaitConnectedAsync(client, port2, TimeSpan.FromSeconds(45));
 
             // Cycle 2: switch back to s1
             s2.Stop();
             await Task.Delay(500);
             s1.Start();
+            await ServerTestHelpers.WaitForServerStartedAsync(s1);
             await WaitConnectedAsync(client, port1, TimeSpan.FromSeconds(45));
 
             // One more flip to s2 for robustness
             s1.Stop();
             await Task.Delay(500);
             s2.Start();
+            await ServerTestHelpers.WaitForServerStartedAsync(s2);
             await WaitConnectedAsync(client, port2, TimeSpan.FromSeconds(45));
 
             client.Stop();
@@ -73,4 +77,3 @@ public class AlternatingFailoverTests
         }
     }
 }
-

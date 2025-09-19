@@ -72,6 +72,7 @@ public class ParametersRoundtripTests
         var server = new SocketServer(port, false);
         server.MessageReceived += (s, e) => { var str = Canonical(e.Parameters); e.Response = Encoding.UTF8.GetBytes(str); };
         server.Start();
+        await ServerTestHelpers.WaitForServerStartedAsync(server);
         try
         {
             var client = new SocketClient(new List<SocketEndPoint> { new SocketEndPoint("127.0.0.1", port) }, false, "ParamsClient");
@@ -106,6 +107,7 @@ public class ParametersRoundtripTests
         var connected = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         server.ClientConnected += (s, e) => { remote = e.Client; connected.TrySetResult(true); };
         server.Start();
+        await ServerTestHelpers.WaitForServerStartedAsync(server);
         try
         {
             var client = new SocketClient(new List<SocketEndPoint> { new SocketEndPoint("127.0.0.1", port) }, false, "ParamsClient2");

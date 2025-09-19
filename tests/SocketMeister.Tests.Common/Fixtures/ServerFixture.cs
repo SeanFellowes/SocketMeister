@@ -12,7 +12,7 @@ public sealed class ServerFixture : IAsyncLifetime
     public SocketServer Server { get; private set; } = null!;
     public int Port { get; private set; }
 
-    public Task InitializeAsync()
+    public async Task InitializeAsync()
     {
         Port = PortAllocator.GetFreeTcpPort();
         Server = new SocketServer(Port, CompressSentData: false);
@@ -30,7 +30,7 @@ public sealed class ServerFixture : IAsyncLifetime
         };
 
         Server.Start();
-        return Task.CompletedTask;
+        await ServerTestHelpers.WaitForServerStartedAsync(Server);
     }
 
     public Task DisposeAsync()
@@ -40,4 +40,3 @@ public sealed class ServerFixture : IAsyncLifetime
         return Task.CompletedTask;
     }
 }
-

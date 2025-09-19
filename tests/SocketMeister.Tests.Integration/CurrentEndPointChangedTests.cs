@@ -35,6 +35,7 @@ public class CurrentEndPointChangedTests
 
         // Start s1
         s1.Start();
+        await ServerTestHelpers.WaitForServerStartedAsync(s1);
         try
         {
             var client = new SocketClient(new List<SocketEndPoint>
@@ -55,12 +56,14 @@ public class CurrentEndPointChangedTests
             s1.Stop();
             await Task.Delay(500);
             s2.Start();
+            await ServerTestHelpers.WaitForServerStartedAsync(s2);
             await WaitConnectedAsync(client, port2, TimeSpan.FromSeconds(45));
 
             // Switch back to s1
             s2.Stop();
             await Task.Delay(500);
             s1.Start();
+            await ServerTestHelpers.WaitForServerStartedAsync(s1);
             await WaitConnectedAsync(client, port1, TimeSpan.FromSeconds(45));
 
             Assert.Contains((ushort)port2, sequence);

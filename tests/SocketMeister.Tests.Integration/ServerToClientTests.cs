@@ -29,6 +29,7 @@ public class ServerToClientTests
             }
         };
         server.Start();
+        await ServerTestHelpers.WaitForServerStartedAsync(server);
         try
         {
             // Clients reply to server-initiated message via MessageReceived

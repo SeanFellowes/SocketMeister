@@ -46,6 +46,7 @@ public class PubSubTests
         int port = PortAllocator.GetFreeTcpPort();
         var server = new SocketServer(port, false);
         server.Start();
+        await ServerTestHelpers.WaitForServerStartedAsync(server);
         try
         {
             var c1 = NewClient("127.0.0.1", port, "c1");
@@ -108,6 +109,7 @@ public class PubSubTests
         int port = PortAllocator.GetFreeTcpPort();
         var server = new SocketServer(port, false);
         server.Start();
+        await ServerTestHelpers.WaitForServerStartedAsync(server);
         try
         {
             var c1 = NewClient("127.0.0.1", port, "c1");
@@ -158,6 +160,7 @@ public class PubSubTests
         int port = PortAllocator.GetFreeTcpPort();
         var server = new SocketServer(port, false);
         server.Start();
+        await ServerTestHelpers.WaitForServerStartedAsync(server);
         try
         {
             var client = NewClient("127.0.0.1", port, "client");
@@ -186,6 +189,7 @@ public class PubSubTests
             server.Stop();
             await Task.Delay(500);
             server.Start();
+            await ServerTestHelpers.WaitForServerStartedAsync(server);
 
             // Wait for reconnect (allow ample time)
             var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
