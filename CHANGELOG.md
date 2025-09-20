@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 The format is based on Keep a Changelog and this project adheres to Semantic Versioning.
 
+## 11.2.0
+
+Added
+- SocketClient dynamic endpoint management:
+  - New `SocketClient.EndPoints` property returns a snapshot array of configured endpoints.
+  - New methods: `SetEndPoints(IEnumerable<SocketEndPoint>)`, `AddEndPoint(SocketEndPoint)`, `AddEndPoint(string,int)`, and `RemoveEndPoint(string,int)`.
+  - Behavior: newly supplied endpoints are made immediately eligible (backoff cleared). If the current endpoint is removed, the client disconnects and reconnects to an eligible endpoint.
+
+Changed
+- Connection robustness on slow hosts:
+  - Client handshake now uses independent windows for Handshake1 and Handshake2Ack (each ~30s) to avoid near‑deadline timeouts.
+  - Server sends Handshake1 for a short window (~5s) with small intervals to reduce first‑message loss.
+- Server endpoint reporting:
+  - `SocketServer.EndPoint` now reflects the actual bound port after `Bind()` (including when starting with port 0).
+- XML docs improvements:
+  - Clarified `SocketEndPoint` summary and properties (Description, IPAddress, IPEndPoint, Port, Socket).
+  - Documented `SocketClient.EndPoints` semantics (snapshot/copy; use Set/Add/Remove to change).
+
+Test Harness (internal)
+- Refactored GitHub CI tests for reliability and speed:
+  - Bind‑only port reservation to prevent accidental early client connects.
+  - Event‑driven reconnect waiters and small post‑start settles across server‑starting tests.
+  - Additional connection attempt diagnostics printed during CI.
+  These changes do not affect public APIs; they improve CI stability notably on Windows Server 2022 runners.
+
+
 ## 11.1.0
 Added
 - Runtime telemetry for client and server: lock-free counters + periodic aggregation.
