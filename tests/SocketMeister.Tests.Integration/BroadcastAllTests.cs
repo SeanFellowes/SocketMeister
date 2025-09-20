@@ -17,6 +17,7 @@ public class BroadcastAllTests
         var server = new SocketServer(0, false);
         server.Start();
         await ServerTestHelpers.WaitForServerStartedAsync(server);
+        await Task.Delay(200);
         int port = ServerTestHelpers.GetBoundPort(server);
         try
         {

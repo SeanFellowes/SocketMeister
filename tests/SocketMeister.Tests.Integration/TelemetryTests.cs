@@ -17,7 +17,7 @@ public class TelemetryTests
         var server = new SocketServer(0, compressSentData: false);
         server.MessageReceived += (s, e) => { e.Response = Array.Empty<byte>(); };
         server.Start();
-        await ServerTestHelpers.WaitForServerStartedAsync(server);
+        await ServerTestHelpers.WaitForServerStartedAsync(server);\r\n        await Task.Delay(200);
         int port = ServerTestHelpers.GetBoundPort(server);
 
         try
@@ -68,7 +68,7 @@ public class TelemetryTests
         var server = new SocketServer(0, compressSentData: false);
         server.MessageReceived += (s, e) => { e.Response = Array.Empty<byte>(); };
         server.Start();
-        await ServerTestHelpers.WaitForServerStartedAsync(server);
+        await ServerTestHelpers.WaitForServerStartedAsync(server);\r\n        await Task.Delay(200);
         int port = ServerTestHelpers.GetBoundPort(server);
 
         try
@@ -103,4 +103,5 @@ public class TelemetryTests
     }
 #endif
 }
+
 

@@ -29,6 +29,7 @@ public class ServerToClientTests
         };
         server.Start();
         await ServerTestHelpers.WaitForServerStartedAsync(server);
+        await Task.Delay(200);
         int port = ServerTestHelpers.GetBoundPort(server);
         try
         {

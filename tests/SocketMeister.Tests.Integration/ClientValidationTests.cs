@@ -33,6 +33,7 @@ public class ClientValidationTests
         var server = new SocketServer(0, false);
         server.Start();
         await ServerTestHelpers.WaitForServerStartedAsync(server);
+        await Task.Delay(200);
         try
         {
             int port = ServerTestHelpers.GetBoundPort(server);
@@ -62,6 +63,7 @@ public class ClientValidationTests
         var server = new SocketServer(0, false);
         server.Start();
         await ServerTestHelpers.WaitForServerStartedAsync(server);
+        await Task.Delay(200);
         try
         {
             int port = ServerTestHelpers.GetBoundPort(server);
@@ -90,6 +92,7 @@ public class ClientValidationTests
         var server = new SocketServer(0, false);
         server.Start();
         await ServerTestHelpers.WaitForServerStartedAsync(server);
+        await Task.Delay(200);
         try
         {
             int port = ServerTestHelpers.GetBoundPort(server);

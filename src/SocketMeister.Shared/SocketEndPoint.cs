@@ -5,7 +5,8 @@ using System.Net.Sockets;
 namespace SocketMeister
 {
     /// <summary>
-    /// Client <see cref="Socket"/> to a SocketServer end point.
+    /// Represents a remote server endpoint (IPv4 address and TCP port) and its underlying TCP <see cref="Socket"/>.
+    /// Used by <see cref="SocketClient"/> to maintain a single active connection and coordinate reconnect backoff per endpoint.
     /// </summary>
 #if SMISPUBLIC
     public class SocketEndPoint : IDisposable
@@ -93,7 +94,7 @@ namespace SocketMeister
         }
 
         /// <summary>
-        /// Description of the IP Address and Port. For example, 123.123.123.123:5000
+        /// Description of the IP Address and Port. For example, "123.123.123.123:5000".
         /// </summary>
         public string Description
         {
@@ -111,12 +112,12 @@ namespace SocketMeister
         }
 
         /// <summary>
-        /// IP Address of the server to connect to
+        /// IP Address (IPv4) of the server to connect to.
         /// </summary>
         public string IPAddress => _iPAddress;
 
         /// <summary>
-        /// IPEndpoint
+        /// The local <see cref="System.Net.IPEndPoint"/> composed from <see cref="IPAddress"/> and <see cref="Port"/>.
         /// </summary>
         internal IPEndPoint IPEndPoint => _ipEndPoint;
 
@@ -138,12 +139,12 @@ namespace SocketMeister
 
 
         /// <summary>
-        /// Port number of the socket listener to connect to
+        /// TCP port number of the remote socket listener.
         /// </summary>
         public ushort Port => _port;
 
         /// <summary>
-        /// TCP <see cref="Socket"/> in use for the current destination.
+        /// TCP <see cref="Socket"/> bound to this endpoint for the active session.
         /// </summary>
         internal Socket Socket
         {

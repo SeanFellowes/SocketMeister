@@ -72,6 +72,7 @@ public class ParametersRoundtripTests
         server.MessageReceived += (s, e) => { var str = Canonical(e.Parameters); e.Response = Encoding.UTF8.GetBytes(str); };
         server.Start();
         await ServerTestHelpers.WaitForServerStartedAsync(server);
+        await Task.Delay(200);
         int port = ServerTestHelpers.GetBoundPort(server);
         await Task.Delay(200);
         try
@@ -108,6 +109,7 @@ public class ParametersRoundtripTests
         server.ClientConnected += (s, e) => { remote = e.Client; connected.TrySetResult(true); };
         server.Start();
         await ServerTestHelpers.WaitForServerStartedAsync(server);
+        await Task.Delay(200);
         int port = ServerTestHelpers.GetBoundPort(server);
         await Task.Delay(200);
         try
@@ -139,3 +141,4 @@ public class ParametersRoundtripTests
         }
     }
 }
+

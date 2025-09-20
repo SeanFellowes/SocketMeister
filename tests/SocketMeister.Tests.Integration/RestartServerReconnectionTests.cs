@@ -21,6 +21,7 @@ public class RestartServerReconnectionTests
         reservation.Dispose();
         server.Start();
         await ServerTestHelpers.WaitForServerStartedAsync(server);
+            await Task.Delay(200);
         try
         {
             var client = new SocketClient(new List<SocketEndPoint> { new SocketEndPoint("127.0.0.1", port) }, false, "RestartClient");
@@ -39,6 +40,7 @@ public class RestartServerReconnectionTests
             await Task.Delay(1000);
             server.Start();
             await ServerTestHelpers.WaitForServerStartedAsync(server);
+            await Task.Delay(200);
 
             // Wait for client to reconnect (event-driven) and send again
             var reconnected = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -62,3 +64,4 @@ public class RestartServerReconnectionTests
         }
     }
 }
+

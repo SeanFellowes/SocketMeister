@@ -1384,6 +1384,14 @@
             The final transition to <see cref="F:SocketMeister.SocketClient.ConnectionStatuses.Connected"/> occurs after handshake, and raises <see cref="E:SocketMeister.SocketClient.ConnectionStatusChanged"/>.
             </remarks>
         </member>
+        <member name="P:SocketMeister.SocketClient.EndPoints">
+             <summary>
+             Returns a snapshot of the configured endpoints as a new array.
+             Use <see cref="M:SocketMeister.SocketClient.SetEndPoints(System.Collections.Generic.IEnumerable{SocketMeister.SocketEndPoint})"/>, <see cref="M:SocketMeister.SocketClient.AddEndPoint(SocketMeister.SocketEndPoint)"/>, or <see cref="M:SocketMeister.SocketClient.RemoveEndPoint(System.String,System.Int32)"/> to change endpoints.
+            
+             The returned array is a copy; modifying it does not affect the client's configuration.
+             </summary>
+        </member>
         <member name="P:SocketMeister.SocketClient.FriendlyName">
             <summary>
             A friendly name for the client which can be. If available, the SocketServer will use this in logging and error handling, otherwise a GUID is used.
@@ -1450,6 +1458,26 @@
         <member name="M:SocketMeister.SocketClient.BgPerformAttemptConnect">
             <summary>
             Attempts to re-establish a connection using the endpoint with the shortest wait time.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketClient.SetEndPoints(System.Collections.Generic.IEnumerable{SocketMeister.SocketEndPoint})">
+            <summary>
+            Replace the entire list of endpoints. If the current connection's endpoint is removed, the client will disconnect and reconnect to an eligible endpoint.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketClient.AddEndPoint(SocketMeister.SocketEndPoint)">
+            <summary>
+            Adds an endpoint if not already present.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketClient.AddEndPoint(System.String,System.Int32)">
+            <summary>
+            Adds an endpoint by IP and port if not already present.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketClient.RemoveEndPoint(System.String,System.Int32)">
+            <summary>
+            Removes the endpoint matching IP and port. If currently connected to it, initiates a disconnect.
             </summary>
         </member>
         <member name="M:SocketMeister.SocketClient.RestartStopwatch(System.Diagnostics.Stopwatch)">
@@ -1641,7 +1669,8 @@
         </member>
         <member name="T:SocketMeister.SocketEndPoint">
             <summary>
-            Client <see cref="P:SocketMeister.SocketEndPoint.Socket"/> to a SocketServer end point.
+            Represents a remote server endpoint (IPv4 address and TCP port) and its underlying TCP <see cref="P:SocketMeister.SocketEndPoint.Socket"/>.
+            Used by <see cref="T:SocketMeister.SocketClient"/> to maintain a single active connection and coordinate reconnect backoff per endpoint.
             </summary>
         </member>
         <member name="M:SocketMeister.SocketEndPoint.#ctor(System.String,System.Int32)">
@@ -1665,7 +1694,7 @@
         </member>
         <member name="P:SocketMeister.SocketEndPoint.Description">
             <summary>
-            Description of the IP Address and Port. For example, 123.123.123.123:5000
+            Description of the IP Address and Port. For example, "123.123.123.123:5000".
             </summary>
         </member>
         <member name="P:SocketMeister.SocketEndPoint.DontReconnectUntil">
@@ -1675,12 +1704,12 @@
         </member>
         <member name="P:SocketMeister.SocketEndPoint.IPAddress">
             <summary>
-            IP Address of the server to connect to
+            IP Address (IPv4) of the server to connect to.
             </summary>
         </member>
         <member name="P:SocketMeister.SocketEndPoint.IPEndPoint">
             <summary>
-            IPEndpoint
+            The local <see cref="T:System.Net.IPEndPoint"/> composed from <see cref="P:SocketMeister.SocketEndPoint.IPAddress"/> and <see cref="P:SocketMeister.SocketEndPoint.Port"/>.
             </summary>
         </member>
         <member name="P:SocketMeister.SocketEndPoint.LastDisconnectReason">
@@ -1691,12 +1720,12 @@
         </member>
         <member name="P:SocketMeister.SocketEndPoint.Port">
             <summary>
-            Port number of the socket listener to connect to
+            TCP port number of the remote socket listener.
             </summary>
         </member>
         <member name="P:SocketMeister.SocketEndPoint.Socket">
             <summary>
-            TCP <see cref="P:SocketMeister.SocketEndPoint.Socket"/> in use for the current destination.
+            TCP <see cref="P:SocketMeister.SocketEndPoint.Socket"/> bound to this endpoint for the active session.
             </summary>
         </member>
         <member name="M:SocketMeister.SocketEndPoint.SetDisconnected(SocketMeister.ClientDisconnectReason)">

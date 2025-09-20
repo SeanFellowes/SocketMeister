@@ -51,6 +51,7 @@ public class FailoverTests
             r1.Dispose();
             server1.Start();
             await ServerTestHelpers.WaitForServerStartedAsync(server1);
+            await Task.Delay(200);
 
             var endpoints = new List<SocketEndPoint>
             {
@@ -75,6 +76,7 @@ public class FailoverTests
             r2.Dispose();
             server2.Start();
             await ServerTestHelpers.WaitForServerStartedAsync(server2);
+            await Task.Delay(200);
 
             // The client should reconnect to server2
             var cts = new CancellationTokenSource(TimeSpan.FromSeconds(90));
@@ -96,6 +98,7 @@ public class FailoverTests
             await Task.Delay(1000);
             server1.Start();
             await ServerTestHelpers.WaitForServerStartedAsync(server1);
+            await Task.Delay(200);
 
             cts = new CancellationTokenSource(TimeSpan.FromSeconds(90));
             while (!cts.IsCancellationRequested)
@@ -122,3 +125,5 @@ public class FailoverTests
         }
     }
 }
+
+

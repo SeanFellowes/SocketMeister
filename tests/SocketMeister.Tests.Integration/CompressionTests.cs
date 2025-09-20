@@ -30,6 +30,7 @@ public class CompressionTests
         server.MessageReceived += (s, e) => { e.Response = Encoding.UTF8.GetBytes((string)e.Parameters[0]); };
         server.Start();
         await ServerTestHelpers.WaitForServerStartedAsync(server);
+        await Task.Delay(200);
         int port = ServerTestHelpers.GetBoundPort(server);
         try
         {
@@ -54,6 +55,7 @@ public class CompressionTests
         server.MessageReceived += (s, e) => { e.Response = Encoding.UTF8.GetBytes((string)e.Parameters[0]); };
         server.Start();
         await ServerTestHelpers.WaitForServerStartedAsync(server);
+        await Task.Delay(200);
         int port = ServerTestHelpers.GetBoundPort(server);
         try
         {
@@ -79,6 +81,7 @@ public class CompressionTests
         server.MessageReceived += (s, e) => { e.Response = Encoding.UTF8.GetBytes((string)e.Parameters[0]); };
         server.Start();
         await ServerTestHelpers.WaitForServerStartedAsync(server);
+        await Task.Delay(200);
         int port = ServerTestHelpers.GetBoundPort(server);
         try
         {
@@ -104,6 +107,7 @@ public class CompressionTests
         server.MessageReceived += (s, e) => { e.Response = Encoding.UTF8.GetBytes((string)e.Parameters[0]); };
         server.Start();
         await ServerTestHelpers.WaitForServerStartedAsync(server);
+        await Task.Delay(200);
         int port = ServerTestHelpers.GetBoundPort(server);
         try
         {

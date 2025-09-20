@@ -463,7 +463,9 @@ namespace SocketMeister
 
         /// <summary>
         /// Returns a snapshot of the configured endpoints as a new array.
-        /// Use <see cref="SetEndPoints(IEnumerable{SocketEndPoint})"/>, <see cref="AddEndPoint(SocketEndPoint)"/>, or <see cref="RemoveEndPoint(string, int)"/> to change endpoints.
+        /// Use <see cref="SetEndPoints(System.Collections.Generic.IEnumerable{SocketEndPoint})"/>, <see cref="AddEndPoint(SocketEndPoint)"/>, or <see cref="RemoveEndPoint(string, int)"/> to change endpoints.
+        ///
+        /// The returned array is a copy; modifying it does not affect the client's configuration.
         /// </summary>
         public SocketEndPoint[] EndPoints
         {

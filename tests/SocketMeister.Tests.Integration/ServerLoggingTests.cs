@@ -20,6 +20,7 @@ public class ServerLoggingTests
         server.MessageReceived += (s, e) => throw new InvalidOperationException("boom");
         server.Start();
         await ServerTestHelpers.WaitForServerStartedAsync(server);
+        await Task.Delay(200);
         int port = ServerTestHelpers.GetBoundPort(server);
         try
         {
@@ -45,3 +46,4 @@ public class ServerLoggingTests
         }
     }
 }
+

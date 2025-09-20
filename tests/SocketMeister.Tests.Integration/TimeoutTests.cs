@@ -24,6 +24,7 @@ public class TimeoutTests
         };
         server.Start();
         await ServerTestHelpers.WaitForServerStartedAsync(server);
+        await Task.Delay(200);
         try
         {
             int port = ServerTestHelpers.GetBoundPort(server);

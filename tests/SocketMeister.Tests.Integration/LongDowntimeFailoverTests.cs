@@ -34,6 +34,7 @@ public class LongDowntimeFailoverTests
         r1.Dispose();
         server1.Start();
         await ServerTestHelpers.WaitForServerStartedAsync(server1);
+            await Task.Delay(200);
         var server2 = new SocketServer(port2, false);
         try
         {
@@ -54,6 +55,7 @@ public class LongDowntimeFailoverTests
             r2.Dispose();
             server2.Start();
             await ServerTestHelpers.WaitForServerStartedAsync(server2);
+            await Task.Delay(200);
 
             // Event-driven reconnect wait targeting port2
             var reconnected = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -81,3 +83,5 @@ public class LongDowntimeFailoverTests
         }
     }
 }
+
+

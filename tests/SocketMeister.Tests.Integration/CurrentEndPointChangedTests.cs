@@ -39,6 +39,7 @@ public class CurrentEndPointChangedTests
         r1.Dispose();
         s1.Start();
         await ServerTestHelpers.WaitForServerStartedAsync(s1);
+            await Task.Delay(200);
         try
         {
             var client = new SocketClient(new List<SocketEndPoint>
@@ -61,6 +62,7 @@ public class CurrentEndPointChangedTests
             r2.Dispose();
             s2.Start();
             await ServerTestHelpers.WaitForServerStartedAsync(s2);
+            await Task.Delay(200);
             await WaitConnectedAsync(client, port2, TimeSpan.FromSeconds(60));
 
             // Switch back to s1
@@ -68,6 +70,7 @@ public class CurrentEndPointChangedTests
             await Task.Delay(500);
             s1.Start();
             await ServerTestHelpers.WaitForServerStartedAsync(s1);
+            await Task.Delay(200);
             await WaitConnectedAsync(client, port1, TimeSpan.FromSeconds(60));
 
             Assert.Contains((ushort)port2, sequence);
@@ -86,3 +89,5 @@ public class CurrentEndPointChangedTests
         }
     }
 }
+
+
