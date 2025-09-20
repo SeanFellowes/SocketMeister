@@ -14,8 +14,7 @@ public class ServerStatusTests
     [Fact]
     public async Task StatusChanged_Fired_On_Start_Stop()
     {
-        int port = PortAllocator.GetFreeTcpPort();
-        var server = new SocketServer(port, false);
+        var server = new SocketServer(0, false);
         var seq = new List<SocketServerStatus>();
         server.StatusChanged += (s, e) => seq.Add(e.NewStatus);
 

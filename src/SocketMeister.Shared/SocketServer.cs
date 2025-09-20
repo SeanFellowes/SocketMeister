@@ -1,4 +1,4 @@
-﻿#if !NET35
+#if !NET35
 using SocketMeister.Messages;
 using System;
 using System.Collections.Generic;
@@ -195,6 +195,8 @@ namespace SocketMeister
         /// </summary>
         public string EndPoint => _endPoint;
 
+        
+
         /// <summary>
         /// Central logging for the socket server. This is a simple logger that logs messages to the console and raises log events to calling code.
         /// </summary>
@@ -363,10 +365,15 @@ namespace SocketMeister
             {
                 var ip = _options?.BindAddress ?? IPAddress.Parse("0.0.0.0");
                 _localEndPoint = new IPEndPoint(ip, _options.Port);
-                _endPoint = (ip.Equals(IPAddress.Any) ? GetLocalIPAddress().ToString() : ip.ToString()) + ":" + _options.Port.ToString(CultureInfo.InvariantCulture);
 
                 _listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 _listener.Bind(_localEndPoint);
+
+                // After binding, the kernel assigns the actual port if Port was 0. Capture it now.
+                var actual = (IPEndPoint)_listener.LocalEndPoint;
+                _localEndPoint = actual;
+                _endPoint = (ip.Equals(IPAddress.Any) ? GetLocalIPAddress().ToString() : ip.ToString()) + ":" + actual.Port.ToString(CultureInfo.InvariantCulture);
+
                 _listener.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
                 _listener.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, 0);
 
@@ -486,11 +493,11 @@ namespace SocketMeister
                     Client remoteClient = new Client(this, handler, _compressSentData);
                     handler.BeginReceive(remoteClient.ReceiveBuffer, 0, Constants.SEND_RECEIVE_BUFFER_SIZE, 0, new AsyncCallback(ReadCallback), remoteClient);
 
-                    // Send Handshake 1 with retries until Handshake2 received or stopping
+                    // Send Handshake 1 with retries for a short window until Handshake2 is received or server stops
                     Task.Run(() =>
                     {
-                        int attempts = 0;
-                        while (!remoteClient.Handshake2Received && Status == SocketServerStatus.Started && handler.Connected && attempts < 3)
+                        var deadline = DateTime.UtcNow.AddSeconds(5);
+                        while (!remoteClient.Handshake2Received && Status == SocketServerStatus.Started && handler.Connected && DateTime.UtcNow < deadline)
                         {
                             try
                             {
@@ -513,8 +520,7 @@ namespace SocketMeister
                                 Logger.Log(new LogEntry(ex));
                                 try { _telemetry.AddSendFailure(); } catch { }
                             }
-                            attempts++;
-                            Thread.Sleep(700);
+                            Thread.Sleep(400);
                         }
                     });
                 });
@@ -869,3 +875,4 @@ namespace SocketMeister
     }
 }
 #endif
+

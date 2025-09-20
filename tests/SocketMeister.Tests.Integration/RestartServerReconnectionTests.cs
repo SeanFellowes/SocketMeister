@@ -14,9 +14,11 @@ public class RestartServerReconnectionTests
     [Fact]
     public async Task Client_Reconnects_After_Server_Restart_And_Can_Send()
     {
-        int port = PortAllocator.GetFreeTcpPort();
+        using var reservation = PortReservation.ReserveLoopbackPort();
+        int port = reservation.Port;
         var server = new SocketServer(port, false);
         server.MessageReceived += (s, e) => { e.Response = Encoding.UTF8.GetBytes("ACK"); };
+        reservation.Dispose();
         server.Start();
         await ServerTestHelpers.WaitForServerStartedAsync(server);
         try
@@ -38,20 +40,18 @@ public class RestartServerReconnectionTests
             server.Start();
             await ServerTestHelpers.WaitForServerStartedAsync(server);
 
-            // Wait for client to reconnect and send again
-            var deadline = DateTime.UtcNow.AddSeconds(90);
-            byte[]? r2 = null;
-            while (DateTime.UtcNow < deadline)
-            {
-                if (client.ConnectionStatus == SocketClient.ConnectionStatuses.Connected)
-                {
-                    try { r2 = client.SendMessage(new object[] { 2 }, 5000); break; }
-                    catch { }
-                }
-                await Task.Delay(500);
-            }
-            Assert.NotNull(r2);
-            Assert.Equal("ACK", Encoding.UTF8.GetString(r2!));
+            // Wait for client to reconnect (event-driven) and send again
+            var reconnected = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            EventHandler<SocketClient.ConnectionStatusChangedEventArgs> handler = null!;
+            handler = (s, e) => { if (e.NewStatus == SocketClient.ConnectionStatuses.Connected) reconnected.TrySetResult(true); };
+            client.ConnectionStatusChanged += handler;
+            if (client.ConnectionStatus == SocketClient.ConnectionStatuses.Connected) reconnected.TrySetResult(true);
+            await Task.WhenAny(reconnected.Task, Task.Delay(TimeSpan.FromSeconds(90)));
+            client.ConnectionStatusChanged -= handler;
+            Assert.True(reconnected.Task.IsCompleted, "Client did not reconnect after restart");
+
+            var r2 = client.SendMessage(new object[] { 2 }, 5000);
+            Assert.Equal("ACK", Encoding.UTF8.GetString(r2));
 
             client.Stop();
         }

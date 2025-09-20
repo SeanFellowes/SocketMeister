@@ -14,8 +14,7 @@ public sealed class ServerFixture : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        Port = PortAllocator.GetFreeTcpPort();
-        Server = new SocketServer(Port, CompressSentData: false);
+        Server = new SocketServer(0, CompressSentData: false);
 
         // Simple echo handler for harness validation
         Server.MessageReceived += (s, e) =>
@@ -31,6 +30,7 @@ public sealed class ServerFixture : IAsyncLifetime
 
         Server.Start();
         await ServerTestHelpers.WaitForServerStartedAsync(Server);
+        Port = ServerTestHelpers.GetBoundPort(Server);
     }
 
     public Task DisposeAsync()

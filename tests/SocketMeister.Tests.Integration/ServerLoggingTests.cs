@@ -14,13 +14,13 @@ public class ServerLoggingTests
     [Fact]
     public async Task Server_Logs_Error_When_Handler_Throws()
     {
-        int port = PortAllocator.GetFreeTcpPort();
-        var server = new SocketServer(port, false);
+        var server = new SocketServer(0, false);
         int logCount = 0;
         server.LogRaised += (s, e) => { logCount++; };
         server.MessageReceived += (s, e) => throw new InvalidOperationException("boom");
         server.Start();
         await ServerTestHelpers.WaitForServerStartedAsync(server);
+        int port = ServerTestHelpers.GetBoundPort(server);
         try
         {
             var client = new SocketClient(new List<SocketEndPoint> { new SocketEndPoint("127.0.0.1", port) }, false, "LogClient");

@@ -14,10 +14,10 @@ public class BroadcastAllTests
     [Fact]
     public async Task Broadcast_To_All_Clients()
     {
-        int port = PortAllocator.GetFreeTcpPort();
-        var server = new SocketServer(port, false);
+        var server = new SocketServer(0, false);
         server.Start();
         await ServerTestHelpers.WaitForServerStartedAsync(server);
+        int port = ServerTestHelpers.GetBoundPort(server);
         try
         {
             var c1 = new SocketClient(new List<SocketEndPoint> { new SocketEndPoint("127.0.0.1", port) }, false, "BA1");
@@ -58,8 +58,7 @@ public class BroadcastAllTests
     [Fact]
     public void BroadcastToSubscribers_EmptyName_Throws()
     {
-        int port = PortAllocator.GetFreeTcpPort();
-        var server = new SocketServer(port, false);
+        var server = new SocketServer(0, false);
         server.Start();
         try
         {

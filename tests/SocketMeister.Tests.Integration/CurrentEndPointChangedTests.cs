@@ -26,14 +26,17 @@ public class CurrentEndPointChangedTests
     [Fact]
     public async Task Sequence_On_Failover_And_Failback()
     {
-        int port1 = PortAllocator.GetFreeTcpPort();
-        int port2 = PortAllocator.GetFreeTcpPort();
+        using var r1 = PortReservation.ReserveLoopbackPort();
+        using var r2 = PortReservation.ReserveLoopbackPort();
+        int port1 = r1.Port;
+        int port2 = r2.Port;
         var s1 = new SocketServer(port1, false);
         var s2 = new SocketServer(port2, false);
 
         var sequence = new List<ushort>();
 
         // Start s1
+        r1.Dispose();
         s1.Start();
         await ServerTestHelpers.WaitForServerStartedAsync(s1);
         try
@@ -55,6 +58,7 @@ public class CurrentEndPointChangedTests
             // Switch to s2
             s1.Stop();
             await Task.Delay(500);
+            r2.Dispose();
             s2.Start();
             await ServerTestHelpers.WaitForServerStartedAsync(s2);
             await WaitConnectedAsync(client, port2, TimeSpan.FromSeconds(60));

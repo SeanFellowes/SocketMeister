@@ -25,11 +25,11 @@ public class CompressionTests
     [Fact]
     public async Task Echo_With_Compression_On_Both_Sides()
     {
-        int port = PortAllocator.GetFreeTcpPort();
-        var server = new SocketServer(port, CompressSentData: true);
+        var server = new SocketServer(0, CompressSentData: true);
         server.MessageReceived += (s, e) => { e.Response = Encoding.UTF8.GetBytes((string)e.Parameters[0]); };
         server.Start();
         await ServerTestHelpers.WaitForServerStartedAsync(server);
+        int port = ServerTestHelpers.GetBoundPort(server);
         try
         {
             var client = await CreateAndConnectAsync(port, true, "CompEcho");
@@ -49,11 +49,11 @@ public class CompressionTests
     [Fact]
     public async Task Echo_With_Compression_Server_Only()
     {
-        int port = PortAllocator.GetFreeTcpPort();
-        var server = new SocketServer(port, CompressSentData: true);
+        var server = new SocketServer(0, CompressSentData: true);
         server.MessageReceived += (s, e) => { e.Response = Encoding.UTF8.GetBytes((string)e.Parameters[0]); };
         server.Start();
         await ServerTestHelpers.WaitForServerStartedAsync(server);
+        int port = ServerTestHelpers.GetBoundPort(server);
         try
         {
             // client compression disabled
@@ -74,11 +74,11 @@ public class CompressionTests
     [Fact]
     public async Task Echo_With_Compression_Client_Only()
     {
-        int port = PortAllocator.GetFreeTcpPort();
-        var server = new SocketServer(port, CompressSentData: false);
+        var server = new SocketServer(0, CompressSentData: false);
         server.MessageReceived += (s, e) => { e.Response = Encoding.UTF8.GetBytes((string)e.Parameters[0]); };
         server.Start();
         await ServerTestHelpers.WaitForServerStartedAsync(server);
+        int port = ServerTestHelpers.GetBoundPort(server);
         try
         {
             // client compression enabled
@@ -99,11 +99,11 @@ public class CompressionTests
     [Fact]
     public async Task Large_Payload_Roundtrip_With_Compression()
     {
-        int port = PortAllocator.GetFreeTcpPort();
-        var server = new SocketServer(port, CompressSentData: true);
+        var server = new SocketServer(0, CompressSentData: true);
         server.MessageReceived += (s, e) => { e.Response = Encoding.UTF8.GetBytes((string)e.Parameters[0]); };
         server.Start();
         await ServerTestHelpers.WaitForServerStartedAsync(server);
+        int port = ServerTestHelpers.GetBoundPort(server);
         try
         {
             var client = await CreateAndConnectAsync(port, true, "CompLarge");

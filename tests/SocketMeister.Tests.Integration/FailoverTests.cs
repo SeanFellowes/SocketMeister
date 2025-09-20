@@ -37,8 +37,10 @@ public class FailoverTests
     [Fact]
     public async Task Client_FailsOver_Between_Two_Endpoints()
     {
-        int port1 = PortAllocator.GetFreeTcpPort();
-        int port2 = PortAllocator.GetFreeTcpPort();
+        using var r1 = PortReservation.ReserveLoopbackPort();
+        using var r2 = PortReservation.ReserveLoopbackPort();
+        int port1 = r1.Port;
+        int port2 = r2.Port;
 
         var server1 = new SocketServer(port1, CompressSentData: false);
         var server2 = new SocketServer(port2, CompressSentData: false);
@@ -46,6 +48,7 @@ public class FailoverTests
         try
         {
             // Start only server1
+            r1.Dispose();
             server1.Start();
             await ServerTestHelpers.WaitForServerStartedAsync(server1);
 
@@ -69,6 +72,7 @@ public class FailoverTests
             // Stop server1, wait a moment, then start server2
             server1.Stop();
             await Task.Delay(1000);
+            r2.Dispose();
             server2.Start();
             await ServerTestHelpers.WaitForServerStartedAsync(server2);
 

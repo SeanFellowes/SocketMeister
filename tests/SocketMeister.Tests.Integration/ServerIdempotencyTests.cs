@@ -11,8 +11,7 @@ public class ServerIdempotencyTests
     [Fact]
     public void Start_Twice_Throws_Stop_Idempotent()
     {
-        int port = PortAllocator.GetFreeTcpPort();
-        var server = new SocketServer(port, false);
+        var server = new SocketServer(0, false);
 
         server.Start();
         Assert.Throws<InvalidOperationException>(() => server.Start());

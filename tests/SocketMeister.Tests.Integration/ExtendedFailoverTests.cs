@@ -26,8 +26,10 @@ public class ExtendedFailoverTests
     [Fact]
     public async Task Delayed_Server_Start_And_Failback()
     {
-        int port1 = PortAllocator.GetFreeTcpPort();
-        int port2 = PortAllocator.GetFreeTcpPort();
+        using var r1 = PortReservation.ReserveLoopbackPort();
+        using var r2 = PortReservation.ReserveLoopbackPort();
+        int port1 = r1.Port;
+        int port2 = r2.Port;
 
         // Client has both endpoints; no servers up yet
         var client = new SocketClient(new List<SocketEndPoint>
@@ -40,6 +42,7 @@ public class ExtendedFailoverTests
 
         // After some seconds, start server2 only
         await Task.Delay(3000);
+        r2.Dispose();
         var server2 = new SocketServer(port2, false);
         server2.Start();
         await ServerTestHelpers.WaitForServerStartedAsync(server2);
@@ -51,6 +54,7 @@ public class ExtendedFailoverTests
             // Now stop server2 and start server1; expect client to reconnect to port1 eventually
             server2.Stop();
             await Task.Delay(1000);
+            r1.Dispose();
             var server1 = new SocketServer(port1, false);
             server1.Start();
             await ServerTestHelpers.WaitForServerStartedAsync(server1);

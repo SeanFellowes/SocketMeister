@@ -30,12 +30,12 @@ public class ClientValidationTests
     [Fact]
     public async Task AddSubscription_Duplicate_Throws()
     {
-        int port = PortAllocator.GetFreeTcpPort();
-        var server = new SocketServer(port, false);
+        var server = new SocketServer(0, false);
         server.Start();
         await ServerTestHelpers.WaitForServerStartedAsync(server);
         try
         {
+            int port = ServerTestHelpers.GetBoundPort(server);
             var client = new SocketClient(new List<SocketEndPoint> { new SocketEndPoint("127.0.0.1", port) }, false, "CV-SubDup");
             var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             client.ConnectionStatusChanged += (s, e) => { if (e.NewStatus == SocketClient.ConnectionStatuses.Connected) tcs.TrySetResult(true); };
@@ -59,12 +59,12 @@ public class ClientValidationTests
     [Fact]
     public async Task RemoveSubscription_Missing_ReturnsFalse()
     {
-        int port = PortAllocator.GetFreeTcpPort();
-        var server = new SocketServer(port, false);
+        var server = new SocketServer(0, false);
         server.Start();
         await ServerTestHelpers.WaitForServerStartedAsync(server);
         try
         {
+            int port = ServerTestHelpers.GetBoundPort(server);
             var client = new SocketClient(new List<SocketEndPoint> { new SocketEndPoint("127.0.0.1", port) }, false, "CV-Remove");
             var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             client.ConnectionStatusChanged += (s, e) => { if (e.NewStatus == SocketClient.ConnectionStatuses.Connected) tcs.TrySetResult(true); };
@@ -87,12 +87,12 @@ public class ClientValidationTests
     [Fact]
     public async Task Start_Stop_Toggles_IsRunning_And_ServerVersion_Set()
     {
-        int port = PortAllocator.GetFreeTcpPort();
-        var server = new SocketServer(port, false);
+        var server = new SocketServer(0, false);
         server.Start();
         await ServerTestHelpers.WaitForServerStartedAsync(server);
         try
         {
+            int port = ServerTestHelpers.GetBoundPort(server);
             var client = new SocketClient(new List<SocketEndPoint> { new SocketEndPoint("127.0.0.1", port) }, false, "CV-Run");
             Assert.False(client.IsRunning);
             var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);

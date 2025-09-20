@@ -15,8 +15,7 @@ public class ServerToClientTests
     [Fact]
     public async Task Server_Sends_Message_To_Client_And_Many()
     {
-        int port = PortAllocator.GetFreeTcpPort();
-        var server = new SocketServer(port, false);
+        var server = new SocketServer(0, false);
         var connectedClients = new List<SocketServer.Client>();
         var evAll = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
@@ -30,6 +29,7 @@ public class ServerToClientTests
         };
         server.Start();
         await ServerTestHelpers.WaitForServerStartedAsync(server);
+        int port = ServerTestHelpers.GetBoundPort(server);
         try
         {
             // Clients reply to server-initiated message via MessageReceived

@@ -43,8 +43,10 @@ public class PubSubTests
     [Fact]
     public async Task Broadcast_Received_By_All_Subscribers()
     {
-        int port = PortAllocator.GetFreeTcpPort();
+        using var reservation = PortReservation.ReserveLoopbackPort();
+        int port = reservation.Port;
         var server = new SocketServer(port, false);
+        reservation.Dispose();
         server.Start();
         await ServerTestHelpers.WaitForServerStartedAsync(server);
         try
@@ -108,8 +110,10 @@ public class PubSubTests
     [Fact]
     public async Task Broadcast_Routed_To_Correct_Subscribers()
     {
-        int port = PortAllocator.GetFreeTcpPort();
+        using var reservation2 = PortReservation.ReserveLoopbackPort();
+        int port = reservation2.Port;
         var server = new SocketServer(port, false);
+        reservation2.Dispose();
         server.Start();
         await ServerTestHelpers.WaitForServerStartedAsync(server);
         try
@@ -159,8 +163,10 @@ public class PubSubTests
     [Fact]
     public async Task RemoveSubscription_Stops_Routing_And_Survives_Restart()
     {
-        int port = PortAllocator.GetFreeTcpPort();
+        using var reservation3 = PortReservation.ReserveLoopbackPort();
+        int port = reservation3.Port;
         var server = new SocketServer(port, false);
+        reservation3.Dispose();
         server.Start();
         await ServerTestHelpers.WaitForServerStartedAsync(server);
         try
@@ -193,11 +199,15 @@ public class PubSubTests
             server.Start();
             await ServerTestHelpers.WaitForServerStartedAsync(server);
 
-            // Wait for reconnect (allow ample time)
-            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
-            while (!cts.IsCancellationRequested && client.ConnectionStatus != SocketClient.ConnectionStatuses.Connected)
-                await Task.Delay(200);
-            Assert.Equal(SocketClient.ConnectionStatuses.Connected, client.ConnectionStatus);
+            // Wait for reconnect (event-driven, avoids polling races)
+            var reconnected = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            EventHandler<SocketClient.ConnectionStatusChangedEventArgs> handler = null!;
+            handler = (s, e) => { if (e.NewStatus == SocketClient.ConnectionStatuses.Connected) reconnected.TrySetResult(true); };
+            client.ConnectionStatusChanged += handler;
+            if (client.ConnectionStatus == SocketClient.ConnectionStatuses.Connected) reconnected.TrySetResult(true);
+            await Task.WhenAny(reconnected.Task, Task.Delay(TimeSpan.FromSeconds(90)));
+            client.ConnectionStatusChanged -= handler;
+            Assert.True(reconnected.Task.IsCompleted, "Client did not reconnect after server restart");
 
             // Post-restart routing check
             Assert.False(server.DoSubscribersExist("T1"));

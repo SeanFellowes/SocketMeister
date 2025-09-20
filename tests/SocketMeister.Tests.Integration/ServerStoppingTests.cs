@@ -13,12 +13,12 @@ public class ServerStoppingTests
     [Fact]
     public async Task Client_Raises_ServerStopping_On_Server_Stop()
     {
-        int port = PortAllocator.GetFreeTcpPort();
-        var server = new SocketServer(port, false);
+        var server = new SocketServer(0, false);
         server.Start();
         await ServerTestHelpers.WaitForServerStartedAsync(server);
         try
         {
+            int port = ServerTestHelpers.GetBoundPort(server);
             var client = new SocketClient(new List<SocketEndPoint> { new SocketEndPoint("127.0.0.1", port) }, false, "SS-Client");
             var connected = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             var serverStopping = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);

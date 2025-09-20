@@ -35,12 +35,12 @@ public class ConnectionReasonTests
     [Fact]
     public async Task ClientIsStopping_Reason_On_Stop()
     {
-        int port = PortAllocator.GetFreeTcpPort();
-        var server = new SocketServer(port, false);
+        var server = new SocketServer(0, false);
         server.Start();
         await ServerTestHelpers.WaitForServerStartedAsync(server);
         try
         {
+            int port = ServerTestHelpers.GetBoundPort(server);
             var client = new SocketClient(new List<SocketEndPoint> { new SocketEndPoint("127.0.0.1", port) }, false, "StopReasonClient");
             var connected = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             var stopped = new TaskCompletionSource<ClientDisconnectReason>(TaskCreationOptions.RunContinuationsAsynchronously);

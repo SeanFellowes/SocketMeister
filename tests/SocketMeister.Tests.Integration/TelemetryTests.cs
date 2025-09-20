@@ -14,11 +14,11 @@ public class TelemetryTests
     [Fact]
     public async Task Telemetry_Basic_Connection_And_Message_Counters_Move()
     {
-        int port = PortAllocator.GetFreeTcpPort();
-        var server = new SocketServer(port, compressSentData: false);
+        var server = new SocketServer(0, compressSentData: false);
         server.MessageReceived += (s, e) => { e.Response = Array.Empty<byte>(); };
         server.Start();
         await ServerTestHelpers.WaitForServerStartedAsync(server);
+        int port = ServerTestHelpers.GetBoundPort(server);
 
         try
         {
@@ -65,11 +65,11 @@ public class TelemetryTests
     [Fact]
     public async Task Telemetry_Disable_Stops_Counter_Updates()
     {
-        int port = PortAllocator.GetFreeTcpPort();
-        var server = new SocketServer(port, compressSentData: false);
+        var server = new SocketServer(0, compressSentData: false);
         server.MessageReceived += (s, e) => { e.Response = Array.Empty<byte>(); };
         server.Start();
         await ServerTestHelpers.WaitForServerStartedAsync(server);
+        int port = ServerTestHelpers.GetBoundPort(server);
 
         try
         {

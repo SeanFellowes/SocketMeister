@@ -25,13 +25,16 @@ public class AlternatingFailoverTests
     [Fact]
     public async Task Alternating_Server_Failover_Twice()
     {
-        int port1 = PortAllocator.GetFreeTcpPort();
-        int port2 = PortAllocator.GetFreeTcpPort();
+        using var r1 = PortReservation.ReserveLoopbackPort();
+        using var r2 = PortReservation.ReserveLoopbackPort();
+        int port1 = r1.Port;
+        int port2 = r2.Port;
 
         var s1 = new SocketServer(port1, false);
         var s2 = new SocketServer(port2, false);
 
         // Start s1 only
+        r1.Dispose();
         s1.Start();
         await ServerTestHelpers.WaitForServerStartedAsync(s1);
         try
@@ -48,6 +51,7 @@ public class AlternatingFailoverTests
             // Cycle 1: switch to s2
             s1.Stop();
             await Task.Delay(500);
+            r2.Dispose();
             s2.Start();
             await ServerTestHelpers.WaitForServerStartedAsync(s2);
             await WaitConnectedAsync(client, port2, TimeSpan.FromSeconds(60));

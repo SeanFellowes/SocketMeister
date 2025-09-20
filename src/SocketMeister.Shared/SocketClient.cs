@@ -1102,9 +1102,9 @@ namespace SocketMeister
 
             // wait for handshake1 message
             Log($"Connected to {CurrentEndPoint.Description}. Awaiting handshake...", Severity.Information, LogEventType.ConnectionEvent);
-            int timeoutSeconds = 30;
-            DateTime timeout = DateTime.UtcNow.AddSeconds(timeoutSeconds);
-            while (DateTime.UtcNow < timeout && !Handshake1Received && !StopClientPermanently && InternalConnectionStatus == ConnectionStatuses.Connected)
+            int handshake1TimeoutSeconds = 30;
+            DateTime handshake1Timeout = DateTime.UtcNow.AddSeconds(handshake1TimeoutSeconds);
+            while (DateTime.UtcNow < handshake1Timeout && !Handshake1Received && !StopClientPermanently && InternalConnectionStatus == ConnectionStatuses.Connected)
             {
                 Thread.Sleep(25);
             }
@@ -1117,7 +1117,7 @@ namespace SocketMeister
             }
             if (!Handshake1Received)
             {
-                traceMsg = $"Handshake was not received within {timeoutSeconds} seconds. Disconnecting.";
+                traceMsg = $"Handshake was not received within {handshake1TimeoutSeconds} seconds. Disconnecting.";
                 Log(new Exception(traceMsg));
                 Disconnect(SocketHasErrored: false, ClientDisconnectReason.HandshakeTimeout, traceMsg);
                 return;
@@ -1149,8 +1149,10 @@ namespace SocketMeister
             SendFastMessage(new Handshake2(Constants.SOCKET_MEISTER_VERSION, FriendlyName, _subscriptions.SerializeTokens(), isServerVersionSupported));
             Log("Handshake response sent", Severity.Information, LogEventType.ConnectionEvent);
 
-            // wait to receive a handshake2Ack message from the server
-            while (DateTime.UtcNow < timeout && !Handshake2AckReceived && !StopClientPermanently && InternalConnectionStatus == ConnectionStatuses.Connected)
+            // wait to receive a handshake2Ack message from the server (fresh timeout window)
+            int handshake2TimeoutSeconds = 30;
+            DateTime handshake2Timeout = DateTime.UtcNow.AddSeconds(handshake2TimeoutSeconds);
+            while (DateTime.UtcNow < handshake2Timeout && !Handshake2AckReceived && !StopClientPermanently && InternalConnectionStatus == ConnectionStatuses.Connected)
             {
                 Thread.Sleep(25);
             }
@@ -1166,7 +1168,7 @@ namespace SocketMeister
             }
             else if (!Handshake2AckReceived)
             {
-                traceMsg = $"Handshake could not be completed within {timeoutSeconds} seconds. Disconnecting.";
+                traceMsg = $"Handshake could not be completed within {handshake2TimeoutSeconds} seconds. Disconnecting.";
                 Log(new Exception(traceMsg));
                 Disconnect(SocketHasErrored: false, ClientDisconnectReason.HandshakeTimeout, traceMsg);
             }

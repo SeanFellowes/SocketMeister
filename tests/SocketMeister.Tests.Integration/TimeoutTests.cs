@@ -14,8 +14,7 @@ public class TimeoutTests
     [Fact]
     public async Task Client_SendMessage_TimesOut_When_Server_Delays()
     {
-        int port = PortAllocator.GetFreeTcpPort();
-        var server = new SocketServer(port, false);
+        var server = new SocketServer(0, false);
         // Install handler that delays longer than client timeout
         server.MessageReceived += (s, e) =>
         {
@@ -27,6 +26,7 @@ public class TimeoutTests
         await ServerTestHelpers.WaitForServerStartedAsync(server);
         try
         {
+            int port = ServerTestHelpers.GetBoundPort(server);
             var client = new SocketClient(new List<SocketEndPoint> { new SocketEndPoint("127.0.0.1", port) }, false, "TimeoutClient");
             var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             client.ConnectionStatusChanged += (s, e) => { if (e.NewStatus == SocketClient.ConnectionStatuses.Connected) tcs.TrySetResult(true); };
