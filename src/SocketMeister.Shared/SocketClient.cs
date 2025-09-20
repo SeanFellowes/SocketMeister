@@ -5,6 +5,7 @@ using System.Collections.Concurrent;
 using System.Threading.Tasks;
 #endif
 using System.Collections.Generic;
+using System.Linq;
 using System.Diagnostics;
 using System.Net.Sockets;
 using System.Threading;
@@ -52,6 +53,7 @@ namespace SocketMeister
         private bool _disposed = false;
         private readonly bool _enableCompression;
         private readonly List<SocketEndPoint> _endPoints = null;
+        private readonly object _endPointsLock = new object();
         private readonly string _friendlyName = string.Empty;
 
         private bool _handshakeCompleted = false;
@@ -189,7 +191,10 @@ namespace SocketMeister
             _pollingBuffer = MessageEngine.GenerateSendBytes(new PollingRequestV1(), false);
 
             //  Set the default endpoint. This may be changed when the client first connects to the server
-            _currentEndPoint = _endPoints[0];
+            lock (_endPointsLock)
+            {
+                _currentEndPoint = _endPoints[0];
+            }
 
             //  Setup a pool of SocketAsyncEventArgs for sending messages
             _sendEventArgsPool = new SocketAsyncEventArgsPool();
@@ -454,6 +459,15 @@ namespace SocketMeister
                 }
                 return conStatus;
             }
+        }
+
+        /// <summary>
+        /// Returns a snapshot of the configured endpoints as a new array.
+        /// Use <see cref="SetEndPoints(IEnumerable{SocketEndPoint})"/>, <see cref="AddEndPoint(SocketEndPoint)"/>, or <see cref="RemoveEndPoint(string, int)"/> to change endpoints.
+        /// </summary>
+        public SocketEndPoint[] EndPoints
+        {
+            get { lock (_endPointsLock) { return _endPoints.ToArray(); } }
         }
 
 
@@ -867,9 +881,15 @@ namespace SocketMeister
                 if (DateTime.UtcNow < CurrentEndPoint.DontReconnectUntil.AddMilliseconds(-1000)) InternalConnectionStatus = ConnectionStatuses.Connecting;
 
                 //  Determine the endpoint which should be current based on the lowest DontReconnectUntil from the collection
-                DateTime lowestDontReconnectUntil = _endPoints[0].DontReconnectUntil;
-                SocketEndPoint bestEndPoint = _endPoints[0];
-                foreach (SocketEndPoint ep in _endPoints)
+                List<SocketEndPoint> endpointsSnapshot;
+                lock (_endPointsLock)
+                {
+                    if (_endPoints.Count == 0) { ConnectInProgress = false; return; }
+                    endpointsSnapshot = new List<SocketEndPoint>(_endPoints);
+                }
+                DateTime lowestDontReconnectUntil = endpointsSnapshot[0].DontReconnectUntil;
+                SocketEndPoint bestEndPoint = endpointsSnapshot[0];
+                foreach (SocketEndPoint ep in endpointsSnapshot)
                 {
                     if (ep.DontReconnectUntil < lowestDontReconnectUntil)
                     {
@@ -992,6 +1012,112 @@ namespace SocketMeister
             {
                 Log($"Caller error processing {nameof(RaiseConnectionStatusChanged)} event: {ex}", Severity.Error, LogEventType.Exception);
             }
+        }
+
+        /// <summary>
+        /// Replace the entire list of endpoints. If the current connection's endpoint is removed, the client will disconnect and reconnect to an eligible endpoint.
+        /// </summary>
+        public void SetEndPoints(IEnumerable<SocketEndPoint> newEndPoints)
+        {
+            if (newEndPoints == null) throw new ArgumentNullException(nameof(newEndPoints));
+            var list = newEndPoints.ToList();
+            if (list.Count == 0) throw new ArgumentException("At least one endpoint is required.", nameof(newEndPoints));
+
+            // Remove duplicates by IP+Port
+            var distinct = list
+                .GroupBy(ep => ep.IPAddress + ":" + ep.Port)
+                .Select(g => g.First())
+                .ToList();
+
+            SocketEndPoint current = CurrentEndPoint;
+            bool currentStillExists = false;
+            foreach (var ep in distinct)
+            {
+                if (current != null && string.Equals(ep.IPAddress, current.IPAddress, StringComparison.Ordinal) && ep.Port == current.Port)
+                {
+                    currentStillExists = true;
+                    break;
+                }
+            }
+
+            lock (_endPointsLock)
+            {
+                _endPoints.Clear();
+                _endPoints.AddRange(distinct);
+            }
+
+            // Expedite reconnect attempts to evaluate the new set quickly
+            try
+            {
+                lock (_endPointsLock)
+                {
+                    foreach (var ep in _endPoints) ep.DontReconnectUntil = DateTime.UtcNow.AddMilliseconds(-1);
+                }
+                ConnectInProgress = false;
+            }
+            catch { }
+
+            if (!currentStillExists && InternalConnectionStatus == ConnectionStatuses.Connected)
+            {
+                Disconnect(SocketHasErrored: false, ClientDisconnectReason.Unknown, "Endpoint list changed; previous endpoint removed.");
+            }
+        }
+
+        /// <summary>
+        /// Adds an endpoint if not already present.
+        /// </summary>
+        public bool AddEndPoint(SocketEndPoint endPoint)
+        {
+            if (endPoint == null) throw new ArgumentNullException(nameof(endPoint));
+            lock (_endPointsLock)
+            {
+                bool exists = _endPoints.Any(ep => string.Equals(ep.IPAddress, endPoint.IPAddress, StringComparison.Ordinal) && ep.Port == endPoint.Port);
+                if (exists) return false;
+                _endPoints.Add(endPoint);
+                endPoint.DontReconnectUntil = DateTime.UtcNow.AddMilliseconds(-1);
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// Adds an endpoint by IP and port if not already present.
+        /// </summary>
+        public bool AddEndPoint(string ipAddress, int port) => AddEndPoint(new SocketEndPoint(ipAddress, port));
+
+        /// <summary>
+        /// Removes the endpoint matching IP and port. If currently connected to it, initiates a disconnect.
+        /// </summary>
+        public bool RemoveEndPoint(string ipAddress, int port)
+        {
+            bool removed = false;
+            lock (_endPointsLock)
+            {
+                // Do not allow removing the last remaining endpoint
+                int matchIndex = -1;
+                for (int i = _endPoints.Count - 1; i >= 0; i--)
+                {
+                    var ep = _endPoints[i];
+                    if (string.Equals(ep.IPAddress, ipAddress, StringComparison.Ordinal) && ep.Port == port)
+                    {
+                        matchIndex = i; break;
+                    }
+                }
+                if (matchIndex < 0) return false;
+                if (_endPoints.Count <= 1) return false;
+                _endPoints.RemoveAt(matchIndex);
+                removed = true;
+            }
+
+            if (!removed) return false;
+
+            var current = CurrentEndPoint;
+            if (current != null && string.Equals(current.IPAddress, ipAddress, StringComparison.Ordinal) && current.Port == port)
+            {
+                // Current endpoint removed; disconnect so background worker can select a new eligible endpoint
+                Disconnect(SocketHasErrored: false, ClientDisconnectReason.Unknown, "Endpoint removed by caller.");
+            }
+
+            return true;
         }
 
         /// <summary>

@@ -1384,6 +1384,12 @@
             The final transition to <see cref="F:SocketMeister.SocketClient.ConnectionStatuses.Connected"/> occurs after handshake, and raises <see cref="E:SocketMeister.SocketClient.ConnectionStatusChanged"/>.
             </remarks>
         </member>
+        <member name="P:SocketMeister.SocketClient.EndPoints">
+            <summary>
+            Returns a snapshot of the configured endpoints as a new array.
+            Use <see cref="M:SocketMeister.SocketClient.SetEndPoints(System.Collections.Generic.IEnumerable{SocketMeister.SocketEndPoint})"/>, <see cref="M:SocketMeister.SocketClient.AddEndPoint(SocketMeister.SocketEndPoint)"/>, or <see cref="M:SocketMeister.SocketClient.RemoveEndPoint(System.String,System.Int32)"/> to change endpoints.
+            </summary>
+        </member>
         <member name="P:SocketMeister.SocketClient.FriendlyName">
             <summary>
             A friendly name for the client which can be. If available, the SocketServer will use this in logging and error handling, otherwise a GUID is used.
@@ -1450,6 +1456,26 @@
         <member name="M:SocketMeister.SocketClient.BgPerformAttemptConnect">
             <summary>
             Attempts to re-establish a connection using the endpoint with the shortest wait time.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketClient.SetEndPoints(System.Collections.Generic.IEnumerable{SocketMeister.SocketEndPoint})">
+            <summary>
+            Replace the entire list of endpoints. If the current connection's endpoint is removed, the client will disconnect and reconnect to an eligible endpoint.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketClient.AddEndPoint(SocketMeister.SocketEndPoint)">
+            <summary>
+            Adds an endpoint if not already present.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketClient.AddEndPoint(System.String,System.Int32)">
+            <summary>
+            Adds an endpoint by IP and port if not already present.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketClient.RemoveEndPoint(System.String,System.Int32)">
+            <summary>
+            Removes the endpoint matching IP and port. If currently connected to it, initiates a disconnect.
             </summary>
         </member>
         <member name="M:SocketMeister.SocketClient.RestartStopwatch(System.Diagnostics.Stopwatch)">

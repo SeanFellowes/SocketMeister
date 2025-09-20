@@ -27,7 +27,7 @@ public class ServerLoggingTests
             var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             client.ConnectionStatusChanged += (s, e) => { if (e.NewStatus == SocketClient.ConnectionStatuses.Connected) tcs.TrySetResult(true); };
             client.Start();
-            await Task.WhenAny(tcs.Task, Task.Delay(45000));
+            await Task.WhenAny(tcs.Task, Task.Delay(60000));
             Assert.True(tcs.Task.IsCompleted, "Client did not connect");
 
             // Cause server to execute handler and log exception

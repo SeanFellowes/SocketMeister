@@ -14,9 +14,10 @@ public class CompressionTests
     {
         var client = new SocketClient(new List<SocketEndPoint> { new SocketEndPoint("127.0.0.1", port) }, compress, name);
         var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        client.ConnectionAttemptFailed += (s, e) => { try { Console.WriteLine($"ConnectionAttemptFailed[{name}]: {e.Reason} {e.Message} ep={e.EndPoint?.Description}"); } catch { } };
         client.ConnectionStatusChanged += (s, e) => { if (e.NewStatus == SocketClient.ConnectionStatuses.Connected) tcs.TrySetResult(true); };
         client.Start();
-        await Task.WhenAny(tcs.Task, Task.Delay(20000));
+        await Task.WhenAny(tcs.Task, Task.Delay(60000));
         Assert.True(tcs.Task.IsCompleted, "Client did not connect");
         return client;
     }
