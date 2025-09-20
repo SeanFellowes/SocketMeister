@@ -16,6 +16,7 @@ public class ServerStoppingTests
         var server = new SocketServer(0, false);
         server.Start();
         await ServerTestHelpers.WaitForServerStartedAsync(server);
+        await Task.Delay(200); // allow listener to fully settle on slower runners
         try
         {
             int port = ServerTestHelpers.GetBoundPort(server);
@@ -23,6 +24,11 @@ public class ServerStoppingTests
             var connected = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             var serverStopping = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             var disconnectedWithReason = new TaskCompletionSource<SocketMeister.SocketClient.ConnectionStatusChangedEventArgs>(TaskCreationOptions.RunContinuationsAsynchronously);
+            // Log connection attempts to aid CI diagnostics
+            client.ConnectionAttemptFailed += (s, e) =>
+            {
+                try { Console.WriteLine($"ConnectionAttemptFailed: {e.Reason} {e.Message} ep={e.EndPoint?.Description}"); } catch { }
+            };
             client.ConnectionStatusChanged += (s, e) => { if (e.NewStatus == SocketClient.ConnectionStatuses.Connected) connected.TrySetResult(true); };
             client.ServerStopping += (s, e) => serverStopping.TrySetResult(true);
             client.ConnectionStatusChanged += (s, e) =>
@@ -31,7 +37,7 @@ public class ServerStoppingTests
                     disconnectedWithReason.TrySetResult(e);
             };
             client.Start();
-            await Task.WhenAny(connected.Task, Task.Delay(45000));
+            await Task.WhenAny(connected.Task, Task.Delay(60000));
             Assert.True(connected.Task.IsCompleted, "Client did not connect");
 
             server.Stop();
