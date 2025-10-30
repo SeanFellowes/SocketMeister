@@ -27,7 +27,7 @@ namespace SocketMeister.Messages
         private int _timeoutMilliseconds = 60000;
         private DateTime _timeoutDateTime;
 #if !NET35
-        private ManualResetEventSlim _responseReceivedEvent;
+        private ManualResetEventSlim _responseReceivedEvent = new ManualResetEventSlim(false);
 #endif
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace SocketMeister.Messages
                 }
             }
             else
-                { _messageId = messageId; }    
+            { _messageId = messageId; }
         }
 
         /// <summary>
@@ -186,8 +186,16 @@ namespace SocketMeister.Messages
 
         public void SetStatusUnsent()
         {
-            if (SendReceiveStatus != MessageStatus.InProgress) return;
-            SetStatus(MessageStatus.Unsent);
+            lock (_lock)
+            {
+                if (SendReceiveStatus != MessageStatus.InProgress) return;
+                SetStatus(MessageStatus.Unsent);
+#if !NET35
+                // Dispose and recreate the event for resends
+                _responseReceivedEvent?.Dispose();
+                _responseReceivedEvent = new ManualResetEventSlim(false);
+#endif
+            }
         }
 
         private void SetStatus(MessageStatus value, MessageResponseV1 responseMessage = null, Exception exception = null)
@@ -195,10 +203,10 @@ namespace SocketMeister.Messages
             bool changed = false;
             lock (_lock)
             {
-                if (exception != null) 
+                if (exception != null)
                     _error = exception;
 
-                if (responseMessage != null) 
+                if (responseMessage != null)
                     _response = responseMessage;
 
                 if (value != _status)
@@ -211,12 +219,9 @@ namespace SocketMeister.Messages
                 if (_status == MessageStatus.Completed)
                 {
                     _responseReceivedEvent?.Set();
-                    _responseReceivedEvent?.Dispose();
+                    // Do NOT dispose here - the event is readonly and will be disposed in Dispose()
                 }
 #endif
-
-
-
             }
             if (changed) SendReceiveStatusChanged?.Invoke(this, new EventArgs());
         }
@@ -267,9 +272,8 @@ namespace SocketMeister.Messages
         {
             int remainingMilliseconds;
             int timeoutMilliseconds;
-            lock (_lock) 
+            lock (_lock)
             {
-                _responseReceivedEvent = new ManualResetEventSlim(false); 
                 timeoutMilliseconds = _timeoutMilliseconds;
                 remainingMilliseconds = timeoutMilliseconds - (int)(DateTime.UtcNow - CreatedDateTime).TotalMilliseconds;
             }
@@ -280,5 +284,5 @@ namespace SocketMeister.Messages
                 throw new TimeoutException($"SendMessage() received no response out after {timeoutMilliseconds} milliseconds.");
         }
 #endif
-}
+    }
 }

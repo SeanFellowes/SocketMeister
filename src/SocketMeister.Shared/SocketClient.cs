@@ -26,7 +26,7 @@ namespace SocketMeister
         /// <summary>
         /// Disconnect the client if no poll response is received within this number of seconds.
         /// </summary>
-        private const int DISCONNECT_AFTER_NO_POLL_RESPONSE_SECONDS = 300; 
+        private const int DISCONNECT_AFTER_NO_POLL_RESPONSE_SECONDS = 300;
 
         /// <summary>
         /// Frequency (in seconds) at which the client polls the server to verify the socket is active.
@@ -216,7 +216,7 @@ namespace SocketMeister
         {
             LogRaised?.Invoke(this, e);
             if (ExceptionRaised != null && !(e.LogEntry.Exception == null))
-                    ExceptionRaised(this, new ExceptionEventArgs(e.LogEntry.Exception, 0));
+                ExceptionRaised(this, new ExceptionEventArgs(e.LogEntry.Exception, 0));
         }
 
 
@@ -1626,7 +1626,7 @@ namespace SocketMeister
         {
             IMessage message = (IMessage)e.UserToken;
             SocketError result = e.SocketError;
-            
+
             // Capture header lengths for successful sends before recycling the buffer
             if (result == SocketError.Success && e.Buffer != null && e.Count >= SocketMeister.Messages.MessageEngine.HEADERLENGTH)
             {
@@ -1972,7 +1972,7 @@ namespace SocketMeister
 
         private void Log(Exception ex, long messageId = 0)
         {
-            LogEntry log = new LogEntry(ex,messageId);
+            LogEntry log = new LogEntry(ex, messageId);
             _logger.Log(log);
         }
     }

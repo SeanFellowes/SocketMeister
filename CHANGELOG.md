@@ -3,6 +3,11 @@
 All notable changes to this project will be documented in this file.
 The format is based on Keep a Changelog and this project adheres to Semantic Versioning.
 
+## 11.2.1 - 2025-10-30
+
+### Fixed
+- SocketClient: Fixed a race condition causing message failure under heavy load.
+
 ## 11.2.0
 
 Added
