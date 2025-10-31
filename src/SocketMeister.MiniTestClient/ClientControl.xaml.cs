@@ -175,6 +175,10 @@ namespace SocketMeister.MiniTestClient
                             tbRequestsSent.Text = _messagesSent.ToString();
                         }));
                     }
+                    catch (TimeoutException)
+                    {
+                        // Swallow timeout exceptions. The socketclient will have already logged them.
+                    }
                     catch (Exception ex)
                     {
                         Dispatcher.BeginInvoke((Action)(() =>

@@ -31,7 +31,7 @@ namespace SocketMeister.Messages
         /// <summary>
         /// Status of the message. 
         /// </summary>
-        MessageStatus SendReceiveStatus { get; }
+        SendStatus SendReceiveStatus { get; }
 
         /// <summary>
         /// Number of milliseconds after the message was created before the message should timeout
@@ -60,10 +60,10 @@ namespace SocketMeister.Messages
 
 
 #if !NET35
-        //  This is only used by some message types as a wait lock for a response to be received. Null by default
-        //ManualResetEventSlim ResponseReceivedEvent { get; set; }
-
-        void WaitForResponseOrTimeout();
+        /// <summary>
+        /// Using a blocking wait, wait for the block to be set or timeout
+        /// </summary>
+        void ActivateSendWaitBlocker(int TimeoutMs);
 #endif
 
 

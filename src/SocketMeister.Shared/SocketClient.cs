@@ -1385,7 +1385,7 @@ namespace SocketMeister
                 }
 
                 Log($"Sending user response to message {message.MessageId} ({sendBytes.Length} bytes) ", Severity.Information, LogEventType.UserMessage);
-                if (messageResponse.SendReceiveStatus == MessageStatus.Unsent && CanSendReceive() == true)
+                if (messageResponse.SendReceiveStatus == SendStatus.Unsent && CanSendReceive() == true)
                 {
                     sendEventArgs = _sendEventArgsPool.Pop();
                     if (sendEventArgs != null)
@@ -1467,8 +1467,8 @@ namespace SocketMeister
                 Log(ex7);
                 throw ex7;
             }
-            DateTime startTime = DateTime.UtcNow;
-            DateTime maxWait = startTime.AddMilliseconds(TimeoutMilliseconds);
+            DateTime utcSendStart = DateTime.UtcNow;
+            DateTime utcTimeout = utcSendStart.AddMilliseconds(TimeoutMilliseconds);
             while (ConnectionStatus != ConnectionStatuses.Connected && !StopClientPermanently)
             {
                 if (StopClientPermanently)
@@ -1478,7 +1478,7 @@ namespace SocketMeister
                     Log(ex6);
                     throw ex6;
                 }
-                if (DateTime.UtcNow > maxWait)
+                if (DateTime.UtcNow > utcTimeout)
                 {
                     msg = $"{nameof(SendMessage)}() failed: Timeout ({TimeoutMilliseconds} ms).";
                     TimeoutException ex5 = new TimeoutException(msg);
@@ -1487,7 +1487,7 @@ namespace SocketMeister
                 }
                 Thread.Sleep(100);
             }
-            int remainingMilliseconds = TimeoutMilliseconds - Convert.ToInt32((DateTime.UtcNow - startTime).TotalMilliseconds);
+            int remainingMilliseconds = TimeoutMilliseconds - Convert.ToInt32((DateTime.UtcNow - utcSendStart).TotalMilliseconds);
 
             //  Create Message
             MessageV1 message = new MessageV1(Parameters, remainingMilliseconds, FriendlyMessageName);
@@ -1510,48 +1510,49 @@ namespace SocketMeister
             {
                 while (message.TrySendReceive && !StopClientPermanently)
                 {
-                    try
+                    if (message.SendReceiveStatus == SendStatus.Unsent && CanSendReceive())
                     {
-                        if (message.SendReceiveStatus == MessageStatus.Unsent && CanSendReceive())
+                        var sendEventArgs = _sendEventArgsPool.Pop();
+                        if (sendEventArgs != null)
                         {
-                            var sendEventArgs = _sendEventArgsPool.Pop();
-                            if (sendEventArgs != null)
-                            {
-                                message.SetStatusInProgress();
-                                sendEventArgs.UserToken = message;
-                                sendEventArgs.SetBuffer(sendBytes, 0, sendBytes.Length);
-                                sendEventArgs.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
+                            message.SetStatusInProgress();
+                            sendEventArgs.UserToken = message;
+                            sendEventArgs.SetBuffer(sendBytes, 0, sendBytes.Length);
+                            sendEventArgs.RemoteEndPoint = CurrentEndPoint.IPEndPoint;
 
-                                if (!CurrentEndPoint.Socket.SendAsync(sendEventArgs))
-                                    ProcessSend(null, sendEventArgs);
+                            if (!CurrentEndPoint.Socket.SendAsync(sendEventArgs))
+                                ProcessSend(null, sendEventArgs);
 
 #if NET35
-                                // Exit if the message has timed out
-                                if (message.SendReceiveStatus == MessageStatus.Completed) break;
+                            // Exit if the message has timed out
+                            if (message.SendReceiveStatus == SendStatus.Completed) break;
 #else
-                                // Wait for a response.
-                                message.WaitForResponseOrTimeout();
-                                break;
+                            // Wait for a send blocker to complete.
+                            remainingMilliseconds = TimeoutMilliseconds - Convert.ToInt32((DateTime.UtcNow - utcSendStart).TotalMilliseconds);
+                            message.ActivateSendWaitBlocker(remainingMilliseconds);
+                            if (message.SendReceiveStatus == SendStatus.Completed) break;
 #endif
-                            }
                         }
-                    }
-                    catch (TimeoutException)
-                    {
-                        msg = $"{nameof(SendMessage)}() failed: Timeout ({message.TimeoutMilliseconds} ms).";
-                        TimeoutException ex4 = new TimeoutException(msg);
-                        Log(ex4);
-                        throw ex4;
-                    }
-                    catch (Exception ex)
-                    {
-                        Log(ex);
-                        throw;
                     }
 #if NET35
                     Thread.Sleep(10); // Poll for response
 #endif
                 }
+            }
+            catch (TimeoutException)
+            {
+                if (FriendlyMessageName == null)
+                {
+                    msg = $"Timout Sending {typeof(MessageV1).Name} ({sendBytes.Length} bytes, timeout ({message.TimeoutMilliseconds} ms).";
+                }
+                else
+                {
+                    msg = $"Timeout Sending {FriendlyMessageName} ({sendBytes.Length} bytes, timeout ({message.TimeoutMilliseconds} ms).";
+                }
+                TimeoutException ex4 = new TimeoutException(msg);
+                Log(ex4);
+                throw ex4;
+
             }
             catch (Exception ex)
             {

@@ -101,9 +101,9 @@ namespace SocketMeister
 
 
     /// <summary>
-    /// The status of the message.
+    /// The status of a message send operation.
     /// </summary>
-    internal enum MessageStatus
+    internal enum SendStatus
     {
         /// <summary>
         /// The message has not been sent or is flagged to be resent (due to a socket connection failure).
@@ -111,12 +111,12 @@ namespace SocketMeister
         Unsent = 0,
 
         /// <summary>
-        /// The message is in progress.
+        /// The message send operation is in progress.
         /// </summary>
         InProgress = 1,
 
         /// <summary>
-        /// The send operation has finished (it could be either successful or unsuccessful).
+        /// The send operation has completed successfully or unsuccessfully.
         /// </summary>
         Completed = short.MaxValue
     }
