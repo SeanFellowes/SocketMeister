@@ -322,33 +322,71 @@ namespace SocketMeister
                 {
                     Stop();
 
-                    _connectionStatusLock.Dispose();
-                    _currentEndPointLock.Dispose();
-
-                    _asyncEventArgsConnect?.Dispose(); // Fixed disposed typo.
-                    _asyncEventArgsConnect = null;
-
-                    _asyncEventArgsPolling?.Dispose();
-                    _asyncEventArgsPolling = null;
-
-                    _asyncEventArgsReceive?.Dispose();
-                    _asyncEventArgsReceive = null;
-
-                    _sendEventArgsPool?.Dispose();
-
-                    _asyncEventArgsSendSubscriptionChanges?.Dispose();
-                    _asyncEventArgsSendSubscriptionChanges = null;
-
-                    _unrespondedMessages.Clear(); // Explicitly clear any remaining references
-
-                    try { _telemetry.Dispose(); } catch { }
-
-                    foreach (SocketEndPoint ep in _endPoints)
+                    if (_connectionStatusLock != null)
                     {
-                        ep.Dispose();
+                        _connectionStatusLock.Dispose();
                     }
 
-                    _endPoints.Clear();
+                    if (_currentEndPointLock != null)
+                    {
+                        _currentEndPointLock.Dispose();
+                    }
+
+                    if (_asyncEventArgsConnect != null)
+                    {
+                        _asyncEventArgsConnect.Dispose();
+                        _asyncEventArgsConnect = null;
+                    }
+
+                    if (_asyncEventArgsPolling != null)
+                    {
+                        _asyncEventArgsPolling.Dispose();
+                        _asyncEventArgsPolling = null;
+                    }
+
+                    if (_asyncEventArgsReceive != null)
+                    {
+                        _asyncEventArgsReceive.Dispose();
+                        _asyncEventArgsReceive = null;
+                    }
+
+                    if (_sendEventArgsPool != null)
+                    {
+                        _sendEventArgsPool.Dispose();
+                    }
+
+                    if (_asyncEventArgsSendSubscriptionChanges != null)
+                    {
+                        _asyncEventArgsSendSubscriptionChanges.Dispose();
+                        _asyncEventArgsSendSubscriptionChanges = null;
+                    }
+
+                    if (_unrespondedMessages != null)
+                    {
+                        _unrespondedMessages.Clear();
+                    }
+
+                    try
+                    {
+                        if (_telemetry != null)
+                        {
+                            _telemetry.Dispose();
+                        }
+                    }
+                    catch { }
+
+                    if (_endPoints != null)
+                    {
+                        foreach (SocketEndPoint ep in _endPoints)
+                        {
+                            if (ep != null)
+                            {
+                                ep.Dispose();
+                            }
+                        }
+
+                        _endPoints.Clear();
+                    }
                 }
                 _disposed = true;
             }
@@ -364,10 +402,11 @@ namespace SocketMeister
 
 
         /// <summary>
-        /// Adds a subscription name to the list of subscriptions. Throws an error if the name (case insensitive) exists.
+     /// Adds a subscription name to the list of subscriptions.
         /// </summary>
-        /// <param name="SubscriptionName"></param>
-        public void AddSubscription(string SubscriptionName)
+        /// <param name="SubscriptionName">The name of the subscription to add.</param>
+   /// <exception cref="ArgumentException">Thrown if the subscription name already exists (case-insensitive).</exception>
+      public void AddSubscription(string SubscriptionName)
         {
             Token newSubs = new Token(SubscriptionName);
             _subscriptions.Add(newSubs);
@@ -475,7 +514,7 @@ namespace SocketMeister
 
 
         /// <summary>
-        /// A friendly name for the client which can be. If available, the SocketServer will use this in logging and error handling, otherwise a GUID is used.
+        /// A friendly name for the client. If available, the SocketServer will use this in logging and error handling; otherwise, a GUID is used.
         /// </summary>
         public string FriendlyName
         {
@@ -618,7 +657,7 @@ namespace SocketMeister
         private bool IsBackgroundWorkerRunning { get { lock (_lock) { return _isBackgroundWorkerRunning; } } set { lock (_lock) { _isBackgroundWorkerRunning = value; } } }
 
         /// <summary>
-        /// 
+        /// Whether the client has been started via <see cref="Start()"/>.
         /// </summary>
         private bool HasStarted { get { lock (_lock) { return _hasStarted; } } set { lock (_lock) { _hasStarted = value; } } }
 
@@ -1004,11 +1043,11 @@ namespace SocketMeister
                     }
                 }
             }
-            catch (Exception ex)
+        catch (Exception ex)
             {
-                Log(ex);
+      Log(ex);
             }
-        }
+     }
 
 
         private void RaiseConnectionStatusChanged(ConnectionStatuses oldStatus, ConnectionStatuses newStatus, ClientDisconnectReason reason)
@@ -1353,9 +1392,9 @@ namespace SocketMeister
 
 
         /// <summary>
-        /// Stops the client permenently. There is no option from here to restart without creating a new instance of SocketClient.
+        /// Stops the client permanently. After calling this method, a new instance of <see cref="SocketClient"/> must be created to reconnect.
         /// </summary>
-        public void Stop()
+      public void Stop()
         {
             if (StopClientPermanently == true) return;  //  Don't allow this to run more than once
             StopClientPermanently = true;
@@ -1477,30 +1516,11 @@ namespace SocketMeister
             if (HasStarted == false) throw new InvalidOperationException($"{nameof(SendMessage)}() failed: {nameof(SocketClient)} has not started yet. Call {nameof(Start)}() to start the client.");
             if (StopClientPermanently) throw new InvalidOperationException($"{nameof(SendMessage)}() failed: {nameof(SocketClient)} has been stopped permanently. A new {nameof(SocketClient)} instance must be created.");
 
-            DateTime utcSendStart = DateTime.UtcNow;
-            DateTime utcTimeout = utcSendStart.AddMilliseconds(TimeoutMilliseconds);
-            //while (ConnectionStatus != ConnectionStatuses.Connected && !StopClientPermanently)
-            //{
-            //    if (StopClientPermanently)
-            //    {
-            //        msg = $"{nameof(SendMessage)}() failed: The socket client is stopped or stopping.";
-            //        Exception ex6 = new Exception(msg);
-            //        Log(ex6);
-            //        throw ex6;
-            //    }
-            //    if (DateTime.UtcNow > utcTimeout)
-            //    {
-            //        msg = $"{nameof(SendMessage)}() failed: Timeout ({TimeoutMilliseconds} ms).";
-            //        TimeoutException ex5 = new TimeoutException(msg);
-            //        Log(ex5);
-            //        throw ex5;
-            //    }
-            //    Thread.Sleep(100);
-            //}
-            int remainingTimeoutMs = TimeoutMilliseconds - Convert.ToInt32((DateTime.UtcNow - utcSendStart).TotalMilliseconds);
+            DateTime sendStartUtc = DateTime.UtcNow;
+            DateTime sendTimeoutUtc = sendStartUtc.AddMilliseconds(TimeoutMilliseconds);
 
             //  Create Message
-            MessageV1 message = new MessageV1(Parameters, remainingTimeoutMs, FriendlyMessageName);
+            MessageV1 message = new MessageV1(Parameters, TimeoutMilliseconds, FriendlyMessageName);
 
             //  Add the message to the unresponded messages collection
             UnrespondedMessages.Add(message);
@@ -1509,31 +1529,33 @@ namespace SocketMeister
             byte[] sendBytes = MessageEngine.GenerateSendBytes(message, _enableCompression);
 
             // Create log message
-            string logMsg;
-            if (FriendlyMessageName == null)
-            {
-                logMsg = $"{typeof(MessageV1).Name} ({sendBytes.Length} bytes, timeout:{TimeoutMilliseconds} ms)";
-            }
-            else
-            {
-                logMsg = $"{FriendlyMessageName} ({sendBytes.Length} bytes, timeout:{TimeoutMilliseconds} ms)";
-            }
+            string logMsg = string.IsNullOrEmpty(FriendlyMessageName)
+                ? $"{typeof(MessageV1).Name} ({sendBytes.Length} bytes, timeout:{TimeoutMilliseconds} ms)"
+                : $"{FriendlyMessageName} ({sendBytes.Length} bytes, timeout:{TimeoutMilliseconds} ms)";
 
             try
             {
-                int sentAttempts = 0;
+                int sendAttempts = 0;
                 bool queuedForSend = false;
                 bool queuedLogged = false;
+                bool pauseThread = false;
+#if !NET35
+                int sendTimeoutRemainingMs;
+#endif
                 while (message.TrySendReceive && !StopClientPermanently)
                 {
+                    pauseThread = true;
                     if (message.SendReceiveStatus == SendStatus.Unsent && CanSendReceive())
                     {
                         var sendEventArgs = _sendEventArgsPool.Pop();
                         if (sendEventArgs != null)
                         {
-                            sentAttempts++;
+#if !NET35
+                            pauseThread = false;
+#endif
+                            sendAttempts++;
                             // Log the send attempt
-                            if (sentAttempts == 1)
+                            if (sendAttempts == 1)
                             {
                                 Log($"Sending {logMsg}...", Severity.Information, LogEventType.UserMessage, message.MessageId);
                             }
@@ -1554,8 +1576,8 @@ namespace SocketMeister
                             if (message.SendReceiveStatus == SendStatus.Completed) break;
 #else
                             // Wait for a send blocker to complete.
-                            remainingTimeoutMs = TimeoutMilliseconds - Convert.ToInt32((DateTime.UtcNow - utcSendStart).TotalMilliseconds);
-                            message.WaitForSendAttemptCompletion(remainingTimeoutMs);
+                            sendTimeoutRemainingMs = TimeoutMilliseconds - Convert.ToInt32((DateTime.UtcNow - sendStartUtc).TotalMilliseconds);
+                            message.WaitForSendAttemptCompletion(sendTimeoutRemainingMs);
                             if (message.SendReceiveStatus == SendStatus.Completed) break;
 #endif
                         }
@@ -1573,9 +1595,12 @@ namespace SocketMeister
                         Log($"Queued to send {logMsg}...", Severity.Information, LogEventType.UserMessage, message.MessageId);
                         queuedLogged = true;
                     }
-#if NET35
-                    Thread.Sleep(10); // Poll for response
-#endif
+
+                    if (pauseThread)
+                    {
+                        Thread.Sleep(10); // Pause Thre
+                    }
+
                 }
             }
             catch (TimeoutException)
@@ -1691,13 +1716,13 @@ namespace SocketMeister
                     Disconnect(SocketHasErrored: true, ClientDisconnectReason.SocketError, "");
                 }
             }
-            catch (Exception ex)
-            {
-                message.SetStatusUnsent();
-                Log(ex);
-                try { _telemetry.AddSendFailure(); } catch { }
-            }
-        }
+     catch (Exception ex)
+    {
+    message.SetStatusUnsent();
+    Log(ex);
+      try { _telemetry.AddSendFailure(); } catch { }
+     }
+   }
 
         private void RecycleSocketAsyncEventArgs(SocketAsyncEventArgs e)
         {

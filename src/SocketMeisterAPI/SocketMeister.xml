@@ -130,7 +130,7 @@
         </member>
         <member name="T:SocketMeister.SendStatus">
             <summary>
-            The status of the message.
+            The status of a message send operation.
             </summary>
         </member>
         <member name="F:SocketMeister.SendStatus.Unsent">
@@ -140,12 +140,12 @@
         </member>
         <member name="F:SocketMeister.SendStatus.InProgress">
             <summary>
-            The message is in progress.
+            The message send operation is in progress.
             </summary>
         </member>
         <member name="F:SocketMeister.SendStatus.Completed">
             <summary>
-            The send operation has finished (it could be either successful or unsuccessful).
+            The send operation has completed successfully or unsuccessfully.
             </summary>
         </member>
         <member name="T:SocketMeister.MessageType">
@@ -912,7 +912,7 @@
             Message displosal
             </summary>
         </member>
-        <member name="M:SocketMeister.Messages.IMessage.ActivateSendWaitBlocker">
+        <member name="M:SocketMeister.Messages.IMessage.WaitForSendAttemptCompletion(System.Int32)">
             <summary>
             Using a blocking wait, wait for the block to be set or timeout
             </summary>
@@ -978,11 +978,10 @@
             Whether the method SendReceive(Message Message) should continute trying
             </summary>
         </member>
-        <member name="M:SocketMeister.Messages.MessageBase.ActivateSendWaitBlocker">
+        <member name="M:SocketMeister.Messages.MessageBase.WaitForSendAttemptCompletion(System.Int32)">
             <summary>
             Using a blocking wait, wait for the block to be set or timeout
             </summary>
-            <returns>True if the send completed successfully, false if the send did not complete</returns>
             <exception cref="T:System.TimeoutException">The send operation timed out</exception>
         </member>
         <member name="P:SocketMeister.Messages.MessageResponseV1.RemoteClient">
@@ -1350,9 +1349,10 @@
         </member>
         <member name="M:SocketMeister.SocketClient.AddSubscription(System.String)">
             <summary>
-            Adds a subscription name to the list of subscriptions. Throws an error if the name (case insensitive) exists.
+            Adds a subscription name to the list of subscriptions.
             </summary>
-            <param name="SubscriptionName"></param>
+            <param name="SubscriptionName">The name of the subscription to add.</param>
+            <exception cref="T:System.ArgumentException">Thrown if the subscription name already exists (case-insensitive).</exception>
         </member>
         <member name="P:SocketMeister.SocketClient.LastMessageFromServer">
             <summary>
@@ -1395,7 +1395,7 @@
         </member>
         <member name="P:SocketMeister.SocketClient.FriendlyName">
             <summary>
-            A friendly name for the client which can be. If available, the SocketServer will use this in logging and error handling, otherwise a GUID is used.
+            A friendly name for the client. If available, the SocketServer will use this in logging and error handling; otherwise, a GUID is used.
             </summary>
         </member>
         <member name="P:SocketMeister.SocketClient.IsRunning">
@@ -1411,6 +1411,11 @@
         <member name="P:SocketMeister.SocketClient.CurrentEndPoint">
             <summary>
             The current socket endpoint which the client is using
+            </summary>
+        </member>
+        <member name="P:SocketMeister.SocketClient.HasStarted">
+            <summary>
+            Whether the client has been started via <see cref="M:SocketMeister.SocketClient.Start"/>.
             </summary>
         </member>
         <member name="P:SocketMeister.SocketClient.LastPollResponse">
@@ -1446,14 +1451,14 @@
             </summary>
             <returns>List of subscription names</returns>
         </member>
-        <member name="M:SocketMeister.SocketClient.StartBackgroundWorker">
-            <summary>
-            This background thread runs until the SocketClient is stopped
-            </summary>
-        </member>
         <member name="M:SocketMeister.SocketClient.Start">
             <summary>
             Starts the client background worker and connection logic. Idempotent; throws if the client has been stopped.
+            </summary>
+        </member>
+        <member name="M:SocketMeister.SocketClient.StartBackgroundWorker">
+            <summary>
+            This background thread runs until the SocketClient is stopped
             </summary>
         </member>
         <member name="M:SocketMeister.SocketClient.BgPerformAttemptConnect">
@@ -1501,7 +1506,7 @@
         </member>
         <member name="M:SocketMeister.SocketClient.Stop">
             <summary>
-            Stops the client permenently. There is no option from here to restart without creating a new instance of SocketClient.
+            Stops the client permanently. After calling this method, a new instance of <see cref="T:SocketMeister.SocketClient"/> must be created to reconnect.
             </summary>
         </member>
         <member name="M:SocketMeister.SocketClient.SendFastMessage(SocketMeister.Messages.IMessage)">

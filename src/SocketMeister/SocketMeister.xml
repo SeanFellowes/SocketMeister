@@ -1349,9 +1349,10 @@
         </member>
         <member name="M:SocketMeister.SocketClient.AddSubscription(System.String)">
             <summary>
-            Adds a subscription name to the list of subscriptions. Throws an error if the name (case insensitive) exists.
+            Adds a subscription name to the list of subscriptions.
             </summary>
-            <param name="SubscriptionName"></param>
+            <param name="SubscriptionName">The name of the subscription to add.</param>
+            <exception cref="T:System.ArgumentException">Thrown if the subscription name already exists (case-insensitive).</exception>
         </member>
         <member name="P:SocketMeister.SocketClient.LastMessageFromServer">
             <summary>
@@ -1394,7 +1395,7 @@
         </member>
         <member name="P:SocketMeister.SocketClient.FriendlyName">
             <summary>
-            A friendly name for the client which can be. If available, the SocketServer will use this in logging and error handling, otherwise a GUID is used.
+            A friendly name for the client. If available, the SocketServer will use this in logging and error handling; otherwise, a GUID is used.
             </summary>
         </member>
         <member name="P:SocketMeister.SocketClient.IsRunning">
@@ -1414,7 +1415,7 @@
         </member>
         <member name="P:SocketMeister.SocketClient.HasStarted">
             <summary>
-            
+            Whether the client has been started via <see cref="M:SocketMeister.SocketClient.Start"/>.
             </summary>
         </member>
         <member name="P:SocketMeister.SocketClient.LastPollResponse">
@@ -1505,7 +1506,7 @@
         </member>
         <member name="M:SocketMeister.SocketClient.Stop">
             <summary>
-            Stops the client permenently. There is no option from here to restart without creating a new instance of SocketClient.
+            Stops the client permanently. After calling this method, a new instance of <see cref="T:SocketMeister.SocketClient"/> must be created to reconnect.
             </summary>
         </member>
         <member name="M:SocketMeister.SocketClient.SendFastMessage(SocketMeister.Messages.IMessage)">
