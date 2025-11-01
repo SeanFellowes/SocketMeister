@@ -3,6 +3,11 @@
 All notable changes to this project will be documented in this file.
 The format is based on Keep a Changelog and this project adheres to Semantic Versioning.
 
+## 11.2.2 - 2025-11-01
+
+### Fixed
+- SocketClient: Fixed message resend after reconnect (If message has not timed out).
+
 ## 11.2.1 - 2025-10-30
 
 ### Fixed
