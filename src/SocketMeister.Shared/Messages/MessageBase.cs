@@ -24,7 +24,7 @@ namespace SocketMeister.Messages
         private SendStatus _status = SendStatus.Unsent;
         private MessageResponseV1 _response;
         private int _sendTimeoutMs = 60000;
-        private DateTime _sendTimeout;
+        private DateTime _responseTimeoutUtc;
 #if !NET35
         private readonly ManualResetEventSlim _sendCompletionEvent = new ManualResetEventSlim(false);
 #endif
@@ -40,7 +40,7 @@ namespace SocketMeister.Messages
             _messageType = MessageType;
             _friendlyMessageName = friendlyMessageName;
             CreatedDateTime = DateTime.UtcNow;
-            _sendTimeout = DateTime.UtcNow.AddMilliseconds(_sendTimeoutMs);
+            _responseTimeoutUtc = DateTime.UtcNow.AddMilliseconds(_sendTimeoutMs);
             if (messageId == 0)
             {
                 //  Create a MessageId
@@ -119,7 +119,7 @@ namespace SocketMeister.Messages
                 lock (_lock)
                 {
                     _sendTimeoutMs = value;
-                    _sendTimeout = DateTime.UtcNow.AddMilliseconds(_sendTimeoutMs);
+                    _responseTimeoutUtc = DateTime.UtcNow.AddMilliseconds(_sendTimeoutMs);
                 }
             }
         }
@@ -133,7 +133,7 @@ namespace SocketMeister.Messages
         {
             get
             {
-                if (DateTime.UtcNow > _sendTimeout) return true;
+                if (DateTime.UtcNow > _responseTimeoutUtc) return true;
                 else return false;
             }
         }
@@ -222,7 +222,7 @@ namespace SocketMeister.Messages
                 {
                     if (_status == SendStatus.Completed) return _status;
                     //  Status must be Unsent or In Progress. Check for timeout
-                    if (DateTime.UtcNow > _sendTimeout) incompleteMessageTimedOut = true;
+                    if (DateTime.UtcNow > _responseTimeoutUtc) incompleteMessageTimedOut = true;
                     else return _status;
                 }
                 //  The message is in progress and has timed out
@@ -251,10 +251,10 @@ namespace SocketMeister.Messages
         /// Using a blocking wait, wait for the block to be set or timeout
         /// </summary>
         /// <exception cref="TimeoutException">The send operation timed out</exception>
-        public void ActivateSendWaitBlocker(int TimeoutMs)
+        public void WaitForSendAttemptCompletion(int SendTimeoutMs)
         {
-            if (_sendCompletionEvent.Wait(TimeoutMs) == false)
-                throw new TimeoutException($"SendMessage() received no response out after {TimeoutMs} milliseconds.");
+            if (_sendCompletionEvent.Wait(SendTimeoutMs) == false)
+                throw new TimeoutException($"SendMessage() received no response out after {SendTimeoutMs} milliseconds.");
         }
 #endif
     }

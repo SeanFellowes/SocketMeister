@@ -60,6 +60,7 @@ namespace SocketMeister
         private readonly object _handshakeLock = new object();
         private bool _handshake1Received;
         private bool _handshake2AckReceived;
+        private bool _hasStarted = false; // ensures Start() is idempotent
 
         private bool _isBackgroundWorkerRunning;
         private DateTime? _lastMessageFromServer;
@@ -616,7 +617,10 @@ namespace SocketMeister
 
         private bool IsBackgroundWorkerRunning { get { lock (_lock) { return _isBackgroundWorkerRunning; } } set { lock (_lock) { _isBackgroundWorkerRunning = value; } } }
 
-        private bool _hasStarted = false; // ensures Start() is idempotent
+        /// <summary>
+        /// 
+        /// </summary>
+        private bool HasStarted { get { lock (_lock) { return _hasStarted; } } set { lock (_lock) { _hasStarted = value; } } }
 
         /// <summary>
         /// The last time a polling response was received from the socket server.
@@ -810,6 +814,23 @@ namespace SocketMeister
             }
         }
 
+        /// <summary>
+        /// Starts the client background worker and connection logic. Idempotent; throws if the client has been stopped.
+        /// </summary>
+        public void Start()
+        {
+            if (HasStarted == true) return;
+            if (StopClientPermanently) throw new InvalidOperationException("Cannot start a client that has been stopped.");
+            lock (_lock)
+            {
+                if (_hasStarted) return;
+                _hasStarted = true;
+            }
+            StartBackgroundWorker();
+        }
+
+
+
 
         /// <summary>
         /// This background thread runs until the SocketClient is stopped
@@ -850,20 +871,6 @@ namespace SocketMeister
             }));
             bgWorker.IsBackground = true;
             bgWorker.Start();
-        }
-
-        /// <summary>
-        /// Starts the client background worker and connection logic. Idempotent; throws if the client has been stopped.
-        /// </summary>
-        public void Start()
-        {
-            if (StopClientPermanently) throw new InvalidOperationException("Cannot start a client that has been stopped.");
-            lock (_lock)
-            {
-                if (_hasStarted) return;
-                _hasStarted = true;
-            }
-            StartBackgroundWorker();
         }
 
 
@@ -1467,47 +1474,56 @@ namespace SocketMeister
                 Log(ex7);
                 throw ex7;
             }
+            if (HasStarted == false) throw new InvalidOperationException($"{nameof(SendMessage)}() failed: {nameof(SocketClient)} has not started yet. Call {nameof(Start)}() to start the client.");
+            if (StopClientPermanently) throw new InvalidOperationException($"{nameof(SendMessage)}() failed: {nameof(SocketClient)} has been stopped permanently. A new {nameof(SocketClient)} instance must be created.");
+
             DateTime utcSendStart = DateTime.UtcNow;
             DateTime utcTimeout = utcSendStart.AddMilliseconds(TimeoutMilliseconds);
-            while (ConnectionStatus != ConnectionStatuses.Connected && !StopClientPermanently)
-            {
-                if (StopClientPermanently)
-                {
-                    msg = $"{nameof(SendMessage)}() failed: The socket client is stopped or stopping.";
-                    Exception ex6 = new Exception(msg);
-                    Log(ex6);
-                    throw ex6;
-                }
-                if (DateTime.UtcNow > utcTimeout)
-                {
-                    msg = $"{nameof(SendMessage)}() failed: Timeout ({TimeoutMilliseconds} ms).";
-                    TimeoutException ex5 = new TimeoutException(msg);
-                    Log(ex5);
-                    throw ex5;
-                }
-                Thread.Sleep(100);
-            }
-            int remainingMilliseconds = TimeoutMilliseconds - Convert.ToInt32((DateTime.UtcNow - utcSendStart).TotalMilliseconds);
+            //while (ConnectionStatus != ConnectionStatuses.Connected && !StopClientPermanently)
+            //{
+            //    if (StopClientPermanently)
+            //    {
+            //        msg = $"{nameof(SendMessage)}() failed: The socket client is stopped or stopping.";
+            //        Exception ex6 = new Exception(msg);
+            //        Log(ex6);
+            //        throw ex6;
+            //    }
+            //    if (DateTime.UtcNow > utcTimeout)
+            //    {
+            //        msg = $"{nameof(SendMessage)}() failed: Timeout ({TimeoutMilliseconds} ms).";
+            //        TimeoutException ex5 = new TimeoutException(msg);
+            //        Log(ex5);
+            //        throw ex5;
+            //    }
+            //    Thread.Sleep(100);
+            //}
+            int remainingTimeoutMs = TimeoutMilliseconds - Convert.ToInt32((DateTime.UtcNow - utcSendStart).TotalMilliseconds);
 
             //  Create Message
-            MessageV1 message = new MessageV1(Parameters, remainingMilliseconds, FriendlyMessageName);
+            MessageV1 message = new MessageV1(Parameters, remainingTimeoutMs, FriendlyMessageName);
 
             //  Add the message to the unresponded messages collection
             UnrespondedMessages.Add(message);
 
             // Generate the sendBytes
             byte[] sendBytes = MessageEngine.GenerateSendBytes(message, _enableCompression);
+
+            // Create log message
+            string logMsg;
             if (FriendlyMessageName == null)
             {
-                Log($"Sending {typeof(MessageV1).Name} ({sendBytes.Length} bytes)...", Severity.Information, LogEventType.UserMessage, message.MessageId);
+                logMsg = $"{typeof(MessageV1).Name} ({sendBytes.Length} bytes, timeout:{TimeoutMilliseconds} ms)";
             }
             else
             {
-                Log($"Sending {FriendlyMessageName} ({sendBytes.Length} bytes)...", Severity.Information, LogEventType.UserMessage, message.MessageId);
+                logMsg = $"{FriendlyMessageName} ({sendBytes.Length} bytes, timeout:{TimeoutMilliseconds} ms)";
             }
 
             try
             {
+                int sentAttempts = 0;
+                bool queuedForSend = false;
+                bool queuedLogged = false;
                 while (message.TrySendReceive && !StopClientPermanently)
                 {
                     if (message.SendReceiveStatus == SendStatus.Unsent && CanSendReceive())
@@ -1515,6 +1531,16 @@ namespace SocketMeister
                         var sendEventArgs = _sendEventArgsPool.Pop();
                         if (sendEventArgs != null)
                         {
+                            sentAttempts++;
+                            // Log the send attempt
+                            if (sentAttempts == 1)
+                            {
+                                Log($"Sending {logMsg}...", Severity.Information, LogEventType.UserMessage, message.MessageId);
+                            }
+                            else
+                            {
+                                Log($"Resending {logMsg}...", Severity.Information, LogEventType.UserMessage, message.MessageId);
+                            }
                             message.SetStatusInProgress();
                             sendEventArgs.UserToken = message;
                             sendEventArgs.SetBuffer(sendBytes, 0, sendBytes.Length);
@@ -1528,11 +1554,24 @@ namespace SocketMeister
                             if (message.SendReceiveStatus == SendStatus.Completed) break;
 #else
                             // Wait for a send blocker to complete.
-                            remainingMilliseconds = TimeoutMilliseconds - Convert.ToInt32((DateTime.UtcNow - utcSendStart).TotalMilliseconds);
-                            message.ActivateSendWaitBlocker(remainingMilliseconds);
+                            remainingTimeoutMs = TimeoutMilliseconds - Convert.ToInt32((DateTime.UtcNow - utcSendStart).TotalMilliseconds);
+                            message.WaitForSendAttemptCompletion(remainingTimeoutMs);
                             if (message.SendReceiveStatus == SendStatus.Completed) break;
 #endif
                         }
+                        else
+                        {
+                            queuedForSend = true;
+                        }
+                    }
+                    else
+                    {
+                        queuedForSend = true;
+                    }
+                    if (queuedForSend && !queuedLogged)
+                    {
+                        Log($"Queued to send {logMsg}...", Severity.Information, LogEventType.UserMessage, message.MessageId);
+                        queuedLogged = true;
                     }
 #if NET35
                     Thread.Sleep(10); // Poll for response
@@ -1541,15 +1580,7 @@ namespace SocketMeister
             }
             catch (TimeoutException)
             {
-                if (FriendlyMessageName == null)
-                {
-                    msg = $"Timout Sending {typeof(MessageV1).Name} ({sendBytes.Length} bytes, timeout ({message.TimeoutMilliseconds} ms).";
-                }
-                else
-                {
-                    msg = $"Timeout Sending {FriendlyMessageName} ({sendBytes.Length} bytes, timeout ({message.TimeoutMilliseconds} ms).";
-                }
-                TimeoutException ex4 = new TimeoutException(msg);
+                TimeoutException ex4 = new TimeoutException($"Timout Sending {logMsg}");
                 Log(ex4);
                 throw ex4;
 
@@ -1567,6 +1598,7 @@ namespace SocketMeister
                 UnrespondedMessages.Remove(message);
             }
 
+            //  Process the response
             if (message.Response != null)
             {
                 if (message.Response.Error != null)

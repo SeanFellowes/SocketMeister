@@ -63,7 +63,7 @@ namespace SocketMeister.Messages
         /// <summary>
         /// Using a blocking wait, wait for the block to be set or timeout
         /// </summary>
-        void ActivateSendWaitBlocker(int TimeoutMs);
+        void WaitForSendAttemptCompletion(int TimeoutMs);
 #endif
 
 

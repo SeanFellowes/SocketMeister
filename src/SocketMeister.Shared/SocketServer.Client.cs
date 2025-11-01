@@ -297,7 +297,7 @@ namespace SocketMeister
                     message.SetStatusInProgress();
 
                     // Wait for a response.
-                    message.ActivateSendWaitBlocker(timeoutMilliseconds);
+                    message.WaitForSendAttemptCompletion(timeoutMilliseconds);
 
                     if (message.Response != null)
                     {
