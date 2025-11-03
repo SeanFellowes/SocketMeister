@@ -254,7 +254,7 @@ namespace SocketMeister.Messages
         public void WaitForSendAttemptCompletion(int SendTimeoutMs)
         {
             if (_sendCompletionEvent.Wait(SendTimeoutMs) == false)
-                throw new TimeoutException($"SendMessage() received no response out after {SendTimeoutMs} milliseconds.");
+                throw new TimeoutException($"SendMessage() timeout out after {SendTimeoutMs} milliseconds.");
         }
 #endif
     }

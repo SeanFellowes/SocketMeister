@@ -858,11 +858,10 @@ namespace SocketMeister
         /// </summary>
         public void Start()
         {
-            if (HasStarted == true) return;
-            if (StopClientPermanently) throw new InvalidOperationException("Cannot start a client that has been stopped.");
-            lock (_lock)
+           if (StopClientPermanently) throw new InvalidOperationException("Cannot start a client that has been stopped.");
+           lock (_lock)
             {
-                if (_hasStarted) return;
+                if (_hasStarted == true) return;
                 _hasStarted = true;
             }
             StartBackgroundWorker();

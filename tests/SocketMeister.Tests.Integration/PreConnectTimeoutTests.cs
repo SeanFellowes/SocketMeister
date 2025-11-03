@@ -14,6 +14,7 @@ public class PreConnectTimeoutTests
     {
         int port = PortAllocator.GetFreeTcpPort();
         var client = new SocketClient(new List<SocketEndPoint> { new SocketEndPoint("127.0.0.1", port) }, false, "PreConn");
+        client.Start();
 
         // Do not start server; sending must time out
         var ex = Assert.ThrowsAny<Exception>(() => client.SendMessage(new object[] { "ping" }, 1000));
