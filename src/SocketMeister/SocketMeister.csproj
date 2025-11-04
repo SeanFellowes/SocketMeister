@@ -17,6 +17,7 @@
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageReleaseNotes>See CHANGELOG.md for details: https://github.com/SeanFellowes/SocketMeister/blob/main/CHANGELOG.md</PackageReleaseNotes>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageOutputPath>..\nupkgs</PackageOutputPath>
 
 		<!-- Versioning -->
 		<Version>11.2.2</Version>
@@ -34,7 +35,6 @@
 		<!-- Icon -->
 		<PackageIcon>icon_128.png</PackageIcon>
 		<Configurations>Debug;Release</Configurations>
-		<PackageOutputPath>..\nupkgs</PackageOutputPath>
 
 		<!-- Self-contained is not needed for libraries -->
 	</PropertyGroup>
