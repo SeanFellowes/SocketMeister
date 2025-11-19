@@ -3,6 +3,11 @@
 All notable changes to this project will be documented in this file.
 The format is based on Keep a Changelog and this project adheres to Semantic Versioning.
 
+## 11.2.3 - 2025-11-19
+
+### Fixed
+- SocketMeister.Sources nuget package: Mark as a development dependency to avoid being included as a runtime dependency.
+
 ## 11.2.2 - 2025-11-01
 
 ### Fixed

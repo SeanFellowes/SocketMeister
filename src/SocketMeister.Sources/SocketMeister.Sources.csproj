@@ -4,7 +4,7 @@
 
 		<!-- Package metadata -->
 		<PackageId>SocketMeister.Sources</PackageId>
-		<Version>11.2.2</Version>
+		<Version>11.2.3</Version>
 		<Authors>Sean Fellowes</Authors>
 		<Description>SocketMeister source files—include via PackageReference to compile inline.</Description>
 
@@ -22,6 +22,9 @@
 		<PackageTags>tcp;socket;networking;dotnet</PackageTags>
 		<PackageReleaseNotes>See CHANGELOG.md for details: https://github.com/SeanFellowes/SocketMeister/blob/main/CHANGELOG.md</PackageReleaseNotes>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+
+		<!-- Mark as a development dependency to avoid being included as a runtime dependency -->
+		<DevelopmentDependency>true</DevelopmentDependency>
 	</PropertyGroup>
 
 	<!-- For SDK-style consumers (PackageReference) -->
