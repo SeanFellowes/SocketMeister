@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<!-- Multi-target frameworks -->
-		<TargetFrameworks>net35;netstandard2.0;net472;net48;net6.0;net7.0;net8.0;net9.0</TargetFrameworks>
+		<TargetFrameworks>net35;netstandard2.0;net472;net48;net6.0;net7.0;net8.0;net9.0;net10.0</TargetFrameworks>
 
 		<!-- Package metadata -->
 		<AssemblyName>SocketMeister</AssemblyName>
@@ -20,7 +20,7 @@
 		<PackageOutputPath>..\nupkgs</PackageOutputPath>
 
 		<!-- Versioning -->
-		<Version>11.2.4</Version>
+		<Version>11.2.5</Version>
 
 		<!-- Build settings -->
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>

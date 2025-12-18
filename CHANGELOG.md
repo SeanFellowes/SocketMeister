@@ -3,10 +3,15 @@
 All notable changes to this project will be documented in this file.
 The format is based on Keep a Changelog and this project adheres to Semantic Versioning.
 
+## 11.2.5 - 2025-12-10
+
+### Added
+- Target framework monikers updated to include .NET 10.
+
 ## 11.2.4 - 2025-12-18
 
 ### Fixed
-- SocketServer: Fixed cross threading issue when sending broadcast messages.
+- SocketServer: Fixed a race condition when multiple threads in the host application concurrently broadcast messages. Implemented thread synchronization to ensure thread-safe broadcast operations.
 
 ## 11.2.3 - 2025-11-19
 
@@ -259,3 +264,4 @@ Notes:
 ## Earlier 1.x releases (2015–2020)
 
 The 1.x line predates public NuGet distribution and consisted mainly of exploratory internal releases. They are no longer supported.
+
