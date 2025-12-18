@@ -3,6 +3,11 @@
 All notable changes to this project will be documented in this file.
 The format is based on Keep a Changelog and this project adheres to Semantic Versioning.
 
+## 11.2.4 - 2025-12-18
+
+### Fixed
+- SocketServer: Fixed cross threading issue when sending broadcast messages.
+
 ## 11.2.3 - 2025-11-19
 
 ### Fixed

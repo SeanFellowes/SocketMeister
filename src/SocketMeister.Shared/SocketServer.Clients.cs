@@ -123,6 +123,7 @@ namespace SocketMeister
             /// <returns>A list of connected clients.</returns>
             public List<Client> ToList()
             {
+                // Create a snapshot to avoid enumeration issues during concurrent modifications
                 return _clientDictionary.Values.ToList();
             }
 
@@ -134,12 +135,18 @@ namespace SocketMeister
             internal List<Client> GetClientsWithSubscriptions(string subscriptionName)
             {
                 List<Client> result = new List<Client>();
-                ICollection<Client> clients = _clientDictionary.Values;
+                
+                // Create a snapshot of clients to avoid concurrent modification issues
+                // when multiple threads call BroadcastToSubscribers simultaneously
+                List<Client> clientsSnapshot = _clientDictionary.Values.ToList();
 
-                foreach (var client in clients)
+                foreach (var client in clientsSnapshot)
                 {
-                    if (client != null && client.SubscriptionCount == 0) continue;
+                    // Skip if client is null or has no subscriptions
+                    if (client == null || client.SubscriptionCount == 0) continue;
 
+                    // Check if this client has the subscription
+                    // DoesSubscriptionExist is thread-safe as it uses ConcurrentDictionary internally
                     if (client.DoesSubscriptionExist(subscriptionName))
                         result.Add(client);
                 }

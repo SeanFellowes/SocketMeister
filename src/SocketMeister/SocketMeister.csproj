@@ -20,7 +20,7 @@
 		<PackageOutputPath>..\nupkgs</PackageOutputPath>
 
 		<!-- Versioning -->
-		<Version>11.2.2</Version>
+		<Version>11.2.4</Version>
 
 		<!-- Build settings -->
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
