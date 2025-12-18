@@ -4,7 +4,7 @@ This guide shows how to install the package and build a minimal server and clien
 
 ## Prerequisites
 
-- .NET Framework 3.5+ or modern .NET (Core/5+/6+/7+/8+)
+- .NET Framework 3.5+ or modern .NET (Core/6+/7+/8+/9+/10+)
 - Visual Studio, VS Code, Rider, or equivalent
 - NuGet (via IDE or `dotnet` CLI)
 
@@ -13,13 +13,13 @@ This guide shows how to install the package and build a minimal server and clien
 PowerShell:
 
 ```powershell
-Install-Package SocketMeister -Version 11.0.0
+Install-Package SocketMeister -Version 11.2.4
 ```
 
 Or using the .NET CLI:
 
 ```bash
-dotnet add package SocketMeister --version 11.0.0
+dotnet add package SocketMeister --version 11.2.4
 ```
 
 ## 2) Minimal server
